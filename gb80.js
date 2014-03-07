@@ -2,7 +2,26 @@
 var Gb80Console;
 
 Gb80Console = (function() {
-  function Gb80Console() {}
+  function Gb80Console() {
+    this.reset();
+  }
+
+  Gb80Console.prototype.reset = function() {
+    this.status = "clean";
+    return this.lines = [];
+  };
+
+  Gb80Console.prototype.addline = function(line) {
+    return this.lines.push(line);
+  };
+
+  Gb80Console.prototype.fetch = function(n) {
+    if (n >= 0 && n < this.lines.length) {
+      return this.lines[n];
+    } else {
+      return "";
+    }
+  };
 
   return Gb80Console;
 
