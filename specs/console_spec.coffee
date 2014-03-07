@@ -1,16 +1,16 @@
-describe "Test GB80 Console functions", ->
+xdescribe "Test GB80 Console Text functions", ->
 
   beforeEach ->
-    @console = new Gb80Console
+    @console = new ConsoleText
 
     @clean_console = { "status" : "clean", "lines" : [] }
 
 
-  describe "Test console object", ->
+  describe "Test console text object", ->
 
-    it "should create a Gb80Console object", ->
+    it "should create a ConsoleText object", ->
       expect(@console).toBeDefined
-      expect(@console).toEqual(jasmine.any(Gb80Console))
+      expect(@console).toEqual(jasmine.any(ConsoleText))
       expect(@console.status).toEqual("clean")
       expect(@console.lines).toEqual([])
 
@@ -39,25 +39,34 @@ describe "Test GB80 Console functions", ->
       expect(@console.fetch(6)).toEqual('999 END')
 
 
-  describe "Test console line object", ->
+  describe "Test console line buffer object", ->
 
     beforeEach ->
-      @c_line = @console.line
+      @buffer = @console.line_buffer
 
-    it "should create a ConsoleLine object", ->
-      expect(@c_line).toBeDefined
-      expect(@c_line).toEqual(jasmine.any(ConsoleLine))
-      expect(@c_line.get_text()).toEqual("")
-
-
-    it "should fetch the console line text", ->
-      @c_line.text = '10 REM WELCOME TO GRANDPA BASIC 80'
-      expect(@c_line.get_text()).toEqual('10 REM WELCOME TO GRANDPA BASIC 80')
+    it "should create a LineBuffer object", ->
+      expect(@buffer).toBeDefined
+      expect(@buffer).toEqual(jasmine.any(LineBuffer))
+      expect(@buffer.get_text()).toEqual("")
 
 
-    it "should set the console line text", ->
-      @c_line.set_text('10 REM WELCOME TO GRANDPA BASIC 80')
-      expect(@c_line.get_text()).toEqual('10 REM WELCOME TO GRANDPA BASIC 80')
+    it "should fetch the line buffer text", ->
+      @buffer.text = '10 REM WELCOME TO GRANDPA BASIC 80'
+      expect(@buffer.get_text()).toEqual('10 REM WELCOME TO GRANDPA BASIC 80')
+
+
+    it "should set the line buffer text", ->
+      @buffer.set_text('10 REM WELCOME TO GRANDPA BASIC 80')
+      expect(@buffer.get_text()).toEqual('10 REM WELCOME TO GRANDPA BASIC 80')
+
+
+    it "should load text from the console object into the line buffer object", ->
+      @console.addline('10 REM WELCOME TO GRANDPA BASIC 80')
+      @console.load_line_buffer(0)
+      expect(@buffer.get_text()).toEqual('10 REM WELCOME TO GRANDPA BASIC 80')
+      @console.load_line_buffer(7)
+      expect(@buffer.get_text()).toEqual("")
+
 
 
 

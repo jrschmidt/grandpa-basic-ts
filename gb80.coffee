@@ -1,7 +1,7 @@
-class Gb80Console
+class ConsoleText
 
   constructor: () ->
-    @line = new ConsoleLine
+    @line_buffer = new LineBuffer
 
     @reset()
 
@@ -22,8 +22,25 @@ class Gb80Console
       return ""
 
 
+  load_line_buffer: (n) ->
+    if n>=@lines.length
+      text = ""
+    else
+      text = @lines[n]
+    @line_buffer.set_text(text)
 
-class ConsoleLine
+
+
+class BasicProgramLine
+
+  constructor: (n,str) ->
+    @ln_no = n
+    @text = str
+    @parse_object = {}
+
+
+
+class LineBuffer
 
   constructor: () ->
     @text = ""
