@@ -1,3 +1,7 @@
+class BasicProgram
+
+
+
 class ConsoleText
 
   constructor: () ->
@@ -19,7 +23,7 @@ class ConsoleText
     if n>=0 && n<@lines.length
       return @lines[n]
     else
-      return ""
+      return {}
 
 
   load_line_buffer: (n) ->

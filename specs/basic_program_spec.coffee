@@ -1,21 +1,17 @@
-xdescribe "Test GB80 Console Text functions", ->
+describe "Test Basic program object functions", ->
 
   beforeEach ->
-    @console = new ConsoleText
-
-    @clean_console = { "status" : "clean", "lines" : [] }
+    @console = new BasicProgram
 
 
-  describe "Test console text object", ->
+  describe "TestBasic program object", ->
 
-    it "should create a ConsoleText object", ->
+    it "should create a BasicProgram object", ->
       expect(@console).toBeDefined
-      expect(@console).toEqual(jasmine.any(ConsoleText))
-      expect(@console.status).toEqual("clean")
-      expect(@console.lines).toEqual([])
+      expect(@console).toEqual(jasmine.any(BasicProgram))
 
 
-  describe "Test console line fetch", ->
+  xdescribe "Test console line fetch", ->
 
     it "should fetch lines from console", ->
       @console.lines.push( {"ln_no" : 10, "text" : '10 REM WELCOME TO GRANDPA BASIC 80'} )
@@ -29,7 +25,7 @@ xdescribe "Test GB80 Console Text functions", ->
       expect(@console.fetch(0).text).toEqual('10 REM WELCOME TO GRANDPA BASIC 80')
       expect(@console.fetch(17)).toEqual( {} )
 
-    xit "should add lines to console", ->
+    it "should add lines to console", ->
       @console.addline('10 REM WELCOME TO GRANDPA BASIC 80')
       @console.addline('20 $T = "JOHN R SCHMIDT"')
       @console.addline('30 INPUT "DISPLAY NAME (Y/N)?";$Y')
@@ -47,7 +43,7 @@ xdescribe "Test GB80 Console Text functions", ->
       expect(@console.fetch(6)).toEqual('999 END')
 
 
-  describe "Test console line buffer object", ->
+  xdescribe "Test console line buffer object", ->
 
     beforeEach ->
       @buffer = @console.line_buffer
