@@ -15,7 +15,7 @@ describe("Test GB80 Console functions", function() {
       return expect(this.console.lines).toEqual([]);
     });
   });
-  return describe("Test console line fetch", function() {
+  describe("Test console line fetch", function() {
     it("should fetch lines from console", function() {
       this.console.lines.push('10 REM WELCOME TO GRANDPA BASIC 80');
       return expect(this.console.fetch(0)).toEqual('10 REM WELCOME TO GRANDPA BASIC 80');
@@ -35,6 +35,24 @@ describe("Test GB80 Console functions", function() {
       expect(this.console.fetch(4)).toEqual('50 PRINT "WRITTEN BY "+$T');
       expect(this.console.fetch(5)).toEqual('100 PRINT "OK BYE"');
       return expect(this.console.fetch(6)).toEqual('999 END');
+    });
+  });
+  return describe("Test console line object", function() {
+    beforeEach(function() {
+      return this.c_line = this.console.line;
+    });
+    it("should create a ConsoleLine object", function() {
+      expect(this.c_line).toBeDefined;
+      expect(this.c_line).toEqual(jasmine.any(ConsoleLine));
+      return expect(this.c_line.get_text()).toEqual("");
+    });
+    it("should fetch the console line text", function() {
+      this.c_line.text = '10 REM WELCOME TO GRANDPA BASIC 80';
+      return expect(this.c_line.get_text()).toEqual('10 REM WELCOME TO GRANDPA BASIC 80');
+    });
+    return it("should set the console line text", function() {
+      this.c_line.set_text('10 REM WELCOME TO GRANDPA BASIC 80');
+      return expect(this.c_line.get_text()).toEqual('10 REM WELCOME TO GRANDPA BASIC 80');
     });
   });
 });

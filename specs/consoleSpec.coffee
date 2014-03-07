@@ -38,3 +38,26 @@ describe "Test GB80 Console functions", ->
       expect(@console.fetch(5)).toEqual('100 PRINT "OK BYE"')
       expect(@console.fetch(6)).toEqual('999 END')
 
+
+  describe "Test console line object", ->
+
+    beforeEach ->
+      @c_line = @console.line
+
+    it "should create a ConsoleLine object", ->
+      expect(@c_line).toBeDefined
+      expect(@c_line).toEqual(jasmine.any(ConsoleLine))
+      expect(@c_line.get_text()).toEqual("")
+
+
+    it "should fetch the console line text", ->
+      @c_line.text = '10 REM WELCOME TO GRANDPA BASIC 80'
+      expect(@c_line.get_text()).toEqual('10 REM WELCOME TO GRANDPA BASIC 80')
+
+
+    it "should set the console line text", ->
+      @c_line.set_text('10 REM WELCOME TO GRANDPA BASIC 80')
+      expect(@c_line.get_text()).toEqual('10 REM WELCOME TO GRANDPA BASIC 80')
+
+
+

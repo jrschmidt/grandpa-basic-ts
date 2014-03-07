@@ -1,6 +1,8 @@
 class Gb80Console
 
   constructor: () ->
+    @line = new ConsoleLine
+
     @reset()
 
 
@@ -18,3 +20,20 @@ class Gb80Console
       return @lines[n]
     else
       return ""
+
+
+
+class ConsoleLine
+
+  constructor: () ->
+    @text = ""
+
+
+  set_text: (string) ->
+    @text = string
+
+
+  get_text: () ->
+    return @text
+
+
