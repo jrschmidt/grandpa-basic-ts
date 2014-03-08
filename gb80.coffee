@@ -1,5 +1,31 @@
 class BasicProgram
 
+  constructor: () ->
+    @lines = []
+
+
+  addline: (n, text) ->
+    existing = @lines.filter( (ln) -> ln.ln_no == n )
+    if existing.length == 0
+      @lines.push( { "ln_no" : n, "text" : text } )
+    else
+      existing[0].text = text
+
+
+  fetch: (line_no) ->
+    existing = @lines.filter( (ln) -> ln.ln_no == line_no )
+    if existing.length == 0
+      return {}
+    else
+      return existing[0]
+
+
+  remove: (line_no) ->
+    line = @fetch(line_no)
+    if line != {}
+      line.ln_no = null
+      line.text = null
+
 
 
 class ConsoleText

@@ -2,7 +2,45 @@
 var BasicProgram, BasicProgramLine, ConsoleText, LineBuffer;
 
 BasicProgram = (function() {
-  function BasicProgram() {}
+  function BasicProgram() {
+    this.lines = [];
+  }
+
+  BasicProgram.prototype.addline = function(n, text) {
+    var existing;
+    existing = this.lines.filter(function(ln) {
+      return ln.ln_no === n;
+    });
+    if (existing.length === 0) {
+      return this.lines.push({
+        "ln_no": n,
+        "text": text
+      });
+    } else {
+      return existing[0].text = text;
+    }
+  };
+
+  BasicProgram.prototype.fetch = function(line_no) {
+    var existing;
+    existing = this.lines.filter(function(ln) {
+      return ln.ln_no === line_no;
+    });
+    if (existing.length === 0) {
+      return {};
+    } else {
+      return existing[0];
+    }
+  };
+
+  BasicProgram.prototype.remove = function(line_no) {
+    var line;
+    line = this.fetch(line_no);
+    if (line !== {}) {
+      line.ln_no = null;
+      return line.text = null;
+    }
+  };
 
   return BasicProgram;
 
