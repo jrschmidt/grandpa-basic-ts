@@ -53,6 +53,9 @@ class LineParser
   look_for_command: (string) ->
     cmd = null
     cmd = "<clear>" if string == "CLEAR"
+    cmd = "<run>" if string == "RUN"
+    cmd = "<info>" if string == "INFO"
+    cmd = "<list>" if string == "LIST"
     return cmd
 
 

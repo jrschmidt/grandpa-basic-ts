@@ -78,6 +78,15 @@ LineParser = (function() {
     if (string === "CLEAR") {
       cmd = "<clear>";
     }
+    if (string === "RUN") {
+      cmd = "<run>";
+    }
+    if (string === "INFO") {
+      cmd = "<info>";
+    }
+    if (string === "LIST") {
+      cmd = "<list>";
+    }
     return cmd;
   };
 
