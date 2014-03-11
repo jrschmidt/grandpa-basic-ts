@@ -1,4 +1,4 @@
-describe "Test Basic Program Line functions", ->
+describe "Test Basic program line functions", ->
 
   beforeEach ->
     @line = new BasicProgramLine(10,'10 REM WELCOME TO GRANDPA BASIC 80') 
