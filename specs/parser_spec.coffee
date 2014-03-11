@@ -76,4 +76,34 @@ describe "Test Basic program line parser", ->
 
 
 
+  describe "Test numeric assignment parsing", ->
+    it "should correctly parse a numeric assignment statement", ->
+
+      po = @parser.parse('180 X=77')
+      expect(po).toEqual(jasmine.any(Array))
+      expect(po[0]).toEqual("<line_number>")
+      expect(po[1]).toEqual(180)
+      expect(po[2]).toEqual("<numeric_identifier>")
+      expect(po[3]).toEqual("X")
+      expect(po[4]).toEqual("<equals_sign>")
+
+      po = @parser.parse('320 K5=K2*K3+(2*K4)')
+      expect(po).toEqual(jasmine.any(Array))
+      expect(po[0]).toEqual("<line_number>")
+      expect(po[1]).toEqual(320)
+      expect(po[2]).toEqual("<numeric_identifier>")
+      expect(po[3]).toEqual("K5")
+      expect(po[4]).toEqual("<equals_sign>")
+
+      po = @parser.parse('660 R=1+(B^2-4*A*C)/(2*A)')
+      expect(po).toEqual(jasmine.any(Array))
+      expect(po[0]).toEqual("<line_number>")
+      expect(po[1]).toEqual(660)
+      expect(po[2]).toEqual("<numeric_identifier>")
+      expect(po[3]).toEqual("R")
+      expect(po[4]).toEqual("<equals_sign>")
+
+
+
+
 

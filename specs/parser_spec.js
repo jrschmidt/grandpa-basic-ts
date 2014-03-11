@@ -30,7 +30,7 @@ describe("Test Basic program line parser", function() {
       return expect(po[0]).toEqual("<list>");
     });
   });
-  return describe("Test line number parsing", function() {
+  describe("Test line number parsing", function() {
     return it("should correctly parse line numbers", function() {
       var po;
       po = this.parser.parse('10 REM WELCOME TO GRANDPA BASIC 80');
@@ -61,6 +61,32 @@ describe("Test Basic program line parser", function() {
       expect(po).toEqual(jasmine.any(Array));
       expect(po[0]).toEqual("<line_number>");
       return expect(po[1]).toEqual(999);
+    });
+  });
+  return describe("Test numeric assignment parsing", function() {
+    return it("should correctly parse a numeric assignment statement", function() {
+      var po;
+      po = this.parser.parse('180 X=77');
+      expect(po).toEqual(jasmine.any(Array));
+      expect(po[0]).toEqual("<line_number>");
+      expect(po[1]).toEqual(180);
+      expect(po[2]).toEqual("<numeric_identifier>");
+      expect(po[3]).toEqual("X");
+      expect(po[4]).toEqual("<equals_sign>");
+      po = this.parser.parse('320 K5=K2*K3+(2*K4)');
+      expect(po).toEqual(jasmine.any(Array));
+      expect(po[0]).toEqual("<line_number>");
+      expect(po[1]).toEqual(320);
+      expect(po[2]).toEqual("<numeric_identifier>");
+      expect(po[3]).toEqual("K5");
+      expect(po[4]).toEqual("<equals_sign>");
+      po = this.parser.parse('660 R=1+(B^2-4*A*C)/(2*A)');
+      expect(po).toEqual(jasmine.any(Array));
+      expect(po[0]).toEqual("<line_number>");
+      expect(po[1]).toEqual(660);
+      expect(po[2]).toEqual("<numeric_identifier>");
+      expect(po[3]).toEqual("R");
+      return expect(po[4]).toEqual("<equals_sign>");
     });
   });
 });

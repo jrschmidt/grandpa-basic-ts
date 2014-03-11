@@ -19,7 +19,7 @@ List of Commands and BASIC Statements to be implemented in first version:
   === PROGRAM STATEMENTS ===
 
 
-  BLANK REMARK:   [  <line number> + <REM>  ]
+  BLANK REMARK:   [  {line number} + <REM>  ]
 
     A blank comment line, used for whitespace. (These older regimes didn't allow for plain old blank
     lines in the program listings unless explicitly specified by a statement like this.)
@@ -29,7 +29,7 @@ List of Commands and BASIC Statements to be implemented in first version:
 
 
 
-  REMARK:   [  <line number> + <REM> + {characters}  ]
+  REMARK:   [  {line number} + <REM> + {characters}  ]
 
     A comment line, not executable.
 
@@ -41,7 +41,7 @@ List of Commands and BASIC Statements to be implemented in first version:
 
 
 
-  NUMERIC ASSIGNMENT:   [  <line number> + {numeric identifier} + <equals sign> + {numeric expression}  ]
+  NUMERIC ASSIGNMENT:   [  {line number} + {numeric identifier} + <equals sign> + {numeric expression}  ]
 
     Assign a value to a numeric variable. In the original versions of BASIC, a numeric variable name
     was restricted to either a single (upper case) letter, or a single letter followed by a single
@@ -57,7 +57,7 @@ List of Commands and BASIC Statements to be implemented in first version:
 
 
 
-  STRING ASSIGNMENT:   [  <line number> + {string identifier} + <equals sign> + {string expression}  ]
+  STRING ASSIGNMENT:   [  {line number} + {string identifier} + <equals sign> + {string expression}  ]
 
     Assign a value to a string variable. String variables were distinguished from numeric variables by
     an initial '$' character, such as $A, $B, $G1, $G2. Even in later versions of BASIC which allowed
@@ -70,7 +70,7 @@ List of Commands and BASIC Statements to be implemented in first version:
 
 
 
-  GOTO:   [  <line number> + <GOTO> + <line number>  ]
+  GOTO:   [  {line number} + <GOTO> + {line number}  ]
     Go to the line number specified.
 
     example:
@@ -78,7 +78,7 @@ List of Commands and BASIC Statements to be implemented in first version:
 
 
 
-  GOSUB:   [  <line number> + <GOSUB> + <line number>  ]
+  GOSUB:   [  {line number} + <GOSUB> + {line number}  ]
 
     Jump to the designated line number. When a <RETURN> statement is encountered, return to the next
     line following this one. A precursor to what we think of today as methods or functions was the
@@ -89,7 +89,7 @@ List of Commands and BASIC Statements to be implemented in first version:
 
 
 
-  RETURN:   [  <line number> + <RETURN>  ]
+  RETURN:   [  {line number} + <RETURN>  ]
 
     Return to the line number following the line of the <GOSUB> statement that started the current
     subroutine.
@@ -99,7 +99,7 @@ List of Commands and BASIC Statements to be implemented in first version:
 
 
 
-  IF STATEMENT:   [  <line number> + <IF> + {boolean expression} + <THEN> + <line number>  ]
+  IF STATEMENT:   [  {line number} + <IF> + {boolean expression} + <THEN> + {line number}  ]
 
     Jump to the designated line number if the boolean expression evaluates to <true>.
 
@@ -145,7 +145,7 @@ List of Commands and BASIC Statements to be implemented in first version:
 
 
 
-  PRINT STATEMENT:   [ <line number> + <PRINT> + <string expression>  ]
+  PRINT STATEMENT:   [ {line number} + <PRINT> + <string expression>  ]
 
     Print the value of the string expression on the console (without a line return).
 
@@ -154,7 +154,7 @@ List of Commands and BASIC Statements to be implemented in first version:
 
 
 
-  BLANK PRINT LINE:   [ <line number> + <PRINTLN>  ]
+  BLANK PRINT LINE:   [ {line number} + <PRINTLN>  ]
 
     Print a blank line.
 
@@ -163,7 +163,7 @@ List of Commands and BASIC Statements to be implemented in first version:
 
 
 
-  PRINT LINE STATEMENT:   [ <line number> + <PRINTLN> + <string expression>  ]
+  PRINT LINE STATEMENT:   [ {line number} + <PRINTLN> + <string expression>  ]
 
     Print the value of the string expression on the console on a new line.
 
@@ -172,7 +172,7 @@ List of Commands and BASIC Statements to be implemented in first version:
 
 
 
-  CLEAR STATEMENT:   [  <line number> + <CLEAR>  ]
+  CLEAR STATEMENT:   [  {line number} + <CLEAR>  ]
 
     Different from the CLEAR command. Clear the console screen and move the cursor to position 0,0
     (the upper left corner).
@@ -182,7 +182,7 @@ List of Commands and BASIC Statements to be implemented in first version:
 
 
 
-  TAB TO LINE:   [  <line number> + <TAB> + <integer>  ]
+  TAB TO LINE:   [  {line number} + <TAB> + <integer>  ]
 
     Move the cursor to the beginning of the designated line on the console.
 
@@ -192,7 +192,7 @@ List of Commands and BASIC Statements to be implemented in first version:
 
 
 
-  TAB TO LINE AND COLUMN:   [  <line number> + <TAB> + <integer> + <comma> + <integer>  ]
+  TAB TO LINE AND COLUMN:   [  {line number} + <TAB> + <integer> + <comma> + <integer>  ]
 
     Move the cursor to the line designated by the first argument, at the column designated by
     the second argument.

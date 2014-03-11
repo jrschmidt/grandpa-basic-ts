@@ -62,17 +62,24 @@ LineParser = (function() {
   function LineParser() {}
 
   LineParser.prototype.parse = function(string) {
-    var line, ln, original_string, x;
-    this.string = string;
+    var line, ln, look_for, original_string, token1, x;
     original_string = string;
     line = [];
-    x = this.look_for_command(this.string);
+    x = this.look_for_command(string);
     if (x !== null) {
       line = [x];
     } else {
-      ln = this.look_for_line_number(this.string);
+      look_for = this.look_for_line_number(string);
+      ln = look_for[0];
+      string = look_for[1];
       line[0] = "<line_number>";
       line[1] = ln;
+      token1 = this.look_for_numeric_identifier(string);
+      if (token1 !== null) {
+        line[2] = "<numeric_identifier>";
+        line[3] = token1;
+        line[4] = "<equals_sign>";
+      }
     }
     return line;
   };
@@ -99,11 +106,24 @@ LineParser = (function() {
     var n;
     n = parseInt(string);
     if (n > 0) {
-      string.slice(String(n).length + 1);
+      string = string.slice(String(n).length + 1);
     } else {
       n = 0;
     }
-    return n;
+    return [n, string];
+  };
+
+  LineParser.prototype.look_for_numeric_identifier = function(string) {
+    var find, id, size;
+    id = null;
+    size = 0;
+    find = string.search(/[A-Z][0-9]?=/);
+    if (find === 0) {
+      size = string.indexOf("=");
+      id = string.slice(0, size);
+      string = string.slice(size + 1);
+    }
+    return id;
   };
 
   return LineParser;
