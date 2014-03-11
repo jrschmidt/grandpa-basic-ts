@@ -62,12 +62,17 @@ LineParser = (function() {
   function LineParser() {}
 
   LineParser.prototype.parse = function(string) {
-    var line, original_string, x;
+    var line, ln, original_string, x;
+    this.string = string;
     original_string = string;
     line = [];
-    x = this.look_for_command(string);
+    x = this.look_for_command(this.string);
     if (x !== null) {
       line = [x];
+    } else {
+      ln = this.look_for_line_number(this.string);
+      line[0] = "<line_number>";
+      line[1] = ln;
     }
     return line;
   };
@@ -88,6 +93,17 @@ LineParser = (function() {
       cmd = "<list>";
     }
     return cmd;
+  };
+
+  LineParser.prototype.look_for_line_number = function(string) {
+    var n;
+    n = parseInt(string);
+    if (n > 0) {
+      string.slice(String(n).length + 1);
+    } else {
+      n = 0;
+    }
+    return n;
   };
 
   return LineParser;

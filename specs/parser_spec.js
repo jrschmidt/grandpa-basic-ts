@@ -3,12 +3,14 @@ describe("Test Basic program line parser", function() {
   beforeEach(function() {
     return this.parser = new LineParser;
   });
-  return describe("Test line parser object", function() {
-    it("should create a LineParser object", function() {
+  describe("Test line parser object", function() {
+    return it("should create a LineParser object", function() {
       expect(this.parser).toBeDefined;
       return expect(this.parser).toEqual(jasmine.any(LineParser));
     });
-    return it("should parse a valid string into a parse object", function() {
+  });
+  describe("Test command parsing", function() {
+    return it("should correctly parse a terminal command", function() {
       var po;
       po = this.parser.parse("CLEAR");
       expect(po).toEqual(jasmine.any(Array));
@@ -26,6 +28,39 @@ describe("Test Basic program line parser", function() {
       expect(po).toEqual(jasmine.any(Array));
       expect(po.length).toEqual(1);
       return expect(po[0]).toEqual("<list>");
+    });
+  });
+  return describe("Test line number parsing", function() {
+    return it("should correctly parse line numbers", function() {
+      var po;
+      po = this.parser.parse('10 REM WELCOME TO GRANDPA BASIC 80');
+      expect(po).toEqual(jasmine.any(Array));
+      expect(po[0]).toEqual("<line_number>");
+      expect(po[1]).toEqual(10);
+      po = this.parser.parse('20 $T = "JOHN R SCHMIDT"');
+      expect(po).toEqual(jasmine.any(Array));
+      expect(po[0]).toEqual("<line_number>");
+      expect(po[1]).toEqual(20);
+      po = this.parser.parse('30 INPUT "DISPLAY NAME (Y/N)?";$Y');
+      expect(po).toEqual(jasmine.any(Array));
+      expect(po[0]).toEqual("<line_number>");
+      expect(po[1]).toEqual(30);
+      po = this.parser.parse('40 IF $Y<>"Y" THEN 100');
+      expect(po).toEqual(jasmine.any(Array));
+      expect(po[0]).toEqual("<line_number>");
+      expect(po[1]).toEqual(40);
+      po = this.parser.parse('50 PRINT "WRITTEN BY "+$T');
+      expect(po).toEqual(jasmine.any(Array));
+      expect(po[0]).toEqual("<line_number>");
+      expect(po[1]).toEqual(50);
+      po = this.parser.parse('100 PRINT "OK BYE"');
+      expect(po).toEqual(jasmine.any(Array));
+      expect(po[0]).toEqual("<line_number>");
+      expect(po[1]).toEqual(100);
+      po = this.parser.parse('999 END');
+      expect(po).toEqual(jasmine.any(Array));
+      expect(po[0]).toEqual("<line_number>");
+      return expect(po[1]).toEqual(999);
     });
   });
 });

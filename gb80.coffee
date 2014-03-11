@@ -40,13 +40,17 @@ class BasicProgramLine
 class LineParser
 
   parse: (string) ->
+    @string = string
     original_string = string
     line = []
 
-    x = @look_for_command(string)
+    x = @look_for_command(@string)
     if x != null
       line = [x]
-
+    else
+      ln = @look_for_line_number(@string)
+      line[0] = "<line_number>"
+      line[1] = ln
     return line
 
 
@@ -57,6 +61,15 @@ class LineParser
     cmd = "<info>" if string == "INFO"
     cmd = "<list>" if string == "LIST"
     return cmd
+
+
+  look_for_line_number: (string) ->
+    n = parseInt(string)
+    if n>0
+      string.slice(String(n).length+1)
+    else
+      n = 0
+    return n
 
 
 
