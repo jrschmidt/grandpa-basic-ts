@@ -1,0 +1,93 @@
+GRANDPA BASIC 1980
+
+List of Commands and BASIC Statements to be implemented in first version:
+
+
+COMMANDS:
+
+  CLEAR - Clear the terminal and clear all BASIC program statements from the interpreter.
+
+  RUN - Execute the current BASIC program in the interpreter and display the results in the terminal.
+
+  INFO - Display information about this application.
+
+  LIST - List the statments current BASIC language program, ordered by line number.
+
+
+PROGRAM STATEMENTS:
+
+  <line number> + <REM>
+    A blank comment line, used for whitespace. (These older regimes didn't allow for plain old blank
+    lines in the program listings unless explicitly specified by a statement like this.)
+
+    example:
+       100 REM
+
+
+  <line number> + <REM> + {characters}
+    A comment line, not executable.
+
+    example:
+        200 REM ==========================================
+        210 REM      ***   Compute the sum   ***
+        220 REM Here we compute the sum of the two numbers
+        230 REM ==========================================
+
+
+  <line number> + {numeric identifier} + <equals sign> + {numeric expression}
+    Assign a value to a numeric variable. In the original versions of BASIC, a numeric variable name
+    was restricted to either a single (upper case) letter, or a single letter followed by a single
+    digit.
+
+    The VERY earliest versions of BASIC ("Dartmouth BASIC" and others) called these assignment
+    statements "LET statements". The syntax required the keyword LET at the beginning of the
+    assignment (eg., LET X=Y*Z). This requirement was soon deprecated.
+
+    example:
+        210 S=A+B+C
+        330 X=X1+X2+X3
+
+
+  <line number> + {string identifier} + <equals sign> + {string expression}
+    Assign a value to a string variable. String variables were distinguished from numeric variables by
+    an initial '$' character, such as $A, $B, $G1, $G2. Even in later versions of BASIC which allowed
+    variable names of more than one or two characters (8 characters at first, then longer ones were
+    allowed), the requirement for an initial '$' character was retained.
+
+    example:
+        420 $Z="KILOMETERS PER HOUR"
+        510 $M = "HELLO, "+$N+", HOW ARE YOU?"
+
+
+  <line number> + <GOTO> + <line number>
+    Go to the line number specified.
+
+    example:
+        660 GOTO 200
+
+
+  <line number> + <GOSUB> + <line number>
+    Jump to the designated line number. When a <RETURN> statement is encountered, return to the next
+    line following this one. A precursor to what we think of today as methods or functions was the
+    subroutine, which was implemented in the BASIC language in its simplest, most primitive form.
+
+    example:
+        880 GOSUB 1500
+
+
+  <line number> + <RETURN>
+    Return to the line number following the line of the <GOSUB> statement that started the current
+    subroutine.
+
+    example:
+        1590 RETURN
+
+
+  <line number> + <IF> + {boolean expression} + <THEN> + <line number>
+    Jump to the designated line number if the boolean expression evaluates to <true>.
+
+    example:
+        770 IF X2>X3 THEN 1100
+
+
+
