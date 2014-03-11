@@ -33,7 +33,27 @@ class BasicProgramLine
   constructor: (n,str) ->
     @ln_no = n
     @text = str
-    @parse_object = {}
+    @tokens = []
+
+
+
+class LineParser
+
+  parse: (string) ->
+    original_string = string
+    line = []
+
+    x = @look_for_command(string)
+    if x != null
+      line = [x]
+
+    return line
+
+
+  look_for_command: (string) ->
+    cmd = null
+    cmd = "<clear>" if string == "CLEAR"
+    return cmd
 
 
 
