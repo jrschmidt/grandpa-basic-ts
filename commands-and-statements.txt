@@ -3,7 +3,8 @@ GRANDPA BASIC 1980
 List of Commands and BASIC Statements to be implemented in first version:
 
 
-COMMANDS:
+
+=== COMMANDS ===
 
   CLEAR - Clear the terminal and clear all BASIC program statements from the interpreter.
 
@@ -14,9 +15,12 @@ COMMANDS:
   LIST - List the statments current BASIC language program, ordered by line number.
 
 
-PROGRAM STATEMENTS:
 
-  <line number> + <REM>
+  === PROGRAM STATEMENTS ===
+
+
+  BLANK REMARK:   [  <line number> + <REM>  ]
+
     A blank comment line, used for whitespace. (These older regimes didn't allow for plain old blank
     lines in the program listings unless explicitly specified by a statement like this.)
 
@@ -24,7 +28,9 @@ PROGRAM STATEMENTS:
        100 REM
 
 
-  <line number> + <REM> + {characters}
+
+  REMARK:   [  <line number> + <REM> + {characters}  ]
+
     A comment line, not executable.
 
     example:
@@ -34,7 +40,9 @@ PROGRAM STATEMENTS:
         230 REM ==========================================
 
 
-  <line number> + {numeric identifier} + <equals sign> + {numeric expression}
+
+  NUMERIC ASSIGNMENT:   [  <line number> + {numeric identifier} + <equals sign> + {numeric expression}  ]
+
     Assign a value to a numeric variable. In the original versions of BASIC, a numeric variable name
     was restricted to either a single (upper case) letter, or a single letter followed by a single
     digit.
@@ -48,7 +56,9 @@ PROGRAM STATEMENTS:
         330 X=X1+X2+X3
 
 
-  <line number> + {string identifier} + <equals sign> + {string expression}
+
+  STRING ASSIGNMENT:   [  <line number> + {string identifier} + <equals sign> + {string expression}  ]
+
     Assign a value to a string variable. String variables were distinguished from numeric variables by
     an initial '$' character, such as $A, $B, $G1, $G2. Even in later versions of BASIC which allowed
     variable names of more than one or two characters (8 characters at first, then longer ones were
@@ -59,14 +69,17 @@ PROGRAM STATEMENTS:
         510 $M = "HELLO, "+$N+", HOW ARE YOU?"
 
 
-  <line number> + <GOTO> + <line number>
+
+  GOTO:   [  <line number> + <GOTO> + <line number>  ]
     Go to the line number specified.
 
     example:
         660 GOTO 200
 
 
-  <line number> + <GOSUB> + <line number>
+
+  GOSUB:   [  <line number> + <GOSUB> + <line number>  ]
+
     Jump to the designated line number. When a <RETURN> statement is encountered, return to the next
     line following this one. A precursor to what we think of today as methods or functions was the
     subroutine, which was implemented in the BASIC language in its simplest, most primitive form.
@@ -75,7 +88,9 @@ PROGRAM STATEMENTS:
         880 GOSUB 1500
 
 
-  <line number> + <RETURN>
+
+  RETURN:   [  <line number> + <RETURN>  ]
+
     Return to the line number following the line of the <GOSUB> statement that started the current
     subroutine.
 
@@ -83,11 +98,107 @@ PROGRAM STATEMENTS:
         1590 RETURN
 
 
-  <line number> + <IF> + {boolean expression} + <THEN> + <line number>
+
+  IF STATEMENT:   [  <line number> + <IF> + {boolean expression} + <THEN> + <line number>  ]
+
     Jump to the designated line number if the boolean expression evaluates to <true>.
 
     example:
         770 IF X2>X3 THEN 1100
 
+
+
+  NUMERIC INPUT:   [  <line number + <INPUT> + <numeric identifier>  ]
+
+    Prompt for keyboard input, then, if the input parses to a numeric value, assign that value to
+    the designated variable.
+
+    example:
+        550 INPUT X
+
+
+  NUMERIC INPUT WITH PROMPT STRING:   [  <line number + <INPUT> + <string> + <semicolon> + <numeric identifier>  ]
+
+    Prompt for keyboard input using the supplied string as a prompt message, then, if the input parses
+    to a numeric value, assign that value to the designated variable.
+
+    example:
+        840 INPUT "WHAT IS THE RADIUS?";R
+
+
+
+  STRING INPUT:   [  <line number + <INPUT> + <string identifier>  ]
+
+    Prompt for keyboard input, then assign that value to the designated string variable.
+
+    example:
+        370 INPUT $W
+
+
+  STRING INPUT WITH PROMPT STRING:   [  <line number + <INPUT> + <string> + <semicolon> + <string identifier>  ]
+
+    Prompt for keyboard input using the supplied string as a prompt message, then assign that value
+    to the designated string variable.
+
+    example:
+        1410 INPUT "ENTER THE THIRD NAME:";$N3
+
+
+
+  PRINT STATEMENT:   [ <line number> + <PRINT> + <string expression>  ]
+
+    Print the value of the string expression on the console (without a line return).
+
+    example:
+        760 PRINT "LAST NAME = "+$N4
+
+
+
+  BLANK PRINT LINE:   [ <line number> + <PRINTLN>  ]
+
+    Print a blank line.
+
+    example:
+        1370 PRINTLN
+
+
+
+  PRINT LINE STATEMENT:   [ <line number> + <PRINTLN> + <string expression>  ]
+
+    Print the value of the string expression on the console on a new line.
+
+    example:
+       820 PRINTLN "WELCOME TO MY BASIC PROGRAM"
+
+
+
+  CLEAR STATEMENT:   [  <line number> + <CLEAR>  ]
+
+    Different from the CLEAR command. Clear the console screen and move the cursor to position 0,0
+    (the upper left corner).
+
+    example:
+        10 CLEAR
+
+
+
+  TAB TO LINE:   [  <line number> + <TAB> + <integer>  ]
+
+    Move the cursor to the beginning of the designated line on the console.
+
+    example:
+        890 TAB 9
+        (moves the cursor to the beginning of line 9 on the console)
+
+
+
+  TAB TO LINE AND COLUMN:   [  <line number> + <TAB> + <integer> + <comma> + <integer>  ]
+
+    Move the cursor to the line designated by the first argument, at the column designated by
+    the second argument.
+
+    example:
+        180 TAB 12,44
+        (moves the cursor to column 44 on line 12)
 
 
