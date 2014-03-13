@@ -93,6 +93,45 @@ class LineParser
 
 class NumericExpressionParser
 
+  constructor: () ->
+    @delimiters = ["(", ")", "+", "-", "*", "/", "^"]
+    @symbols = ["<left>",
+               "<right>",
+               "<plus>",
+               "<minus>",
+               "<times>",
+               "<divide>",
+               "<power>"]
+
+
+  tokenize: (string) ->
+    tokens = []
+    buffer = ""
+    for ch in string
+      if ch in @delimiters
+        if buffer != ""
+          tokens.push(buffer)
+          buffer = ""
+        tokens.push(@symbols[@delimiters.indexOf(ch)])
+      else
+        buffer = buffer + ch
+    tokens.push(buffer) if buffer != ""
+    return tokens
+
+
+
+class NumericExpression
+
+  constructor: () ->
+    @type = null
+
+
+
+class Scalar extends NumericExpression
+
+  constructor: () ->
+    @type = "<scalar>"
+
 
 
 class KeyHelper
