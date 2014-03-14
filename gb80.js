@@ -139,22 +139,16 @@ NumericExpressionParser = (function() {
   }
 
   NumericExpressionParser.prototype.numeric_parse = function(string) {
-    var bad_chars, ok, po, tk, val, _i, _j, _len, _len1;
+    var bad_chars, ok, po, tk, val, _i, _len;
     bad_chars = string.search(/[^A-Z0-9\.+\-*/\^()]/);
     if (bad_chars === -1) {
       po = this.tokenize(string);
-      console.log("po = ");
+      ok = "yes";
       for (_i = 0, _len = po.length; _i < _len; _i++) {
         tk = po[_i];
-        console.log("   " + tk);
-      }
-      ok = "yes";
-      for (_j = 0, _len1 = po.length; _j < _len1; _j++) {
-        tk = po[_j];
         if (!(!(__indexOf.call(this.symbols, tk) >= 0))) {
           continue;
         }
-        console.log(tk + " not a token");
         val = this.numeric_value(tk);
         if (val === "bad") {
           ok = "no";
@@ -191,7 +185,42 @@ NumericExpressionParser = (function() {
     return tokens;
   };
 
-  NumericExpressionParser.prototype.numeric_value = function(string) {};
+  NumericExpressionParser.prototype.numeric_value = function(string) {
+    var ch, non_numerics, val, _i, _len, _ref, _ref1;
+    val = [];
+    if (_ref = string[0], __indexOf.call("ABCDEFGHIJKLMNOPQRSTUVWXYZ", _ref) >= 0) {
+      if ((string.length === 1) || (string.length === 2 && (_ref1 = string[1], __indexOf.call("0123456789", _ref1) >= 0))) {
+        val[0] = "<number_variable>";
+        val[1] = string;
+      } else {
+        val = ["bad", "bad"];
+      }
+    } else {
+      non_numerics = "none";
+      for (_i = 0, _len = string.length; _i < _len; _i++) {
+        ch = string[_i];
+        if (!(__indexOf.call("0123456789", ch) >= 0)) {
+          if (ch === ".") {
+            if (non_numerics === "one_period") {
+              non_numerics = "bad";
+            }
+            if (non_numerics === "none") {
+              non_numerics = "one_period";
+            }
+          } else {
+            non_numerics = "bad";
+          }
+        }
+      }
+      if (non_numerics !== "bad") {
+        val[0] = "<numeric_literal>";
+        val[1] = Number(string);
+      } else {
+        val = ["bad", "bad"];
+      }
+    }
+    return val;
+  };
 
   return NumericExpressionParser;
 

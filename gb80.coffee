@@ -113,11 +113,8 @@ class NumericExpressionParser
     bad_chars = string.search(/[^A-Z0-9\.+\-*/\^()]/)
     if bad_chars == -1
       po = @tokenize(string)
-      console.log("po = ")
-      console.log("   "+tk) for tk in po
       ok = "yes"
       for tk in po when not (tk in @symbols)
-        console.log(tk+" not a token")
         val = @numeric_value(tk)
         ok = "no" if val == "bad"
 
@@ -145,15 +142,22 @@ class NumericExpressionParser
 
   numeric_value: (string) ->
     val = []
-    if string[0] in ["A".."Z"]
-      if string.length == 1 or (string.length == 2 and string[1] in ["0".."9"]
+    if string[0] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      if (string.length == 1) or (string.length == 2 and string[1] in "0123456789")
         val[0] = "<number_variable>"
         val[1] = string
       else
         val = ["bad", "bad"]
     else
-      char_check = ch for ch in string when not (ch in "0123456789")
-      if char_check == [] or char_check == ["."]
+      non_numerics = "none"
+      for ch in string
+        if not (ch in "0123456789")
+          if ch == "."
+            non_numerics = "bad" if non_numerics == "one_period"
+            non_numerics = "one_period" if non_numerics == "none"
+          else
+            non_numerics = "bad"
+      if non_numerics != "bad"
         val[0] = "<numeric_literal>"
         val[1] = Number(string)
       else
