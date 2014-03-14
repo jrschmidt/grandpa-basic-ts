@@ -64,7 +64,7 @@ describe("Test Basic program line parser", function() {
     });
   });
   return describe("Test numeric assignment parsing", function() {
-    return it("should correctly parse a numeric assignment statement", function() {
+    it("should correctly parse a numeric assignment statement", function() {
       var po;
       po = this.parser.parse('180 X=77');
       expect(po).toEqual(jasmine.any(Array));
@@ -73,6 +73,7 @@ describe("Test Basic program line parser", function() {
       expect(po[2]).toEqual("<numeric_identifier>");
       expect(po[3]).toEqual("X");
       expect(po[4]).toEqual("<equals_sign>");
+      expect(po[5]).toEqual("<numeric_expression>");
       po = this.parser.parse('320 K5=K2*K3+(2*K4)');
       expect(po).toEqual(jasmine.any(Array));
       expect(po[0]).toEqual("<line_number>");
@@ -80,13 +81,28 @@ describe("Test Basic program line parser", function() {
       expect(po[2]).toEqual("<numeric_identifier>");
       expect(po[3]).toEqual("K5");
       expect(po[4]).toEqual("<equals_sign>");
+      expect(po[5]).toEqual("<numeric_expression>");
       po = this.parser.parse('660 R=1+(B^2-4*A*C)/(2*A)');
       expect(po).toEqual(jasmine.any(Array));
       expect(po[0]).toEqual("<line_number>");
       expect(po[1]).toEqual(660);
       expect(po[2]).toEqual("<numeric_identifier>");
       expect(po[3]).toEqual("R");
-      return expect(po[4]).toEqual("<equals_sign>");
+      expect(po[4]).toEqual("<equals_sign>");
+      return expect(po[5]).toEqual("<numeric_expression>");
+    });
+    return xit("should flag any string that doesn't parse into a numeric expression after the equals sign", function() {
+      var po;
+      po = this.parser.parse('110 Q="33-7"');
+      expect(po).toEqual("<not_a_numeric_expression>");
+      po = this.parser.parse('404 V6=180-45DEGREES');
+      expect(po).toEqual("<not_a_numeric_expression>");
+      po = this.parser.parse('470 X5="NOTHING PARSEABLE AS A NUMERIC EXPRESSION"');
+      expect(po).toEqual("<not_a_numeric_expression>");
+      po = this.parser.parse('590 Q=2*PI');
+      expect(po).toEqual("<not_a_numeric_expression>");
+      po = this.parser.parse('740 J2=22,348,507');
+      return expect(po).toEqual("<not_a_numeric_expression>");
     });
   });
 });

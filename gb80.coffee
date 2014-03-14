@@ -47,6 +47,8 @@ class LineParser
     if x != null
       line = [x]
     else
+      # FIXME When we refactor this, we can extract everything after this
+      #       point into a look_for_program_statement method
       look_for = @look_for_line_number(string)
       ln = look_for[0]
       string = look_for[1]
@@ -56,7 +58,9 @@ class LineParser
       if token1 != null
         line[2] = "<numeric_identifier>"
         line[3] = token1
-        line[4] = "<equals_sign>"
+        line[4] = "<equals_sign>" # FIXME Almost right, but we need to chop the string, test the remainder for a parseable numeric expression,
+        line[5] = "<numeric_expression>"  # and generate a parse error if we don't find one.
+#        line[6] = new NumericExpression
 
     return line
 
@@ -94,6 +98,7 @@ class LineParser
 class NumericExpressionParser
 
   constructor: () ->
+    @num_exp_chars = ["0","1","2","3","4","5","6","7","8","9",".","(",")","+","-","*","/","^"]
     @delimiters = ["(", ")", "+", "-", "*", "/", "^"]
     @symbols = ["<left>",
                "<right>",
@@ -102,6 +107,25 @@ class NumericExpressionParser
                "<times>",
                "<divide>",
                "<power>"]
+
+
+  numeric_parse: (string) ->
+    bad_chars = string.search(/[^A-Z0-9\.+\-*/\^()]/)
+    if bad_chars == -1
+      po = @tokenize(string)
+      console.log("po = ")
+      console.log("   "+tk) for tk in po
+      ok = "yes"
+      for tk in po when not (tk in @symbols)
+        console.log(tk+" not a token")
+        val = @numeric_value(tk)
+        ok = "no" if val == "bad"
+
+      
+      po = "<not_a_numeric_expression>" if ok == "no"
+      return po
+    else
+      return "<not_a_numeric_expression>"
 
 
   tokenize: (string) ->
@@ -119,18 +143,22 @@ class NumericExpressionParser
     return tokens
 
 
-
-class NumericExpression
-
-  constructor: () ->
-    @type = null
-
-
-
-class Scalar extends NumericExpression
-
-  constructor: () ->
-    @type = "<scalar>"
+  numeric_value: (string) ->
+    val = []
+    if string[0] in ["A".."Z"]
+      if string.length == 1 or (string.length == 2 and string[1] in ["0".."9"]
+        val[0] = "<number_variable>"
+        val[1] = string
+      else
+        val = ["bad", "bad"]
+    else
+      char_check = ch for ch in string when not (ch in "0123456789")
+      if char_check == [] or char_check == ["."]
+        val[0] = "<numeric_literal>"
+        val[1] = Number(string)
+      else
+        val = ["bad", "bad"]
+    return val
 
 
 
@@ -168,7 +196,10 @@ class KeyHelper
   char: (n) ->
     if n in @code
       i = @code.indexOf(n)
-      return @chars[i]
+      ch = @chars[i]
+    else
+      ch = null
+    return ch
 
 
   sprite_xy: (n) ->
