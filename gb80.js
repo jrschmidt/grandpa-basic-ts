@@ -149,28 +149,35 @@ NumericExpressionParser = (function() {
   }
 
   NumericExpressionParser.prototype.numeric_parse = function(string) {
-    var bad_chars, ok, po, tk, val, _i, _len;
+    var bad_chars, ok, po, tk, tokens, val, _i, _len;
+    console.log("string = " + string);
     bad_chars = string.search(/[^A-Z0-9\.+\-*/\^()]/);
     if (bad_chars === -1) {
-      po = this.tokenize(string);
+      po = [];
       ok = "yes";
-      for (_i = 0, _len = po.length; _i < _len; _i++) {
-        tk = po[_i];
-        if (!(!(__indexOf.call(this.symbols, tk) >= 0))) {
-          continue;
-        }
-        val = this.numeric_value(tk);
-        if (val[0] === "bad") {
-          ok = "no";
+      tokens = this.tokenize(string);
+      for (_i = 0, _len = tokens.length; _i < _len; _i++) {
+        tk = tokens[_i];
+        if (__indexOf.call(this.symbols, tk) >= 0) {
+          po.push(tk);
+        } else {
+          val = this.numeric_value(tk);
+          if (val[0] === "bad") {
+            ok = "no";
+          } else {
+            po.push(val[0]);
+            po.push(val[1]);
+          }
         }
       }
-      if (ok === "no") {
-        po = "<not_a_numeric_expression>";
-      }
-      return po;
     } else {
-      return "<not_a_numeric_expression>";
+      ok = "no";
     }
+    if (ok === "no") {
+      po = "<not_a_numeric_expression>";
+    }
+    console.log(po);
+    return po;
   };
 
   NumericExpressionParser.prototype.tokenize = function(string) {

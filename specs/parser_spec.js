@@ -64,7 +64,7 @@ describe("Test Basic program line parser", function() {
     });
   });
   return describe("Test numeric assignment parsing", function() {
-    it("should correctly parse a numeric assignment statement", function() {
+    xit("should correctly parse a numeric assignment statement", function() {
       var po;
       po = this.parser.parse('180 X=77');
       expect(po).toEqual(jasmine.any(Array));
@@ -74,6 +74,8 @@ describe("Test Basic program line parser", function() {
       expect(po[3]).toEqual("X");
       expect(po[4]).toEqual("<equals_sign>");
       expect(po[5]).toEqual("<numeric_expression>");
+      expect(po[6]).toEqual("numeric_literal");
+      expect(po[7]).toEqual("77");
       po = this.parser.parse('320 K5=K2*K3+(2*K4)');
       expect(po).toEqual(jasmine.any(Array));
       expect(po[0]).toEqual("<line_number>");
@@ -82,6 +84,19 @@ describe("Test Basic program line parser", function() {
       expect(po[3]).toEqual("K5");
       expect(po[4]).toEqual("<equals_sign>");
       expect(po[5]).toEqual("<numeric_expression>");
+      expect(po[6]).toEqual("<numeric_identifier>");
+      expect(po[7]).toEqual("K2");
+      expect(po[8]).toEqual("<times>");
+      expect(po[9]).toEqual("<numeric_identifier>");
+      expect(po[10]).toEqual("K3");
+      expect(po[11]).toEqual("<plus>");
+      expect(po[12]).toEqual("<left>");
+      expect(po[13]).toEqual("numeric_literal");
+      expect(po[14]).toEqual("2");
+      expect(po[15]).toEqual("<times>");
+      expect(po[16]).toEqual("<numeric_identifier>");
+      expect(po[17]).toEqual("K4");
+      expect(po[18]).toEqual("<right>");
       po = this.parser.parse('660 R=1+(B^2-4*A*C)/(2*A)');
       expect(po).toEqual(jasmine.any(Array));
       expect(po[0]).toEqual("<line_number>");
@@ -89,7 +104,34 @@ describe("Test Basic program line parser", function() {
       expect(po[2]).toEqual("<numeric_identifier>");
       expect(po[3]).toEqual("R");
       expect(po[4]).toEqual("<equals_sign>");
-      return expect(po[5]).toEqual("<numeric_expression>");
+      expect(po[5]).toEqual("<numeric_expression>");
+      expect(po[6]).toEqual("numeric_literal");
+      expect(po[7]).toEqual("1");
+      expect(po[8]).toEqual("<plus>");
+      expect(po[10]).toEqual("<left>");
+      expect(po[9]).toEqual("<numeric_identifier>");
+      expect(po[11]).toEqual("B");
+      expect(po[10]).toEqual("<power>");
+      expect(po[12]).toEqual("numeric_literal");
+      expect(po[13]).toEqual("2");
+      expect(po[14]).toEqual("<minus>");
+      expect(po[15]).toEqual("numeric_literal");
+      expect(po[16]).toEqual("4");
+      expect(po[17]).toEqual("<times>");
+      expect(po[18]).toEqual("<numeric_identifier>");
+      expect(po[19]).toEqual("A");
+      expect(po[20]).toEqual("<times>");
+      expect(po[21]).toEqual("<numeric_identifier>");
+      expect(po[22]).toEqual("C");
+      expect(po[23]).toEqual("<right>");
+      expect(po[24]).toEqual("<divide>");
+      expect(po[25]).toEqual("<left>");
+      expect(po[26]).toEqual("numeric_literal");
+      expect(po[27]).toEqual("2");
+      expect(po[28]).toEqual("<times>");
+      expect(po[29]).toEqual("<numeric_identifier>");
+      expect(po[30]).toEqual("A");
+      return expect(po[31]).toEqual("<right>");
     });
     return xit("should flag any string that doesn't parse into a numeric expression after the equals sign", function() {
       var po;
