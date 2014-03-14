@@ -62,22 +62,25 @@ LineParser = (function() {
   function LineParser() {}
 
   LineParser.prototype.parse = function(string) {
-    var line, ln, look_for, original_string, token1, x;
+    var line, ln_search, num_id_search, original_string, x;
     original_string = string;
     line = [];
     x = this.look_for_command(string);
     if (x !== null) {
       line = [x];
     } else {
-      look_for = this.look_for_line_number(string);
-      ln = look_for[0];
-      string = look_for[1];
+      ln_search = this.look_for_line_number(string);
+      console.log(ln_search);
       line[0] = "<line_number>";
-      line[1] = ln;
-      token1 = this.look_for_numeric_identifier(string);
-      if (token1 !== null) {
+      line[1] = ln_search["line_no"];
+      string = ln_search["remainder"];
+      num_id_search = this.look_for_numeric_identifier(string);
+      console.log(num_id_search);
+      if (num_id_search === null) {
+        line = "<not_a_numeric_expression>";
+      } else {
         line[2] = "<numeric_identifier>";
-        line[3] = token1;
+        line[3] = num_id_search["num_id"];
         line[4] = "<equals_sign>";
         line[5] = "<numeric_expression>";
       }
@@ -111,20 +114,27 @@ LineParser = (function() {
     } else {
       n = 0;
     }
-    return [n, string];
+    return {
+      line_no: n,
+      remainder: string
+    };
   };
 
   LineParser.prototype.look_for_numeric_identifier = function(string) {
-    var find, id, size;
-    id = null;
-    size = 0;
+    var find, id, result, size;
     find = string.search(/[A-Z][0-9]?=/);
     if (find === 0) {
       size = string.indexOf("=");
       id = string.slice(0, size);
       string = string.slice(size + 1);
+      result = {
+        num_id: id,
+        remainder: string
+      };
+    } else {
+      result = null;
     }
-    return id;
+    return result;
   };
 
   return LineParser;
@@ -150,7 +160,7 @@ NumericExpressionParser = (function() {
           continue;
         }
         val = this.numeric_value(tk);
-        if (val === "bad") {
+        if (val[0] === "bad") {
           ok = "no";
         }
       }

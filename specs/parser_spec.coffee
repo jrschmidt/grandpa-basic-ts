@@ -36,7 +36,7 @@ describe "Test Basic program line parser", ->
       expect(po[0]).toEqual("<list>")
 
 
-  describe "Test line number parsing", ->
+  xdescribe "Test line number parsing", ->
     it "should correctly parse line numbers", ->
 
       po = @parser.parse('10 REM WELCOME TO GRANDPA BASIC 80')

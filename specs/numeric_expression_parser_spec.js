@@ -156,9 +156,11 @@ describe("Test numeric expression parser", function() {
     expect(result[0]).toEqual("bad");
     return expect(result[1]).toEqual("bad");
   });
-  return xit("should return a 'not a numeric expression' token for any string that won't parse into a numeric expression", function() {
+  return it("should return a 'not a numeric expression' token for any string that won't parse into a numeric expression", function() {
     var result;
     result = this.parser.numeric_parse('"33-7"');
+    expect(result).toEqual("<not_a_numeric_expression>");
+    result = this.parser.numeric_parse('617.42.9');
     expect(result).toEqual("<not_a_numeric_expression>");
     result = this.parser.numeric_parse('180-45DEGREES');
     expect(result).toEqual("<not_a_numeric_expression>");

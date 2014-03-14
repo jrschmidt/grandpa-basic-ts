@@ -49,15 +49,18 @@ class LineParser
     else
       # FIXME When we refactor this, we can extract everything after this
       #       point into a look_for_program_statement method
-      look_for = @look_for_line_number(string)
-      ln = look_for[0]
-      string = look_for[1]
+      ln_search = @look_for_line_number(string)  # FIXME What about a line without a valid line number???
+      console.log ln_search
       line[0] = "<line_number>"
-      line[1] = ln
-      token1 = @look_for_numeric_identifier(string)
-      if token1 != null
+      line[1] = ln_search["line_no"]
+      string = ln_search["remainder"]
+      num_id_search = @look_for_numeric_identifier(string)
+      console.log num_id_search
+      if num_id_search == null
+        line = "<not_a_numeric_expression>"
+      else
         line[2] = "<numeric_identifier>"
-        line[3] = token1
+        line[3] = num_id_search["num_id"]
         line[4] = "<equals_sign>" # FIXME Almost right, but we need to chop the string, test the remainder for a parseable numeric expression,
         line[5] = "<numeric_expression>"  # and generate a parse error if we don't find one.
 #        line[6] = new NumericExpression
@@ -80,18 +83,19 @@ class LineParser
       string = string.slice(String(n).length+1)
     else
       n = 0
-    return [n,string]
+    return {line_no: n, remainder: string}
 
 
   look_for_numeric_identifier: (string) ->
-    id = null
-    size = 0
     find = string.search(/[A-Z][0-9]?=/)
     if find == 0
       size = string.indexOf("=")
       id = string.slice(0,size)
       string = string.slice(size+1)
-    return id
+      result = {num_id: id, remainder: string}
+    else
+      result = null
+    return result
 
 
 
@@ -116,9 +120,7 @@ class NumericExpressionParser
       ok = "yes"
       for tk in po when not (tk in @symbols)
         val = @numeric_value(tk)
-        ok = "no" if val == "bad"
-
-      
+        ok = "no" if val[0] == "bad"
       po = "<not_a_numeric_expression>" if ok == "no"
       return po
     else

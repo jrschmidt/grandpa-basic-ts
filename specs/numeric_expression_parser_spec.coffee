@@ -179,9 +179,12 @@ describe "Test numeric expression parser", ->
     expect(result[1]).toEqual("bad")
 
 
-  xit "should return a 'not a numeric expression' token for any string that won't parse into a numeric expression", ->
+  it "should return a 'not a numeric expression' token for any string that won't parse into a numeric expression", ->
 
     result = @parser.numeric_parse('"33-7"')
+    expect(result).toEqual("<not_a_numeric_expression>")
+
+    result = @parser.numeric_parse('617.42.9')
     expect(result).toEqual("<not_a_numeric_expression>")
 
     result = @parser.numeric_parse('180-45DEGREES')

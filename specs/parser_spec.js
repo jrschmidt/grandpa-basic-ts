@@ -30,7 +30,7 @@ describe("Test Basic program line parser", function() {
       return expect(po[0]).toEqual("<list>");
     });
   });
-  describe("Test line number parsing", function() {
+  xdescribe("Test line number parsing", function() {
     return it("should correctly parse line numbers", function() {
       var po;
       po = this.parser.parse('10 REM WELCOME TO GRANDPA BASIC 80');
