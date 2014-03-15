@@ -28,6 +28,37 @@ class BasicProgram
 
 
 
+class SyntaxRules
+
+  constructor: () ->
+
+    @rules = [
+      ["CLEAR"]
+      ["RUN"]
+      ["INFO"]
+      ["LIST"]
+      ["<line_number>","<sp>","REM"]
+      ["<line_number>","<sp>","REM","<sp>","<characters>"]
+      ["<line_number>","<sp>","<number_variable>","<equals>","<numeric_expression>"]
+      ["<line_number>","<sp>","<string_variable>","<equals>","<string_expression>"]
+      ["<line_number>","<sp>","GOTO","<sp>","<line_number>"]
+      ["<line_number>","<sp>","GOSUB","<sp>","<line_number>"]
+      ["<line_number>","<sp>","RETURN"]
+      ["<line_number>","<sp>","IF","<sp>","<boolean_expression>","<sp>","THEN","<sp>","<line_number>"]
+      ["<line_number>","<sp>","INPUT","<sp>","number_variable>"]
+      ["<line_number>","<sp>","INPUT","<sp>","string_variable>"]
+      ["<line_number>","<sp>","INPUT","<sp>","<string>","<semicolon>","<number_variable>"]
+      ["<line_number>","<sp>","INPUT","<sp>","<string>","<semicolon>","<string_variable>"]
+      ["<line_number>","<sp>","PRINT","<sp>","<string_expression>"]
+      ["<line_number>","<sp>","PRINTLN"]
+      ["<line_number>","<sp>","PRINTLN","<sp>","<string_expression>"]
+      ["<line_number>","<sp>","CLEAR"]
+      ["<line_number>","<sp>","TAB","<sp>","<integer>"]
+      ["<line_number>","<sp>","TAB","<sp>","<integer>","<comma>","<integer>"]
+    ]
+
+
+
 class BasicProgramLine
 
   constructor: (n,str) ->
@@ -58,7 +89,10 @@ class LineParser
       console.log num_id_search
       if num_id_search == null
         line = "<not_a_numeric_expression>"
-      else
+      else  # FIXME Right here, we would want to first test num_id_search["remainder"][0] for an equal sign,
+            #       strip the '=' character, then parse the rest for a numeric expression, and return a
+            #       parse error if the num exp search fails.
+            #       HOWEVER, we'll defer this for now to start the 'syntax tree' approach.
         line[2] = "<numeric_identifier>"
         line[3] = num_id_search["num_id"]
         line[4] = "<equals_sign>" # FIXME Almost right, but we need to chop the string, test the remainder for a parseable numeric expression,

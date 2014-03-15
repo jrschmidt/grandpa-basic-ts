@@ -35,8 +35,8 @@ List of Commands and BASIC Statements to be implemented in first version:
 
     example:
         200 REM ==========================================
-        210 REM      ***   Compute the sum   ***
-        220 REM Here we compute the sum of the two numbers
+        210 REM      ***   COMPUTE THE SUM   ***
+        220 REM HERE WE COMPUTE THE SUM OF THE TWO NUMBERS
         230 REM ==========================================
 
 
