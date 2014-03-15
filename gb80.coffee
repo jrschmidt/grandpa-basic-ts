@@ -30,31 +30,87 @@ class BasicProgram
 
 class SyntaxRules
 
-  constructor: () ->
+    @keywords = [
+      "CLEAR"
+      "RUN"
+      "INFO"
+      "LIST"
+      "REM"
+      "GOTO"
+      "GOSUB"
+      "RETURN"
+      "IF"
+      "INPUT"
+      "PRINT"
+      "PRINTLN"
+      "TAB"]
+
+    @keyword_tokens = [
+      "<clear_keyword>"
+      "<run_command>"
+      "<info_command>"
+      "<list_command>"
+      "<remark>"
+      "<goto>"
+      "<gosub>"
+      "<return>"
+      "<if>"
+      "<input>"
+      "<print>"
+      "<println>"
+      "<tab>"]
+
+    @char_tokens = [
+      "<sp>"
+      "<equals>"
+      "<semicolon>"
+      "<comma>"]
+
+    @action_tokens = [
+      "<line_number>"
+      "<number_variable>"
+      "<string_variable>"
+      "<numeric_expression>"
+      "<string_epression>"
+      "<boolean_expression>"
+      "<string>"
+      "<characters>"
+      "<integer>"]
 
     @rules = [
       ["CLEAR"]
       ["RUN"]
       ["INFO"]
       ["LIST"]
-      ["<line_number>","<sp>","REM"]
-      ["<line_number>","<sp>","REM","<sp>","<characters>"]
-      ["<line_number>","<sp>","<number_variable>","<equals>","<numeric_expression>"]
-      ["<line_number>","<sp>","<string_variable>","<equals>","<string_expression>"]
-      ["<line_number>","<sp>","GOTO","<sp>","<line_number>"]
-      ["<line_number>","<sp>","GOSUB","<sp>","<line_number>"]
-      ["<line_number>","<sp>","RETURN"]
-      ["<line_number>","<sp>","IF","<sp>","<boolean_expression>","<sp>","THEN","<sp>","<line_number>"]
-      ["<line_number>","<sp>","INPUT","<sp>","number_variable>"]
-      ["<line_number>","<sp>","INPUT","<sp>","string_variable>"]
-      ["<line_number>","<sp>","INPUT","<sp>","<string>","<semicolon>","<number_variable>"]
-      ["<line_number>","<sp>","INPUT","<sp>","<string>","<semicolon>","<string_variable>"]
-      ["<line_number>","<sp>","PRINT","<sp>","<string_expression>"]
-      ["<line_number>","<sp>","PRINTLN"]
-      ["<line_number>","<sp>","PRINTLN","<sp>","<string_expression>"]
-      ["<line_number>","<sp>","CLEAR"]
-      ["<line_number>","<sp>","TAB","<sp>","<integer>"]
-      ["<line_number>","<sp>","TAB","<sp>","<integer>","<comma>","<integer>"]
+      ["<line_number>","<sp>", @line_number_rules]
+    ]
+
+    # @line_number_rules[] and @input_statement_rules[] are written this
+    # way to facilitate multi-line nested arrays. (Coffeescript multi-line
+    # array syntax seems to only work for one level of nesting.)
+    @line_number_rules = [
+        ["REM","<sp>","<characters>"]
+        ["REM"]
+        ["<number_variable>","<equals>","<numeric_expression>"]
+        ["<string_variable>","<equals>","<string_expression>"]
+        ["GOTO","<sp>","<line_number>"]
+        ["GOSUB","<sp>","<line_number>"]
+        ["RETURN"]
+        ["IF","<sp>","<boolean_expression>","<sp>","THEN","<sp>","<line_number>"]
+        ["INPUT","<sp>", @input_statement_rules]
+        ["PRINT","<sp>","<string_expression>"]
+        ["PRINTLN","<sp>","<string_expression>"]
+        ["PRINTLN"]
+        ["CLEAR"]
+        ["TAB","<sp>","<integer>","<comma>","<integer>"]
+        ["TAB","<sp>","<integer>"]
+    ]
+
+    @input_statement_rules = [
+      ["number_variable>"]
+      ["string_variable>"]
+      ["<string>","<semicolon>","<number_variable>"]
+      ["<string>","<semicolon>","<string_variable>"]
     ]
 
 
@@ -70,65 +126,49 @@ class BasicProgramLine
 
 class LineParser
 
+  constructor: () ->
+    @rules = new SyntaxRules
+    @helpers = new ParseHelpers
+
+
   parse: (string) ->
-    original_string = string
-    line = []
-
-    x = @look_for_command(string)
-    if x != null
-      line = [x]
-    else
-      # FIXME When we refactor this, we can extract everything after this
-      #       point into a look_for_program_statement method
-      ln_search = @look_for_line_number(string)  # FIXME What about a line without a valid line number???
-      console.log ln_search
-      line[0] = "<line_number>"
-      line[1] = ln_search["line_no"]
-      string = ln_search["remainder"]
-      num_id_search = @look_for_numeric_identifier(string)
-      console.log num_id_search
-      if num_id_search == null
-        line = "<not_a_numeric_expression>"
-      else  # FIXME Right here, we would want to first test num_id_search["remainder"][0] for an equal sign,
-            #       strip the '=' character, then parse the rest for a numeric expression, and return a
-            #       parse error if the num exp search fails.
-            #       HOWEVER, we'll defer this for now to start the 'syntax tree' approach.
-        line[2] = "<numeric_identifier>"
-        line[3] = num_id_search["num_id"]
-        line[4] = "<equals_sign>" # FIXME Almost right, but we need to chop the string, test the remainder for a parseable numeric expression,
-        line[5] = "<numeric_expression>"  # and generate a parse error if we don't find one.
-#        line[6] = new NumericExpression
-
-    return line
+    po = []
 
 
-  look_for_command: (string) ->
-    cmd = null
-    cmd = "<clear>" if string == "CLEAR"
-    cmd = "<run>" if string == "RUN"
-    cmd = "<info>" if string == "INFO"
-    cmd = "<list>" if string == "LIST"
-    return cmd
 
+    return po
+
+
+
+class ParseHelpers
 
   look_for_line_number: (string) ->
+    result = {}
     n = parseInt(string)
     if n>0
-      string = string.slice(String(n).length+1)
+      result.match = "yes"
+      result.parse_object = ["<line_number>", n]
+      result.remainder = string.slice(String(n).length)
     else
-      n = 0
-    return {line_no: n, remainder: string}
+      result = {match: "no"}
+    return result
 
 
   look_for_numeric_identifier: (string) ->
-    find = string.search(/[A-Z][0-9]?=/)
-    if find == 0
-      size = string.indexOf("=")
-      id = string.slice(0,size)
-      string = string.slice(size+1)
-      result = {num_id: id, remainder: string}
+    result = {}
+    if string[0] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      if string[1] in "0123456789"
+        len = 2
+      else
+        len = 1
+      if ( len == string.length ) or ( string[len] in "=+-*/^)" )
+        result.match = "yes"
+        id = string.slice(0,len)
+        result.parse_object = ["<number_variable>", id]
+        result.remainder = string.slice(len)
+      else result = {match: "no"}
     else
-      result = null
+      result = {match: "no"}
     return result
 
 
@@ -148,7 +188,6 @@ class NumericExpressionParser
 
 
   numeric_parse: (string) ->
-    console.log "string = "+string
     bad_chars = string.search(/[^A-Z0-9\.+\-*/\^()]/)
     if bad_chars == -1
       po = []
@@ -167,7 +206,6 @@ class NumericExpressionParser
     else
       ok = "no"
     po = "<not_a_numeric_expression>" if ok == "no"
-    console.log po
     return po
 
 
