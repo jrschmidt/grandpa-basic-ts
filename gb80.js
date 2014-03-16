@@ -293,6 +293,44 @@ StringExpressionParser = (function() {
     return tokens;
   };
 
+  StringExpressionParser.prototype.string_value = function(string) {
+    var ch, quote_check, str_var, val, _ref, _ref1, _ref2;
+    val = ["bad", "bad"];
+    quote_check = (function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = string.length; _i < _len; _i++) {
+        ch = string[_i];
+        if (ch === '"') {
+          _results.push(ch);
+        }
+      }
+      return _results;
+    })();
+    if (quote_check.length === 2 && string[0] === '"' && string[string.length - 1] === '"') {
+      val[0] = "<string_literal>";
+      val[1] = string.slice(1, -1);
+    } else {
+      str_var = "no";
+      if ((_ref = string.length, __indexOf.call([2, 3], _ref) >= 0) && string[0] === "$") {
+        if (_ref1 = string[1], __indexOf.call("ABCDEFGHIJKLMNOPQRSTUVWXYZ", _ref1) >= 0) {
+          if (string.length === 2) {
+            str_var = "yes";
+          } else {
+            if (_ref2 = string[2], __indexOf.call("0123456789", _ref2) >= 0) {
+              str_var = "yes";
+            }
+          }
+        }
+      }
+      if (str_var === "yes") {
+        val[0] = "<string_variable>";
+        val[1] = string.slice(1);
+      }
+    }
+    return val;
+  };
+
   return StringExpressionParser;
 
 })();

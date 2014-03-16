@@ -220,7 +220,7 @@ class NumericExpressionParser
         if tk in @symbols
           po.push(tk)
         else
-          val = @numeric_value(tk) #TODO change to numeric_value_tokens
+          val = @numeric_value(tk)
           if val[0] == "bad"
             ok = "no"
           else
@@ -288,6 +288,26 @@ class StringExpressionParser
         buffer = buffer + ch
     tokens.push(buffer) if buffer != ""
     return tokens
+
+
+  string_value: (string) ->
+    val = ["bad", "bad"]
+    quote_check = (ch for ch in string when ch == '"')
+    if quote_check.length == 2 and string[0] == '"' and string[string.length-1] == '"'
+      val[0] = "<string_literal>"
+      val[1] = string.slice(1,-1)
+    else
+      str_var = "no"
+      if string.length in [2..3] and string[0] == "$"
+        if string[1] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+          if string.length == 2
+            str_var = "yes"
+          else
+            if string[2] in "0123456789" then str_var = "yes"
+      if str_var == "yes"
+        val[0] = "<string_variable>"
+        val[1] = string.slice(1)
+    return val
 
 
 

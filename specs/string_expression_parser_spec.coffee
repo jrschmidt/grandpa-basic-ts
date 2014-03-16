@@ -50,21 +50,57 @@ describe "Test string expression parser", ->
     expect(tokens[2]).toEqual('$N')
 
 
-  xit "should parse properly formed strings into string variables or literals", ->
+  it "should parse properly formed strings into string variables or literals", ->
 
-    result = @parser.string_value('')
+    result = @parser.string_value('$T')
     expect(result).toEqual(jasmine.any(Array))
     expect(result.length).toEqual(2)
     expect(result[0]).toEqual("<string_variable>")
-    expect(result[1]).toEqual(0)
+    expect(result[1]).toEqual("T")
 
-    result = @parser.string_value('')
+    result = @parser.string_value('$Z8')
+    expect(result).toEqual(jasmine.any(Array))
+    expect(result.length).toEqual(2)
+    expect(result[0]).toEqual("<string_variable>")
+    expect(result[1]).toEqual("Z8")
+
+    result = @parser.string_value('$K0')
+    expect(result).toEqual(jasmine.any(Array))
+    expect(result.length).toEqual(2)
+    expect(result[0]).toEqual("<string_variable>")
+    expect(result[1]).toEqual("K0")
+
+    result = @parser.string_value('"BANANA"')
     expect(result).toEqual(jasmine.any(Array))
     expect(result.length).toEqual(2)
     expect(result[0]).toEqual("<string_literal>")
-    expect(result[1]).toEqual(0)
+    expect(result[1]).toEqual("BANANA")
 
-    result = @parser.string_value('')
+    result = @parser.string_value('"27 BANANAS AND A LEMON"')
+    expect(result).toEqual(jasmine.any(Array))
+    expect(result.length).toEqual(2)
+    expect(result[0]).toEqual("<string_literal>")
+    expect(result[1]).toEqual("27 BANANAS AND A LEMON")
+
+    result = @parser.string_value('"ALMOST ANY CHARACTERS ..."')
+    expect(result).toEqual(jasmine.any(Array))
+    expect(result.length).toEqual(2)
+    expect(result[0]).toEqual("<string_literal>")
+    expect(result[1]).toEqual("ALMOST ANY CHARACTERS ...")
+
+    result = @parser.string_value('MISSING QUOTE MARKS')
+    expect(result).toEqual(jasmine.any(Array))
+    expect(result.length).toEqual(2)
+    expect(result[0]).toEqual("bad")
+    expect(result[1]).toEqual("bad")
+
+    result = @parser.string_value('440-(3*X+5*Y)')
+    expect(result).toEqual(jasmine.any(Array))
+    expect(result.length).toEqual(2)
+    expect(result[0]).toEqual("bad")
+    expect(result[1]).toEqual("bad")
+
+    result = @parser.string_value('260 $E="TOKEN"')
     expect(result).toEqual(jasmine.any(Array))
     expect(result.length).toEqual(2)
     expect(result[0]).toEqual("bad")
