@@ -4,15 +4,12 @@ describe("Test Basic program line functions", function() {
     return this.line = new BasicProgramLine(10, '10 REM WELCOME TO GRANDPA BASIC 80');
   });
   return describe("Test Basic program line object", function() {
-    it("should create a BasicProgramLine object", function() {
+    return it("should create a BasicProgramLine object", function() {
       expect(this.line).toBeDefined;
       expect(this.line).toEqual(jasmine.any(BasicProgramLine));
       expect(this.line.ln_no).toEqual(10);
       expect(this.line.text).toEqual('10 REM WELCOME TO GRANDPA BASIC 80');
       return expect(this.line.tokens).toEqual(jasmine.any(Array));
-    });
-    return xit("should create a ProgramLineParseObject", function() {
-      return expect(this.line.parse_object).toEqual(jasmine.any(ProgramLineParseObject));
     });
   });
 });

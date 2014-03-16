@@ -275,6 +275,24 @@ class NumericExpressionParser
 
 class StringExpressionParser
 
+  string_value_parse: (string) ->
+    po = []
+    ok = "yes"
+    tokens = @tokenize(string)
+    for tk in tokens
+      if tk == "<plus>"
+        po.push("<plus>")
+      else
+        val = @string_value(tk)
+        if val[0] == "bad"
+          ok = "no"
+        else
+          po.push(val[0])
+          po.push(val[1])
+    po = "<not_a_string_expression>" if ok == "no"
+    return po
+
+
   tokenize: (string) ->
     tokens = []
     buffer = ""

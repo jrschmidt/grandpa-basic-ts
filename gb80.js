@@ -271,6 +271,31 @@ NumericExpressionParser = (function() {
 StringExpressionParser = (function() {
   function StringExpressionParser() {}
 
+  StringExpressionParser.prototype.string_value_parse = function(string) {
+    var ok, po, tk, tokens, val, _i, _len;
+    po = [];
+    ok = "yes";
+    tokens = this.tokenize(string);
+    for (_i = 0, _len = tokens.length; _i < _len; _i++) {
+      tk = tokens[_i];
+      if (tk === "<plus>") {
+        po.push("<plus>");
+      } else {
+        val = this.string_value(tk);
+        if (val[0] === "bad") {
+          ok = "no";
+        } else {
+          po.push(val[0]);
+          po.push(val[1]);
+        }
+      }
+    }
+    if (ok === "no") {
+      po = "<not_a_string_expression>";
+    }
+    return po;
+  };
+
   StringExpressionParser.prototype.tokenize = function(string) {
     var buffer, ch, tokens, _i, _len;
     tokens = [];

@@ -14,8 +14,4 @@ describe "Test Basic program line functions", ->
       expect(@line.tokens).toEqual(jasmine.any(Array))
 
 
-    xit "should create a ProgramLineParseObject", ->
-      expect(@line.parse_object).toEqual(jasmine.any(ProgramLineParseObject))
-
-
 
