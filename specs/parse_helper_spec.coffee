@@ -106,6 +106,68 @@ describe "Test parser helper methods", ->
     expect(result.match).toEqual("no")
 
 
+  it "should correctly parse string identifiers", ->
+
+    result = @helpers.look_for_string_identifier('$Q')
+    expect(result.match).toEqual("yes")
+    expect(result.parse_object[0]).toEqual("<string_variable>")
+    expect(result.parse_object[1]).toEqual("Q")
+    expect(result.remainder).toEqual('')
+
+    result = @helpers.look_for_string_identifier('$V1')
+    expect(result.match).toEqual("yes")
+    expect(result.parse_object[0]).toEqual("<string_variable>")
+    expect(result.parse_object[1]).toEqual("V1")
+    expect(result.remainder).toEqual('')
+
+    result = @helpers.look_for_string_identifier('$F="HELLO, MY NAME IS JAMES"')
+    expect(result.match).toEqual("yes")
+    expect(result.parse_object[0]).toEqual("<string_variable>")
+    expect(result.parse_object[1]).toEqual("F")
+    expect(result.remainder).toEqual('="HELLO, MY NAME IS JAMES"')
+
+    result = @helpers.look_for_string_identifier('$T6+$T7')
+    expect(result.match).toEqual("yes")
+    expect(result.parse_object[0]).toEqual("<string_variable>")
+    expect(result.parse_object[1]).toEqual("T6")
+    expect(result.remainder).toEqual('+$T7')
+
+    result = @helpers.look_for_string_identifier('$U+" HAS NO MORE DATA."')
+    expect(result.match).toEqual("yes")
+    expect(result.parse_object[0]).toEqual("<string_variable>")
+    expect(result.parse_object[1]).toEqual("U")
+    expect(result.remainder).toEqual('+" HAS NO MORE DATA."')
+
+    result = @helpers.look_for_string_identifier('R')
+    expect(result.match).toEqual("no")
+
+    result = @helpers.look_for_string_identifier('Z9')
+    expect(result.match).toEqual("no")
+
+    result = @helpers.look_for_string_identifier('$TOTAL')
+    expect(result.match).toEqual("no")
+
+    result = @helpers.look_for_string_identifier('$42.36')
+    expect(result.match).toEqual("no")
+
+    result = @helpers.look_for_string_identifier('"PLEASE INPUT YOUR ID NUMBER"')
+    expect(result.match).toEqual("no")
+
+    result = @helpers.look_for_string_identifier('Z9')
+    expect(result.match).toEqual("no")
+
+    result = @helpers.look_for_string_identifier('"+ IS EMPTY"')
+    expect(result.match).toEqual("no")
+
+    result = @helpers.look_for_string_identifier('NAME')
+    expect(result.match).toEqual("no")
+
+    result = @helpers.look_for_string_identifier('=$I6')
+    expect(result.match).toEqual("no")
+
+    result = @helpers.look_for_string_identifier('+$V')
+    expect(result.match).toEqual("no")
+
 
 
 

@@ -48,21 +48,15 @@ BasicProgram = (function() {
 })();
 
 SyntaxRules = (function() {
-  function SyntaxRules() {}
-
-  SyntaxRules.keywords = ["CLEAR", "RUN", "INFO", "LIST", "REM", "GOTO", "GOSUB", "RETURN", "IF", "INPUT", "PRINT", "PRINTLN", "TAB"];
-
-  SyntaxRules.keyword_tokens = ["<clear_keyword>", "<run_command>", "<info_command>", "<list_command>", "<remark>", "<goto>", "<gosub>", "<return>", "<if>", "<input>", "<print>", "<println>", "<tab>"];
-
-  SyntaxRules.char_tokens = ["<sp>", "<equals>", "<semicolon>", "<comma>"];
-
-  SyntaxRules.action_tokens = ["<line_number>", "<number_variable>", "<string_variable>", "<numeric_expression>", "<string_epression>", "<boolean_expression>", "<string>", "<characters>", "<integer>"];
-
-  SyntaxRules.rules = [["CLEAR"], ["RUN"], ["INFO"], ["LIST"], ["<line_number>", "<sp>", SyntaxRules.line_number_rules]];
-
-  SyntaxRules.line_number_rules = [["REM", "<sp>", "<characters>"], ["REM"], ["<number_variable>", "<equals>", "<numeric_expression>"], ["<string_variable>", "<equals>", "<string_expression>"], ["GOTO", "<sp>", "<line_number>"], ["GOSUB", "<sp>", "<line_number>"], ["RETURN"], ["IF", "<sp>", "<boolean_expression>", "<sp>", "THEN", "<sp>", "<line_number>"], ["INPUT", "<sp>", SyntaxRules.input_statement_rules], ["PRINT", "<sp>", "<string_expression>"], ["PRINTLN", "<sp>", "<string_expression>"], ["PRINTLN"], ["CLEAR"], ["TAB", "<sp>", "<integer>", "<comma>", "<integer>"], ["TAB", "<sp>", "<integer>"]];
-
-  SyntaxRules.input_statement_rules = [["number_variable>"], ["string_variable>"], ["<string>", "<semicolon>", "<number_variable>"], ["<string>", "<semicolon>", "<string_variable>"]];
+  function SyntaxRules() {
+    this.keywords = ["CLEAR", "RUN", "INFO", "LIST", "REM", "GOTO", "GOSUB", "RETURN", "IF", "INPUT", "PRINT", "PRINTLN", "TAB"];
+    this.keyword_tokens = ["<clear_keyword>", "<run_command>", "<info_command>", "<list_command>", "<remark>", "<goto>", "<gosub>", "<return>", "<if>", "<input>", "<print>", "<println>", "<tab>"];
+    this.char_tokens = ["<sp>", "<equals>", "<semicolon>", "<comma>"];
+    this.action_tokens = ["<line_number>", "<number_variable>", "<string_variable>", "<numeric_expression>", "<string_epression>", "<boolean_expression>", "<string>", "<characters>", "<integer>"];
+    this.rules = [["CLEAR"], ["RUN"], ["INFO"], ["LIST"], ["<line_number>", "<sp>", this.line_number_rules]];
+    this.line_number_rules = [["REM", "<sp>", "<characters>"], ["REM"], ["<number_variable>", "<equals>", "<numeric_expression>"], ["<string_variable>", "<equals>", "<string_expression>"], ["GOTO", "<sp>", "<line_number>"], ["GOSUB", "<sp>", "<line_number>"], ["RETURN"], ["IF", "<sp>", "<boolean_expression>", "<sp>", "THEN", "<sp>", "<line_number>"], ["INPUT", "<sp>", this.input_statement_rules], ["PRINT", "<sp>", "<string_expression>"], ["PRINTLN", "<sp>", "<string_expression>"], ["PRINTLN"], ["CLEAR"], ["TAB", "<sp>", "<integer>", "<comma>", "<integer>"], ["TAB", "<sp>", "<integer>"]];
+    this.input_statement_rules = [["number_variable>"], ["string_variable>"], ["<string>", "<semicolon>", "<number_variable>"], ["<string>", "<semicolon>", "<string_variable>"]];
+  }
 
   return SyntaxRules;
 
@@ -128,6 +122,35 @@ ParseHelpers = (function() {
         id = string.slice(0, len);
         result.parse_object = ["<number_variable>", id];
         result.remainder = string.slice(len);
+      } else {
+        result = {
+          match: "no"
+        };
+      }
+    } else {
+      result = {
+        match: "no"
+      };
+    }
+    return result;
+  };
+
+  ParseHelpers.prototype.look_for_string_identifier = function(string) {
+    var id, len, result, _ref, _ref1, _ref2;
+    result = {};
+    if (string[0] === "$") {
+      if (_ref = string[1], __indexOf.call("ABCDEFGHIJKLMNOPQRSTUVWXYZ", _ref) >= 0) {
+        if (_ref1 = string[2], __indexOf.call("0123456789", _ref1) >= 0) {
+          len = 2;
+        } else {
+          len = 1;
+        }
+      }
+      if ((len === string.length - 1) || (_ref2 = string[len + 1], __indexOf.call("=+", _ref2) >= 0)) {
+        result.match = "yes";
+        id = string.slice(1, len + 1);
+        result.parse_object = ["<string_variable>", id];
+        result.remainder = string.slice(len + 1);
       } else {
         result = {
           match: "no"

@@ -30,6 +30,8 @@ class BasicProgram
 
 class SyntaxRules
 
+  constructor: () ->
+
     @keywords = [
       "CLEAR"
       "RUN"
@@ -166,7 +168,28 @@ class ParseHelpers
         id = string.slice(0,len)
         result.parse_object = ["<number_variable>", id]
         result.remainder = string.slice(len)
-      else result = {match: "no"}
+      else
+        result = {match: "no"}
+    else
+      result = {match: "no"}
+    return result
+
+
+  look_for_string_identifier: (string) ->
+    result = {}
+    if string[0] == "$"
+      if string[1] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        if string[2] in "0123456789"
+          len = 2
+        else
+          len = 1
+      if ( len == string.length-1 ) or ( string[len+1] in "=+" )
+        result.match = "yes"
+        id = string.slice(1,len+1)
+        result.parse_object = ["<string_variable>", id]
+        result.remainder = string.slice(len+1)
+      else
+        result = {match: "no"}
     else
       result = {match: "no"}
     return result
