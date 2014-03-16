@@ -273,6 +273,24 @@ class NumericExpressionParser
 
 
 
+class StringExpressionParser
+
+  tokenize: (string) ->
+    tokens = []
+    buffer = ""
+    for ch in string
+      if ch == "+"
+        if buffer != ""
+          tokens.push(buffer)
+          buffer = ""
+        tokens.push("<plus>")
+      else
+        buffer = buffer + ch
+    tokens.push(buffer) if buffer != ""
+    return tokens
+
+
+
 class KeyHelper
 
   constructor: () ->
