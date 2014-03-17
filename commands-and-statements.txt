@@ -3,8 +3,12 @@ GRANDPA BASIC 1980
 List of Commands and BASIC Statements to be implemented in first version:
 
 
+<<<<<<< HEAD
 
 === COMMANDS ===
+=======
+COMMANDS:
+>>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
 
   CLEAR - Clear the terminal and clear all BASIC program statements from the interpreter.
 
@@ -15,12 +19,18 @@ List of Commands and BASIC Statements to be implemented in first version:
   LIST - List the statments current BASIC language program, ordered by line number.
 
 
+<<<<<<< HEAD
 
   === PROGRAM STATEMENTS ===
 
 
   BLANK REMARK:   [  {line number} + <REM>  ]
 
+=======
+PROGRAM STATEMENTS:
+
+  <line number> + <REM>
+>>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
     A blank comment line, used for whitespace. (These older regimes didn't allow for plain old blank
     lines in the program listings unless explicitly specified by a statement like this.)
 
@@ -28,13 +38,18 @@ List of Commands and BASIC Statements to be implemented in first version:
        100 REM
 
 
+<<<<<<< HEAD
 
   REMARK:   [  {line number} + <REM> + {characters}  ]
 
+=======
+  <line number> + <REM> + {characters}
+>>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
     A comment line, not executable.
 
     example:
         200 REM ==========================================
+<<<<<<< HEAD
         210 REM      ***   COMPUTE THE SUM   ***
         220 REM HERE WE COMPUTE THE SUM OF THE TWO NUMBERS
         230 REM ==========================================
@@ -43,6 +58,14 @@ List of Commands and BASIC Statements to be implemented in first version:
 
   NUMERIC ASSIGNMENT:   [  {line number} + {numeric identifier} + <equals sign> + {numeric expression}  ]
 
+=======
+        210 REM      ***   Compute the sum   ***
+        220 REM Here we compute the sum of the two numbers
+        230 REM ==========================================
+
+
+  <line number> + {numeric identifier} + <equals sign> + {numeric expression}
+>>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
     Assign a value to a numeric variable. In the original versions of BASIC, a numeric variable name
     was restricted to either a single (upper case) letter, or a single letter followed by a single
     digit.
@@ -56,9 +79,13 @@ List of Commands and BASIC Statements to be implemented in first version:
         330 X=X1+X2+X3
 
 
+<<<<<<< HEAD
 
   STRING ASSIGNMENT:   [  {line number} + {string identifier} + <equals sign> + {string expression}  ]
 
+=======
+  <line number> + {string identifier} + <equals sign> + {string expression}
+>>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
     Assign a value to a string variable. String variables were distinguished from numeric variables by
     an initial '$' character, such as $A, $B, $G1, $G2. Even in later versions of BASIC which allowed
     variable names of more than one or two characters (8 characters at first, then longer ones were
@@ -69,17 +96,25 @@ List of Commands and BASIC Statements to be implemented in first version:
         510 $M = "HELLO, "+$N+", HOW ARE YOU?"
 
 
+<<<<<<< HEAD
 
   GOTO:   [  {line number} + <GOTO> + {line number}  ]
+=======
+  <line number> + <GOTO> + <line number>
+>>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
     Go to the line number specified.
 
     example:
         660 GOTO 200
 
 
+<<<<<<< HEAD
 
   GOSUB:   [  {line number} + <GOSUB> + {line number}  ]
 
+=======
+  <line number> + <GOSUB> + <line number>
+>>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
     Jump to the designated line number. When a <RETURN> statement is encountered, return to the next
     line following this one. A precursor to what we think of today as methods or functions was the
     subroutine, which was implemented in the BASIC language in its simplest, most primitive form.
@@ -88,9 +123,13 @@ List of Commands and BASIC Statements to be implemented in first version:
         880 GOSUB 1500
 
 
+<<<<<<< HEAD
 
   RETURN:   [  {line number} + <RETURN>  ]
 
+=======
+  <line number> + <RETURN>
+>>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
     Return to the line number following the line of the <GOSUB> statement that started the current
     subroutine.
 
@@ -98,9 +137,13 @@ List of Commands and BASIC Statements to be implemented in first version:
         1590 RETURN
 
 
+<<<<<<< HEAD
 
   IF STATEMENT:   [  {line number} + <IF> + {boolean expression} + <THEN> + {line number}  ]
 
+=======
+  <line number> + <IF> + {boolean expression} + <THEN> + <line number>
+>>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
     Jump to the designated line number if the boolean expression evaluates to <true>.
 
     example:
@@ -108,6 +151,7 @@ List of Commands and BASIC Statements to be implemented in first version:
 
 
 
+<<<<<<< HEAD
   NUMERIC INPUT:   [  <line number + <INPUT> + <numeric identifier>  ]
 
     Prompt for keyboard input, then, if the input parses to a numeric value, assign that value to
@@ -202,3 +246,5 @@ List of Commands and BASIC Statements to be implemented in first version:
         (moves the cursor to column 44 on line 12)
 
 
+=======
+>>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
