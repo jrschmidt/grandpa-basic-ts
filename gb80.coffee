@@ -329,6 +329,44 @@ class StringExpressionParser
 
 
 
+class BooleanExpressionParser
+
+  split: (string) ->
+    po = []
+    token = ""
+    find = string.indexOf("<")
+    if find > 0
+      if string[find+1] == ">"
+        token = "<not_equal>"
+      else
+        if string[find+1] == "="
+          token = "<lesser_equal>"
+        else
+          token = "<lesser_than>"
+    if token == ""
+      find = string.indexOf(">")
+      if find > 0
+        if string[find+1] == "="
+          token = "<greater_equal>"
+        else
+          token = "<greater_than>"
+    if token == ""
+      find = string.indexOf("=")
+      token = "<equals>" if find > 0
+    if token.length > 0
+      po[0] = string.slice(0,find)
+      po[1] = token
+      if token in ["<not_equal>", "<lesser_equal>", "<greater_equal>"]
+        cut = find+2
+      else
+        cut = find+1
+      po[2] = string.slice(cut)
+    else
+      po = "<not_a_boolean_expression>"
+    return po
+
+
+
 class KeyHelper
 
   constructor: () ->
