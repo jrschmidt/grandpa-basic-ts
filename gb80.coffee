@@ -79,7 +79,7 @@ class SyntaxRules
       "<number_variable>"
       "<string_variable>"
       "<numeric_expression>"
-      "<string_epression>"
+      "<string_expression>"
       "<boolean_expression>"
       "<string>"
       "<characters>"
@@ -94,7 +94,7 @@ class SyntaxRules
     ]
 
     # @line_number_rules[] and @input_statement_rules[] are written this
-    # way to facilitate multi-line nested arrays. (Coffeescript multi-line
+    # way to emulate multi-line nested arrays. (Coffeescript multi-line
     # array syntax seems to only work for one level of nesting.)
     @line_number_rules = [
         ["REM","<sp>","<characters>"]
@@ -176,6 +176,7 @@ class LineParser
           result = {match: "no"}
       console.log "TK match = "+result.match
       if result.match == "yes"
+        string = result.remainder
         console.log "TK po = "+result.parse_object
         console.log "TK remainder = "+result.remainder
     return result
@@ -184,16 +185,61 @@ class LineParser
   look_for_keyword: (token,string) ->
     find = string.indexOf(token)
     if find == 0
-      console.log "KW keyword found"
       i = @syntax.keywords.indexOf(token)
       result = {
         match: "yes"
         parse_object: [@syntax.keyword_tokens[i]]
         remainder: string.slice(token.length) }
-      console.log "KW (if)  result = "
-      console.log key+": "+vv for key,vv of result
     else
       result = {match: "no"}
+    return result
+
+
+  look_for_char: (token,string) ->
+    console.log "CH token = "+token
+    i = @syntax.char_tokens.indexOf(token)
+    ch = string[0]
+    console.log "CH ch = "+ch
+    console.log "CH i = "+i+" chars[i] = "+@syntax.chars[i]
+    if ch == @syntax.chars[i]
+      result = {
+        match: "yes"
+        parse_object: token
+        remainder: string.slice(1) }
+    else
+      result = {match: "no"}
+    console.log "CH result = "
+    console.log "   "+key+": "+val for key,val of result
+    return result
+    
+
+
+  look_for_action: (token,string) ->
+    switch token
+      when  "<line_number>"
+        result = @helpers.look_for_line_number(string)
+      when  "<line_number_statement>"
+        result = {match: "no"} # ** temporary **
+      when  "<input_statement>"
+        result = {match: "no"} # ** temporary **
+      when  "<number_variable>"
+        result = {match: "no"} # ** temporary **
+      when  "<string_variable>"
+        result = {match: "no"} # ** temporary **
+      when  "<numeric_expression>"
+        result = {match: "no"} # ** temporary **
+      when  "<string_expression>"
+        result = {match: "no"} # ** temporary **
+      when  "<boolean_expression>"
+        result = {match: "no"} # ** temporary **
+      when  "<string>"
+        result = {match: "no"} # ** temporary **
+      when  "<characters>"
+        result = {match: "no"} # ** temporary **
+      when  "<integer>"
+        result = {match: "no"} # ** temporary **
+      else
+        result = {match: "no"} # ** temporary **
     return result
 
 

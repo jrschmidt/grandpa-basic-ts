@@ -26,7 +26,7 @@ describe("Test BASIC program line parser", function() {
     expect(po.length).toEqual(1);
     return expect(po[0]).toEqual("<list_command>");
   });
-  xit("should correctly parse line numbers", function() {
+  it("should correctly parse line numbers", function() {
     var po;
     po = this.parser.parse('10 REM WELCOME TO GRANDPA BASIC 80');
     expect(po).toEqual(jasmine.any(Array));

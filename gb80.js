@@ -53,7 +53,7 @@ SyntaxRules = (function() {
     this.keyword_tokens = ["<clear_command>", "<run_command>", "<info_command>", "<list_command>", "<remark>", "<goto>", "<gosub>", "<return>", "<if>", "<input>", "<print>", "<println>", "<clear_screen>", "<tab>"];
     this.char_tokens = ["<sp>", "<equals>", "<semicolon>", "<comma>"];
     this.chars = " =;,";
-    this.action_tokens = ["<line_number>", "<line_number_statement>", "<input_statement>", "<number_variable>", "<string_variable>", "<numeric_expression>", "<string_epression>", "<boolean_expression>", "<string>", "<characters>", "<integer>"];
+    this.action_tokens = ["<line_number>", "<line_number_statement>", "<input_statement>", "<number_variable>", "<string_variable>", "<numeric_expression>", "<string_expression>", "<boolean_expression>", "<string>", "<characters>", "<integer>"];
     this.rules = [["CLEAR"], ["RUN"], ["INFO"], ["LIST"], ["<line_number>", "<sp>", "<line_number_statement>"]];
     this.line_number_rules = [["REM", "<sp>", "<characters>"], ["REM"], ["<number_variable>", "<equals>", "<numeric_expression>"], ["<string_variable>", "<equals>", "<string_expression>"], ["GOTO", "<sp>", "<line_number>"], ["GOSUB", "<sp>", "<line_number>"], ["RETURN"], ["IF", "<sp>", "<boolean_expression>", "<sp>", "THEN", "<sp>", "<line_number>"], ["INPUT", "<sp>", "<input_statement>"], ["PRINT", "<sp>", "<string_expression>"], ["PRINTLN", "<sp>", "<string_expression>"], ["PRINTLN"], ["CLEARSCRN"], ["TAB", "<sp>", "<integer>", "<comma>", "<integer>"], ["TAB", "<sp>", "<integer>"]];
     this.input_statement_rules = [["<number_variable>"], ["<string_variable>"], ["<string>", "<semicolon>", "<number_variable>"], ["<string>", "<semicolon>", "<string_variable>"]];
@@ -136,6 +136,7 @@ LineParser = (function() {
       }
       console.log("TK match = " + result.match);
       if (result.match === "yes") {
+        string = result.remainder;
         console.log("TK po = " + result.parse_object);
         console.log("TK remainder = " + result.remainder);
       }
@@ -144,25 +145,109 @@ LineParser = (function() {
   };
 
   LineParser.prototype.look_for_keyword = function(token, string) {
-    var find, i, key, result, vv;
+    var find, i, result;
     find = string.indexOf(token);
     if (find === 0) {
-      console.log("KW keyword found");
       i = this.syntax.keywords.indexOf(token);
       result = {
         match: "yes",
         parse_object: [this.syntax.keyword_tokens[i]],
         remainder: string.slice(token.length)
       };
-      console.log("KW (if)  result = ");
-      for (key in result) {
-        vv = result[key];
-        console.log(key + ": " + vv);
-      }
     } else {
       result = {
         match: "no"
       };
+    }
+    return result;
+  };
+
+  LineParser.prototype.look_for_char = function(token, string) {
+    var ch, i, key, result, val;
+    console.log("CH token = " + token);
+    i = this.syntax.char_tokens.indexOf(token);
+    ch = string[0];
+    console.log("CH ch = " + ch);
+    console.log("CH i = " + i + " chars[i] = " + this.syntax.chars[i]);
+    if (ch === this.syntax.chars[i]) {
+      result = {
+        match: "yes",
+        parse_object: token,
+        remainder: string.slice(1)
+      };
+    } else {
+      result = {
+        match: "no"
+      };
+    }
+    console.log("CH result = ");
+    for (key in result) {
+      val = result[key];
+      console.log("   " + key + ": " + val);
+    }
+    return result;
+  };
+
+  LineParser.prototype.look_for_action = function(token, string) {
+    var result;
+    switch (token) {
+      case "<line_number>":
+        result = this.helpers.look_for_line_number(string);
+        break;
+      case "<line_number_statement>":
+        result = {
+          match: "no"
+        };
+        break;
+      case "<input_statement>":
+        result = {
+          match: "no"
+        };
+        break;
+      case "<number_variable>":
+        result = {
+          match: "no"
+        };
+        break;
+      case "<string_variable>":
+        result = {
+          match: "no"
+        };
+        break;
+      case "<numeric_expression>":
+        result = {
+          match: "no"
+        };
+        break;
+      case "<string_expression>":
+        result = {
+          match: "no"
+        };
+        break;
+      case "<boolean_expression>":
+        result = {
+          match: "no"
+        };
+        break;
+      case "<string>":
+        result = {
+          match: "no"
+        };
+        break;
+      case "<characters>":
+        result = {
+          match: "no"
+        };
+        break;
+      case "<integer>":
+        result = {
+          match: "no"
+        };
+        break;
+      default:
+        result = {
+          match: "no"
+        };
     }
     return result;
   };
