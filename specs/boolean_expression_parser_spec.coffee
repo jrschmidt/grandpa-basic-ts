@@ -1,7 +1,8 @@
 describe "Test boolean expression parser", ->
 
   beforeEach ->
-    @parser = new BooleanExpressionParser
+    @helpers = new ParseHelpers
+    @parser = @helpers.bool_exp_parser
 
 
   it "should create a BooleanExpressionParser object", ->
@@ -61,20 +62,74 @@ describe "Test boolean expression parser", ->
     expect(tokens[2]).toEqual("H0")
 
 
-  xit "should return a 'not a boolean expression' token for any string that won't parse into a boolean expression", ->
+  it "should return a 'not a boolean expression' token for any string that won't parse into a boolean expression", ->
 
-    result = @parser.boolean_parse('')
+    result = @parser.boolean_parse('"FOURTEEN THOUSAND"')
+    expect(result).toEqual("<not_a_boolean_expression>")
+
+    result = @parser.boolean_parse('$Z9')
+    expect(result).toEqual("<not_a_boolean_expression>")
+
+    result = @parser.boolean_parse('(67-X)/(31*Y)')
     expect(result).toEqual("<not_a_boolean_expression>")
 
 
-  xit "should parse any properly formed boolean expression", ->
+  it "should parse any properly formed boolean expression", ->
 
-    po = @parser.boolean_parse('')
+    po = @parser.boolean_parse('$Y="Y"')
     expect(po).toEqual(jasmine.any(Array))
-    expect(po[0]).toEqual("")
-    expect(po[1]).toEqual("")
-    expect(po[2]).toEqual("")
-    expect(po[3]).toEqual("")
-    expect(po[4]).toEqual("")
+    expect(po[0]).toEqual("<string_variable>")
+    expect(po[1]).toEqual("Y")
+    expect(po[2]).toEqual("<equals>")
+    expect(po[3]).toEqual("<string_literal>")
+    expect(po[4]).toEqual("Y")
+
+    po = @parser.boolean_parse('N>0')
+    expect(po).toEqual(jasmine.any(Array))
+    expect(po[0]).toEqual("<number_variable>")
+    expect(po[1]).toEqual("N")
+    expect(po[2]).toEqual("<greater_than>")
+    expect(po[3]).toEqual("<numeric_literal>")
+    expect(po[4]).toEqual(0)
+
+    po = @parser.boolean_parse('I3<20')
+    expect(po).toEqual(jasmine.any(Array))
+    expect(po[0]).toEqual("<number_variable>")
+    expect(po[1]).toEqual("I3")
+    expect(po[2]).toEqual("<lesser_than>")
+    expect(po[3]).toEqual("<numeric_literal>")
+    expect(po[4]).toEqual(20)
+
+    po = @parser.boolean_parse('Z=A')
+    expect(po).toEqual(jasmine.any(Array))
+    expect(po[0]).toEqual("<number_variable>")
+    expect(po[1]).toEqual("Z")
+    expect(po[2]).toEqual("<equals>")
+    expect(po[3]).toEqual("<number_variable>")
+    expect(po[4]).toEqual("A")
+
+    po = @parser.boolean_parse('Q1<>Q2')
+    expect(po).toEqual(jasmine.any(Array))
+    expect(po[0]).toEqual("<number_variable>")
+    expect(po[1]).toEqual("Q1")
+    expect(po[2]).toEqual("<not_equal>")
+    expect(po[3]).toEqual("<number_variable>")
+    expect(po[4]).toEqual("Q2")
+
+    po = @parser.boolean_parse('T<=30')
+    expect(po).toEqual(jasmine.any(Array))
+    expect(po[0]).toEqual("<number_variable>")
+    expect(po[1]).toEqual("T")
+    expect(po[2]).toEqual("<lesser_equal>")
+    expect(po[3]).toEqual("<numeric_literal>")
+    expect(po[4]).toEqual(30)
+
+    po = @parser.boolean_parse('H>=H0')
+    expect(po).toEqual(jasmine.any(Array))
+    expect(po[0]).toEqual("<number_variable>")
+    expect(po[1]).toEqual("H")
+    expect(po[2]).toEqual("<greater_equal>")
+    expect(po[3]).toEqual("<number_variable>")
+    expect(po[4]).toEqual("H0")
 
 

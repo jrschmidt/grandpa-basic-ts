@@ -55,7 +55,7 @@ SyntaxRules = (function() {
     this.action_tokens = ["<line_number>", "<number_variable>", "<string_variable>", "<numeric_expression>", "<string_epression>", "<boolean_expression>", "<string>", "<characters>", "<integer>"];
     this.rules = [["CLEAR"], ["RUN"], ["INFO"], ["LIST"], ["<line_number>", "<sp>", this.line_number_rules]];
     this.line_number_rules = [["REM", "<sp>", "<characters>"], ["REM"], ["<number_variable>", "<equals>", "<numeric_expression>"], ["<string_variable>", "<equals>", "<string_expression>"], ["GOTO", "<sp>", "<line_number>"], ["GOSUB", "<sp>", "<line_number>"], ["RETURN"], ["IF", "<sp>", "<boolean_expression>", "<sp>", "THEN", "<sp>", "<line_number>"], ["INPUT", "<sp>", this.input_statement_rules], ["PRINT", "<sp>", "<string_expression>"], ["PRINTLN", "<sp>", "<string_expression>"], ["PRINTLN"], ["CLEAR"], ["TAB", "<sp>", "<integer>", "<comma>", "<integer>"], ["TAB", "<sp>", "<integer>"]];
-    this.input_statement_rules = [["number_variable>"], ["string_variable>"], ["<string>", "<semicolon>", "<number_variable>"], ["<string>", "<semicolon>", "<string_variable>"]];
+    this.input_statement_rules = [["<number_variable>"], ["<string_variable>"], ["<string>", "<semicolon>", "<number_variable>"], ["<string>", "<semicolon>", "<string_variable>"]];
   }
 
   return SyntaxRules;
@@ -90,7 +90,11 @@ LineParser = (function() {
 })();
 
 ParseHelpers = (function() {
-  function ParseHelpers() {}
+  function ParseHelpers() {
+    this.num_exp_parser = new NumericExpressionParser;
+    this.str_exp_parser = new StringExpressionParser;
+    this.bool_exp_parser = new BooleanExpressionParser(this);
+  }
 
   ParseHelpers.prototype.look_for_line_number = function(string) {
     var n, result;
@@ -361,7 +365,43 @@ StringExpressionParser = (function() {
 })();
 
 BooleanExpressionParser = (function() {
-  function BooleanExpressionParser() {}
+  function BooleanExpressionParser(parse_helpers) {
+    this.helpers = parse_helpers;
+  }
+
+  BooleanExpressionParser.prototype.boolean_parse = function(string) {
+    var num_exp, num_id, po, str_id, str_val, tokens;
+    po = [];
+    tokens = this.split(string);
+    if (tokens !== "<not_a_boolean_expression>") {
+      num_id = this.helpers.look_for_numeric_identifier(tokens[0]);
+      if (num_id.match === "yes") {
+        num_exp = this.helpers.num_exp_parser.numeric_parse(tokens[2]);
+        if (num_exp !== "<not_a_numeric_expression>") {
+          po = po.concat(num_id.parse_object);
+          po.push(tokens[1]);
+          po = po.concat(num_exp);
+        }
+      } else {
+        str_id = this.helpers.look_for_string_identifier(tokens[0]);
+        if (str_id.match === "yes") {
+          str_val = this.helpers.str_exp_parser.string_value(tokens[2]);
+          if (str_val[0] !== "bad") {
+            po = str_id.parse_object;
+            po.push("<equals>");
+            po = po.concat(str_val);
+          } else {
+            po = "<not_a_boolean_expression>";
+          }
+        } else {
+          po = "<not_a_boolean_expression>";
+        }
+      }
+    } else {
+      po = "<not_a_boolean_expression>";
+    }
+    return po;
+  };
 
   BooleanExpressionParser.prototype.split = function(string) {
     var cut, find, po, token;

@@ -109,8 +109,8 @@ class SyntaxRules
     ]
 
     @input_statement_rules = [
-      ["number_variable>"]
-      ["string_variable>"]
+      ["<number_variable>"]
+      ["<string_variable>"]
       ["<string>","<semicolon>","<number_variable>"]
       ["<string>","<semicolon>","<string_variable>"]
     ]
@@ -143,6 +143,12 @@ class LineParser
 
 
 class ParseHelpers
+
+  constructor: () ->
+    @num_exp_parser = new NumericExpressionParser
+    @str_exp_parser = new StringExpressionParser
+    @bool_exp_parser = new BooleanExpressionParser(this)
+
 
   look_for_line_number: (string) ->
     result = {}
@@ -330,6 +336,36 @@ class StringExpressionParser
 
 
 class BooleanExpressionParser
+
+  constructor: (parse_helpers) ->
+    @helpers = parse_helpers
+
+
+  boolean_parse: (string) ->
+    po = []
+    tokens = @split(string)
+    if tokens != "<not_a_boolean_expression>"
+      num_id = @helpers.look_for_numeric_identifier(tokens[0])
+      if num_id.match == "yes"
+        num_exp = @helpers.num_exp_parser.numeric_parse(tokens[2])
+        if num_exp != "<not_a_numeric_expression>"
+          po = po.concat(num_id.parse_object)
+          po.push(tokens[1])
+          po = po.concat(num_exp)
+      else
+        str_id = @helpers.look_for_string_identifier(tokens[0])
+        if str_id.match == "yes"
+          str_val = @helpers.str_exp_parser.string_value(tokens[2])
+          if str_val[0] != "bad"
+            po = str_id.parse_object
+            po.push("<equals>")
+            po = po.concat(str_val)
+          else po = "<not_a_boolean_expression>"
+        else po = "<not_a_boolean_expression>"
+    else
+      po = "<not_a_boolean_expression>"
+    return po
+
 
   split: (string) ->
     po = []
