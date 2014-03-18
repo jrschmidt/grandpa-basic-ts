@@ -216,13 +216,13 @@ PROGRAM STATEMENTS:
 
 
 
-  CLEAR STATEMENT:   [  {line number} + <CLEAR>  ]
+  CLEARSCRN STATEMENT:   [  {line number} + <CLEARSCRN>  ]
 
     Different from the CLEAR command. Clear the console screen and move the cursor to position 0,0
     (the upper left corner).
 
     example:
-        10 CLEAR
+        10 CLEARSCRN
 
 
 

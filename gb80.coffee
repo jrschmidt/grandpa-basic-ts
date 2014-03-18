@@ -45,10 +45,11 @@ class SyntaxRules
       "INPUT"
       "PRINT"
       "PRINTLN"
+      "CLEARSCRN"
       "TAB"]
 
     @keyword_tokens = [
-      "<clear_keyword>"
+      "<clear_command>"
       "<run_command>"
       "<info_command>"
       "<list_command>"
@@ -60,6 +61,7 @@ class SyntaxRules
       "<input>"
       "<print>"
       "<println>"
+      "<clear_screen>"
       "<tab>"]
 
     @char_tokens = [
@@ -68,8 +70,12 @@ class SyntaxRules
       "<semicolon>"
       "<comma>"]
 
+    @chars = " =;,"
+
     @action_tokens = [
       "<line_number>"
+      "<line_number_statement>"
+      "<input_statement>"
       "<number_variable>"
       "<string_variable>"
       "<numeric_expression>"
@@ -84,7 +90,7 @@ class SyntaxRules
       ["RUN"]
       ["INFO"]
       ["LIST"]
-      ["<line_number>","<sp>", @line_number_rules]
+      ["<line_number>","<sp>","<line_number_statement>"]
     ]
 
     # @line_number_rules[] and @input_statement_rules[] are written this
@@ -99,11 +105,11 @@ class SyntaxRules
         ["GOSUB","<sp>","<line_number>"]
         ["RETURN"]
         ["IF","<sp>","<boolean_expression>","<sp>","THEN","<sp>","<line_number>"]
-        ["INPUT","<sp>", @input_statement_rules]
+        ["INPUT","<sp>","<input_statement>"]
         ["PRINT","<sp>","<string_expression>"]
         ["PRINTLN","<sp>","<string_expression>"]
         ["PRINTLN"]
-        ["CLEAR"]
+        ["CLEARSCRN"]
         ["TAB","<sp>","<integer>","<comma>","<integer>"]
         ["TAB","<sp>","<integer>"]
     ]
@@ -129,16 +135,66 @@ class BasicProgramLine
 class LineParser
 
   constructor: () ->
-    @rules = new SyntaxRules
+    @syntax = new SyntaxRules
+    @rules = @syntax.rules
     @helpers = new ParseHelpers
 
 
   parse: (string) ->
-    po = []
+    console.log " "
+    console.log "PAR string = "+string
+    match = "no"
+    for rule in @rules
+      if match == "no"
+        result = @look_for(string,rule)
+        match = result.match
+    if match == "yes"
+      return result.parse_object
+    else
+      return "<parse_error>"
 
 
+  look_for: (string,rule) ->
+    for token in rule
+      cat = "none"
+      console.log "TK look for token: "+token
+      cat = "keyword" if token in @syntax.keywords
+      cat = "char" if token in @syntax.char_tokens
+      cat = "action" if token in @syntax.action_tokens
 
-    return po
+      switch cat
+        when "keyword"
+          console.log "TK  KEYWORD token"
+          result = @look_for_keyword(token,string)
+        when "char"
+          console.log "TK  CHAR token"
+          result = @look_for_char(token,string)
+        when "action"
+          console.log "TK  ACTION token"
+          result = @look_for_action(token,string)
+        else
+          result = {match: "no"}
+      console.log "TK match = "+result.match
+      if result.match == "yes"
+        console.log "TK po = "+result.parse_object
+        console.log "TK remainder = "+result.remainder
+    return result
+
+
+  look_for_keyword: (token,string) ->
+    find = string.indexOf(token)
+    if find == 0
+      console.log "KW keyword found"
+      i = @syntax.keywords.indexOf(token)
+      result = {
+        match: "yes"
+        parse_object: [@syntax.keyword_tokens[i]]
+        remainder: string.slice(token.length) }
+      console.log "KW (if)  result = "
+      console.log key+": "+vv for key,vv of result
+    else
+      result = {match: "no"}
+    return result
 
 
 

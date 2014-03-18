@@ -4,32 +4,32 @@ describe "Test BASIC program line parser", ->
     @parser = new LineParser
 
 
-  xit "should create a LineParser object", ->
+  it "should create a LineParser object", ->
     expect(@parser).toBeDefined
     expect(@parser).toEqual(jasmine.any(LineParser))
 
 
-  xit "should correctly parse a terminal command", ->
+  it "should correctly parse a terminal command", ->
     po = @parser.parse("CLEAR")
     expect(po).toEqual(jasmine.any(Array))
     expect(po.length).toEqual(1)
-    expect(po[0]).toEqual("<clear>")
+    expect(po[0]).toEqual("<clear_command>")
 
     po = @parser.parse("RUN")
     expect(po).toEqual(jasmine.any(Array))
     expect(po.length).toEqual(1)
-    expect(po[0]).toEqual("<run>")
+    expect(po[0]).toEqual("<run_command>")
 
     po = @parser.parse("INFO")
     expect(po).toEqual(jasmine.any(Array))
     expect(po.length).toEqual(1)
-    expect(po[0]).toEqual("<info>")
+    expect(po[0]).toEqual("<info_command>")
 
 
     po = @parser.parse("LIST")
     expect(po).toEqual(jasmine.any(Array))
     expect(po.length).toEqual(1)
-    expect(po[0]).toEqual("<list>")
+    expect(po[0]).toEqual("<list_command>")
 
 
   xit "should correctly parse line numbers", ->
@@ -141,12 +141,8 @@ describe "Test BASIC program line parser", ->
     expect(po[30]).toEqual("A")
     expect(po[31]).toEqual("<right>")
 
-
-  xit "should flag any string that doesn't parse into a numeric expression after the equals sign", ->
-
     po = @parser.parse('110 Q="33-7"')
     expect(po).toEqual("<not_a_numeric_expression>")
-    # TODO What would be a better value for these flags?
 
     po = @parser.parse('404 V6=180-45DEGREES')
     expect(po).toEqual("<not_a_numeric_expression>")

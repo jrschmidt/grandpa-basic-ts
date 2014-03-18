@@ -49,12 +49,13 @@ BasicProgram = (function() {
 
 SyntaxRules = (function() {
   function SyntaxRules() {
-    this.keywords = ["CLEAR", "RUN", "INFO", "LIST", "REM", "GOTO", "GOSUB", "RETURN", "IF", "INPUT", "PRINT", "PRINTLN", "TAB"];
-    this.keyword_tokens = ["<clear_keyword>", "<run_command>", "<info_command>", "<list_command>", "<remark>", "<goto>", "<gosub>", "<return>", "<if>", "<input>", "<print>", "<println>", "<tab>"];
+    this.keywords = ["CLEAR", "RUN", "INFO", "LIST", "REM", "GOTO", "GOSUB", "RETURN", "IF", "INPUT", "PRINT", "PRINTLN", "CLEARSCRN", "TAB"];
+    this.keyword_tokens = ["<clear_command>", "<run_command>", "<info_command>", "<list_command>", "<remark>", "<goto>", "<gosub>", "<return>", "<if>", "<input>", "<print>", "<println>", "<clear_screen>", "<tab>"];
     this.char_tokens = ["<sp>", "<equals>", "<semicolon>", "<comma>"];
-    this.action_tokens = ["<line_number>", "<number_variable>", "<string_variable>", "<numeric_expression>", "<string_epression>", "<boolean_expression>", "<string>", "<characters>", "<integer>"];
-    this.rules = [["CLEAR"], ["RUN"], ["INFO"], ["LIST"], ["<line_number>", "<sp>", this.line_number_rules]];
-    this.line_number_rules = [["REM", "<sp>", "<characters>"], ["REM"], ["<number_variable>", "<equals>", "<numeric_expression>"], ["<string_variable>", "<equals>", "<string_expression>"], ["GOTO", "<sp>", "<line_number>"], ["GOSUB", "<sp>", "<line_number>"], ["RETURN"], ["IF", "<sp>", "<boolean_expression>", "<sp>", "THEN", "<sp>", "<line_number>"], ["INPUT", "<sp>", this.input_statement_rules], ["PRINT", "<sp>", "<string_expression>"], ["PRINTLN", "<sp>", "<string_expression>"], ["PRINTLN"], ["CLEAR"], ["TAB", "<sp>", "<integer>", "<comma>", "<integer>"], ["TAB", "<sp>", "<integer>"]];
+    this.chars = " =;,";
+    this.action_tokens = ["<line_number>", "<line_number_statement>", "<input_statement>", "<number_variable>", "<string_variable>", "<numeric_expression>", "<string_epression>", "<boolean_expression>", "<string>", "<characters>", "<integer>"];
+    this.rules = [["CLEAR"], ["RUN"], ["INFO"], ["LIST"], ["<line_number>", "<sp>", "<line_number_statement>"]];
+    this.line_number_rules = [["REM", "<sp>", "<characters>"], ["REM"], ["<number_variable>", "<equals>", "<numeric_expression>"], ["<string_variable>", "<equals>", "<string_expression>"], ["GOTO", "<sp>", "<line_number>"], ["GOSUB", "<sp>", "<line_number>"], ["RETURN"], ["IF", "<sp>", "<boolean_expression>", "<sp>", "THEN", "<sp>", "<line_number>"], ["INPUT", "<sp>", "<input_statement>"], ["PRINT", "<sp>", "<string_expression>"], ["PRINTLN", "<sp>", "<string_expression>"], ["PRINTLN"], ["CLEARSCRN"], ["TAB", "<sp>", "<integer>", "<comma>", "<integer>"], ["TAB", "<sp>", "<integer>"]];
     this.input_statement_rules = [["<number_variable>"], ["<string_variable>"], ["<string>", "<semicolon>", "<number_variable>"], ["<string>", "<semicolon>", "<string_variable>"]];
   }
 
@@ -75,14 +76,95 @@ BasicProgramLine = (function() {
 
 LineParser = (function() {
   function LineParser() {
-    this.rules = new SyntaxRules;
+    this.syntax = new SyntaxRules;
+    this.rules = this.syntax.rules;
     this.helpers = new ParseHelpers;
   }
 
   LineParser.prototype.parse = function(string) {
-    var po;
-    po = [];
-    return po;
+    var match, result, rule, _i, _len, _ref;
+    console.log(" ");
+    console.log("PAR string = " + string);
+    match = "no";
+    _ref = this.rules;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      rule = _ref[_i];
+      if (match === "no") {
+        result = this.look_for(string, rule);
+        match = result.match;
+      }
+    }
+    if (match === "yes") {
+      return result.parse_object;
+    } else {
+      return "<parse_error>";
+    }
+  };
+
+  LineParser.prototype.look_for = function(string, rule) {
+    var cat, result, token, _i, _len;
+    for (_i = 0, _len = rule.length; _i < _len; _i++) {
+      token = rule[_i];
+      cat = "none";
+      console.log("TK look for token: " + token);
+      if (__indexOf.call(this.syntax.keywords, token) >= 0) {
+        cat = "keyword";
+      }
+      if (__indexOf.call(this.syntax.char_tokens, token) >= 0) {
+        cat = "char";
+      }
+      if (__indexOf.call(this.syntax.action_tokens, token) >= 0) {
+        cat = "action";
+      }
+      switch (cat) {
+        case "keyword":
+          console.log("TK  KEYWORD token");
+          result = this.look_for_keyword(token, string);
+          break;
+        case "char":
+          console.log("TK  CHAR token");
+          result = this.look_for_char(token, string);
+          break;
+        case "action":
+          console.log("TK  ACTION token");
+          result = this.look_for_action(token, string);
+          break;
+        default:
+          result = {
+            match: "no"
+          };
+      }
+      console.log("TK match = " + result.match);
+      if (result.match === "yes") {
+        console.log("TK po = " + result.parse_object);
+        console.log("TK remainder = " + result.remainder);
+      }
+    }
+    return result;
+  };
+
+  LineParser.prototype.look_for_keyword = function(token, string) {
+    var find, i, key, result, vv;
+    find = string.indexOf(token);
+    if (find === 0) {
+      console.log("KW keyword found");
+      i = this.syntax.keywords.indexOf(token);
+      result = {
+        match: "yes",
+        parse_object: [this.syntax.keyword_tokens[i]],
+        remainder: string.slice(token.length)
+      };
+      console.log("KW (if)  result = ");
+      for (key in result) {
+        vv = result[key];
+        console.log(key + ": " + vv);
+      }
+    } else {
+      result = {
+        match: "no"
+      };
+    }
+    return result;
   };
 
   return LineParser;

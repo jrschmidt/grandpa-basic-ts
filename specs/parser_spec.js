@@ -3,28 +3,28 @@ describe("Test BASIC program line parser", function() {
   beforeEach(function() {
     return this.parser = new LineParser;
   });
-  xit("should create a LineParser object", function() {
+  it("should create a LineParser object", function() {
     expect(this.parser).toBeDefined;
     return expect(this.parser).toEqual(jasmine.any(LineParser));
   });
-  xit("should correctly parse a terminal command", function() {
+  it("should correctly parse a terminal command", function() {
     var po;
     po = this.parser.parse("CLEAR");
     expect(po).toEqual(jasmine.any(Array));
     expect(po.length).toEqual(1);
-    expect(po[0]).toEqual("<clear>");
+    expect(po[0]).toEqual("<clear_command>");
     po = this.parser.parse("RUN");
     expect(po).toEqual(jasmine.any(Array));
     expect(po.length).toEqual(1);
-    expect(po[0]).toEqual("<run>");
+    expect(po[0]).toEqual("<run_command>");
     po = this.parser.parse("INFO");
     expect(po).toEqual(jasmine.any(Array));
     expect(po.length).toEqual(1);
-    expect(po[0]).toEqual("<info>");
+    expect(po[0]).toEqual("<info_command>");
     po = this.parser.parse("LIST");
     expect(po).toEqual(jasmine.any(Array));
     expect(po.length).toEqual(1);
-    return expect(po[0]).toEqual("<list>");
+    return expect(po[0]).toEqual("<list_command>");
   });
   xit("should correctly parse line numbers", function() {
     var po;
@@ -57,7 +57,7 @@ describe("Test BASIC program line parser", function() {
     expect(po[0]).toEqual("<line_number>");
     return expect(po[1]).toEqual(999);
   });
-  xit("should correctly parse a numeric assignment statement", function() {
+  return xit("should correctly parse a numeric assignment statement", function() {
     var po;
     po = this.parser.parse('180 X=77');
     expect(po).toEqual(jasmine.any(Array));
@@ -124,10 +124,7 @@ describe("Test BASIC program line parser", function() {
     expect(po[28]).toEqual("<times>");
     expect(po[29]).toEqual("<numeric_identifier>");
     expect(po[30]).toEqual("A");
-    return expect(po[31]).toEqual("<right>");
-  });
-  return xit("should flag any string that doesn't parse into a numeric expression after the equals sign", function() {
-    var po;
+    expect(po[31]).toEqual("<right>");
     po = this.parser.parse('110 Q="33-7"');
     expect(po).toEqual("<not_a_numeric_expression>");
     po = this.parser.parse('404 V6=180-45DEGREES');
