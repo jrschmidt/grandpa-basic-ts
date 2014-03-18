@@ -1,7 +1,8 @@
-xdescribe "Test console line buffer object", ->
+describe "Test console line buffer object", ->
 
   beforeEach ->
     @buffer = new LineBuffer
+
 
   it "should create a LineBuffer object", ->
     expect(@buffer).toBeDefined
@@ -19,7 +20,7 @@ xdescribe "Test console line buffer object", ->
     expect(@buffer.get_text()).toEqual('10 REM WELCOME TO GRANDPA BASIC 80')
 
 
-  it "should load text from the console object into the line buffer object", ->
+  xit "should load text from the console object into the line buffer object", ->
     @console.addline('10 REM WELCOME TO GRANDPA BASIC 80')
     @console.load_line_buffer(0)
     expect(@buffer.get_text()).toEqual('10 REM WELCOME TO GRANDPA BASIC 80')

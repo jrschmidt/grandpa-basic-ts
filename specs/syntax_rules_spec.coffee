@@ -1,4 +1,4 @@
-describe "Test Syntax Rules", ->
+describe "Test syntax rules", ->
 
   beforeEach ->
     @parser = new SyntaxRules
