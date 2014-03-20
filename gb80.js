@@ -78,13 +78,15 @@ LineParser = (function() {
   function LineParser() {
     this.syntax = new SyntaxRules;
     this.rules = this.syntax.rules;
+    this.ln_rules = this.syntax.line_number_rules;
+    this.input_rules = this.syntax.input_statement_rules;
     this.helpers = new ParseHelpers;
   }
 
   LineParser.prototype.parse = function(string) {
     var match, result, rule, _i, _len, _ref;
     console.log(" ");
-    console.log("PAR string = " + string);
+    console.log("string to parse: " + string);
     match = "no";
     _ref = this.rules;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -102,44 +104,67 @@ LineParser = (function() {
   };
 
   LineParser.prototype.look_for = function(string, rule) {
-    var cat, result, token, _i, _len;
+    var cat, parse_object, result, rule_match, tk, token, token_result, _i, _j, _len, _len1, _ref;
+    parse_object = [];
+    rule_match = "unknown";
     for (_i = 0, _len = rule.length; _i < _len; _i++) {
       token = rule[_i];
-      cat = "none";
-      console.log("TK look for token: " + token);
-      if (__indexOf.call(this.syntax.keywords, token) >= 0) {
-        cat = "keyword";
+      if (rule_match !== "no") {
+        cat = "none";
+        if (__indexOf.call(this.syntax.keywords, token) >= 0) {
+          cat = "keyword";
+        }
+        if (__indexOf.call(this.syntax.char_tokens, token) >= 0) {
+          cat = "char";
+        }
+        if (__indexOf.call(this.syntax.action_tokens, token) >= 0) {
+          cat = "action";
+        }
+        switch (cat) {
+          case "keyword":
+            console.log("look for KEYWORD token: " + token);
+            token_result = this.look_for_keyword(token, string);
+            break;
+          case "char":
+            console.log("look for CHAR token: " + token);
+            token_result = this.look_for_char(token, string);
+            break;
+          case "action":
+            console.log("look for ACTION token: " + token);
+            token_result = this.look_for_action(token, string);
+            break;
+          default:
+            token_result = {
+              match: "no"
+            };
+        }
+        console.log("token match = " + token_result.match);
+        if (token_result.match === "yes") {
+          console.log("partial parse object for token = " + token_result.parse_object);
+          console.log("remainder = " + token_result.remainder);
+          console.log("big PARSE OBJECT (before) = " + parse_object);
+          _ref = token_result.parse_object;
+          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+            tk = _ref[_j];
+            parse_object.push(tk);
+          }
+          console.log("big PARSE OBJECT (after) = " + parse_object);
+          string = token_result.remainder;
+        } else {
+          rule_match = "no";
+        }
       }
-      if (__indexOf.call(this.syntax.char_tokens, token) >= 0) {
-        cat = "char";
-      }
-      if (__indexOf.call(this.syntax.action_tokens, token) >= 0) {
-        cat = "action";
-      }
-      switch (cat) {
-        case "keyword":
-          console.log("TK  KEYWORD token");
-          result = this.look_for_keyword(token, string);
-          break;
-        case "char":
-          console.log("TK  CHAR token");
-          result = this.look_for_char(token, string);
-          break;
-        case "action":
-          console.log("TK  ACTION token");
-          result = this.look_for_action(token, string);
-          break;
-        default:
-          result = {
-            match: "no"
-          };
-      }
-      console.log("TK match = " + result.match);
-      if (result.match === "yes") {
-        string = result.remainder;
-        console.log("TK po = " + result.parse_object);
-        console.log("TK remainder = " + result.remainder);
-      }
+    }
+    if (rule_match === "no") {
+      result = {
+        match: "no"
+      };
+    } else {
+      result = {
+        match: "yes",
+        parse_object: parse_object
+      };
+      console.log("PARSE OBJECT after rule check = " + parse_object);
     }
     return result;
   };
@@ -163,27 +188,19 @@ LineParser = (function() {
   };
 
   LineParser.prototype.look_for_char = function(token, string) {
-    var ch, i, key, result, val;
-    console.log("CH token = " + token);
+    var ch, i, result;
     i = this.syntax.char_tokens.indexOf(token);
     ch = string[0];
-    console.log("CH ch = " + ch);
-    console.log("CH i = " + i + " chars[i] = " + this.syntax.chars[i]);
     if (ch === this.syntax.chars[i]) {
       result = {
         match: "yes",
-        parse_object: token,
+        parse_object: [token],
         remainder: string.slice(1)
       };
     } else {
       result = {
         match: "no"
       };
-    }
-    console.log("CH result = ");
-    for (key in result) {
-      val = result[key];
-      console.log("   " + key + ": " + val);
     }
     return result;
   };
@@ -195,9 +212,7 @@ LineParser = (function() {
         result = this.helpers.look_for_line_number(string);
         break;
       case "<line_number_statement>":
-        result = {
-          match: "no"
-        };
+        result = this.look_for_line_number_statement(string);
         break;
       case "<input_statement>":
         result = {
@@ -235,9 +250,7 @@ LineParser = (function() {
         };
         break;
       case "<characters>":
-        result = {
-          match: "no"
-        };
+        result = this.helpers.look_for_characters(string);
         break;
       case "<integer>":
         result = {
@@ -250,6 +263,35 @@ LineParser = (function() {
         };
     }
     return result;
+  };
+
+  LineParser.prototype.look_for_line_number_statement = function(string) {
+    var match, result, rule, tk, _i, _j, _len, _len1, _ref, _ref1;
+    console.log(" ");
+    console.log("LN string = " + string);
+    match = "no";
+    _ref = this.ln_rules;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      rule = _ref[_i];
+      if (match === "no") {
+        result = this.look_for(string, rule);
+        match = result.match;
+      }
+    }
+    console.log("LN match = " + result.match);
+    console.log("LN parse_object = ");
+    _ref1 = result.parse_object;
+    for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+      tk = _ref1[_j];
+      console.log("   " + tk);
+    }
+    if (match === "yes") {
+      return result;
+    } else {
+      return {
+        match: "no"
+      };
+    }
   };
 
   return LineParser;
@@ -332,6 +374,16 @@ ParseHelpers = (function() {
         match: "no"
       };
     }
+    return result;
+  };
+
+  ParseHelpers.prototype.look_for_characters = function(string) {
+    var result;
+    result = {
+      match: "yes",
+      parse_object: ["<characters>", string],
+      remainder: ""
+    };
     return result;
   };
 

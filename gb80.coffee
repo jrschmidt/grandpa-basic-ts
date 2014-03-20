@@ -137,12 +137,14 @@ class LineParser
   constructor: () ->
     @syntax = new SyntaxRules
     @rules = @syntax.rules
+    @ln_rules = @syntax.line_number_rules
+    @input_rules = @syntax.input_statement_rules
     @helpers = new ParseHelpers
 
 
   parse: (string) ->
     console.log " "
-    console.log "PAR string = "+string
+    console.log "string to parse: "+string
     match = "no"
     for rule in @rules
       if match == "no"
@@ -154,34 +156,49 @@ class LineParser
       return "<parse_error>"
 
 
+  # Check the string against a specific syntax rule
   look_for: (string,rule) ->
+    parse_object = []
+    rule_match = "unknown"
     for token in rule
-      cat = "none"
-      console.log "TK look for token: "+token
-      cat = "keyword" if token in @syntax.keywords
-      cat = "char" if token in @syntax.char_tokens
-      cat = "action" if token in @syntax.action_tokens
-
-      switch cat
-        when "keyword"
-          console.log "TK  KEYWORD token"
-          result = @look_for_keyword(token,string)
-        when "char"
-          console.log "TK  CHAR token"
-          result = @look_for_char(token,string)
-        when "action"
-          console.log "TK  ACTION token"
-          result = @look_for_action(token,string)
+      if rule_match != "no"
+        cat = "none"
+        cat = "keyword" if token in @syntax.keywords
+        cat = "char" if token in @syntax.char_tokens
+        cat = "action" if token in @syntax.action_tokens
+        switch cat
+          when "keyword"
+            console.log "look for KEYWORD token: "+token
+            token_result = @look_for_keyword(token,string)
+          when "char"
+            console.log "look for CHAR token: "+token
+            token_result = @look_for_char(token,string)
+          when "action"
+            console.log "look for ACTION token: "+token
+            token_result = @look_for_action(token,string)
+          else
+            token_result = {match: "no"}
+        console.log "token match = "+token_result.match
+        if token_result.match == "yes"
+          console.log "partial parse object for token = "+token_result.parse_object
+          console.log "remainder = "+token_result.remainder
+          console.log "big PARSE OBJECT (before) = "+parse_object
+          parse_object.push(tk) for tk in token_result.parse_object
+          console.log "big PARSE OBJECT (after) = "+parse_object
+          string = token_result.remainder
         else
-          result = {match: "no"}
-      console.log "TK match = "+result.match
-      if result.match == "yes"
-        string = result.remainder
-        console.log "TK po = "+result.parse_object
-        console.log "TK remainder = "+result.remainder
+          rule_match = "no"
+    if rule_match == "no"
+      result = {match: "no"}
+    else
+      result = {
+        match: "yes"
+        parse_object: parse_object }
+      console.log "PARSE OBJECT after rule check = "+parse_object
     return result
 
 
+  # Check for a specific literal keyword
   look_for_keyword: (token,string) ->
     find = string.indexOf(token)
     if find == 0
@@ -195,31 +212,28 @@ class LineParser
     return result
 
 
+  # Check for the one specific character that matches the token
   look_for_char: (token,string) ->
-    console.log "CH token = "+token
     i = @syntax.char_tokens.indexOf(token)
     ch = string[0]
-    console.log "CH ch = "+ch
-    console.log "CH i = "+i+" chars[i] = "+@syntax.chars[i]
     if ch == @syntax.chars[i]
       result = {
         match: "yes"
-        parse_object: token
+        parse_object: [ token ]
         remainder: string.slice(1) }
     else
       result = {match: "no"}
-    console.log "CH result = "
-    console.log "   "+key+": "+val for key,val of result
     return result
     
 
 
+  # Delegate to the 'look_for' method associated with a specific 'action' token
   look_for_action: (token,string) ->
     switch token
       when  "<line_number>"
         result = @helpers.look_for_line_number(string)
       when  "<line_number_statement>"
-        result = {match: "no"} # ** temporary **
+        result = @look_for_line_number_statement(string)
       when  "<input_statement>"
         result = {match: "no"} # ** temporary **
       when  "<number_variable>"
@@ -235,12 +249,30 @@ class LineParser
       when  "<string>"
         result = {match: "no"} # ** temporary **
       when  "<characters>"
-        result = {match: "no"} # ** temporary **
+        result = @helpers.look_for_characters(string)
       when  "<integer>"
         result = {match: "no"} # ** temporary **
       else
         result = {match: "no"} # ** temporary **
     return result
+
+
+  # Cycle through the list of line-numbered statements
+  look_for_line_number_statement: (string) ->
+    console.log " "
+    console.log "LN string = "+string
+    match = "no"
+    for rule in @ln_rules
+      if match == "no"
+        result = @look_for(string,rule)
+        match = result.match
+    console.log "LN match = "+result.match
+    console.log "LN parse_object = "
+    console.log "   "+tk for tk in result.parse_object
+    if match == "yes"
+      return result
+    else
+      return {match: "no" }
 
 
 
@@ -300,6 +332,17 @@ class ParseHelpers
         result = {match: "no"}
     else
       result = {match: "no"}
+    return result
+
+
+  # All we need to pass here is any string of legitimate characters. This is
+  # different than StringExpressionParser##string_value(), which requires that
+  # the string be delimited at either end with double quote (") characters.
+  look_for_characters: (string) ->
+    result = {
+      match: "yes"
+      parse_object: [ "<characters>", string ]
+      remainder: "" }
     return result
 
 
