@@ -183,4 +183,55 @@ describe "Test statement line parsing", ->
     expect(po[28]).toEqual("<right>")
 
 
+  it "should correctly parse string assignment statements", ->
+
+    result = @parser.look_for('$L="HAPPY THURSDAY!"', @syntax.line_number_rules[3])
+    po = result.parse_object
+    expect(po[0]).toEqual("<string_variable>")
+    expect(po[1]).toEqual("L")
+    expect(po[2]).toEqual("<equals>")
+    expect(po[3]).toEqual("<string_literal>")
+    expect(po[4]).toEqual("HAPPY THURSDAY!")
+
+    result = @parser.look_for('$U7=$U0+" AND ANY "+$U1+" THAT DOES NOT INCLUDE "+$U4', @syntax.line_number_rules[3])
+    po = result.parse_object
+    expect(po[0]).toEqual("<string_variable>")
+    expect(po[1]).toEqual("U7")
+    expect(po[2]).toEqual("<equals>")
+    expect(po[3]).toEqual("<string_variable>")
+    expect(po[4]).toEqual("U0")
+    expect(po[5]).toEqual("<plus>")
+    expect(po[6]).toEqual("<string_literal>")
+    expect(po[7]).toEqual(" AND ANY ")
+    expect(po[8]).toEqual("<plus>")
+    expect(po[9]).toEqual("<string_variable>")
+    expect(po[10]).toEqual("U1")
+    expect(po[11]).toEqual("<plus>")
+    expect(po[12]).toEqual("<string_literal>")
+    expect(po[13]).toEqual(" THAT DOES NOT INCLUDE ")
+    expect(po[14]).toEqual("<plus>")
+    expect(po[15]).toEqual("<string_variable>")
+    expect(po[16]).toEqual("U4")
+
+    result = @parser.look_for('$B=$C', @syntax.line_number_rules[3])
+    po = result.parse_object
+    expect(po[0]).toEqual("<string_variable>")
+    expect(po[1]).toEqual("B")
+    expect(po[2]).toEqual("<equals>")
+    expect(po[3]).toEqual("<string_variable>")
+    expect(po[4]).toEqual("C")
+
+    result = @parser.look_for('$E=$M+" IS NOT COMPLETE"', @syntax.line_number_rules[3])
+    po = result.parse_object
+    expect(po[0]).toEqual("<string_variable>")
+    expect(po[1]).toEqual("E")
+    expect(po[2]).toEqual("<equals>")
+    expect(po[3]).toEqual("<string_variable>")
+    expect(po[4]).toEqual("M")
+    expect(po[5]).toEqual("<plus>")
+    expect(po[6]).toEqual("<string_literal>")
+    expect(po[7]).toEqual(" IS NOT COMPLETE")
+
+
+
 

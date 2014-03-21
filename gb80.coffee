@@ -242,11 +242,11 @@ class LineParser
       when  "<number_variable>"
         result = @helpers.look_for_numeric_identifier(string)
       when  "<string_variable>"
-        result = {match: "no"} # ** temporary **
+        result = @helpers.look_for_string_identifier(string)
       when  "<numeric_expression>"
         result = @helpers.num_exp_parser.numeric_parse(string)
       when  "<string_expression>"
-        result = {match: "no"} # ** temporary **
+        result = @helpers.str_exp_parser.string_value_parse(string)
       when  "<boolean_expression>"
         result = {match: "no"} # ** temporary **
       when  "<string>"
@@ -443,8 +443,13 @@ class StringExpressionParser
         else
           po.push(val[0])
           po.push(val[1])
-    po = "<not_a_string_expression>" if ok == "no"
-    return po
+    if ok == "yes"
+      result = {
+        match: "yes"
+        parse_object: po }
+    else
+      result = {match: "no"}
+    return result
 
 
   tokenize: (string) ->

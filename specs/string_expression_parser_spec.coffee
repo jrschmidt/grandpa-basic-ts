@@ -110,54 +110,53 @@ describe "Test string expression parser", ->
   it "should return a 'not a string expression' token for any string that won't parse into a string expression", ->
 
     result = @parser.string_value_parse('MISSING QUOTE MARKS')
-    expect(result).toEqual("<not_a_string_expression>")
+    expect(result.match).toEqual("no")
 
     result = @parser.string_value_parse('440-(3*X+5*Y)')
-    expect(result).toEqual("<not_a_string_expression>")
+    expect(result.match).toEqual("no")
 
     result = @parser.string_value_parse('260 $E="TOKEN"')
-    expect(result).toEqual("<not_a_string_expression>")
-
+    expect(result.match).toEqual("no")
 
 
   it "should parse any properly formed string expression", ->
     # FIXME What about plus signs ("+") inside a string literal?
 
-    po = @parser.string_value_parse('$R')
-    expect(po).toEqual(jasmine.any(Array))
+    result = @parser.string_value_parse('$R')
+    po = result.parse_object
     expect(po[0]).toEqual("<string_variable>")
     expect(po[1]).toEqual("R")
 
-    po = @parser.string_value_parse('$T8')
-    expect(po).toEqual(jasmine.any(Array))
+    result = @parser.string_value_parse('$T8')
+    po = result.parse_object
     expect(po[0]).toEqual("<string_variable>")
     expect(po[1]).toEqual("T8")
 
-    po = @parser.string_value_parse('$X0')
-    expect(po).toEqual(jasmine.any(Array))
+    result = @parser.string_value_parse('$X0')
+    po = result.parse_object
     expect(po[0]).toEqual("<string_variable>")
     expect(po[1]).toEqual("X0")
 
-    po = @parser.string_value_parse('"HUMMINGBIRD"')
-    expect(po).toEqual(jasmine.any(Array))
+    result = @parser.string_value_parse('"HUMMINGBIRD"')
+    po = result.parse_object
     expect(po[0]).toEqual("<string_literal>")
     expect(po[1]).toEqual("HUMMINGBIRD")
 
-    po = @parser.string_value_parse('"ABCDEFGHIJKLMNOPQRSTUVWXYZ"')
-    expect(po).toEqual(jasmine.any(Array))
+    result = @parser.string_value_parse('"ABCDEFGHIJKLMNOPQRSTUVWXYZ"')
+    po = result.parse_object
     expect(po[0]).toEqual("<string_literal>")
     expect(po[1]).toEqual("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
-    po = @parser.string_value_parse('"LAST NAME: "+$N2')
-    expect(po).toEqual(jasmine.any(Array))
+    result = @parser.string_value_parse('"LAST NAME: "+$N2')
+    po = result.parse_object
     expect(po[0]).toEqual("<string_literal>")
     expect(po[1]).toEqual("LAST NAME: ")
     expect(po[2]).toEqual("<plus>")
     expect(po[3]).toEqual("<string_variable>")
     expect(po[4]).toEqual("N2")
 
-    po = @parser.string_value_parse('"FIRST NAME: "+$N0+";  LAST NAME: "+$N2')
-    expect(po).toEqual(jasmine.any(Array))
+    result = @parser.string_value_parse('"FIRST NAME: "+$N0+";  LAST NAME: "+$N2')
+    po = result.parse_object
     expect(po[0]).toEqual("<string_literal>")
     expect(po[1]).toEqual("FIRST NAME: ")
     expect(po[2]).toEqual("<plus>")
@@ -170,8 +169,8 @@ describe "Test string expression parser", ->
     expect(po[9]).toEqual("<string_variable>")
     expect(po[10]).toEqual("N2")
 
-    po = @parser.string_value_parse('$C2+" IS IN "+$D2')
-    expect(po).toEqual(jasmine.any(Array))
+    result = @parser.string_value_parse('$C2+" IS IN "+$D2')
+    po = result.parse_object
     expect(po[0]).toEqual("<string_variable>")
     expect(po[1]).toEqual("C2")
     expect(po[2]).toEqual("<plus>")

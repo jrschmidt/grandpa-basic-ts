@@ -226,17 +226,13 @@ LineParser = (function() {
         result = this.helpers.look_for_numeric_identifier(string);
         break;
       case "<string_variable>":
-        result = {
-          match: "no"
-        };
+        result = this.helpers.look_for_string_identifier(string);
         break;
       case "<numeric_expression>":
         result = this.helpers.num_exp_parser.numeric_parse(string);
         break;
       case "<string_expression>":
-        result = {
-          match: "no"
-        };
+        result = this.helpers.str_exp_parser.string_value_parse(string);
         break;
       case "<boolean_expression>":
         result = {
@@ -492,7 +488,7 @@ StringExpressionParser = (function() {
   function StringExpressionParser() {}
 
   StringExpressionParser.prototype.string_value_parse = function(string) {
-    var ok, po, tk, tokens, val, _i, _len;
+    var ok, po, result, tk, tokens, val, _i, _len;
     po = [];
     ok = "yes";
     tokens = this.tokenize(string);
@@ -510,10 +506,17 @@ StringExpressionParser = (function() {
         }
       }
     }
-    if (ok === "no") {
-      po = "<not_a_string_expression>";
+    if (ok === "yes") {
+      result = {
+        match: "yes",
+        parse_object: po
+      };
+    } else {
+      result = {
+        match: "no"
+      };
     }
-    return po;
+    return result;
   };
 
   StringExpressionParser.prototype.tokenize = function(string) {
