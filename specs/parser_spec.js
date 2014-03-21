@@ -26,7 +26,7 @@ describe("Test BASIC program line parser", function() {
     expect(po.length).toEqual(1);
     return expect(po[0]).toEqual("<list_command>");
   });
-  xit("should correctly parse line numbers", function() {
+  xit("should correctly parse line numbers in program lines", function() {
     var po;
     po = this.parser.parse('10 REM WELCOME TO GRANDPA BASIC 80');
     expect(po).toEqual(jasmine.any(Array));
@@ -57,7 +57,7 @@ describe("Test BASIC program line parser", function() {
     expect(po[0]).toEqual("<line_number>");
     return expect(po[1]).toEqual(999);
   });
-  return xit("should correctly parse a numeric assignment statement", function() {
+  return xit("should correctly parse a numeric assignment program line", function() {
     var po;
     po = this.parser.parse('180 X=77');
     expect(po).toEqual(jasmine.any(Array));
@@ -126,14 +126,14 @@ describe("Test BASIC program line parser", function() {
     expect(po[30]).toEqual("A");
     expect(po[31]).toEqual("<right>");
     po = this.parser.parse('110 Q="33-7"');
-    expect(po).toEqual("<not_a_numeric_expression>");
+    expect(po).toEqual("<parse_error>");
     po = this.parser.parse('404 V6=180-45DEGREES');
-    expect(po).toEqual("<not_a_numeric_expression>");
+    expect(po).toEqual("<parse_error>");
     po = this.parser.parse('470 X5="NOTHING PARSEABLE AS A NUMERIC EXPRESSION"');
-    expect(po).toEqual("<not_a_numeric_expression>");
+    expect(po).toEqual("<parse_error>");
     po = this.parser.parse('590 Q=2*PI');
-    expect(po).toEqual("<not_a_numeric_expression>");
+    expect(po).toEqual("<parse_error>");
     po = this.parser.parse('740 J2=22,348,507');
-    return expect(po).toEqual("<not_a_numeric_expression>");
+    return expect(po).toEqual("<parse_error>");
   });
 });

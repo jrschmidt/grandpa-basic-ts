@@ -105,6 +105,9 @@ LineParser = (function() {
 
   LineParser.prototype.look_for = function(string, rule) {
     var cat, parse_object, result, rule_match, tk, token, token_result, _i, _j, _len, _len1, _ref;
+    console.log(" ");
+    console.log("LOOK FOR: " + string);
+    console.log("LOOK FOR: " + rule);
     parse_object = [];
     rule_match = "unknown";
     for (_i = 0, _len = rule.length; _i < _len; _i++) {
@@ -220,9 +223,7 @@ LineParser = (function() {
         };
         break;
       case "<number_variable>":
-        result = {
-          match: "no"
-        };
+        result = this.helpers.look_for_numeric_identifier(string);
         break;
       case "<string_variable>":
         result = {
@@ -230,9 +231,7 @@ LineParser = (function() {
         };
         break;
       case "<numeric_expression>":
-        result = {
-          match: "no"
-        };
+        result = this.helpers.num_exp_parser.numeric_parse(string);
         break;
       case "<string_expression>":
         result = {
@@ -266,9 +265,7 @@ LineParser = (function() {
   };
 
   LineParser.prototype.look_for_line_number_statement = function(string) {
-    var match, result, rule, tk, _i, _j, _len, _len1, _ref, _ref1;
-    console.log(" ");
-    console.log("LN string = " + string);
+    var match, result, rule, _i, _len, _ref;
     match = "no";
     _ref = this.ln_rules;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -277,13 +274,6 @@ LineParser = (function() {
         result = this.look_for(string, rule);
         match = result.match;
       }
-    }
-    console.log("LN match = " + result.match);
-    console.log("LN parse_object = ");
-    _ref1 = result.parse_object;
-    for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-      tk = _ref1[_j];
-      console.log("   " + tk);
     }
     if (match === "yes") {
       return result;
@@ -399,7 +389,7 @@ NumericExpressionParser = (function() {
   }
 
   NumericExpressionParser.prototype.numeric_parse = function(string) {
-    var bad_chars, ok, po, tk, tokens, val, _i, _len;
+    var bad_chars, ok, po, result, tk, tokens, val, _i, _len;
     bad_chars = string.search(/[^A-Z0-9\.+\-*/\^()]/);
     if (bad_chars === -1) {
       po = [];
@@ -422,10 +412,17 @@ NumericExpressionParser = (function() {
     } else {
       ok = "no";
     }
-    if (ok === "no") {
-      po = "<not_a_numeric_expression>";
+    if (ok === "yes") {
+      result = {
+        match: "yes",
+        parse_object: po
+      };
+    } else {
+      result = {
+        match: "no"
+      };
     }
-    return po;
+    return result;
   };
 
   NumericExpressionParser.prototype.tokenize = function(string) {
@@ -589,17 +586,22 @@ BooleanExpressionParser = (function() {
   }
 
   BooleanExpressionParser.prototype.boolean_parse = function(string) {
-    var num_exp, num_id, po, str_id, str_val, tokens;
+    var match, num_exp, num_id, po, result, str_id, str_val, tk, tokens, _i, _len, _ref;
     po = [];
     tokens = this.split(string);
     if (tokens !== "<not_a_boolean_expression>") {
+      match = "yes";
       num_id = this.helpers.look_for_numeric_identifier(tokens[0]);
       if (num_id.match === "yes") {
         num_exp = this.helpers.num_exp_parser.numeric_parse(tokens[2]);
-        if (num_exp !== "<not_a_numeric_expression>") {
+        if (num_exp.match === "yes") {
           po = po.concat(num_id.parse_object);
           po.push(tokens[1]);
-          po = po.concat(num_exp);
+          _ref = num_exp.parse_object;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            tk = _ref[_i];
+            po.push(tk);
+          }
         }
       } else {
         str_id = this.helpers.look_for_string_identifier(tokens[0]);
@@ -610,16 +612,26 @@ BooleanExpressionParser = (function() {
             po.push("<equals>");
             po = po.concat(str_val);
           } else {
-            po = "<not_a_boolean_expression>";
+            match = "no";
           }
         } else {
-          po = "<not_a_boolean_expression>";
+          match = "no";
         }
       }
     } else {
-      po = "<not_a_boolean_expression>";
+      match = "no";
     }
-    return po;
+    if (match === "yes") {
+      result = {
+        match: "yes",
+        parse_object: po
+      };
+    } else {
+      result = {
+        match: "no"
+      };
+    }
+    return result;
   };
 
   BooleanExpressionParser.prototype.split = function(string) {

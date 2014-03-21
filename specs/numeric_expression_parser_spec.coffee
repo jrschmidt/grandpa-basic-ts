@@ -179,82 +179,89 @@ describe "Test numeric expression parser", ->
     expect(result[1]).toEqual("bad")
 
 
-  it "should return a 'not a numeric expression' token for any string that won't parse into a numeric expression", ->
+  it "should return 'no match' for any string that won't parse into a numeric expression", ->
 
     result = @parser.numeric_parse('"33-7"')
-    expect(result).toEqual("<not_a_numeric_expression>")
+    expect(result.match).toEqual("no")
 
     result = @parser.numeric_parse('617.42.9')
-    expect(result).toEqual("<not_a_numeric_expression>")
+    expect(result.match).toEqual("no")
 
     result = @parser.numeric_parse('180-45DEGREES')
-    expect(result).toEqual("<not_a_numeric_expression>")
+    expect(result.match).toEqual("no")
 
     result = @parser.numeric_parse('"NOTHING PARSEABLE AS A NUMERIC EXPRESSION"')
-    expect(result).toEqual("<not_a_numeric_expression>")
+    expect(result.match).toEqual("no")
 
     result = @parser.numeric_parse('2*PI')
-    expect(result).toEqual("<not_a_numeric_expression>")
+    expect(result.match).toEqual("no")
 
     result = @parser.numeric_parse('22,348,507')
-    expect(result).toEqual("<not_a_numeric_expression>")
+    expect(result.match).toEqual("no")
 
     result = @parser.numeric_parse('45507')
-    expect(result).not.toEqual("<not_a_numeric_expression>")
+    expect(result.match).not.toEqual("no")
 
     result = @parser.numeric_parse('102.54')
-    expect(result).not.toEqual("<not_a_numeric_expression>")
+    expect(result.match).not.toEqual("no")
 
     result = @parser.numeric_parse('800/37')
-    expect(result).not.toEqual("<not_a_numeric_expression>")
+    expect(result.match).not.toEqual("no")
 
     result = @parser.numeric_parse('(66*A)-Z^4')
-    expect(result).not.toEqual("<not_a_numeric_expression>")
+    expect(result.match).not.toEqual("no")
 
 
   it "should parse any properly formed numeric expression", ->
 
-    po = @parser.numeric_parse("X")
-    expect(po).toEqual(jasmine.any(Array))
+    result = @parser.numeric_parse("X")
+    expect(result.match).toEqual("yes")
+    po = result.parse_object
     expect(po[0]).toEqual("<number_variable>")
     expect(po[1]).toEqual("X")
 
-    po = @parser.numeric_parse("42")
-    expect(po).toEqual(jasmine.any(Array))
+    result = @parser.numeric_parse("42")
+    expect(result.match).toEqual("yes")
+    po = result.parse_object
     expect(po[0]).toEqual("<numeric_literal>")
     expect(po[1]).toEqual(42)
 
-    po = @parser.numeric_parse("13.477")
-    expect(po).toEqual(jasmine.any(Array))
+    result = @parser.numeric_parse("13.477")
+    expect(result.match).toEqual("yes")
+    po = result.parse_object
     expect(po[0]).toEqual("<numeric_literal>")
     expect(po[1]).toEqual(13.477)
 
-    po = @parser.numeric_parse("12/3")
-    expect(po).toEqual(jasmine.any(Array))
+    result = @parser.numeric_parse("12/3")
+    expect(result.match).toEqual("yes")
+    po = result.parse_object
     expect(po[0]).toEqual("<numeric_literal>")
     expect(po[1]).toEqual(12)
     expect(po[2]).toEqual("<divide>")
     expect(po[3]).toEqual("<numeric_literal>")
     expect(po[4]).toEqual(3)
 
-    po = @parser.numeric_parse("477+B")
-    expect(po).toEqual(jasmine.any(Array))
+    result = @parser.numeric_parse("477+B")
+    expect(result.match).toEqual("yes")
+    po = result.parse_object
     expect(po[0]).toEqual("<numeric_literal>")
     expect(po[1]).toEqual(477)
     expect(po[2]).toEqual("<plus>")
     expect(po[3]).toEqual("<number_variable>")
     expect(po[4]).toEqual("B")
 
-    po = @parser.numeric_parse("C^2")
-    expect(po).toEqual(jasmine.any(Array))
+    result = @parser.numeric_parse("C^2")
+    expect(result.match).toEqual("yes")
+    po = result.parse_object
     expect(po[0]).toEqual("<number_variable>")
     expect(po[1]).toEqual("C")
     expect(po[2]).toEqual("<power>")
     expect(po[3]).toEqual("<numeric_literal>")
     expect(po[4]).toEqual(2)
 
-    po = @parser.numeric_parse("X*Y*Z")
-    expect(po).toEqual(jasmine.any(Array))
+    result = @parser.numeric_parse("X*Y*Z")
+    expect(result.match).toEqual("yes")
+    po = result.parse_object
     expect(po[0]).toEqual("<number_variable>")
     expect(po[1]).toEqual("X")
     expect(po[2]).toEqual("<times>")
@@ -264,8 +271,9 @@ describe "Test numeric expression parser", ->
     expect(po[6]).toEqual("<number_variable>")
     expect(po[7]).toEqual("Z")
 
-    po = @parser.numeric_parse("28*(J+2)")
-    expect(po).toEqual(jasmine.any(Array))
+    result = @parser.numeric_parse("28*(J+2)")
+    expect(result.match).toEqual("yes")
+    po = result.parse_object
     expect(po[0]).toEqual("<numeric_literal>")
     expect(po[1]).toEqual(28)
     expect(po[2]).toEqual("<times>")
@@ -277,8 +285,9 @@ describe "Test numeric expression parser", ->
     expect(po[8]).toEqual(2)
     expect(po[9]).toEqual("<right>")
 
-    po = @parser.numeric_parse("W5+W7-4*(J^2+K^3)")
-    expect(po).toEqual(jasmine.any(Array))
+    result = @parser.numeric_parse("W5+W7-4*(J^2+K^3)")
+    expect(result.match).toEqual("yes")
+    po = result.parse_object
     expect(po[0]).toEqual("<number_variable>")
     expect(po[1]).toEqual("W5")
     expect(po[2]).toEqual("<plus>")
@@ -302,8 +311,9 @@ describe "Test numeric expression parser", ->
     expect(po[20]).toEqual(3)
     expect(po[21]).toEqual("<right>")
 
-    po = @parser.numeric_parse("(18-Q7)/(2.108*(14*M+17*X))")
-    expect(po).toEqual(jasmine.any(Array))
+    result = @parser.numeric_parse("(18-Q7)/(2.108*(14*M+17*X))")
+    expect(result.match).toEqual("yes")
+    po = result.parse_object
     expect(po[0]).toEqual("<left>")
     expect(po[1]).toEqual("<numeric_literal>")
     expect(po[2]).toEqual(18)

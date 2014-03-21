@@ -32,7 +32,7 @@ describe "Test BASIC program line parser", ->
     expect(po[0]).toEqual("<list_command>")
 
 
-  xit "should correctly parse line numbers", ->
+  xit "should correctly parse line numbers in program lines", ->
 
     po = @parser.parse('10 REM WELCOME TO GRANDPA BASIC 80')
     expect(po).toEqual(jasmine.any(Array))
@@ -70,7 +70,7 @@ describe "Test BASIC program line parser", ->
     expect(po[1]).toEqual(999)
 
 
-  xit "should correctly parse a numeric assignment statement", ->
+  xit "should correctly parse a numeric assignment program line", ->
 
     po = @parser.parse('180 X=77')
     expect(po).toEqual(jasmine.any(Array))
@@ -142,18 +142,18 @@ describe "Test BASIC program line parser", ->
     expect(po[31]).toEqual("<right>")
 
     po = @parser.parse('110 Q="33-7"')
-    expect(po).toEqual("<not_a_numeric_expression>")
+    expect(po).toEqual("<parse_error>")
 
     po = @parser.parse('404 V6=180-45DEGREES')
-    expect(po).toEqual("<not_a_numeric_expression>")
+    expect(po).toEqual("<parse_error>")
 
     po = @parser.parse('470 X5="NOTHING PARSEABLE AS A NUMERIC EXPRESSION"')
-    expect(po).toEqual("<not_a_numeric_expression>")
+    expect(po).toEqual("<parse_error>")
 
     po = @parser.parse('590 Q=2*PI')
-    expect(po).toEqual("<not_a_numeric_expression>")
+    expect(po).toEqual("<parse_error>")
 
     po = @parser.parse('740 J2=22,348,507')
-    expect(po).toEqual("<not_a_numeric_expression>")
+    expect(po).toEqual("<parse_error>")
 
 

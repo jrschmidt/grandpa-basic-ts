@@ -158,6 +158,9 @@ class LineParser
 
   # Check the string against a specific syntax rule
   look_for: (string,rule) ->
+    console.log " "
+    console.log "LOOK FOR: "+string
+    console.log "LOOK FOR: "+rule
     parse_object = []
     rule_match = "unknown"
     for token in rule
@@ -237,11 +240,11 @@ class LineParser
       when  "<input_statement>"
         result = {match: "no"} # ** temporary **
       when  "<number_variable>"
-        result = {match: "no"} # ** temporary **
+        result = @helpers.look_for_numeric_identifier(string)
       when  "<string_variable>"
         result = {match: "no"} # ** temporary **
       when  "<numeric_expression>"
-        result = {match: "no"} # ** temporary **
+        result = @helpers.num_exp_parser.numeric_parse(string)
       when  "<string_expression>"
         result = {match: "no"} # ** temporary **
       when  "<boolean_expression>"
@@ -259,16 +262,11 @@ class LineParser
 
   # Cycle through the list of line-numbered statements
   look_for_line_number_statement: (string) ->
-    console.log " "
-    console.log "LN string = "+string
     match = "no"
     for rule in @ln_rules
       if match == "no"
         result = @look_for(string,rule)
         match = result.match
-    console.log "LN match = "+result.match
-    console.log "LN parse_object = "
-    console.log "   "+tk for tk in result.parse_object
     if match == "yes"
       return result
     else
@@ -379,8 +377,13 @@ class NumericExpressionParser
             po.push(val[1])
     else
       ok = "no"
-    po = "<not_a_numeric_expression>" if ok == "no"
-    return po
+    if ok == "yes"
+      result = {
+        match: "yes"
+        parse_object: po }
+    else
+      result = {match: "no"}
+    return result
 
 
   tokenize: (string) ->
@@ -490,13 +493,14 @@ class BooleanExpressionParser
     po = []
     tokens = @split(string)
     if tokens != "<not_a_boolean_expression>"
+      match = "yes"
       num_id = @helpers.look_for_numeric_identifier(tokens[0])
       if num_id.match == "yes"
         num_exp = @helpers.num_exp_parser.numeric_parse(tokens[2])
-        if num_exp != "<not_a_numeric_expression>"
+        if num_exp.match == "yes"
           po = po.concat(num_id.parse_object)
           po.push(tokens[1])
-          po = po.concat(num_exp)
+          po.push tk for tk in num_exp.parse_object
       else
         str_id = @helpers.look_for_string_identifier(tokens[0])
         if str_id.match == "yes"
@@ -505,11 +509,17 @@ class BooleanExpressionParser
             po = str_id.parse_object
             po.push("<equals>")
             po = po.concat(str_val)
-          else po = "<not_a_boolean_expression>"
-        else po = "<not_a_boolean_expression>"
+          else match = "no"
+        else match = "no"
     else
-      po = "<not_a_boolean_expression>"
-    return po
+      match = "no"
+    if match == "yes"
+      result = {
+        match: "yes"
+        parse_object: po }
+    else
+      result = {match: "no"}
+    return result
 
 
   split: (string) ->
