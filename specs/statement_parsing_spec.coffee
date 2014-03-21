@@ -233,5 +233,70 @@ describe "Test statement line parsing", ->
     expect(po[7]).toEqual(" IS NOT COMPLETE")
 
 
+  it "should correctly parse GOTO statements", ->
+
+    result = @parser.look_for("GOTO 40", @syntax.line_number_rules[4])
+    po = result.parse_object
+    expect(po[0]).toEqual("<goto>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<line_number>")
+    expect(po[3]).toEqual(40)
+
+    result = @parser.look_for("GOTO 880", @syntax.line_number_rules[4])
+    po = result.parse_object
+    expect(po[0]).toEqual("<goto>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<line_number>")
+    expect(po[3]).toEqual(880)
+
+    result = @parser.look_for("GOTO 2470", @syntax.line_number_rules[4])
+    po = result.parse_object
+    expect(po[0]).toEqual("<goto>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<line_number>")
+    expect(po[3]).toEqual(2470)
+
+
+  it "should correctly parse GOSUB statements", ->
+
+    result = @parser.look_for("GOSUB 60", @syntax.line_number_rules[5])
+    po = result.parse_object
+    expect(po[0]).toEqual("<gosub>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<line_number>")
+    expect(po[3]).toEqual(60)
+
+    result = @parser.look_for("GOSUB 200", @syntax.line_number_rules[5])
+    po = result.parse_object
+    expect(po[0]).toEqual("<gosub>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<line_number>")
+    expect(po[3]).toEqual(200)
+
+    result = @parser.look_for("GOSUB 2300", @syntax.line_number_rules[5])
+    po = result.parse_object
+    expect(po[0]).toEqual("<gosub>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<line_number>")
+    expect(po[3]).toEqual(2300)
+
+
+  it "should correctly parse return from GOSUB statements", ->
+
+    result = @parser.look_for("RETURN", @syntax.line_number_rules[6])
+    po = result.parse_object
+    expect(po[0]).toEqual("<return>")
+
+
+
+
+
+  xit "should correctly parse ??? statements", ->
+
+    result = @parser.look_for("", @syntax.line_number_rules[0])
+    po = result.parse_object
+    expect(po[0]).toEqual("")
+
+
 
 

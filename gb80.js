@@ -85,8 +85,6 @@ LineParser = (function() {
 
   LineParser.prototype.parse = function(string) {
     var match, result, rule, _i, _len, _ref;
-    console.log(" ");
-    console.log("string to parse: " + string);
     match = "no";
     _ref = this.rules;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -105,9 +103,6 @@ LineParser = (function() {
 
   LineParser.prototype.look_for = function(string, rule) {
     var cat, parse_object, result, rule_match, tk, token, token_result, _i, _j, _len, _len1, _ref;
-    console.log(" ");
-    console.log("LOOK FOR: " + string);
-    console.log("LOOK FOR: " + rule);
     parse_object = [];
     rule_match = "unknown";
     for (_i = 0, _len = rule.length; _i < _len; _i++) {
@@ -125,15 +120,12 @@ LineParser = (function() {
         }
         switch (cat) {
           case "keyword":
-            console.log("look for KEYWORD token: " + token);
             token_result = this.look_for_keyword(token, string);
             break;
           case "char":
-            console.log("look for CHAR token: " + token);
             token_result = this.look_for_char(token, string);
             break;
           case "action":
-            console.log("look for ACTION token: " + token);
             token_result = this.look_for_action(token, string);
             break;
           default:
@@ -141,17 +133,12 @@ LineParser = (function() {
               match: "no"
             };
         }
-        console.log("token match = " + token_result.match);
         if (token_result.match === "yes") {
-          console.log("partial parse object for token = " + token_result.parse_object);
-          console.log("remainder = " + token_result.remainder);
-          console.log("big PARSE OBJECT (before) = " + parse_object);
           _ref = token_result.parse_object;
           for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
             tk = _ref[_j];
             parse_object.push(tk);
           }
-          console.log("big PARSE OBJECT (after) = " + parse_object);
           string = token_result.remainder;
         } else {
           rule_match = "no";
@@ -167,7 +154,6 @@ LineParser = (function() {
         match: "yes",
         parse_object: parse_object
       };
-      console.log("PARSE OBJECT after rule check = " + parse_object);
     }
     return result;
   };

@@ -143,8 +143,6 @@ class LineParser
 
 
   parse: (string) ->
-    console.log " "
-    console.log "string to parse: "+string
     match = "no"
     for rule in @rules
       if match == "no"
@@ -158,9 +156,6 @@ class LineParser
 
   # Check the string against a specific syntax rule
   look_for: (string,rule) ->
-    console.log " "
-    console.log "LOOK FOR: "+string
-    console.log "LOOK FOR: "+rule
     parse_object = []
     rule_match = "unknown"
     for token in rule
@@ -171,23 +166,15 @@ class LineParser
         cat = "action" if token in @syntax.action_tokens
         switch cat
           when "keyword"
-            console.log "look for KEYWORD token: "+token
             token_result = @look_for_keyword(token,string)
           when "char"
-            console.log "look for CHAR token: "+token
             token_result = @look_for_char(token,string)
           when "action"
-            console.log "look for ACTION token: "+token
             token_result = @look_for_action(token,string)
           else
             token_result = {match: "no"}
-        console.log "token match = "+token_result.match
         if token_result.match == "yes"
-          console.log "partial parse object for token = "+token_result.parse_object
-          console.log "remainder = "+token_result.remainder
-          console.log "big PARSE OBJECT (before) = "+parse_object
           parse_object.push(tk) for tk in token_result.parse_object
-          console.log "big PARSE OBJECT (after) = "+parse_object
           string = token_result.remainder
         else
           rule_match = "no"
@@ -197,7 +184,6 @@ class LineParser
       result = {
         match: "yes"
         parse_object: parse_object }
-      console.log "PARSE OBJECT after rule check = "+parse_object
     return result
 
 
