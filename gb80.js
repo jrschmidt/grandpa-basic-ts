@@ -49,8 +49,8 @@ BasicProgram = (function() {
 
 SyntaxRules = (function() {
   function SyntaxRules() {
-    this.keywords = ["CLEAR", "RUN", "INFO", "LIST", "REM", "GOTO", "GOSUB", "RETURN", "IF", "INPUT", "PRINT", "PRINTLN", "CLEARSCRN", "TAB"];
-    this.keyword_tokens = ["<clear_command>", "<run_command>", "<info_command>", "<list_command>", "<remark>", "<goto>", "<gosub>", "<return>", "<if>", "<input>", "<print>", "<println>", "<clear_screen>", "<tab>"];
+    this.keywords = ["CLEAR", "RUN", "INFO", "LIST", "REM", "GOTO", "GOSUB", "RETURN", "IF", "THEN", "INPUT", "PRINT", "PRINTLN", "CLEARSCRN", "TAB"];
+    this.keyword_tokens = ["<clear_command>", "<run_command>", "<info_command>", "<list_command>", "<remark>", "<goto>", "<gosub>", "<return>", "<if>", "<then>", "<input>", "<print>", "<println>", "<clear_screen>", "<tab>"];
     this.char_tokens = ["<sp>", "<equals>", "<semicolon>", "<comma>"];
     this.chars = " =;,";
     this.action_tokens = ["<line_number>", "<line_number_statement>", "<input_statement>", "<number_variable>", "<string_variable>", "<numeric_expression>", "<string_expression>", "<boolean_expression>", "<string>", "<characters>", "<integer>"];
@@ -221,9 +221,7 @@ LineParser = (function() {
         result = this.helpers.str_exp_parser.string_value_parse(string);
         break;
       case "<boolean_expression>":
-        result = {
-          match: "no"
-        };
+        result = this.helpers.bool_exp_parser.boolean_parse(string);
         break;
       case "<string>":
         result = {
@@ -575,7 +573,10 @@ BooleanExpressionParser = (function() {
   }
 
   BooleanExpressionParser.prototype.boolean_parse = function(string) {
-    var match, num_exp, num_id, po, result, str_id, str_val, tk, tokens, _i, _len, _ref;
+    var match, num_exp, num_id, po, prep, remainder, result, str_id, str_val, tk, tokens, _i, _len, _ref;
+    prep = this.strip_remainder(string);
+    string = prep.string;
+    remainder = prep.remainder;
     po = [];
     tokens = this.split(string);
     if (tokens !== "<not_a_boolean_expression>") {
@@ -613,11 +614,41 @@ BooleanExpressionParser = (function() {
     if (match === "yes") {
       result = {
         match: "yes",
-        parse_object: po
+        parse_object: po,
+        remainder: remainder
       };
     } else {
       result = {
         match: "no"
+      };
+    }
+    return result;
+  };
+
+  BooleanExpressionParser.prototype.strip_remainder = function(string) {
+    var cut, q1, q2, result, sp;
+    cut = 0;
+    q1 = string.indexOf('"');
+    q2 = string.lastIndexOf('"');
+    if ((q1 > 0) && (q1 !== q2)) {
+      cut = q2 + 1;
+    } else {
+      sp = string.indexOf(" ");
+      if (sp > 0) {
+        cut = sp;
+      } else {
+        cut = 0;
+      }
+    }
+    if (cut > 0) {
+      result = {
+        string: string.slice(0, cut),
+        remainder: string.slice(cut)
+      };
+    } else {
+      result = {
+        string: string,
+        remainder: ""
       };
     }
     return result;

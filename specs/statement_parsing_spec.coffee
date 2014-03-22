@@ -288,6 +288,69 @@ describe "Test statement line parsing", ->
     expect(po[0]).toEqual("<return>")
 
 
+  it "should correctly parse IF statements", ->
+
+    result = @parser.look_for("IF Z<0 THEN 340", @syntax.line_number_rules[7])
+    po = result.parse_object
+    expect(po[0]).toEqual("<if>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<number_variable>")
+    expect(po[3]).toEqual("Z")
+    expect(po[4]).toEqual("<lesser_than>")
+    expect(po[5]).toEqual("<numeric_literal>")
+    expect(po[6]).toEqual(0)
+    expect(po[7]).toEqual("<sp>")
+    expect(po[8]).toEqual("<then>")
+    expect(po[9]).toEqual("<sp>")
+    expect(po[10]).toEqual("<line_number>")
+    expect(po[11]).toEqual(340)
+
+    result = @parser.look_for('IF $T="INCOMPLETE" THEN 1680', @syntax.line_number_rules[7])
+    po = result.parse_object
+    expect(po[0]).toEqual("<if>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<string_variable>")
+    expect(po[3]).toEqual("T")
+    expect(po[4]).toEqual("<equals>")
+    expect(po[5]).toEqual("<string_literal>")
+    expect(po[6]).toEqual("INCOMPLETE")
+    expect(po[7]).toEqual("<sp>")
+    expect(po[8]).toEqual("<then>")
+    expect(po[9]).toEqual("<sp>")
+    expect(po[10]).toEqual("<line_number>")
+    expect(po[11]).toEqual(1680)
+
+    result = @parser.look_for("IF A>B THEN 750", @syntax.line_number_rules[7])
+    po = result.parse_object
+    expect(po[0]).toEqual("<if>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<number_variable>")
+    expect(po[3]).toEqual("A")
+    expect(po[4]).toEqual("<greater_than>")
+    expect(po[5]).toEqual("<number_variable>")
+    expect(po[6]).toEqual("B")
+    expect(po[7]).toEqual("<sp>")
+    expect(po[8]).toEqual("<then>")
+    expect(po[9]).toEqual("<sp>")
+    expect(po[10]).toEqual("<line_number>")
+    expect(po[11]).toEqual(750)
+
+    result = @parser.look_for("IF N>=1000 THEN 930", @syntax.line_number_rules[7])
+    po = result.parse_object
+    expect(po[0]).toEqual("<if>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<number_variable>")
+    expect(po[3]).toEqual("N")
+    expect(po[4]).toEqual("<greater_equal>")
+    expect(po[5]).toEqual("<numeric_literal>")
+    expect(po[6]).toEqual(1000)
+    expect(po[7]).toEqual("<sp>")
+    expect(po[8]).toEqual("<then>")
+    expect(po[9]).toEqual("<sp>")
+    expect(po[10]).toEqual("<line_number>")
+    expect(po[11]).toEqual(930)
+
+
 
 
 

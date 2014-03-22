@@ -42,6 +42,7 @@ class SyntaxRules
       "GOSUB"
       "RETURN"
       "IF"
+      "THEN"
       "INPUT"
       "PRINT"
       "PRINTLN"
@@ -58,6 +59,7 @@ class SyntaxRules
       "<gosub>"
       "<return>"
       "<if>"
+      "<then>"
       "<input>"
       "<print>"
       "<println>"
@@ -234,7 +236,7 @@ class LineParser
       when  "<string_expression>"
         result = @helpers.str_exp_parser.string_value_parse(string)
       when  "<boolean_expression>"
-        result = {match: "no"} # ** temporary **
+        result = @helpers.bool_exp_parser.boolean_parse(string)
       when  "<string>"
         result = {match: "no"} # ** temporary **
       when  "<characters>"
@@ -242,7 +244,7 @@ class LineParser
       when  "<integer>"
         result = {match: "no"} # ** temporary **
       else
-        result = {match: "no"} # ** temporary **
+        result = {match: "no"}
     return result
 
 
@@ -481,6 +483,9 @@ class BooleanExpressionParser
 
 
   boolean_parse: (string) ->
+    prep = @strip_remainder(string)
+    string = prep.string
+    remainder = prep.remainder
     po = []
     tokens = @split(string)
     if tokens != "<not_a_boolean_expression>"
@@ -507,9 +512,34 @@ class BooleanExpressionParser
     if match == "yes"
       result = {
         match: "yes"
-        parse_object: po }
+        parse_object: po
+        remainder: remainder }
     else
       result = {match: "no"}
+    return result
+
+
+  # Cut off at second quote mark (string comparision) or first space
+  strip_remainder: (string) ->
+    cut = 0
+    q1 = string.indexOf('"')
+    q2 = string.lastIndexOf('"')
+    if (q1 > 0) && (q1 != q2)
+      cut = q2+1
+    else
+      sp = string.indexOf(" ")
+      if sp>0
+        cut = sp
+      else
+        cut = 0
+    if cut > 0
+      result = {
+        string: string.slice(0,cut)
+        remainder: string.slice(cut) }
+    else
+      result = {
+        string: string
+        remainder: "" }
     return result
 
 

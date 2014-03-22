@@ -10,6 +10,25 @@ describe "Test boolean expression parser", ->
     expect(@parser).toEqual(jasmine.any(BooleanExpressionParser))
 
 
+  it "should separate a boolean expression from the characters that follow it", ->
+
+    result = @parser.strip_remainder("Z<0 THEN 340")
+    expect(result.string).toEqual("Z<0")
+    expect(result.remainder).toEqual(" THEN 340")
+
+    result = @parser.strip_remainder('$T="INCOMPLETE" THEN 1680')
+    expect(result.string).toEqual('$T="INCOMPLETE"')
+    expect(result.remainder).toEqual(" THEN 1680")
+
+    result = @parser.strip_remainder("A>B THEN 750")
+    expect(result.string).toEqual("A>B")
+    expect(result.remainder).toEqual(" THEN 750")
+
+    result = @parser.strip_remainder("N>=1000 THEN 930")
+    expect(result.string).toEqual("N>=1000")
+    expect(result.remainder).toEqual(" THEN 930")
+
+
   it "should split and tokenize a boolean expression string", ->
 
     str = '$Y="Y"'
