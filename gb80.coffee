@@ -136,6 +136,8 @@ class BasicProgramLine
 
 class LineParser
 
+  # TODO After making everything work, add a check to fail the match if result.remainder != ""
+
   constructor: () ->
     @helpers = new ParseHelpers
     @syntax = @helpers.syntax
@@ -242,7 +244,7 @@ class LineParser
       when  "<characters>"
         result = @helpers.look_for_characters(string)
       when  "<integer>"
-        result = {match: "no"} # ** temporary **
+        result = @helpers.look_for_integer(string)
       else
         result = {match: "no"}
     return result
@@ -360,6 +362,24 @@ class ParseHelpers
         remainder: remdr }
     else
       result = {match: "no" }
+    return result
+
+
+  # If the first or first and second characters in string are digits, return the integer value
+  look_for_integer: (string) ->
+    if string[0] in "0123456789"
+      if string[1] in "0123456789"
+        int = Number(string[0..1])
+        end = string.slice(2)
+      else
+        int = Number(string[0])
+        end = string.slice(1)
+      result = {
+        match: "yes"
+        parse_object: [ "<integer>", int ]
+        remainder: end }
+    else
+      result = {match: "no"}
     return result
 
 

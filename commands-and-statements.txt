@@ -226,13 +226,13 @@ PROGRAM STATEMENTS:
 
 
 
-  TAB TO LINE:   [  {line number} + <TAB> + <integer>  ]
+  TAB TO COLUMN:   [  {line number} + <TAB> + <integer>  ]
 
-    Move the cursor to the beginning of the designated line on the console.
+    Move the cursor to the designated column of the current line.
 
     example:
         890 TAB 9
-        (moves the cursor to the beginning of line 9 on the console)
+        (moves the cursor to column 9 in the current line)
 
 
 

@@ -494,14 +494,30 @@ describe "Test statement line parsing", ->
     expect(po[0]).toEqual("<clear_screen>")
 
 
+  it "should correctly parse TAB statements", ->
 
-
-  xit "should correctly parse ??? statements", ->
-
-    result = @parser.look_for("", @syntax.line_number_rules[0])
+    result = @parser.look_for("TAB 0", @syntax.line_number_rules[14])
     po = result.parse_object
-    expect(po[0]).toEqual("")
+    expect(po[0]).toEqual("<tab>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<integer>")
+    expect(po[3]).toEqual(0)
 
+    result = @parser.look_for("TAB 28", @syntax.line_number_rules[14])
+    po = result.parse_object
+    expect(po[0]).toEqual("<tab>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<integer>")
+    expect(po[3]).toEqual(28)
 
+    result = @parser.look_for("TAB 12,44", @syntax.line_number_rules[13])
+    po = result.parse_object
+    expect(po[0]).toEqual("<tab>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<integer>")
+    expect(po[3]).toEqual(12)
+    expect(po[4]).toEqual("<comma>")
+    expect(po[5]).toEqual("<integer>")
+    expect(po[6]).toEqual(44)
 
 

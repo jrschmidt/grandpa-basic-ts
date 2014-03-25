@@ -228,9 +228,7 @@ LineParser = (function() {
         result = this.helpers.look_for_characters(string);
         break;
       case "<integer>":
-        result = {
-          match: "no"
-        };
+        result = this.helpers.look_for_integer(string);
         break;
       default:
         result = {
@@ -396,6 +394,29 @@ ParseHelpers = (function() {
         match: "yes",
         parse_object: ["<string>", contents],
         remainder: remdr
+      };
+    } else {
+      result = {
+        match: "no"
+      };
+    }
+    return result;
+  };
+
+  ParseHelpers.prototype.look_for_integer = function(string) {
+    var end, int, result, _ref, _ref1;
+    if (_ref = string[0], __indexOf.call("0123456789", _ref) >= 0) {
+      if (_ref1 = string[1], __indexOf.call("0123456789", _ref1) >= 0) {
+        int = Number(string.slice(0, 2));
+        end = string.slice(2);
+      } else {
+        int = Number(string[0]);
+        end = string.slice(1);
+      }
+      result = {
+        match: "yes",
+        parse_object: ["<integer>", int],
+        remainder: end
       };
     } else {
       result = {

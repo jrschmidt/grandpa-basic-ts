@@ -447,10 +447,28 @@ describe("Test statement line parsing", function() {
     po = result.parse_object;
     return expect(po[0]).toEqual("<clear_screen>");
   });
-  return xit("should correctly parse ??? statements", function() {
+  return it("should correctly parse TAB statements", function() {
     var po, result;
-    result = this.parser.look_for("", this.syntax.line_number_rules[0]);
+    result = this.parser.look_for("TAB 0", this.syntax.line_number_rules[14]);
     po = result.parse_object;
-    return expect(po[0]).toEqual("");
+    expect(po[0]).toEqual("<tab>");
+    expect(po[1]).toEqual("<sp>");
+    expect(po[2]).toEqual("<integer>");
+    expect(po[3]).toEqual(0);
+    result = this.parser.look_for("TAB 28", this.syntax.line_number_rules[14]);
+    po = result.parse_object;
+    expect(po[0]).toEqual("<tab>");
+    expect(po[1]).toEqual("<sp>");
+    expect(po[2]).toEqual("<integer>");
+    expect(po[3]).toEqual(28);
+    result = this.parser.look_for("TAB 12,44", this.syntax.line_number_rules[13]);
+    po = result.parse_object;
+    expect(po[0]).toEqual("<tab>");
+    expect(po[1]).toEqual("<sp>");
+    expect(po[2]).toEqual("<integer>");
+    expect(po[3]).toEqual(12);
+    expect(po[4]).toEqual("<comma>");
+    expect(po[5]).toEqual("<integer>");
+    return expect(po[6]).toEqual(44);
   });
 });
