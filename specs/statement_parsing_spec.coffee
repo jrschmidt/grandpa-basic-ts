@@ -352,7 +352,7 @@ describe "Test statement line parsing", ->
 
 
 
-  it "should correctly parse input statements", ->
+  it "should correctly parse INPUT statements", ->
 
     result = @parser.look_for("INPUT R", @syntax.line_number_rules[8])
     po = result.parse_object
@@ -390,6 +390,108 @@ describe "Test statement line parsing", ->
     expect(po[5]).toEqual("<string_variable>")
     expect(po[6]).toEqual("N2")
 
+
+  it "should correctly parse PRINT statements", ->
+
+    result = @parser.look_for('PRINT "WELCOME TO GRANDPA BASIC 1980"', @syntax.line_number_rules[9])
+    po = result.parse_object
+    expect(po[0]).toEqual("<print>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<string_literal>")
+    expect(po[3]).toEqual("WELCOME TO GRANDPA BASIC 1980")
+
+    result = @parser.look_for("PRINT $Z1", @syntax.line_number_rules[9])
+    po = result.parse_object
+    expect(po[0]).toEqual("<print>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<string_variable>")
+    expect(po[3]).toEqual("Z1")
+
+    result = @parser.look_for('PRINT "LAST NAME = "+$N4', @syntax.line_number_rules[9])
+    po = result.parse_object
+    expect(po[0]).toEqual("<print>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<string_literal>")
+    expect(po[3]).toEqual("LAST NAME = ")
+    expect(po[4]).toEqual("<plus>")
+    expect(po[5]).toEqual("<string_variable>")
+    expect(po[6]).toEqual("N4")
+
+    result = @parser.look_for('PRINT $T+" : "+$T8+"/"+$T9', @syntax.line_number_rules[9])
+    po = result.parse_object
+    expect(po[0]).toEqual("<print>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<string_variable>")
+    expect(po[3]).toEqual("T")
+    expect(po[4]).toEqual("<plus>")
+    expect(po[5]).toEqual("<string_literal>")
+    expect(po[6]).toEqual(" : ")
+    expect(po[7]).toEqual("<plus>")
+    expect(po[8]).toEqual("<string_variable>")
+    expect(po[9]).toEqual("T8")
+    expect(po[10]).toEqual("<plus>")
+    expect(po[11]).toEqual("<string_literal>")
+    expect(po[12]).toEqual("/")
+    expect(po[13]).toEqual("<plus>")
+    expect(po[14]).toEqual("<string_variable>")
+    expect(po[15]).toEqual("T9")
+
+
+  it "should correctly parse PRINTLN statements", ->
+
+    result = @parser.look_for("PRINTLN", @syntax.line_number_rules[11])
+    po = result.parse_object
+    expect(po[0]).toEqual("<println>")
+
+    result = @parser.look_for('PRINTLN "WELCOME TO GRANDPA BASIC 1980"', @syntax.line_number_rules[10])
+    po = result.parse_object
+    expect(po[0]).toEqual("<println>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<string_literal>")
+    expect(po[3]).toEqual("WELCOME TO GRANDPA BASIC 1980")
+
+    result = @parser.look_for("PRINTLN $Z1", @syntax.line_number_rules[10])
+    po = result.parse_object
+    expect(po[0]).toEqual("<println>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<string_variable>")
+    expect(po[3]).toEqual("Z1")
+
+    result = @parser.look_for('PRINTLN "LAST NAME = "+$N4', @syntax.line_number_rules[10])
+    po = result.parse_object
+    expect(po[0]).toEqual("<println>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<string_literal>")
+    expect(po[3]).toEqual("LAST NAME = ")
+    expect(po[4]).toEqual("<plus>")
+    expect(po[5]).toEqual("<string_variable>")
+    expect(po[6]).toEqual("N4")
+
+    result = @parser.look_for('PRINTLN $T+" : "+$T8+"/"+$T9', @syntax.line_number_rules[10])
+    po = result.parse_object
+    expect(po[0]).toEqual("<println>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<string_variable>")
+    expect(po[3]).toEqual("T")
+    expect(po[4]).toEqual("<plus>")
+    expect(po[5]).toEqual("<string_literal>")
+    expect(po[6]).toEqual(" : ")
+    expect(po[7]).toEqual("<plus>")
+    expect(po[8]).toEqual("<string_variable>")
+    expect(po[9]).toEqual("T8")
+    expect(po[10]).toEqual("<plus>")
+    expect(po[11]).toEqual("<string_literal>")
+    expect(po[12]).toEqual("/")
+    expect(po[13]).toEqual("<plus>")
+    expect(po[14]).toEqual("<string_variable>")
+    expect(po[15]).toEqual("T9")
+
+
+  it "should correctly parse CLEARSCRN statements", ->
+
+    result = @parser.look_for("CLEARSCRN", @syntax.line_number_rules[12])
+    po = result.parse_object
+    expect(po[0]).toEqual("<clear_screen>")
 
 
 
