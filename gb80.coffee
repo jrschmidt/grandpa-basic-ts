@@ -137,11 +137,11 @@ class BasicProgramLine
 class LineParser
 
   constructor: () ->
-    @syntax = new SyntaxRules
+    @helpers = new ParseHelpers
+    @syntax = @helpers.syntax
     @rules = @syntax.rules
     @ln_rules = @syntax.line_number_rules
     @input_rules = @syntax.input_statement_rules
-    @helpers = new ParseHelpers
 
 
   parse: (string) ->
@@ -226,7 +226,7 @@ class LineParser
       when  "<line_number_statement>"
         result = @look_for_line_number_statement(string)
       when  "<input_statement>"
-        result = {match: "no"} # ** temporary **
+        result = @look_for_input_parameters(string)
       when  "<number_variable>"
         result = @helpers.look_for_numeric_identifier(string)
       when  "<string_variable>"
@@ -238,7 +238,7 @@ class LineParser
       when  "<boolean_expression>"
         result = @helpers.bool_exp_parser.boolean_parse(string)
       when  "<string>"
-        result = {match: "no"} # ** temporary **
+        result = @helpers.look_for_string(string)
       when  "<characters>"
         result = @helpers.look_for_characters(string)
       when  "<integer>"
@@ -261,10 +261,25 @@ class LineParser
       return {match: "no" }
 
 
+  # Cycle through the list of variants for input statements
+  look_for_input_parameters: (string) ->
+    match = "no"
+    for rule in @input_rules
+      if match == "no"
+        result = @look_for(string,rule)
+        match = result.match
+    if match == "yes"
+      return result
+    else
+      return {match: "no" }
+
+
 
 class ParseHelpers
 
   constructor: () ->
+    @syntax = new SyntaxRules
+    @rules = @syntax.rules
     @num_exp_parser = new NumericExpressionParser
     @str_exp_parser = new StringExpressionParser
     @bool_exp_parser = new BooleanExpressionParser(this)
@@ -321,14 +336,30 @@ class ParseHelpers
     return result
 
 
-  # All we need to pass here is any string of legitimate characters. This is
-  # different than StringExpressionParser##string_value(), which requires that
-  # the string be delimited at either end with double quote (") characters.
+  # All we need to pass here is any string of zero or more characters.
   look_for_characters: (string) ->
     result = {
       match: "yes"
       parse_object: [ "<characters>", string ]
       remainder: "" }
+    return result
+
+
+  # This method passes if the string contains one or more characters enclosed with
+  # double quotation marks <">. Characters after the second double quote mark are
+  # returned in the remainder string.
+  look_for_string: (string) ->
+    quote_check = (ch for ch in string when ch == '"')
+    if quote_check.length >= 2 and string[0] == '"' and string.length > 2
+      cut = string.indexOf('"',1)
+      contents = string.slice(1,cut)
+      remdr = string.slice(cut+1)
+      result = {
+        match: "yes"
+        parse_object: [ "<string>", contents ]
+        remainder: remdr }
+    else
+      result = {match: "no" }
     return result
 
 

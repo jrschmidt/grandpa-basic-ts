@@ -352,6 +352,46 @@ describe "Test statement line parsing", ->
 
 
 
+  it "should correctly parse input statements", ->
+
+    result = @parser.look_for("INPUT R", @syntax.line_number_rules[8])
+    po = result.parse_object
+    expect(po[0]).toEqual("<input>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<number_variable>")
+    expect(po[3]).toEqual("R")
+
+
+    result = @parser.look_for("INPUT $V", @syntax.line_number_rules[8])
+    po = result.parse_object
+    expect(po[0]).toEqual("<input>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<string_variable>")
+    expect(po[3]).toEqual("V")
+
+
+    result = @parser.look_for('INPUT "HOW MANY?";M', @syntax.line_number_rules[8])
+    po = result.parse_object
+    expect(po[0]).toEqual("<input>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<string>")
+    expect(po[3]).toEqual("HOW MANY?")
+    expect(po[4]).toEqual("<semicolon>")
+    expect(po[5]).toEqual("<number_variable>")
+    expect(po[6]).toEqual("M")
+
+    result = @parser.look_for('INPUT "LAST NAME?";$N2', @syntax.line_number_rules[8])
+    po = result.parse_object
+    expect(po[0]).toEqual("<input>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<string>")
+    expect(po[3]).toEqual("LAST NAME?")
+    expect(po[4]).toEqual("<semicolon>")
+    expect(po[5]).toEqual("<string_variable>")
+    expect(po[6]).toEqual("N2")
+
+
+
 
 
   xit "should correctly parse ??? statements", ->

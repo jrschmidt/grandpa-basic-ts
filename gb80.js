@@ -76,11 +76,11 @@ BasicProgramLine = (function() {
 
 LineParser = (function() {
   function LineParser() {
-    this.syntax = new SyntaxRules;
+    this.helpers = new ParseHelpers;
+    this.syntax = this.helpers.syntax;
     this.rules = this.syntax.rules;
     this.ln_rules = this.syntax.line_number_rules;
     this.input_rules = this.syntax.input_statement_rules;
-    this.helpers = new ParseHelpers;
   }
 
   LineParser.prototype.parse = function(string) {
@@ -204,9 +204,7 @@ LineParser = (function() {
         result = this.look_for_line_number_statement(string);
         break;
       case "<input_statement>":
-        result = {
-          match: "no"
-        };
+        result = this.look_for_input_parameters(string);
         break;
       case "<number_variable>":
         result = this.helpers.look_for_numeric_identifier(string);
@@ -224,9 +222,7 @@ LineParser = (function() {
         result = this.helpers.bool_exp_parser.boolean_parse(string);
         break;
       case "<string>":
-        result = {
-          match: "no"
-        };
+        result = this.helpers.look_for_string(string);
         break;
       case "<characters>":
         result = this.helpers.look_for_characters(string);
@@ -264,12 +260,34 @@ LineParser = (function() {
     }
   };
 
+  LineParser.prototype.look_for_input_parameters = function(string) {
+    var match, result, rule, _i, _len, _ref;
+    match = "no";
+    _ref = this.input_rules;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      rule = _ref[_i];
+      if (match === "no") {
+        result = this.look_for(string, rule);
+        match = result.match;
+      }
+    }
+    if (match === "yes") {
+      return result;
+    } else {
+      return {
+        match: "no"
+      };
+    }
+  };
+
   return LineParser;
 
 })();
 
 ParseHelpers = (function() {
   function ParseHelpers() {
+    this.syntax = new SyntaxRules;
+    this.rules = this.syntax.rules;
     this.num_exp_parser = new NumericExpressionParser;
     this.str_exp_parser = new StringExpressionParser;
     this.bool_exp_parser = new BooleanExpressionParser(this);
@@ -354,6 +372,36 @@ ParseHelpers = (function() {
       parse_object: ["<characters>", string],
       remainder: ""
     };
+    return result;
+  };
+
+  ParseHelpers.prototype.look_for_string = function(string) {
+    var ch, contents, cut, quote_check, remdr, result;
+    quote_check = (function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = string.length; _i < _len; _i++) {
+        ch = string[_i];
+        if (ch === '"') {
+          _results.push(ch);
+        }
+      }
+      return _results;
+    })();
+    if (quote_check.length >= 2 && string[0] === '"' && string.length > 2) {
+      cut = string.indexOf('"', 1);
+      contents = string.slice(1, cut);
+      remdr = string.slice(cut + 1);
+      result = {
+        match: "yes",
+        parse_object: ["<string>", contents],
+        remainder: remdr
+      };
+    } else {
+      result = {
+        match: "no"
+      };
+    }
     return result;
   };
 
