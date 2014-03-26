@@ -3,12 +3,10 @@ GRANDPA BASIC 1980
 List of Commands and BASIC Statements to be implemented in first version:
 
 
-<<<<<<< HEAD
 
-=== COMMANDS ===
-=======
+  === COMMANDS ===
+
 COMMANDS:
->>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
 
   CLEAR - Clear the terminal and clear all BASIC program statements from the interpreter.
 
@@ -19,18 +17,15 @@ COMMANDS:
   LIST - List the statments current BASIC language program, ordered by line number.
 
 
-<<<<<<< HEAD
 
   === PROGRAM STATEMENTS ===
 
 
   BLANK REMARK:   [  {line number} + <REM>  ]
 
-=======
 PROGRAM STATEMENTS:
 
   <line number> + <REM>
->>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
     A blank comment line, used for whitespace. (These older regimes didn't allow for plain old blank
     lines in the program listings unless explicitly specified by a statement like this.)
 
@@ -38,18 +33,14 @@ PROGRAM STATEMENTS:
        100 REM
 
 
-<<<<<<< HEAD
 
   REMARK:   [  {line number} + <REM> + {characters}  ]
 
-=======
   <line number> + <REM> + {characters}
->>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
     A comment line, not executable.
 
     example:
         200 REM ==========================================
-<<<<<<< HEAD
         210 REM      ***   COMPUTE THE SUM   ***
         220 REM HERE WE COMPUTE THE SUM OF THE TWO NUMBERS
         230 REM ==========================================
@@ -58,14 +49,12 @@ PROGRAM STATEMENTS:
 
   NUMERIC ASSIGNMENT:   [  {line number} + {numeric identifier} + <equals sign> + {numeric expression}  ]
 
-=======
         210 REM      ***   Compute the sum   ***
         220 REM Here we compute the sum of the two numbers
         230 REM ==========================================
 
 
   <line number> + {numeric identifier} + <equals sign> + {numeric expression}
->>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
     Assign a value to a numeric variable. In the original versions of BASIC, a numeric variable name
     was restricted to either a single (upper case) letter, or a single letter followed by a single
     digit.
@@ -79,13 +68,10 @@ PROGRAM STATEMENTS:
         330 X=X1+X2+X3
 
 
-<<<<<<< HEAD
 
   STRING ASSIGNMENT:   [  {line number} + {string identifier} + <equals sign> + {string expression}  ]
 
-=======
   <line number> + {string identifier} + <equals sign> + {string expression}
->>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
     Assign a value to a string variable. String variables were distinguished from numeric variables by
     an initial '$' character, such as $A, $B, $G1, $G2. Even in later versions of BASIC which allowed
     variable names of more than one or two characters (8 characters at first, then longer ones were
@@ -96,25 +82,19 @@ PROGRAM STATEMENTS:
         510 $M = "HELLO, "+$N+", HOW ARE YOU?"
 
 
-<<<<<<< HEAD
 
   GOTO:   [  {line number} + <GOTO> + {line number}  ]
-=======
   <line number> + <GOTO> + <line number>
->>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
     Go to the line number specified.
 
     example:
         660 GOTO 200
 
 
-<<<<<<< HEAD
 
   GOSUB:   [  {line number} + <GOSUB> + {line number}  ]
 
-=======
   <line number> + <GOSUB> + <line number>
->>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
     Jump to the designated line number. When a <RETURN> statement is encountered, return to the next
     line following this one. A precursor to what we think of today as methods or functions was the
     subroutine, which was implemented in the BASIC language in its simplest, most primitive form.
@@ -123,13 +103,10 @@ PROGRAM STATEMENTS:
         880 GOSUB 1500
 
 
-<<<<<<< HEAD
 
   RETURN:   [  {line number} + <RETURN>  ]
 
-=======
   <line number> + <RETURN>
->>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
     Return to the line number following the line of the <GOSUB> statement that started the current
     subroutine.
 
@@ -137,13 +114,10 @@ PROGRAM STATEMENTS:
         1590 RETURN
 
 
-<<<<<<< HEAD
 
   IF STATEMENT:   [  {line number} + <IF> + {boolean expression} + <THEN> + {line number}  ]
 
-=======
   <line number> + <IF> + {boolean expression} + <THEN> + <line number>
->>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
     Jump to the designated line number if the boolean expression evaluates to <true>.
 
     example:
@@ -151,7 +125,6 @@ PROGRAM STATEMENTS:
 
 
 
-<<<<<<< HEAD
   NUMERIC INPUT:   [  <line number + <INPUT> + <numeric identifier>  ]
 
     Prompt for keyboard input, then, if the input parses to a numeric value, assign that value to
@@ -246,5 +219,13 @@ PROGRAM STATEMENTS:
         (moves the cursor to column 44 on line 12)
 
 
-=======
->>>>>>> 866b422b010cb779798d23da3615a2b1151332b4
+
+  END STATEMENT:   [  {line number} + <END>  ]
+
+    End execution of the program when this statement is reached. You can have
+    more than one END statement, reached by different paths.
+
+    example:
+        999 END
+
+

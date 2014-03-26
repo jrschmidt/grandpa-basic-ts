@@ -521,3 +521,10 @@ describe "Test statement line parsing", ->
     expect(po[6]).toEqual(44)
 
 
+  it "should correctly parse END statements", ->
+
+    result = @parser.look_for("END", @syntax.line_number_rules[15])
+    po = result.parse_object
+    expect(po[0]).toEqual("<end>")
+
+

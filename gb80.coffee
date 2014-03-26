@@ -47,7 +47,8 @@ class SyntaxRules
       "PRINT"
       "PRINTLN"
       "CLEARSCRN"
-      "TAB"]
+      "TAB"
+      "END"]
 
     @keyword_tokens = [
       "<clear_command>"
@@ -64,7 +65,8 @@ class SyntaxRules
       "<print>"
       "<println>"
       "<clear_screen>"
-      "<tab>"]
+      "<tab>"
+      "<end>"]
 
     @char_tokens = [
       "<sp>"
@@ -114,6 +116,7 @@ class SyntaxRules
         ["CLEARSCRN"]
         ["TAB","<sp>","<integer>","<comma>","<integer>"]
         ["TAB","<sp>","<integer>"]
+        ["END"]
     ]
 
     @input_statement_rules = [

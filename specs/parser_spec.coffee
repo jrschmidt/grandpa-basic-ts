@@ -32,14 +32,14 @@ describe "Test BASIC program line parser", ->
     expect(po[0]).toEqual("<list_command>")
 
 
-  xit "should correctly parse line numbers in program lines", ->
+  it "should correctly parse line numbers in program lines", ->
 
     po = @parser.parse('10 REM WELCOME TO GRANDPA BASIC 80')
     expect(po).toEqual(jasmine.any(Array))
     expect(po[0]).toEqual("<line_number>")
     expect(po[1]).toEqual(10)
 
-    po = @parser.parse('20 $T = "JOHN R SCHMIDT"')
+    po = @parser.parse('20 $T="JOHN R SCHMIDT"')
     expect(po).toEqual(jasmine.any(Array))
     expect(po[0]).toEqual("<line_number>")
     expect(po[1]).toEqual(20)

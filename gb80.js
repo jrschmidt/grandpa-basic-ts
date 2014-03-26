@@ -49,13 +49,13 @@ BasicProgram = (function() {
 
 SyntaxRules = (function() {
   function SyntaxRules() {
-    this.keywords = ["CLEAR", "RUN", "INFO", "LIST", "REM", "GOTO", "GOSUB", "RETURN", "IF", "THEN", "INPUT", "PRINT", "PRINTLN", "CLEARSCRN", "TAB"];
-    this.keyword_tokens = ["<clear_command>", "<run_command>", "<info_command>", "<list_command>", "<remark>", "<goto>", "<gosub>", "<return>", "<if>", "<then>", "<input>", "<print>", "<println>", "<clear_screen>", "<tab>"];
+    this.keywords = ["CLEAR", "RUN", "INFO", "LIST", "REM", "GOTO", "GOSUB", "RETURN", "IF", "THEN", "INPUT", "PRINT", "PRINTLN", "CLEARSCRN", "TAB", "END"];
+    this.keyword_tokens = ["<clear_command>", "<run_command>", "<info_command>", "<list_command>", "<remark>", "<goto>", "<gosub>", "<return>", "<if>", "<then>", "<input>", "<print>", "<println>", "<clear_screen>", "<tab>", "<end>"];
     this.char_tokens = ["<sp>", "<equals>", "<semicolon>", "<comma>"];
     this.chars = " =;,";
     this.action_tokens = ["<line_number>", "<line_number_statement>", "<input_statement>", "<number_variable>", "<string_variable>", "<numeric_expression>", "<string_expression>", "<boolean_expression>", "<string>", "<characters>", "<integer>"];
     this.rules = [["CLEAR"], ["RUN"], ["INFO"], ["LIST"], ["<line_number>", "<sp>", "<line_number_statement>"]];
-    this.line_number_rules = [["REM", "<sp>", "<characters>"], ["REM"], ["<number_variable>", "<equals>", "<numeric_expression>"], ["<string_variable>", "<equals>", "<string_expression>"], ["GOTO", "<sp>", "<line_number>"], ["GOSUB", "<sp>", "<line_number>"], ["RETURN"], ["IF", "<sp>", "<boolean_expression>", "<sp>", "THEN", "<sp>", "<line_number>"], ["INPUT", "<sp>", "<input_statement>"], ["PRINT", "<sp>", "<string_expression>"], ["PRINTLN", "<sp>", "<string_expression>"], ["PRINTLN"], ["CLEARSCRN"], ["TAB", "<sp>", "<integer>", "<comma>", "<integer>"], ["TAB", "<sp>", "<integer>"]];
+    this.line_number_rules = [["REM", "<sp>", "<characters>"], ["REM"], ["<number_variable>", "<equals>", "<numeric_expression>"], ["<string_variable>", "<equals>", "<string_expression>"], ["GOTO", "<sp>", "<line_number>"], ["GOSUB", "<sp>", "<line_number>"], ["RETURN"], ["IF", "<sp>", "<boolean_expression>", "<sp>", "THEN", "<sp>", "<line_number>"], ["INPUT", "<sp>", "<input_statement>"], ["PRINT", "<sp>", "<string_expression>"], ["PRINTLN", "<sp>", "<string_expression>"], ["PRINTLN"], ["CLEARSCRN"], ["TAB", "<sp>", "<integer>", "<comma>", "<integer>"], ["TAB", "<sp>", "<integer>"], ["END"]];
     this.input_statement_rules = [["<number_variable>"], ["<string_variable>"], ["<string>", "<semicolon>", "<number_variable>"], ["<string>", "<semicolon>", "<string_variable>"]];
   }
 

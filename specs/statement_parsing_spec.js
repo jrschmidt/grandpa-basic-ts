@@ -447,7 +447,7 @@ describe("Test statement line parsing", function() {
     po = result.parse_object;
     return expect(po[0]).toEqual("<clear_screen>");
   });
-  return it("should correctly parse TAB statements", function() {
+  it("should correctly parse TAB statements", function() {
     var po, result;
     result = this.parser.look_for("TAB 0", this.syntax.line_number_rules[14]);
     po = result.parse_object;
@@ -470,5 +470,11 @@ describe("Test statement line parsing", function() {
     expect(po[4]).toEqual("<comma>");
     expect(po[5]).toEqual("<integer>");
     return expect(po[6]).toEqual(44);
+  });
+  return it("should correctly parse END statements", function() {
+    var po, result;
+    result = this.parser.look_for("END", this.syntax.line_number_rules[15]);
+    po = result.parse_object;
+    return expect(po[0]).toEqual("<end>");
   });
 });

@@ -26,13 +26,13 @@ describe("Test BASIC program line parser", function() {
     expect(po.length).toEqual(1);
     return expect(po[0]).toEqual("<list_command>");
   });
-  xit("should correctly parse line numbers in program lines", function() {
+  it("should correctly parse line numbers in program lines", function() {
     var po;
     po = this.parser.parse('10 REM WELCOME TO GRANDPA BASIC 80');
     expect(po).toEqual(jasmine.any(Array));
     expect(po[0]).toEqual("<line_number>");
     expect(po[1]).toEqual(10);
-    po = this.parser.parse('20 $T = "JOHN R SCHMIDT"');
+    po = this.parser.parse('20 $T="JOHN R SCHMIDT"');
     expect(po).toEqual(jasmine.any(Array));
     expect(po[0]).toEqual("<line_number>");
     expect(po[1]).toEqual(20);
