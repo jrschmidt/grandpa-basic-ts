@@ -441,25 +441,25 @@ describe "Test statement line parsing", ->
 
     result = @parser.look_for("PRINTLN", @syntax.line_number_rules[11])
     po = result.parse_object
-    expect(po[0]).toEqual("<println>")
+    expect(po[0]).toEqual("<print_line>")
 
     result = @parser.look_for('PRINTLN "WELCOME TO GRANDPA BASIC 1980"', @syntax.line_number_rules[10])
     po = result.parse_object
-    expect(po[0]).toEqual("<println>")
+    expect(po[0]).toEqual("<print_line>")
     expect(po[1]).toEqual("<sp>")
     expect(po[2]).toEqual("<string_literal>")
     expect(po[3]).toEqual("WELCOME TO GRANDPA BASIC 1980")
 
     result = @parser.look_for("PRINTLN $Z1", @syntax.line_number_rules[10])
     po = result.parse_object
-    expect(po[0]).toEqual("<println>")
+    expect(po[0]).toEqual("<print_line>")
     expect(po[1]).toEqual("<sp>")
     expect(po[2]).toEqual("<string_variable>")
     expect(po[3]).toEqual("Z1")
 
     result = @parser.look_for('PRINTLN "LAST NAME = "+$N4', @syntax.line_number_rules[10])
     po = result.parse_object
-    expect(po[0]).toEqual("<println>")
+    expect(po[0]).toEqual("<print_line>")
     expect(po[1]).toEqual("<sp>")
     expect(po[2]).toEqual("<string_literal>")
     expect(po[3]).toEqual("LAST NAME = ")
@@ -469,7 +469,7 @@ describe "Test statement line parsing", ->
 
     result = @parser.look_for('PRINTLN $T+" : "+$T8+"/"+$T9', @syntax.line_number_rules[10])
     po = result.parse_object
-    expect(po[0]).toEqual("<println>")
+    expect(po[0]).toEqual("<print_line>")
     expect(po[1]).toEqual("<sp>")
     expect(po[2]).toEqual("<string_variable>")
     expect(po[3]).toEqual("T")

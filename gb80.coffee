@@ -63,7 +63,7 @@ class SyntaxRules
       "<then>"
       "<input>"
       "<print>"
-      "<println>"
+      "<print_line>"
       "<clear_screen>"
       "<tab>"
       "<end>"]
@@ -149,16 +149,22 @@ class LineParser
     @input_rules = @syntax.input_statement_rules
 
 
-  parse: (string) ->
-    match = "no"
-    for rule in @rules
-      if match == "no"
-        result = @look_for(string,rule)
-        match = result.match
-    if match == "yes"
-      return result.parse_object
-    else
-      return "<parse_error>"
+#  parse: (string) ->
+#    pre = @pre_parse(string)
+#    if pre.match == "yes"
+      
+
+
+#  parse: (string) ->
+#    match = "no"
+#    for rule in @rules
+#      if match == "no"
+#        result = @look_for(string,rule)
+#        match = result.match
+#    if match == "yes"
+#      return result.parse_object
+#    else
+#      return "<parse_error>"
 
 
   # Check the string against a specific syntax rule

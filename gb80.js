@@ -50,7 +50,7 @@ BasicProgram = (function() {
 SyntaxRules = (function() {
   function SyntaxRules() {
     this.keywords = ["CLEAR", "RUN", "INFO", "LIST", "REM", "GOTO", "GOSUB", "RETURN", "IF", "THEN", "INPUT", "PRINT", "PRINTLN", "CLEARSCRN", "TAB", "END"];
-    this.keyword_tokens = ["<clear_command>", "<run_command>", "<info_command>", "<list_command>", "<remark>", "<goto>", "<gosub>", "<return>", "<if>", "<then>", "<input>", "<print>", "<println>", "<clear_screen>", "<tab>", "<end>"];
+    this.keyword_tokens = ["<clear_command>", "<run_command>", "<info_command>", "<list_command>", "<remark>", "<goto>", "<gosub>", "<return>", "<if>", "<then>", "<input>", "<print>", "<print_line>", "<clear_screen>", "<tab>", "<end>"];
     this.char_tokens = ["<sp>", "<equals>", "<semicolon>", "<comma>"];
     this.chars = " =;,";
     this.action_tokens = ["<line_number>", "<line_number_statement>", "<input_statement>", "<number_variable>", "<string_variable>", "<numeric_expression>", "<string_expression>", "<boolean_expression>", "<string>", "<characters>", "<integer>"];
@@ -82,24 +82,6 @@ LineParser = (function() {
     this.ln_rules = this.syntax.line_number_rules;
     this.input_rules = this.syntax.input_statement_rules;
   }
-
-  LineParser.prototype.parse = function(string) {
-    var match, result, rule, _i, _len, _ref;
-    match = "no";
-    _ref = this.rules;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      rule = _ref[_i];
-      if (match === "no") {
-        result = this.look_for(string, rule);
-        match = result.match;
-      }
-    }
-    if (match === "yes") {
-      return result.parse_object;
-    } else {
-      return "<parse_error>";
-    }
-  };
 
   LineParser.prototype.look_for = function(string, rule) {
     var cat, parse_object, result, rule_match, tk, token, token_result, _i, _j, _len, _len1, _ref;

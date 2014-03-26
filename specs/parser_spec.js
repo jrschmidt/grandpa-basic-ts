@@ -7,7 +7,7 @@ describe("Test BASIC program line parser", function() {
     expect(this.parser).toBeDefined;
     return expect(this.parser).toEqual(jasmine.any(LineParser));
   });
-  it("should correctly parse a terminal command", function() {
+  xit("should correctly parse a terminal command", function() {
     var po;
     po = this.parser.parse("CLEAR");
     expect(po).toEqual(jasmine.any(Array));
@@ -26,7 +26,7 @@ describe("Test BASIC program line parser", function() {
     expect(po.length).toEqual(1);
     return expect(po[0]).toEqual("<list_command>");
   });
-  it("should correctly parse line numbers in program lines", function() {
+  xit("should correctly parse line numbers in program lines", function() {
     var po;
     po = this.parser.parse('10 REM WELCOME TO GRANDPA BASIC 80');
     expect(po).toEqual(jasmine.any(Array));

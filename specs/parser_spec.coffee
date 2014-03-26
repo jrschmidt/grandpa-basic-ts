@@ -9,7 +9,7 @@ describe "Test BASIC program line parser", ->
     expect(@parser).toEqual(jasmine.any(LineParser))
 
 
-  it "should correctly parse a terminal command", ->
+  xit "should correctly parse a terminal command", ->
     po = @parser.parse("CLEAR")
     expect(po).toEqual(jasmine.any(Array))
     expect(po.length).toEqual(1)
@@ -32,7 +32,7 @@ describe "Test BASIC program line parser", ->
     expect(po[0]).toEqual("<list_command>")
 
 
-  it "should correctly parse line numbers in program lines", ->
+  xit "should correctly parse line numbers in program lines", ->
 
     po = @parser.parse('10 REM WELCOME TO GRANDPA BASIC 80')
     expect(po).toEqual(jasmine.any(Array))
