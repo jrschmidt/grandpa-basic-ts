@@ -1,4 +1,4 @@
-describe "Test console line buffer object", ->
+describe "Console line buffer", ->
 
   beforeEach ->
     @buffer = new LineBuffer

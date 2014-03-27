@@ -1,4 +1,4 @@
-describe "Test functions of the BASIC program object", ->
+describe "The BASIC program object", ->
 
   beforeEach ->
     @program = new BasicProgram
@@ -6,7 +6,8 @@ describe "Test functions of the BASIC program object", ->
 
   it "should create a BasicProgram object", ->
     expect(@program).toBeDefined
-    expect(@program).toEqual(jasmine.any(BasicProgram))
+    bp = jasmine.any(BasicProgram)
+    expect(@program).toEqual(bp)
     expect(@program.lines).toEqual(jasmine.any(Array))
 
 

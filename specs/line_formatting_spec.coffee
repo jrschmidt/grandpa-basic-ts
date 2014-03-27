@@ -1,4 +1,4 @@
-xdescribe "Test program line formatting", ->
+xdescribe "Program line formatting", ->
 
 
   it "should correctly format a program line with a REM statement", ->
@@ -14,8 +14,9 @@ xdescribe "Test program line formatting", ->
       type:  "<remark>"
       text: '10 REM' }
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
     parse_object = [
@@ -30,6 +31,10 @@ xdescribe "Test program line formatting", ->
       line_no: 20
       type:  "<remark>"
       text: '20 REM WELCOME TO GRANDPA BASIC 1980' }
+
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
   it "should correctly format a program line with a numeric assignment statement", ->
@@ -49,50 +54,46 @@ xdescribe "Test program line formatting", ->
       "<numeric_variable>"
       "B" ]
 
-
     expected = {
       line_no: 30
       type:  "<numeric_assignment>"
       text: '30 D=477+B'
       operand: "D"
-      expression: [NumericExpression] }
+      expression: jasmine.any(NumericExpression) }
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
-
-
-
-
-  
-line_30 = {
-      line_no: 30
-      type:  "<numeric_assignment>"
-      text: '30 D=477+B'
-      operand: "D"
-      expression: [NumericExpression] }
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
-  it "should correctly format a program line with a  statement", ->
+  it "should correctly format a program line with a string assignment statement", ->
 
     parse_object = [
       "<line_number>"
-
+      40
       "<sp>"
+      "<string_variable>"
+      "E"
+      "<equals>"
+      "<string_expression>"
+      "<string_variable>"
+      "M"
+      "<plus>"
+      "<string_literal>"
+      " IS NOT COMPLETE"
+      "<str_exp_end>" ]
 
-
-    expected = 
-
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
-
-
-line_40 = {
+    expected = {
       line_no: 40
       type:  "<string_assignment>"
       text: '40 $E=$M+" IS NOT COMPLETE"'
       operand: "E"
       expression: [StringExpression] }
 
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
+
 
   it "should correctly format a program line with a  statement", ->
 
@@ -104,8 +105,9 @@ line_40 = {
 
     expected = 
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
 line_520 = {
@@ -125,8 +127,9 @@ line_520 = {
 
     expected = 
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
 line_320 = {
@@ -146,8 +149,9 @@ line_320 = {
 
     expected = 
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
 line_1299 = {
@@ -166,8 +170,9 @@ line_1299 = {
 
     expected = 
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
 line_150 = {
@@ -188,8 +193,9 @@ line_150 = {
 
     expected = 
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
 line_610 = {
@@ -210,8 +216,9 @@ line_610 = {
 
     expected = 
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
 line_110 = {
@@ -231,8 +238,9 @@ line_110 = {
 
     expected = 
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
 line_120 = {
@@ -252,8 +260,9 @@ line_120 = {
 
     expected = 
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
 line_130 = {
@@ -274,8 +283,9 @@ line_130 = {
 
     expected = 
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
 line_140 = {
@@ -296,8 +306,9 @@ line_140 = {
 
     expected = 
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
 line_340 = {
@@ -317,8 +328,9 @@ line_340 = {
 
     expected = 
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
 line_350 = {
@@ -338,8 +350,9 @@ line_350 = {
 
     expected = 
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
 line_360 = {
@@ -359,8 +372,9 @@ line_360 = {
 
     expected = 
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
 line_470 = {
@@ -380,8 +394,9 @@ line_470 = {
 
     expected = 
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
 line_480 = {
@@ -401,8 +416,9 @@ line_480 = {
 
     expected = 
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
 line_490 = {
@@ -422,8 +438,9 @@ line_490 = {
 
     expected = 
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
 line_940 = {
@@ -442,8 +459,9 @@ line_940 = {
 
     expected = 
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
 line_870 = {
@@ -463,8 +481,9 @@ line_870 = {
 
     expected = 
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
 line_880 = {
@@ -485,8 +504,9 @@ line_880 = {
 
     expected = 
 
-    result = new BasicProgramLine(parse_object)
-    expect(result.components).toEqual(expected)
+    bpl = new BasicProgramLine(parse_object)
+    result = bpl.components
+    expect(val).toEqual(expected[key]) for key,val of result
 
 
 line_999 = {

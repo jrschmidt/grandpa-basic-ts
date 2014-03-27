@@ -1,4 +1,4 @@
-describe "Test statement line parsing", ->
+describe "Statement line parsing", ->
 
   beforeEach ->
     @parser = new LineParser

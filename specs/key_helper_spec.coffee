@@ -1,4 +1,4 @@
-describe "Test key helper functions", ->
+describe "Key helper methods", ->
 
   beforeEach ->
     @key_help = new KeyHelper

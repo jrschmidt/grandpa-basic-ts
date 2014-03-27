@@ -1,4 +1,4 @@
-describe "Test numeric expression parser", ->
+describe "Numeric expression parser", ->
 
   beforeEach ->
     @parser = new NumericExpressionParser

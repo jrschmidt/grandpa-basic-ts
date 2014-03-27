@@ -1,4 +1,4 @@
-describe "Test string expression parser", ->
+describe "String expression parser", ->
 
   beforeEach ->
     @parser = new StringExpressionParser

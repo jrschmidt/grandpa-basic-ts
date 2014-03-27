@@ -1,4 +1,4 @@
-describe "Test parser helper methods", ->
+describe "Parser helper methods", ->
 
   beforeEach ->
     @helpers = new ParseHelpers

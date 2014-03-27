@@ -1,4 +1,4 @@
-describe "Test boolean expression parser", ->
+describe "Boolean expression parser", ->
 
   beforeEach ->
     @helpers = new ParseHelpers
