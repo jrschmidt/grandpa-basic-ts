@@ -410,7 +410,7 @@ class NumericExpressionParser
   numeric_parse: (string) ->
     bad_chars = string.search(/[^A-Z0-9\.+\-*/\^()]/)
     if bad_chars == -1
-      po = []
+      po = ["<numeric_expression>"]
       ok = "yes"
       tokens = @tokenize(string)
       for tk in tokens
@@ -423,6 +423,7 @@ class NumericExpressionParser
           else
             po.push(val[0])
             po.push(val[1])
+      po.push("<num_exp_end>")
     else
       ok = "no"
     if ok == "yes"
@@ -478,7 +479,7 @@ class NumericExpressionParser
 class StringExpressionParser
 
   string_value_parse: (string) ->
-    po = []
+    po = ["<string_expression>"]
     ok = "yes"
     tokens = @tokenize(string)
     for tk in tokens
@@ -491,6 +492,7 @@ class StringExpressionParser
         else
           po.push(val[0])
           po.push(val[1])
+    po.push("<str_exp_end>")
     if ok == "yes"
       result = {
         match: "yes"
@@ -546,7 +548,7 @@ class BooleanExpressionParser
     prep = @strip_remainder(string)
     string = prep.string
     remainder = prep.remainder
-    po = []
+    po = ["<boolean_expression>"]
     tokens = @split(string)
     if tokens != "<not_a_boolean_expression>"
       match = "yes"
@@ -560,16 +562,17 @@ class BooleanExpressionParser
       else
         str_id = @helpers.look_for_string_identifier(tokens[0])
         if str_id.match == "yes"
-          str_val = @helpers.str_exp_parser.string_value(tokens[2])
-          if str_val[0] != "bad"
-            po = str_id.parse_object
+          str_val = @helpers.str_exp_parser.string_value_parse(tokens[2])
+          if str_val.match != "bad"
+            po.push tk for tk in str_id.parse_object
             po.push("<equals>")
-            po = po.concat(str_val)
+            po = po.concat(str_val.parse_object)
           else match = "no"
         else match = "no"
     else
       match = "no"
     if match == "yes"
+      po.push("<bool_exp_end>")
       result = {
         match: "yes"
         parse_object: po

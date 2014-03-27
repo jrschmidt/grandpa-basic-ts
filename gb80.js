@@ -423,7 +423,7 @@ NumericExpressionParser = (function() {
     var bad_chars, ok, po, result, tk, tokens, val, _i, _len;
     bad_chars = string.search(/[^A-Z0-9\.+\-*/\^()]/);
     if (bad_chars === -1) {
-      po = [];
+      po = ["<numeric_expression>"];
       ok = "yes";
       tokens = this.tokenize(string);
       for (_i = 0, _len = tokens.length; _i < _len; _i++) {
@@ -440,6 +440,7 @@ NumericExpressionParser = (function() {
           }
         }
       }
+      po.push("<num_exp_end>");
     } else {
       ok = "no";
     }
@@ -524,7 +525,7 @@ StringExpressionParser = (function() {
 
   StringExpressionParser.prototype.string_value_parse = function(string) {
     var ok, po, result, tk, tokens, val, _i, _len;
-    po = [];
+    po = ["<string_expression>"];
     ok = "yes";
     tokens = this.tokenize(string);
     for (_i = 0, _len = tokens.length; _i < _len; _i++) {
@@ -541,6 +542,7 @@ StringExpressionParser = (function() {
         }
       }
     }
+    po.push("<str_exp_end>");
     if (ok === "yes") {
       result = {
         match: "yes",
@@ -624,11 +626,11 @@ BooleanExpressionParser = (function() {
   }
 
   BooleanExpressionParser.prototype.boolean_parse = function(string) {
-    var match, num_exp, num_id, po, prep, remainder, result, str_id, str_val, tk, tokens, _i, _len, _ref;
+    var match, num_exp, num_id, po, prep, remainder, result, str_id, str_val, tk, tokens, _i, _j, _len, _len1, _ref, _ref1;
     prep = this.strip_remainder(string);
     string = prep.string;
     remainder = prep.remainder;
-    po = [];
+    po = ["<boolean_expression>"];
     tokens = this.split(string);
     if (tokens !== "<not_a_boolean_expression>") {
       match = "yes";
@@ -647,11 +649,15 @@ BooleanExpressionParser = (function() {
       } else {
         str_id = this.helpers.look_for_string_identifier(tokens[0]);
         if (str_id.match === "yes") {
-          str_val = this.helpers.str_exp_parser.string_value(tokens[2]);
-          if (str_val[0] !== "bad") {
-            po = str_id.parse_object;
+          str_val = this.helpers.str_exp_parser.string_value_parse(tokens[2]);
+          if (str_val.match !== "bad") {
+            _ref1 = str_id.parse_object;
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              tk = _ref1[_j];
+              po.push(tk);
+            }
             po.push("<equals>");
-            po = po.concat(str_val);
+            po = po.concat(str_val.parse_object);
           } else {
             match = "no";
           }
@@ -663,6 +669,7 @@ BooleanExpressionParser = (function() {
       match = "no";
     }
     if (match === "yes") {
+      po.push("<bool_exp_end>");
       result = {
         match: "yes",
         parse_object: po,
