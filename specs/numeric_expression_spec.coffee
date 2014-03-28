@@ -299,12 +299,55 @@ describe "Numeric expression object", ->
 
     expected = {
       exp: "<divide>"
+      op1: op1
+      op2: op2 }
 
+    op1 = {
+      exp: "<minus>"
+      op1: {exp: "<num>", value: 18 }
+      op2: {exp: "<var>", name: "Q7" } }
+
+    op2 = {
+      exp: "<times>"
+      op1: {exp: "<num>", value: 2.108 }
+      op2: op2_2 }
+
+    op2_2 = {
+      exp: "<plus>"
+      op1: op2_2_1
+      op2: op2_2_2 }
+
+    op2_2_1 = {
+      exp: "<times>"
+      op1: {exp: "<num>", val: 14 }
+      op2: {exp: "<var>", name: "M" }
+
+    op2_2_2 = {
+      exp: "<times>"
+      op1: {exp: "<num>", val: 17 }
+      op2: {exp: "<var>", name: "X" }
+#(18-Q7)/(2.108*(14*M+17*X))
 
     nmx = new NumericExpression(po)
-    expect(nmx.exp).toEqual(expected.)
-    expect(nmx.).toEqual(expected.)
-
-
+    expect(nmx.exp).toEqual(expected.exp)
+    expect(nmx.op1.exp).toEqual(expected.op1.exp)
+    expect(nmx.op1.op1.exp).toEqual(expected.op1.op1.exp)
+    expect(nmx.op1.op1.value).toEqual(expected.op1.op1.value)
+    expect(nmx.op1.op2.exp).toEqual(expected.op1.op2.exp)
+    expect(nmx.op1.op2.name).toEqual(expected.op1.op2.name)
+    expect(nmx.op2.exp).toEqual(expected.op2.exp)
+    expect(nmx.op2.op1.exp).toEqual(expected.op2.op1.exp)
+    expect(nmx.op2.op1.value).toEqual(expected.op2.op1.value)
+    expect(nmx.op2.op2.exp).toEqual(expected.op2.op2.exp)
+    expect(nmx.op2.op2.op1.exp).toEqual(expected.op2.op2.op1.exp)
+    expect(nmx.op2.op2.op1.op1.exp).toEqual(expected.op2.op2.op1.op1.exp)
+    expect(nmx.op2.op2.op1.op1.value).toEqual(expected.op2.op2.op1.op1.value)
+    expect(nmx.op2.op2.op1.op2.exp).toEqual(expected.op2.op2.op1.op2.exp)
+    expect(nmx.op2.op2.op1.op2.name).toEqual(expected.op2.op2.op1.op2.name)
+    expect(nmx.op2.op2.op2.exp).toEqual(expected.op2.op2.op2.exp)
+    expect(nmx.op2.op2.op2.op1.exp).toEqual(expected.op2.op2.op2.op1.exp)
+    expect(nmx.op2.op2.op2.op1.value).toEqual(expected.op2.op2.op2.op1.value)
+    expect(nmx.op2.op2.op2.op2.exp).toEqual(expected.op2.op2.op2.op2.exp)
+    expect(nmx.op2.op2.op2.op2.name).toEqual(expected.op2.op2.op2.op2.name)
 
 
