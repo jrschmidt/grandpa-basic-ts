@@ -38,6 +38,7 @@ describe("Statement line parsing", function() {
     expect(po[3]).toEqual("<numeric_expression>");
     expect(po[4]).toEqual("<number_variable>");
     expect(po[5]).toEqual("X");
+    expect(po[6]).toEqual("<num_exp_end>");
     result = this.parser.look_for("B=42", this.syntax.line_number_rules[2]);
     po = result.parse_object;
     expect(po[0]).toEqual("<number_variable>");
@@ -46,6 +47,7 @@ describe("Statement line parsing", function() {
     expect(po[3]).toEqual("<numeric_expression>");
     expect(po[4]).toEqual("<numeric_literal>");
     expect(po[5]).toEqual(42);
+    expect(po[6]).toEqual("<num_exp_end>");
     result = this.parser.look_for("Z7=13.477", this.syntax.line_number_rules[2]);
     po = result.parse_object;
     expect(po[0]).toEqual("<number_variable>");
@@ -54,6 +56,7 @@ describe("Statement line parsing", function() {
     expect(po[3]).toEqual("<numeric_expression>");
     expect(po[4]).toEqual("<numeric_literal>");
     expect(po[5]).toEqual(13.477);
+    expect(po[6]).toEqual("<num_exp_end>");
     result = this.parser.look_for("E=12/3", this.syntax.line_number_rules[2]);
     po = result.parse_object;
     expect(po[0]).toEqual("<number_variable>");
@@ -65,6 +68,7 @@ describe("Statement line parsing", function() {
     expect(po[6]).toEqual("<divide>");
     expect(po[7]).toEqual("<numeric_literal>");
     expect(po[8]).toEqual(3);
+    expect(po[9]).toEqual("<num_exp_end>");
     result = this.parser.look_for("D=477+B", this.syntax.line_number_rules[2]);
     po = result.parse_object;
     expect(po[0]).toEqual("<number_variable>");
@@ -76,6 +80,7 @@ describe("Statement line parsing", function() {
     expect(po[6]).toEqual("<plus>");
     expect(po[7]).toEqual("<number_variable>");
     expect(po[8]).toEqual("B");
+    expect(po[9]).toEqual("<num_exp_end>");
     result = this.parser.look_for("F1=C^2", this.syntax.line_number_rules[2]);
     po = result.parse_object;
     expect(po[0]).toEqual("<number_variable>");
@@ -87,6 +92,7 @@ describe("Statement line parsing", function() {
     expect(po[6]).toEqual("<power>");
     expect(po[7]).toEqual("<numeric_literal>");
     expect(po[8]).toEqual(2);
+    expect(po[9]).toEqual("<num_exp_end>");
     result = this.parser.look_for("W=X*Y*Z", this.syntax.line_number_rules[2]);
     po = result.parse_object;
     expect(po[0]).toEqual("<number_variable>");
@@ -101,6 +107,7 @@ describe("Statement line parsing", function() {
     expect(po[9]).toEqual("<times>");
     expect(po[10]).toEqual("<number_variable>");
     expect(po[11]).toEqual("Z");
+    expect(po[12]).toEqual("<num_exp_end>");
     result = this.parser.look_for("M=28*(J+2)", this.syntax.line_number_rules[2]);
     po = result.parse_object;
     expect(po[0]).toEqual("<number_variable>");
@@ -117,6 +124,7 @@ describe("Statement line parsing", function() {
     expect(po[11]).toEqual("<numeric_literal>");
     expect(po[12]).toEqual(2);
     expect(po[13]).toEqual("<right>");
+    expect(po[14]).toEqual("<num_exp_end>");
     result = this.parser.look_for("L3=W5+W7-4*(J^2+K^3)", this.syntax.line_number_rules[2]);
     po = result.parse_object;
     expect(po[0]).toEqual("<number_variable>");
@@ -145,6 +153,7 @@ describe("Statement line parsing", function() {
     expect(po[23]).toEqual("<numeric_literal>");
     expect(po[24]).toEqual(3);
     expect(po[25]).toEqual("<right>");
+    expect(po[26]).toEqual("<num_exp_end>");
     result = this.parser.look_for("G=(18-Q7)/(2.108*(14*M+17*X))", this.syntax.line_number_rules[2]);
     po = result.parse_object;
     expect(po[0]).toEqual("<number_variable>");
@@ -176,7 +185,8 @@ describe("Statement line parsing", function() {
     expect(po[26]).toEqual("<number_variable>");
     expect(po[27]).toEqual("X");
     expect(po[28]).toEqual("<right>");
-    return expect(po[29]).toEqual("<right>");
+    expect(po[29]).toEqual("<right>");
+    return expect(po[30]).toEqual("<num_exp_end>");
   });
   it("should correctly parse string assignment statements", function() {
     var po, result;
@@ -188,6 +198,7 @@ describe("Statement line parsing", function() {
     expect(po[3]).toEqual("<string_expression>");
     expect(po[4]).toEqual("<string_literal>");
     expect(po[5]).toEqual("HAPPY THURSDAY!");
+    expect(po[6]).toEqual("<str_exp_end>");
     result = this.parser.look_for('$U7=$U0+" AND ANY "+$U1+" THAT DOES NOT INCLUDE "+$U4', this.syntax.line_number_rules[3]);
     po = result.parse_object;
     expect(po[0]).toEqual("<string_variable>");
@@ -208,6 +219,7 @@ describe("Statement line parsing", function() {
     expect(po[15]).toEqual("<plus>");
     expect(po[16]).toEqual("<string_variable>");
     expect(po[17]).toEqual("U4");
+    expect(po[18]).toEqual("<str_exp_end>");
     result = this.parser.look_for('$B=$C', this.syntax.line_number_rules[3]);
     po = result.parse_object;
     expect(po[0]).toEqual("<string_variable>");
@@ -216,6 +228,7 @@ describe("Statement line parsing", function() {
     expect(po[3]).toEqual("<string_expression>");
     expect(po[4]).toEqual("<string_variable>");
     expect(po[5]).toEqual("C");
+    expect(po[6]).toEqual("<str_exp_end>");
     result = this.parser.look_for('$E=$M+" IS NOT COMPLETE"', this.syntax.line_number_rules[3]);
     po = result.parse_object;
     expect(po[0]).toEqual("<string_variable>");
@@ -226,7 +239,8 @@ describe("Statement line parsing", function() {
     expect(po[5]).toEqual("M");
     expect(po[6]).toEqual("<plus>");
     expect(po[7]).toEqual("<string_literal>");
-    return expect(po[8]).toEqual(" IS NOT COMPLETE");
+    expect(po[8]).toEqual(" IS NOT COMPLETE");
+    return expect(po[9]).toEqual("<str_exp_end>");
   });
   it("should correctly parse GOTO statements", function() {
     var po, result;
@@ -393,6 +407,7 @@ describe("Statement line parsing", function() {
     expect(po[2]).toEqual("<string_expression>");
     expect(po[3]).toEqual("<string_literal>");
     expect(po[4]).toEqual("WELCOME TO GRANDPA BASIC 1980");
+    expect(po[5]).toEqual("<str_exp_end>");
     result = this.parser.look_for("PRINT $Z1", this.syntax.line_number_rules[9]);
     po = result.parse_object;
     expect(po[0]).toEqual("<print>");
@@ -400,6 +415,7 @@ describe("Statement line parsing", function() {
     expect(po[2]).toEqual("<string_expression>");
     expect(po[3]).toEqual("<string_variable>");
     expect(po[4]).toEqual("Z1");
+    expect(po[5]).toEqual("<str_exp_end>");
     result = this.parser.look_for('PRINT "LAST NAME = "+$N4', this.syntax.line_number_rules[9]);
     po = result.parse_object;
     expect(po[0]).toEqual("<print>");
@@ -410,6 +426,7 @@ describe("Statement line parsing", function() {
     expect(po[5]).toEqual("<plus>");
     expect(po[6]).toEqual("<string_variable>");
     expect(po[7]).toEqual("N4");
+    expect(po[8]).toEqual("<str_exp_end>");
     result = this.parser.look_for('PRINT $T+" : "+$T8+"/"+$T9', this.syntax.line_number_rules[9]);
     po = result.parse_object;
     expect(po[0]).toEqual("<print>");
@@ -428,7 +445,8 @@ describe("Statement line parsing", function() {
     expect(po[13]).toEqual("/");
     expect(po[14]).toEqual("<plus>");
     expect(po[15]).toEqual("<string_variable>");
-    return expect(po[16]).toEqual("T9");
+    expect(po[16]).toEqual("T9");
+    return expect(po[17]).toEqual("<str_exp_end>");
   });
   it("should correctly parse PRINTLN statements", function() {
     var po, result;
@@ -442,6 +460,7 @@ describe("Statement line parsing", function() {
     expect(po[2]).toEqual("<string_expression>");
     expect(po[3]).toEqual("<string_literal>");
     expect(po[4]).toEqual("WELCOME TO GRANDPA BASIC 1980");
+    expect(po[5]).toEqual("<str_exp_end>");
     result = this.parser.look_for("PRINTLN $Z1", this.syntax.line_number_rules[10]);
     po = result.parse_object;
     expect(po[0]).toEqual("<print_line>");
@@ -449,6 +468,7 @@ describe("Statement line parsing", function() {
     expect(po[2]).toEqual("<string_expression>");
     expect(po[3]).toEqual("<string_variable>");
     expect(po[4]).toEqual("Z1");
+    expect(po[5]).toEqual("<str_exp_end>");
     result = this.parser.look_for('PRINTLN "LAST NAME = "+$N4', this.syntax.line_number_rules[10]);
     po = result.parse_object;
     expect(po[0]).toEqual("<print_line>");
@@ -459,6 +479,7 @@ describe("Statement line parsing", function() {
     expect(po[5]).toEqual("<plus>");
     expect(po[6]).toEqual("<string_variable>");
     expect(po[7]).toEqual("N4");
+    expect(po[8]).toEqual("<str_exp_end>");
     result = this.parser.look_for('PRINTLN $T+" : "+$T8+"/"+$T9', this.syntax.line_number_rules[10]);
     po = result.parse_object;
     expect(po[0]).toEqual("<print_line>");
@@ -477,7 +498,8 @@ describe("Statement line parsing", function() {
     expect(po[13]).toEqual("/");
     expect(po[14]).toEqual("<plus>");
     expect(po[15]).toEqual("<string_variable>");
-    return expect(po[16]).toEqual("T9");
+    expect(po[16]).toEqual("T9");
+    return expect(po[17]).toEqual("<str_exp_end>");
   });
   it("should correctly parse CLEARSCRN statements", function() {
     var po, result;
