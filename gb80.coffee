@@ -130,10 +130,11 @@ class SyntaxRules
 
 class BasicProgramLine
 
-  constructor: (n,str) ->
-    @ln_no = n
-    @text = str
-    @tokens = []
+
+
+class ProgramLineFormatter
+
+  format: (parse_object, line_text) ->
 
 
 
@@ -639,6 +640,10 @@ class BooleanExpressionParser
     else
       po = "<not_a_boolean_expression>"
     return po
+
+
+
+class NumericExpression
 
 
 

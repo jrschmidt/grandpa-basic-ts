@@ -1,7 +1,12 @@
 describe "Program line formatting", ->
 
+  beforeEach ->
+    @formatter = new ProgramLineFormatter
+
 
   xit "should correctly format a program line with a REM statement", ->
+
+    line_text = '10 REM'
 
     parse_object = [
       "<line_number>"
@@ -14,10 +19,12 @@ describe "Program line formatting", ->
       type:  "<remark>"
       text: '10 REM' }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
-    expect(val).toEqual(expected[key]) for key,val of result
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
+    expect(result[key]).toEqual(val) for key,val of expected
 
+
+    line_text = '20 REM WELCOME TO GRANDPA BASIC 1980'
 
     parse_object = [
       "<line_number>"
@@ -32,12 +39,14 @@ describe "Program line formatting", ->
       type:  "<remark>"
       text: '20 REM WELCOME TO GRANDPA BASIC 1980' }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
 
   xit "should correctly format a program line with a numeric assignment statement", ->
+
+    line_text = '30 D=477+B'
 
     parse_object = [
       "<line_number>"
@@ -61,12 +70,14 @@ describe "Program line formatting", ->
       operand: "D"
       expression: jasmine.any(NumericExpression) }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
 
   xit "should correctly format a program line with a string assignment statement", ->
+
+    line_text = '40 $E=$M+" IS NOT COMPLETE"'
 
     parse_object = [
       "<line_number>"
@@ -90,12 +101,14 @@ describe "Program line formatting", ->
       operand: "E"
       expression: jasmine.any(StringExpression) }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
 
   xit "should correctly format a program line with a GOTO statement", ->
+
+    line_text = '520 GOTO 880'
 
     parse_object = [
       "<line_number>"
@@ -112,12 +125,14 @@ describe "Program line formatting", ->
       text: '520 GOTO 880'
       dest: 880 }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
 
   xit "should correctly format a program line with a GOSUB statement", ->
+
+    line_text = '320 GOSUB 1200'
 
     parse_object = [
       "<line_number>"
@@ -134,12 +149,14 @@ describe "Program line formatting", ->
       text: '320 GOSUB 1200'
       dest: 1200 }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
 
   xit "should correctly format a program line with a RETURN statement", ->
+
+    line_text = '1299 RETURN'
 
     parse_object = [
       "<line_number>"
@@ -152,12 +169,14 @@ describe "Program line formatting", ->
       type:  "<return>"
       text: '1299 RETURN' }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
 
   xit "should correctly format a program line with an IF statement", ->
+
+    line_text = '150 IF Z<0 THEN 340'
 
     parse_object = [
       "<line_number>"
@@ -185,10 +204,12 @@ describe "Program line formatting", ->
       cond: jasmine.any(BooleanExpression)
       dest: 340 }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
+
+    line_text = '610 IF $T="INCOMPLETE" THEN 1680'
 
     parse_object = [
       "<line_number>"
@@ -216,12 +237,14 @@ describe "Program line formatting", ->
       cond: jasmine.any(BooleanExpression)
       dest: 1680 }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
 
   xit "should correctly format a program line with an INPUT statement", ->
+
+    line_text = '110 INPUT R'
 
     parse_object = [
       "<line_number>"
@@ -238,10 +261,12 @@ describe "Program line formatting", ->
       text: '110 INPUT R'
       operand: "R" }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
+
+    line_text = '120 INPUT $V'
 
     parse_object = [
       "<line_number>"
@@ -258,10 +283,12 @@ describe "Program line formatting", ->
       text: '120 INPUT $V'
       operand: "V" }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
+
+    line_text = '130 INPUT "HOW MANY?";M'
 
     parse_object = [
       "<line_number>"
@@ -282,13 +309,15 @@ describe "Program line formatting", ->
       operand: "M"
       prompt: "HOW MANY?" }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
 
 
   xit "should correctly format a program line with a  statement", ->
+
+    line_text = '140 INPUT "LAST NAME?";$N2'
 
     parse_object = [
       "<line_number>"
@@ -309,12 +338,14 @@ describe "Program line formatting", ->
       operand: "N2"
       prompt: "LAST NAME?" }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
 
   xit "should correctly format a program line with a PRINT statement", ->
+
+    line_text = '340 PRINT "WELCOME TO GRANDPA BASIC 1980"'
 
     parse_object = [
       "<line_number>"
@@ -333,10 +364,12 @@ describe "Program line formatting", ->
       text: '340 PRINT "WELCOME TO GRANDPA BASIC 1980"'
       expression: jasmine.any(StringExpression) }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
+
+    line_text = '350 PRINT $Z1'
 
     parse_object = [
       "<line_number>"
@@ -355,10 +388,12 @@ describe "Program line formatting", ->
       text: '350 PRINT $Z1'
       expression: jasmine.any(StringExpression) }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
+
+    line_text = '360 PRINT "LAST NAME = "+$N4'
 
     parse_object = [
       "<line_number>"
@@ -381,12 +416,14 @@ describe "Program line formatting", ->
       expression: jasmine.any(StringExpression) }
 
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
 
   xit "should correctly format a program line with a PRINTLN statement", ->
+
+    line_text = '470 PRINTLN'
 
     parse_object = [
       "<line_number>"
@@ -400,10 +437,12 @@ describe "Program line formatting", ->
       text: '470 PRINTLN'
       expression: jasmine.any(StringExpression) }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
+
+    line_text = '480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"'
 
     parse_object = [
       "<line_number>"
@@ -422,10 +461,12 @@ describe "Program line formatting", ->
       text: '480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"'
       expression: jasmine.any(StringExpression) }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
+
+    line_text = '490 PRINTLN $Z1'
 
     parse_object = [
       "<line_number>"
@@ -444,12 +485,14 @@ describe "Program line formatting", ->
       text: '490 PRINTLN $Z1'
       expression: jasmine.any(StringExpression) }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
 
   xit "should correctly format a program line with a CLEARSCRN statement", ->
+
+    line_text = '940 CLEARSCRN'
 
     parse_object = [
       "<line_number>"
@@ -462,12 +505,14 @@ describe "Program line formatting", ->
       type:  "<clear_screen>"
       text: '940 CLEARSCRN' }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
 
   xit "should correctly format a program line with a TAB statement", ->
+
+    line_text = '870 TAB 28'
 
     parse_object = [
       "<line_number>"
@@ -484,10 +529,12 @@ describe "Program line formatting", ->
       text: '870 TAB 28'
       col: 28 }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
+
+    line_text = '880 TAB 12,44'
 
     parse_object = [
       "<line_number>"
@@ -508,12 +555,14 @@ describe "Program line formatting", ->
       line: 12
       col: 44 }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
 
   xit "should correctly format a program line with an END statement", ->
+
+    line_text = '999 END'
 
     parse_object = [
       "<line_number>"
@@ -526,8 +575,8 @@ describe "Program line formatting", ->
       type:  "<end>"
       text: '999 END' }
 
-    bpl = new BasicProgramLine(parse_object)
-    result = bpl.components
+    result = @formatter.format(parse_object, line_text)
+    expect(result).toEqual(jasmine.any(Object))
     expect(val).toEqual(expected[key]) for key,val of result
 
 
