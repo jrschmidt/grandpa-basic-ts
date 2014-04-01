@@ -645,6 +645,105 @@ class BooleanExpressionParser
 
 class NumericExpression
 
+  constructor: (stack) ->
+    @helper = new NumExpHelper
+
+    first = stack.shift()
+    last = stack.pop()
+    if first == "<numeric_expression>" && last == "<num_exp_end>"
+      nxp = @build_num_exp(stack)
+    else
+      nxp = "<malformed>"
+    return nxp
+
+
+  build_num_exp: (stack) ->
+    split_stack = @helper.split(stack)
+    if split_stack == "<malformed>"
+      nxp = "<malformed>"
+    else
+      switch split_stack.expression
+        when "<plus>", "<minus>", "<times>", "<divide>", "<power>"
+          nxp = "<UNFINISHED_METHOD>"
+        when "<numeric_literal>"
+          nxp = "<UNFINISHED_METHOD>"
+        when "<number_variable>"
+          nxp = "<UNFINISHED_METHOD>"
+        else
+          nxp = "<malformed>"
+    return nxp
+
+
+
+class NumExpHelper
+
+  constructor: () ->
+
+    @search_terms = [
+      ["<plus>", "<minus>" ]
+      ["<times>", "<divide>" ]
+      ["<power>"]
+      ["<numeric_literal>", "<number_variable>" ] ]
+
+
+  scan: (stack) ->
+    stack = @deparenthesize(stack)
+    index = 999
+    for level in @search_terms
+      if index == 999
+        for tt in level
+          find = stack.indexOf(tt)
+          index = find if find >= 0 && find < index
+        if index < 999
+          if index == 0
+            exp = stack[0]
+            left = []
+            right = stack.slice(1)
+          else
+            exp = stack[index]
+            left = stack[0..index-1]
+            right = stack.slice(index+1)
+            left = left[0] if Array.isArray(left[0])
+            right = right[0] if Array.isArray(right[0])
+          result = {
+            exp: exp
+            left: left
+            right: right }
+        else
+          result = "<malformed>"
+    return result
+
+
+  # Strip parentheses (<left> and <right> tokens) in an expression and replace
+  # them with nested arrays of tokens.
+  deparenthesize: (stack) ->
+    ok = "yes"
+    nesting = 0
+    i = -1
+    while stack.indexOf("<left>") >= 0 && ok == "yes"
+      i = i+1
+      if stack[i] == "<left>"
+        left = i
+        nesting = nesting + 1
+      if stack[i] == "<right>"
+        if nesting == 0
+          ok = "no"
+        else
+          right = i
+          new_stack = []
+          new_stack.push(tk) for tk in stack[0..left-1] if left > 0
+          nested_array = stack[left+1..right-1]
+          new_stack.push(nested_array)
+          new_stack.push(tk) for tk in stack[right+1..stack.length-1]
+          stack = new_stack
+          nesting = 0
+          i = -1
+    stack = stack[0] if stack.length == 1
+    if ok == "bad"
+      return "<malformed>"
+    else
+      return stack
+
 
 
 class KeyHelper
