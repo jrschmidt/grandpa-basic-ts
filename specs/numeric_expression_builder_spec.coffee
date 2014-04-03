@@ -1,4 +1,4 @@
-describe "Numeric expression object", ->
+describe "Numeric expression builder", ->
 
   beforeEach ->
     @helper = new NumExpBuilder
