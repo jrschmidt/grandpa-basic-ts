@@ -1,8 +1,9 @@
 describe "Numeric expression object", ->
 
-  it "should strip parentheses in an expression and replace them with nested arrays of tokens", ->
+  beforeEach ->
+    @helper = new NumExpBuilder
 
-    helper = new NumExpHelper
+  it "should strip parentheses in an expression and replace them with nested arrays of tokens", ->
 
     # TEST  (J+K)
     stack = [
@@ -14,7 +15,7 @@ describe "Numeric expression object", ->
       "K"
       "<right>" ]
 
-    result = helper.deparenthesize(stack)
+    result = @helper.deparenthesize(stack)
     expect(result.length).toEqual(5)
     expect(result[0]).toEqual("<number_variable>")
     expect(result[1]).toEqual("J")
@@ -42,7 +43,7 @@ describe "Numeric expression object", ->
       "<number_variable>"
       "B" ]
 
-    result = helper.deparenthesize(stack)
+    result = @helper.deparenthesize(stack)
     expect(result.length).toEqual(7)
     expect(result[0]).toEqual("<numeric_literal>")
     expect(result[1]).toEqual(1)
@@ -83,7 +84,7 @@ describe "Numeric expression object", ->
       7
       "<right>" ]
 
-    result = helper.deparenthesize(stack)
+    result = @helper.deparenthesize(stack)
     expect(result.length).toEqual(3)
     expect(result[0]).toEqual(jasmine.any(Array))
     expect(result[0].length).toEqual(5)
@@ -126,7 +127,7 @@ describe "Numeric expression object", ->
       "<numeric_literal>"
       11 ]
 
-    result = helper.deparenthesize(stack)
+    result = @helper.deparenthesize(stack)
     expect(result.length).toEqual(4)
     expect(result[0]).toEqual(jasmine.any(Array))
     expect(result[0].length).toEqual(7)
@@ -166,7 +167,7 @@ describe "Numeric expression object", ->
       1.7
       "<right>" ]
 
-    result = helper.deparenthesize(stack)
+    result = @helper.deparenthesize(stack)
     expect(result.length).toEqual(6)
     expect(result[0]).toEqual("<numeric_literal>")
     expect(result[1]).toEqual(2)
@@ -191,7 +192,6 @@ describe "Numeric expression object", ->
 
   it "should find the designated splitter token", ->
 
-    helper = new NumExpHelper
     test_data = []
 
     # {0}  SCAN:  A+B
@@ -586,7 +586,7 @@ describe "Numeric expression object", ->
       right: right }
 
     for test_set in test_data
-      result = helper.split(test_set.stack)
+      result = @helper.split(test_set.stack)
       expect(result.left.length).toEqual(test_set.left.length)
       expect(result.right.length).toEqual(test_set.right.length)
       expect(result.exp).toEqual(test_set.expected_expression)
@@ -595,10 +595,10 @@ describe "Numeric expression object", ->
 
 
 
-  it "should build a NumericExpression object from a numeric expression 'parse object'", ->
+  it "should build a usable key-value object from a numeric expression 'parse object' array", ->
 
     # TEST NUMERIC EXPRESSION:  X
-    po = [
+    stack = [
       "<numeric_expression>"
       "<number_variable>"
       "X"
@@ -608,14 +608,13 @@ describe "Numeric expression object", ->
       exp: "<var>"
       name: "X" }
 
-    nmx = new NumericExpression(po)
-    expect(nmx).toEqual(jasmine.any(NumericExpression))
+    nmx = @helper.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.name).toEqual(expected.name)
 
 
     # TEST NUMERIC EXPRESSION:  42
-    po = [
+    stack = [
       "<numeric_expression>"
       "<numeric_literal>"
       42
@@ -625,14 +624,13 @@ describe "Numeric expression object", ->
       exp: "<num>"
       value: 42 }
 
-    nmx = new NumericExpression(po)
-    expect(nmx).toEqual(jasmine.any(NumericExpression))
+    nmx = @helper.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.value).toEqual(expected.value)
 
 
     # TEST NUMERIC EXPRESSION:  13.477
-    po = [
+    stack = [
       "<numeric_expression>"
       "<numeric_literal>"
       13.477
@@ -642,14 +640,13 @@ describe "Numeric expression object", ->
       exp: "<num>"
       value: 13.477 }
 
-    nmx = new NumericExpression(po)
-    expect(nmx).toEqual(jasmine.any(NumericExpression))
+    nmx = @helper.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.value).toEqual(expected.value)
 
 
     # TEST NUMERIC EXPRESSION:  7/12
-    po = [
+    stack = [
       "<numeric_expression>"
       "<numeric_literal>"
       7
@@ -663,8 +660,7 @@ describe "Numeric expression object", ->
       op1: {exp: "<num>", value: 7 } 
       op2: {exp: "<num>", value: 12 } }
 
-    nmx = new NumericExpression(po)
-    expect(nmx).toEqual(jasmine.any(NumericExpression))
+    nmx = @helper.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.value).toEqual(expected.op1.value)
@@ -673,7 +669,7 @@ describe "Numeric expression object", ->
 
 
     # TEST NUMERIC EXPRESSION:  477+B
-    po = [
+    stack = [
       "<numeric_expression>"
       "<numeric_literal>"
       477
@@ -687,8 +683,7 @@ describe "Numeric expression object", ->
       op1: {exp: "<num>", value: 477 }
       op2: {exp: "<var>", name: "B" } }
 
-    nmx = new NumericExpression(po)
-    expect(nmx).toEqual(jasmine.any(NumericExpression))
+    nmx = @helper.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.value).toEqual(expected.op1.value)
@@ -696,7 +691,7 @@ describe "Numeric expression object", ->
     expect(nmx.op2.name).toEqual(expected.op2.name)
 
     # TEST NUMERIC EXPRESSION:  C^2
-    po = [
+    stack = [
       "<numeric_expression>"
       "<number_variable>"
       "C"
@@ -710,8 +705,7 @@ describe "Numeric expression object", ->
       op1: {exp: "<var>", name: "C" }
       op2: {exp: "<num>", value: 2 } }
 
-    nmx = new NumericExpression(po)
-    expect(nmx).toEqual(jasmine.any(NumericExpression))
+    nmx = @helper.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.name).toEqual(expected.op1.name)
@@ -720,7 +714,7 @@ describe "Numeric expression object", ->
 
 
     # TEST NUMERIC EXPRESSION:  X*Y*Z
-    po = [
+    stack = [
       "<numeric_expression>"
       "<number_variable>"
       "X"
@@ -742,8 +736,7 @@ describe "Numeric expression object", ->
       op1: {exp: "<var>", name: "X" }
       op2: op2 }
 
-    nmx = new NumericExpression(po)
-    expect(nmx).toEqual(jasmine.any(NumericExpression))
+    nmx = @helper.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.name).toEqual(expected.op1.name)
@@ -754,7 +747,7 @@ describe "Numeric expression object", ->
     expect(nmx.op2.op2.name).toEqual(expected.op2.op2.name)
 
     # TEST NUMERIC EXPRESSION:  28*(J+2)
-    po = [
+    stack = [
       "<numeric_expression>"
       "<numeric_literal>"
       28
@@ -778,8 +771,7 @@ describe "Numeric expression object", ->
       op1: {exp: "<num>", value: 28 }
       op2: op2 }
 
-    nmx = new NumericExpression(po)
-    expect(nmx).toEqual(jasmine.any(NumericExpression))
+    nmx = @helper.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.value).toEqual(expected.op1.value)
@@ -791,7 +783,7 @@ describe "Numeric expression object", ->
 
 
     # TEST NUMERIC EXPRESSION:  W5+W7-4*(J^2+K^3)
-    po = [
+    stack = [
       "<numeric_expression>"
       "<number_variable>"
       "W5"
@@ -848,8 +840,7 @@ describe "Numeric expression object", ->
       op2: op2 }
 
 
-    nmx = new NumericExpression(po)
-    expect(nmx).toEqual(jasmine.any(NumericExpression))
+    nmx = @helper.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.name).toEqual(expected.op1.name)
@@ -871,7 +862,7 @@ describe "Numeric expression object", ->
 
 
     # TEST NUMERIC EXPRESSION:  (18-Q7)/(2.108*(14*M+17*X))
-    po = [
+    stack = [
       "<numeric_expression>"
       "<left>"
       "<numeric_literal>"
@@ -931,8 +922,7 @@ describe "Numeric expression object", ->
       op1: op1
       op2: op2 }
 
-    nmx = new NumericExpression(po)
-    expect(nmx).toEqual(jasmine.any(NumericExpression))
+    nmx = @helper.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.op1.exp).toEqual(expected.op1.op1.exp)

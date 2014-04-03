@@ -643,74 +643,50 @@ class BooleanExpressionParser
 
 
 
-class NumericExpression
+class NumExpBuilder
 
-  constructor: (stack) ->
-    console.log " "
-    console.log "NumericExpession constructor called with:"
-    console.log "   stack = "+stack
-    @helper = new NumExpHelper  # FIXME FIXME We DON"T NEED to create a new NXH object each time we create a NumExp object !!!!!!! FIXME
-                                # It's supposed to be a singleton!!
+  constructor: () ->
+
+    @search_terms = [
+      ["<plus>", "<minus>" ]
+      ["<times>", "<divide>" ]
+      ["<power>"]
+      ["<numeric_literal>", "<number_variable>" ] ]
+
+
+  build_nxp: (stack) ->
     first = stack.shift()
     last = stack.pop()
-    console.log "NEW NumExp: "
-    console.log "   first = "+first
-    console.log "   last = "+last
     if first == "<numeric_expression>" && last == "<num_exp_end>"
-      console.log "first & last are correct"
       nxp = @build_num_exp(stack)
     else
       nxp = { malformed: "yes" }
     this[kk] = vv for kk, vv of nxp
-    console.log " "
-    console.log "FINAL RESULT: "
-    console.log "   "+kk+": "+vv for kk, vv of nxp
     return nxp
 
+  # TODO Combine these two methods, then look for refactoring.
 
   build_num_exp: (stack) ->
-    console.log " "
-    console.log "BUILD stack = "
-    console.log "   "+tk for tk in stack
-    split_stack = @helper.split(stack)
-    console.log "split stack exp = "+split_stack.exp
-    console.log "split stack left = "+split_stack.left
-    console.log "split stack right = "+split_stack.right
+    split_stack = @split(stack)
     if split_stack.malformed == "yes"
       nxp = { malformed: "yes" }
     else
       switch split_stack.exp
         when "<plus>", "<minus>", "<times>", "<divide>", "<power>"
-          console.log "BUILD exp: + - * / ^"
           nxp = @build_binary_expression(split_stack)
         when "<numeric_literal>"
-          console.log "BUILD exp: <numeric_literal>"
           nxp = @build_numeric_literal(split_stack)
         when "<number_variable>"
-          console.log "BUILD exp: <number_variable>"
           nxp = @build_number_variable(split_stack)
         else
           nxp = { malformed: "yes" }
-    console.log "nxp = "+nxp
-    console.log "    exp = "+nxp.exp
-    console.log "    left = "+nxp.left
-    console.log "    right = "+nxp.right
-    console.log "    name = "+nxp.name
-    console.log "    value = "+nxp.value
     return nxp
 
 
   build_binary_expression: (split_stack) ->
-    console.log "build_binary_expression"
-    console.log "   values received by BBX:"
-    console.log "     split stack exp = "+split_stack.exp
-    console.log "     split stack left = "+split_stack.left
-    console.log "     split stack right = "+split_stack.right
     result = {}
-    left = new NumericExpression(split_stack.left)
-    console.log "RETURN FROM new NumExp"
-    right = new NumericExpression(split_stack.right)
-    # FIXME  add error catcher TRY THIS:  (no test for it yet)
+    left = @build_nxp(split_stack.left)
+    right = @build_nxp(split_stack.right)
     if right.malformed == "yes" or left.malformed == "yes"
       result = { malformed: "yes" }
     else
@@ -722,21 +698,16 @@ class NumericExpression
 
 
   build_numeric_literal: (split_stack) ->
-    console.log "build_numeric_literal"
     result = {}
     if split_stack.right.length == 1
       result = {
         exp: "<num>"
         value: split_stack.right[0] }
     else result = { malformed: "yes" }
-    return result   # TODO FOUND IT !! These methods compute the right values,
-                    # but they don't create a NumExp object !!!
-                    # ('binary' creates new Nxp's for its branches, but not for itself)
-                    # ... or should we do it at the end of the NumExp constructor ??
+    return result
 
 
   build_number_variable: (split_stack) ->
-    console.log "build_number_variable"
     result = {}
     if split_stack.right.length == 1
       result = {
@@ -744,18 +715,6 @@ class NumericExpression
         name: split_stack.right[0] }
     else result = { malformed: "yes" }
     return result
-
-
-
-class NumExpHelper
-
-  constructor: () ->
-
-    @search_terms = [
-      ["<plus>", "<minus>" ]
-      ["<times>", "<divide>" ]
-      ["<power>"]
-      ["<numeric_literal>", "<number_variable>" ] ]
 
 
   split: (stack) ->
