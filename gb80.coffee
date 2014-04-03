@@ -646,32 +646,104 @@ class BooleanExpressionParser
 class NumericExpression
 
   constructor: (stack) ->
-    @helper = new NumExpHelper
-
+    console.log " "
+    console.log "NumericExpession constructor called with:"
+    console.log "   stack = "+stack
+    @helper = new NumExpHelper  # FIXME FIXME We DON"T NEED to create a new NXH object each time we create a NumExp object !!!!!!! FIXME
+                                # It's supposed to be a singleton!!
     first = stack.shift()
     last = stack.pop()
+    console.log "NEW NumExp: "
+    console.log "   first = "+first
+    console.log "   last = "+last
     if first == "<numeric_expression>" && last == "<num_exp_end>"
+      console.log "first & last are correct"
       nxp = @build_num_exp(stack)
     else
-      nxp = "<malformed>"
+      nxp = { malformed: "yes" }
+    this[kk] = vv for kk, vv of nxp
+    console.log " "
+    console.log "FINAL RESULT: "
+    console.log "   "+kk+": "+vv for kk, vv of nxp
     return nxp
 
 
   build_num_exp: (stack) ->
+    console.log " "
+    console.log "BUILD stack = "
+    console.log "   "+tk for tk in stack
     split_stack = @helper.split(stack)
-    if split_stack == "<malformed>"
-      nxp = "<malformed>"
+    console.log "split stack exp = "+split_stack.exp
+    console.log "split stack left = "+split_stack.left
+    console.log "split stack right = "+split_stack.right
+    if split_stack.malformed == "yes"
+      nxp = { malformed: "yes" }
     else
-      switch split_stack.expression
+      switch split_stack.exp
         when "<plus>", "<minus>", "<times>", "<divide>", "<power>"
-          nxp = "<UNFINISHED_METHOD>"
+          console.log "BUILD exp: + - * / ^"
+          nxp = @build_binary_expression(split_stack)
         when "<numeric_literal>"
-          nxp = "<UNFINISHED_METHOD>"
+          console.log "BUILD exp: <numeric_literal>"
+          nxp = @build_numeric_literal(split_stack)
         when "<number_variable>"
-          nxp = "<UNFINISHED_METHOD>"
+          console.log "BUILD exp: <number_variable>"
+          nxp = @build_number_variable(split_stack)
         else
-          nxp = "<malformed>"
+          nxp = { malformed: "yes" }
+    console.log "nxp = "+nxp
+    console.log "    exp = "+nxp.exp
+    console.log "    left = "+nxp.left
+    console.log "    right = "+nxp.right
+    console.log "    name = "+nxp.name
+    console.log "    value = "+nxp.value
     return nxp
+
+
+  build_binary_expression: (split_stack) ->
+    console.log "build_binary_expression"
+    console.log "   values received by BBX:"
+    console.log "     split stack exp = "+split_stack.exp
+    console.log "     split stack left = "+split_stack.left
+    console.log "     split stack right = "+split_stack.right
+    result = {}
+    left = new NumericExpression(split_stack.left)
+    console.log "RETURN FROM new NumExp"
+    right = new NumericExpression(split_stack.right)
+    # FIXME  add error catcher TRY THIS:  (no test for it yet)
+    if right.malformed == "yes" or left.malformed == "yes"
+      result = { malformed: "yes" }
+    else
+      result = {
+        exp: split_stack.exp
+        op1: left
+        op2: right }
+    return result
+
+
+  build_numeric_literal: (split_stack) ->
+    console.log "build_numeric_literal"
+    result = {}
+    if split_stack.right.length == 1
+      result = {
+        exp: "<num>"
+        value: split_stack.right[0] }
+    else result = { malformed: "yes" }
+    return result   # TODO FOUND IT !! These methods compute the right values,
+                    # but they don't create a NumExp object !!!
+                    # ('binary' creates new Nxp's for its branches, but not for itself)
+                    # ... or should we do it at the end of the NumExp constructor ??
+
+
+  build_number_variable: (split_stack) ->
+    console.log "build_number_variable"
+    result = {}
+    if split_stack.right.length == 1
+      result = {
+        exp: "<var>"
+        name: split_stack.right[0] }
+    else result = { malformed: "yes" }
+    return result
 
 
 
@@ -686,7 +758,7 @@ class NumExpHelper
       ["<numeric_literal>", "<number_variable>" ] ]
 
 
-  scan: (stack) ->
+  split: (stack) ->
     stack = @deparenthesize(stack)
     index = 999
     for level in @search_terms
@@ -705,12 +777,16 @@ class NumExpHelper
             right = stack.slice(index+1)
             left = left[0] if Array.isArray(left[0])
             right = right[0] if Array.isArray(right[0])
+            left.unshift("<numeric_expression>")
+            left.push("<num_exp_end>")
+            right.unshift("<numeric_expression>")
+            right.push("<num_exp_end>")
           result = {
             exp: exp
             left: left
             right: right }
         else
-          result = "<malformed>"
+          result = { malformed: "yes" }
     return result
 
 
@@ -740,7 +816,7 @@ class NumExpHelper
           i = -1
     stack = stack[0] if stack.length == 1
     if ok == "bad"
-      return "<malformed>"
+      return { malformed: "yes" }
     else
       return stack
 

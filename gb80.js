@@ -770,43 +770,143 @@ BooleanExpressionParser = (function() {
 
 NumericExpression = (function() {
   function NumericExpression(stack) {
-    var first, last, nxp;
+    var first, kk, last, nxp, vv;
+    console.log(" ");
+    console.log("NumericExpession constructor called with:");
+    console.log("   stack = " + stack);
     this.helper = new NumExpHelper;
     first = stack.shift();
     last = stack.pop();
+    console.log("NEW NumExp: ");
+    console.log("   first = " + first);
+    console.log("   last = " + last);
     if (first === "<numeric_expression>" && last === "<num_exp_end>") {
+      console.log("first & last are correct");
       nxp = this.build_num_exp(stack);
     } else {
-      nxp = "<malformed>";
+      nxp = {
+        malformed: "yes"
+      };
+    }
+    for (kk in nxp) {
+      vv = nxp[kk];
+      this[kk] = vv;
+    }
+    console.log(" ");
+    console.log("FINAL RESULT: ");
+    for (kk in nxp) {
+      vv = nxp[kk];
+      console.log("   " + kk + ": " + vv);
     }
     return nxp;
   }
 
   NumericExpression.prototype.build_num_exp = function(stack) {
-    var nxp, split_stack;
+    var nxp, split_stack, tk, _i, _len;
+    console.log(" ");
+    console.log("BUILD stack = ");
+    for (_i = 0, _len = stack.length; _i < _len; _i++) {
+      tk = stack[_i];
+      console.log("   " + tk);
+    }
     split_stack = this.helper.split(stack);
-    if (split_stack === "<malformed>") {
-      nxp = "<malformed>";
+    console.log("split stack exp = " + split_stack.exp);
+    console.log("split stack left = " + split_stack.left);
+    console.log("split stack right = " + split_stack.right);
+    if (split_stack.malformed === "yes") {
+      nxp = {
+        malformed: "yes"
+      };
     } else {
-      switch (split_stack.expression) {
+      switch (split_stack.exp) {
         case "<plus>":
         case "<minus>":
         case "<times>":
         case "<divide>":
         case "<power>":
-          nxp = "<UNFINISHED_METHOD>";
+          console.log("BUILD exp: + - * / ^");
+          nxp = this.build_binary_expression(split_stack);
           break;
         case "<numeric_literal>":
-          nxp = "<UNFINISHED_METHOD>";
+          console.log("BUILD exp: <numeric_literal>");
+          nxp = this.build_numeric_literal(split_stack);
           break;
         case "<number_variable>":
-          nxp = "<UNFINISHED_METHOD>";
+          console.log("BUILD exp: <number_variable>");
+          nxp = this.build_number_variable(split_stack);
           break;
         default:
-          nxp = "<malformed>";
+          nxp = {
+            malformed: "yes"
+          };
       }
     }
+    console.log("nxp = " + nxp);
+    console.log("    exp = " + nxp.exp);
+    console.log("    left = " + nxp.left);
+    console.log("    right = " + nxp.right);
+    console.log("    name = " + nxp.name);
+    console.log("    value = " + nxp.value);
     return nxp;
+  };
+
+  NumericExpression.prototype.build_binary_expression = function(split_stack) {
+    var left, result, right;
+    console.log("build_binary_expression");
+    console.log("   values received by BBX:");
+    console.log("     split stack exp = " + split_stack.exp);
+    console.log("     split stack left = " + split_stack.left);
+    console.log("     split stack right = " + split_stack.right);
+    result = {};
+    left = new NumericExpression(split_stack.left);
+    console.log("RETURN FROM new NumExp");
+    right = new NumericExpression(split_stack.right);
+    if (right.malformed === "yes" || left.malformed === "yes") {
+      result = {
+        malformed: "yes"
+      };
+    } else {
+      result = {
+        exp: split_stack.exp,
+        op1: left,
+        op2: right
+      };
+    }
+    return result;
+  };
+
+  NumericExpression.prototype.build_numeric_literal = function(split_stack) {
+    var result;
+    console.log("build_numeric_literal");
+    result = {};
+    if (split_stack.right.length === 1) {
+      result = {
+        exp: "<num>",
+        value: split_stack.right[0]
+      };
+    } else {
+      result = {
+        malformed: "yes"
+      };
+    }
+    return result;
+  };
+
+  NumericExpression.prototype.build_number_variable = function(split_stack) {
+    var result;
+    console.log("build_number_variable");
+    result = {};
+    if (split_stack.right.length === 1) {
+      result = {
+        exp: "<var>",
+        name: split_stack.right[0]
+      };
+    } else {
+      result = {
+        malformed: "yes"
+      };
+    }
+    return result;
   };
 
   return NumericExpression;
@@ -818,7 +918,7 @@ NumExpHelper = (function() {
     this.search_terms = [["<plus>", "<minus>"], ["<times>", "<divide>"], ["<power>"], ["<numeric_literal>", "<number_variable>"]];
   }
 
-  NumExpHelper.prototype.scan = function(stack) {
+  NumExpHelper.prototype.split = function(stack) {
     var exp, find, index, left, level, result, right, tt, _i, _j, _len, _len1, _ref;
     stack = this.deparenthesize(stack);
     index = 999;
@@ -848,6 +948,10 @@ NumExpHelper = (function() {
             if (Array.isArray(right[0])) {
               right = right[0];
             }
+            left.unshift("<numeric_expression>");
+            left.push("<num_exp_end>");
+            right.unshift("<numeric_expression>");
+            right.push("<num_exp_end>");
           }
           result = {
             exp: exp,
@@ -855,7 +959,9 @@ NumExpHelper = (function() {
             right: right
           };
         } else {
-          result = "<malformed>";
+          result = {
+            malformed: "yes"
+          };
         }
       }
     }
@@ -903,7 +1009,9 @@ NumExpHelper = (function() {
       stack = stack[0];
     }
     if (ok === "bad") {
-      return "<malformed>";
+      return {
+        malformed: "yes"
+      };
     } else {
       return stack;
     }

@@ -96,8 +96,8 @@ describe("Numeric expression object", function() {
     helper = new NumExpHelper;
     test_data = [];
     stack = ["<number_variable>", "A", "<plus>", "<number_variable>", "B"];
-    left = ["<number_variable>", "A"];
-    right = ["<number_variable>", "B"];
+    left = ["<numeric_expression>", "<number_variable>", "A", "<num_exp_end>"];
+    right = ["<numeric_expression>", "<number_variable>", "B", "<num_exp_end>"];
     test_data[0] = {
       stack: stack,
       expected_expression: "<plus>",
@@ -105,8 +105,8 @@ describe("Numeric expression object", function() {
       right: right
     };
     stack = ["<number_variable>", "X", "<minus>", "<numeric_literal>", 200];
-    left = ["<number_variable>", "X"];
-    right = ["<numeric_literal>", 200];
+    left = ["<numeric_expression>", "<number_variable>", "X", "<num_exp_end>"];
+    right = ["<numeric_expression>", "<numeric_literal>", 200, "<num_exp_end>"];
     test_data[1] = {
       stack: stack,
       expected_expression: "<minus>",
@@ -114,8 +114,8 @@ describe("Numeric expression object", function() {
       right: right
     };
     stack = ["<number_variable>", "P", "<plus>", "<number_variable>", "Q", "<plus>", "<number_variable>", "R", "<plus>", "<number_variable>", "S"];
-    left = ["<number_variable>", "P"];
-    right = ["<number_variable>", "Q", "<plus>", "<number_variable>", "R", "<plus>", "<number_variable>", "S"];
+    left = ["<numeric_expression>", "<number_variable>", "P", "<num_exp_end>"];
+    right = ["<numeric_expression>", "<number_variable>", "Q", "<plus>", "<number_variable>", "R", "<plus>", "<number_variable>", "S", "<num_exp_end>"];
     test_data[2] = {
       stack: stack,
       expected_expression: "<plus>",
@@ -123,8 +123,8 @@ describe("Numeric expression object", function() {
       right: right
     };
     stack = ["<number_variable>", "J", "<times>", "<number_variable>", "Z1", "<minus>", "<number_variable>", "K", "<times>", "<number_variable>", "Z2"];
-    left = ["<number_variable>", "J", "<times>", "<number_variable>", "Z1"];
-    right = ["<number_variable>", "K", "<times>", "<number_variable>", "Z2"];
+    left = ["<numeric_expression>", "<number_variable>", "J", "<times>", "<number_variable>", "Z1", "<num_exp_end>"];
+    right = ["<numeric_expression>", "<number_variable>", "K", "<times>", "<number_variable>", "Z2", "<num_exp_end>"];
     test_data[3] = {
       stack: stack,
       expected_expression: "<minus>",
@@ -132,8 +132,8 @@ describe("Numeric expression object", function() {
       right: right
     };
     stack = ["<numeric_literal>", 21, "<times>", "<number_variable>", "T"];
-    left = ["<numeric_literal>", 21];
-    right = ["<number_variable>", "T"];
+    left = ["<numeric_expression>", "<numeric_literal>", 21, "<num_exp_end>"];
+    right = ["<numeric_expression>", "<number_variable>", "T", "<num_exp_end>"];
     test_data[4] = {
       stack: stack,
       expected_expression: "<times>",
@@ -141,8 +141,8 @@ describe("Numeric expression object", function() {
       right: right
     };
     stack = ["<numeric_literal>", 3.1416, "<divide>", "<numeric_literal>", 2];
-    left = ["<numeric_literal>", 3.1416];
-    right = ["<numeric_literal>", 2];
+    left = ["<numeric_expression>", "<numeric_literal>", 3.1416, "<num_exp_end>"];
+    right = ["<numeric_expression>", "<numeric_literal>", 2, "<num_exp_end>"];
     test_data[5] = {
       stack: stack,
       expected_expression: "<divide>",
@@ -150,8 +150,8 @@ describe("Numeric expression object", function() {
       right: right
     };
     stack = ["<numeric_literal>", 3.3333, "<times>", "<number_variable>", "Z", "<times>", "<number_variable>", "A", "<divide>", "<number_variable>", "M"];
-    left = ["<numeric_literal>", 3.3333];
-    right = ["<number_variable>", "Z", "<times>", "<number_variable>", "A", "<divide>", "<number_variable>", "M"];
+    left = ["<numeric_expression>", "<numeric_literal>", 3.3333, "<num_exp_end>"];
+    right = ["<numeric_expression>", "<number_variable>", "Z", "<times>", "<number_variable>", "A", "<divide>", "<number_variable>", "M", "<num_exp_end>"];
     test_data[6] = {
       stack: stack,
       expected_expression: "<times>",
@@ -159,8 +159,8 @@ describe("Numeric expression object", function() {
       right: right
     };
     stack = ["<number_variable>", "M", "<power>", "<numeric_literal>", 3];
-    left = ["<number_variable>", "M"];
-    right = ["<numeric_literal>", 3];
+    left = ["<numeric_expression>", "<number_variable>", "M", "<num_exp_end>"];
+    right = ["<numeric_expression>", "<numeric_literal>", 3, "<num_exp_end>"];
     test_data[7] = {
       stack: stack,
       expected_expression: "<power>",
@@ -186,8 +186,8 @@ describe("Numeric expression object", function() {
       right: right
     };
     stack = ["<left>", "<numeric_literal>", 1, "<plus>", "<number_variable>", "W", "<right>", "<divide>", "<left>", "<number_variable>", "Z1", "<plus>", "<number_variable>", "Z2", "plus", "<number_variable>", "Z3", "<right>"];
-    left = ["<numeric_literal>", 1, "<plus>", "<number_variable>", "W"];
-    right = ["<number_variable>", "Z1", "<plus>", "<number_variable>", "Z2", "plus", "<number_variable>", "Z3"];
+    left = ["<numeric_expression>", "<numeric_literal>", 1, "<plus>", "<number_variable>", "W", "<num_exp_end>"];
+    right = ["<numeric_expression>", "<number_variable>", "Z1", "<plus>", "<number_variable>", "Z2", "plus", "<number_variable>", "Z3", "<num_exp_end>"];
     test_data[10] = {
       stack: stack,
       expected_expression: "<divide>",
@@ -195,8 +195,8 @@ describe("Numeric expression object", function() {
       right: right
     };
     stack = ["<left>", "<numeric_literal>", 6, "<times>", "<number_variable>", "A", "<minus>", "<left>", "<numeric_literal>", 400, "<plus>", "<number_variable>", "X2", "<right>", "<right>", "<times>", "<numeric_literal>", 11];
-    left = ["<numeric_literal>", 6, "<times>", "<number_variable>", "A", "<minus>", ["<numeric_literal>", 400, "<plus>", "<number_variable>", "X2"]];
-    right = ["<numeric_literal>", 11];
+    left = ["<numeric_expression>", "<numeric_literal>", 6, "<times>", "<number_variable>", "A", "<minus>", ["<numeric_literal>", 400, "<plus>", "<number_variable>", "X2"], "<num_exp_end>"];
+    right = ["<numeric_expression>", "<numeric_literal>", 11, "<num_exp_end>"];
     test_data[11] = {
       stack: stack,
       expected_expression: "<times>",
@@ -206,7 +206,7 @@ describe("Numeric expression object", function() {
     _results = [];
     for (_i = 0, _len = test_data.length; _i < _len; _i++) {
       test_set = test_data[_i];
-      result = helper.scan(test_set.stack);
+      result = helper.split(test_set.stack);
       expect(result.left.length).toEqual(test_set.left.length);
       expect(result.right.length).toEqual(test_set.right.length);
       expect(result.exp).toEqual(test_set.expected_expression);
@@ -224,7 +224,7 @@ describe("Numeric expression object", function() {
     }
     return _results;
   });
-  return xit("should build a NumericExpression object from a numeric expression 'parse object'", function() {
+  return it("should build a NumericExpression object from a numeric expression 'parse object'", function() {
     var expected, nmx, op1, op2, op2_2, op2_2_1, op2_2_2, op2_2_2_1, op2_2_2_2, po;
     po = ["<numeric_expression>", "<number_variable>", "X", "<num_exp_end>"];
     expected = {
@@ -232,6 +232,7 @@ describe("Numeric expression object", function() {
       name: "X"
     };
     nmx = new NumericExpression(po);
+    expect(nmx).toEqual(jasmine.any(NumericExpression));
     expect(nmx.exp).toEqual(expected.exp);
     expect(nmx.name).toEqual(expected.name);
     po = ["<numeric_expression>", "<numeric_literal>", 42, "<num_exp_end>"];
@@ -240,6 +241,7 @@ describe("Numeric expression object", function() {
       value: 42
     };
     nmx = new NumericExpression(po);
+    expect(nmx).toEqual(jasmine.any(NumericExpression));
     expect(nmx.exp).toEqual(expected.exp);
     expect(nmx.value).toEqual(expected.value);
     po = ["<numeric_expression>", "<numeric_literal>", 13.477, "<num_exp_end>"];
@@ -248,6 +250,7 @@ describe("Numeric expression object", function() {
       value: 13.477
     };
     nmx = new NumericExpression(po);
+    expect(nmx).toEqual(jasmine.any(NumericExpression));
     expect(nmx.exp).toEqual(expected.exp);
     expect(nmx.value).toEqual(expected.value);
     po = ["<numeric_expression>", "<numeric_literal>", 7, "<divide>", "<numeric_literal>", 12, "<num_exp_end>"];
@@ -263,6 +266,7 @@ describe("Numeric expression object", function() {
       }
     };
     nmx = new NumericExpression(po);
+    expect(nmx).toEqual(jasmine.any(NumericExpression));
     expect(nmx.exp).toEqual(expected.exp);
     expect(nmx.op1.exp).toEqual(expected.op1.exp);
     expect(nmx.op1.value).toEqual(expected.op1.value);
@@ -281,6 +285,7 @@ describe("Numeric expression object", function() {
       }
     };
     nmx = new NumericExpression(po);
+    expect(nmx).toEqual(jasmine.any(NumericExpression));
     expect(nmx.exp).toEqual(expected.exp);
     expect(nmx.op1.exp).toEqual(expected.op1.exp);
     expect(nmx.op1.value).toEqual(expected.op1.value);
@@ -299,20 +304,13 @@ describe("Numeric expression object", function() {
       }
     };
     nmx = new NumericExpression(po);
+    expect(nmx).toEqual(jasmine.any(NumericExpression));
     expect(nmx.exp).toEqual(expected.exp);
     expect(nmx.op1.exp).toEqual(expected.op1.exp);
     expect(nmx.op1.name).toEqual(expected.op1.name);
     expect(nmx.op2.exp).toEqual(expected.op2.exp);
     expect(nmx.op2.value).toEqual(expected.op2.value);
     po = ["<numeric_expression>", "<number_variable>", "X", "<times>", "<number_variable>", "Y", "<times>", "<number_variable>", "Z", "<num_exp_end>"];
-    expected = {
-      exp: "<times>",
-      op1: {
-        exp: "<var>",
-        name: "X"
-      },
-      op2: op2
-    };
     op2 = {
       exp: "<times>",
       op1: {
@@ -324,7 +322,16 @@ describe("Numeric expression object", function() {
         name: "Z"
       }
     };
+    expected = {
+      exp: "<times>",
+      op1: {
+        exp: "<var>",
+        name: "X"
+      },
+      op2: op2
+    };
     nmx = new NumericExpression(po);
+    expect(nmx).toEqual(jasmine.any(NumericExpression));
     expect(nmx.exp).toEqual(expected.exp);
     expect(nmx.op1.exp).toEqual(expected.op1.exp);
     expect(nmx.op1.name).toEqual(expected.op1.name);
@@ -334,14 +341,6 @@ describe("Numeric expression object", function() {
     expect(nmx.op2.op2.exp).toEqual(expected.op2.op2.exp);
     expect(nmx.op2.op2.name).toEqual(expected.op2.op2.name);
     po = ["<numeric_expression>", "<numeric_literal>", 28, "<times>", "<left>", "<number_variable>", "J", "<plus>", "<numeric_literal>", 2, "<right>", "<num_exp_end>"];
-    expected = {
-      exp: "<times>",
-      op1: {
-        exp: "<num>",
-        value: 28
-      },
-      op2: op2
-    };
     op2 = {
       exp: "<plus>",
       op1: {
@@ -353,7 +352,16 @@ describe("Numeric expression object", function() {
         value: 2
       }
     };
+    expected = {
+      exp: "<times>",
+      op1: {
+        exp: "<num>",
+        value: 28
+      },
+      op2: op2
+    };
     nmx = new NumericExpression(po);
+    expect(nmx).toEqual(jasmine.any(NumericExpression));
     expect(nmx.exp).toEqual(expected.exp);
     expect(nmx.op1.exp).toEqual(expected.op1.exp);
     expect(nmx.op1.value).toEqual(expected.op1.value);
@@ -363,35 +371,6 @@ describe("Numeric expression object", function() {
     expect(nmx.op2.op2.exp).toEqual(expected.op2.op2.exp);
     expect(nmx.op2.op2.value).toEqual(expected.op2.op2.value);
     po = ["<numeric_expression>", "<number_variable>", "W5", "<plus>", "<number_variable>", "W7", "<minus>", "<numeric_literal>", 4, "<times>", "<left>", "<number_variable>", "J", "<power>", "<numeric_literal>", 2, "<plus>", "<number_variable>", "K", "<power>", "<numeric_literal>", 3, "<right>", "<num_exp_end>"];
-    expected = {
-      exp: "<plus>",
-      op1: {
-        exp: "<var>",
-        name: "W5"
-      },
-      op2: op2
-    };
-    op2 = {
-      exp: "<minus>",
-      op1: {
-        exp: "<var>",
-        name: "W7"
-      },
-      op2: op2_2
-    };
-    op2_2 = {
-      exp: "<times>",
-      op1: {
-        exp: "<num>",
-        value: 4
-      },
-      op2: op2_2_2
-    };
-    op2_2_2 = {
-      exp: "<plus>",
-      op1: op2_2_2_1,
-      op2: op2_2_2_2
-    };
     op2_2_2_1 = {
       exp: "<power>",
       op1: {
@@ -414,7 +393,37 @@ describe("Numeric expression object", function() {
         value: 3
       }
     };
+    op2_2_2 = {
+      exp: "<plus>",
+      op1: op2_2_2_1,
+      op2: op2_2_2_2
+    };
+    op2_2 = {
+      exp: "<times>",
+      op1: {
+        exp: "<num>",
+        value: 4
+      },
+      op2: op2_2_2
+    };
+    op2 = {
+      exp: "<minus>",
+      op1: {
+        exp: "<var>",
+        name: "W7"
+      },
+      op2: op2_2
+    };
+    expected = {
+      exp: "<plus>",
+      op1: {
+        exp: "<var>",
+        name: "W5"
+      },
+      op2: op2
+    };
     nmx = new NumericExpression(po);
+    expect(nmx).toEqual(jasmine.any(NumericExpression));
     expect(nmx.exp).toEqual(expected.exp);
     expect(nmx.op1.exp).toEqual(expected.op1.exp);
     expect(nmx.op1.name).toEqual(expected.op1.name);
@@ -434,11 +443,6 @@ describe("Numeric expression object", function() {
     expect(nmx.op2.op2.op2.op2.op2.exp).toEqual(expected.op2.op2.op2.op2.op2.exp);
     expect(nmx.op2.op2.op2.op2.op2.value).toEqual(expected.op2.op2.op2.op2.op2.value);
     po = ["<numeric_expression>", "<left>", "<numeric_literal>", 18, "<minus>", "<number_variable>", "Q7", "<right>", "<divide>", "<left>", "<numeric_literal>", 2.108, "<times>", "<left>", "<numeric_literal>", 14, "<times>", "<number_variable>", "M", "<plus>", "<numeric_literal>", 17, "<times>", "<number_variable>", "X", "<right>", "<right>", "<num_exp_end>"];
-    expected = {
-      exp: "<divide>",
-      op1: op1,
-      op2: op2
-    };
     op1 = {
       exp: "<minus>",
       op1: {
@@ -450,24 +454,11 @@ describe("Numeric expression object", function() {
         name: "Q7"
       }
     };
-    op2 = {
-      exp: "<times>",
-      op1: {
-        exp: "<num>",
-        value: 2.108
-      },
-      op2: op2_2
-    };
-    op2_2 = {
-      exp: "<plus>",
-      op1: op2_2_1,
-      op2: op2_2_2
-    };
     op2_2_1 = {
       exp: "<times>",
       op1: {
         exp: "<num>",
-        val: 14
+        value: 14
       },
       op2: {
         exp: "<var>",
@@ -478,14 +469,33 @@ describe("Numeric expression object", function() {
       exp: "<times>",
       op1: {
         exp: "<num>",
-        val: 17
+        value: 17
       },
       op2: {
         exp: "<var>",
         name: "X"
       }
     };
+    op2_2 = {
+      exp: "<plus>",
+      op1: op2_2_1,
+      op2: op2_2_2
+    };
+    op2 = {
+      exp: "<times>",
+      op1: {
+        exp: "<num>",
+        value: 2.108
+      },
+      op2: op2_2
+    };
+    expected = {
+      exp: "<divide>",
+      op1: op1,
+      op2: op2
+    };
     nmx = new NumericExpression(po);
+    expect(nmx).toEqual(jasmine.any(NumericExpression));
     expect(nmx.exp).toEqual(expected.exp);
     expect(nmx.op1.exp).toEqual(expected.op1.exp);
     expect(nmx.op1.op1.exp).toEqual(expected.op1.op1.exp);

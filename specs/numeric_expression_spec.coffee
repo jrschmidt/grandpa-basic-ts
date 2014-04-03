@@ -204,12 +204,16 @@ describe "Numeric expression object", ->
       "B" ]
 
     left = [
+      "<numeric_expression>"
       "<number_variable>"
-      "A" ]
+      "A"
+      "<num_exp_end>" ]
 
     right = [
+      "<numeric_expression>"
       "<number_variable>"
-      "B" ]
+      "B" 
+      "<num_exp_end>"]
 
     test_data[0] = {
       stack: stack
@@ -228,12 +232,16 @@ describe "Numeric expression object", ->
       200 ]
 
     left = [
+      "<numeric_expression>"
       "<number_variable>"
-      "X" ]
+      "X"
+      "<num_exp_end>" ]
 
     right = [
+      "<numeric_expression>"
       "<numeric_literal>"
-      200 ]
+      200
+      "<num_exp_end>" ]
 
     test_data[1] = {
       stack: stack
@@ -258,10 +266,13 @@ describe "Numeric expression object", ->
       "S" ]
 
     left = [
+      "<numeric_expression>"
       "<number_variable>"
-      "P" ]
+      "P"
+      "<num_exp_end>" ]
 
     right = [
+      "<numeric_expression>"
       "<number_variable>"
       "Q"
       "<plus>"
@@ -269,7 +280,8 @@ describe "Numeric expression object", ->
       "R"
       "<plus>"
       "<number_variable>"
-      "S" ]
+      "S"
+      "<num_exp_end>" ]
 
     test_data[2] = {
       stack: stack
@@ -294,18 +306,22 @@ describe "Numeric expression object", ->
       "Z2" ]
 
     left = [
+      "<numeric_expression>"
       "<number_variable>"
       "J"
       "<times>"
       "<number_variable>"
-      "Z1" ]
+      "Z1"
+      "<num_exp_end>" ]
 
     right = [
+      "<numeric_expression>"
       "<number_variable>"
       "K"
       "<times>"
       "<number_variable>"
-      "Z2" ]
+      "Z2"
+      "<num_exp_end>" ]
 
     test_data[3] = {
       stack: stack
@@ -325,12 +341,16 @@ describe "Numeric expression object", ->
       "T" ]
 
     left = [
+      "<numeric_expression>"
       "<numeric_literal>"
-      21 ]
+      21
+      "<num_exp_end>" ]
 
     right = [
+      "<numeric_expression>"
       "<number_variable>"
-      "T" ]
+      "T"
+      "<num_exp_end>" ]
 
     test_data[4] = {
       stack: stack
@@ -349,12 +369,16 @@ describe "Numeric expression object", ->
       2 ]
 
     left = [
+      "<numeric_expression>"
       "<numeric_literal>"
-      3.1416 ]
+      3.1416
+      "<num_exp_end>" ]
 
     right = [
+      "<numeric_expression>"
       "<numeric_literal>"
-      2 ]
+      2
+      "<num_exp_end>" ]
 
     test_data[5] = {
       stack: stack
@@ -379,10 +403,13 @@ describe "Numeric expression object", ->
       "M" ]
 
     left = [
+      "<numeric_expression>"
       "<numeric_literal>"
-      3.3333 ]
+      3.3333
+      "<num_exp_end>" ]
 
     right = [
+      "<numeric_expression>"
       "<number_variable>"
       "Z"
       "<times>"
@@ -390,7 +417,8 @@ describe "Numeric expression object", ->
       "A"
       "<divide>"
       "<number_variable>"
-      "M" ]
+      "M"
+      "<num_exp_end>" ]
 
     test_data[6] = {
       stack: stack
@@ -409,12 +437,16 @@ describe "Numeric expression object", ->
       3 ]
 
     left = [
+      "<numeric_expression>"
       "<number_variable>"
-      "M" ]
+      "M"
+      "<num_exp_end>" ]
 
     right = [
+      "<numeric_expression>"
       "<numeric_literal>"
-      3 ]
+      3
+      "<num_exp_end>" ]
 
     test_data[7] = {
       stack: stack
@@ -481,13 +513,16 @@ describe "Numeric expression object", ->
       "<right>" ]
 
     left = [
+      "<numeric_expression>"
       "<numeric_literal>"
       1
       "<plus>"
       "<number_variable>"
-      "W" ]
+      "W"
+      "<num_exp_end>" ]
 
     right = [
+      "<numeric_expression>"
       "<number_variable>"
       "Z1"
       "<plus>"
@@ -495,7 +530,8 @@ describe "Numeric expression object", ->
       "Z2"
       "plus"
       "<number_variable>"
-      "Z3" ]
+      "Z3"
+      "<num_exp_end>" ]
 
     test_data[10] = {
       stack: stack
@@ -527,17 +563,21 @@ describe "Numeric expression object", ->
       11 ]
 
     left = [
+      "<numeric_expression>"
       "<numeric_literal>"
       6
       "<times>"
       "<number_variable>"
       "A"
       "<minus>"
-      ["<numeric_literal>", 400, "<plus>", "<number_variable>", "X2"] ]
+      ["<numeric_literal>", 400, "<plus>", "<number_variable>", "X2"]
+      "<num_exp_end>" ]
 
     right = [
+      "<numeric_expression>"
       "<numeric_literal>"
-      11 ]
+      11
+      "<num_exp_end>" ]
 
     test_data[11] = {
       stack: stack
@@ -546,7 +586,7 @@ describe "Numeric expression object", ->
       right: right }
 
     for test_set in test_data
-      result = helper.scan(test_set.stack)
+      result = helper.split(test_set.stack)
       expect(result.left.length).toEqual(test_set.left.length)
       expect(result.right.length).toEqual(test_set.right.length)
       expect(result.exp).toEqual(test_set.expected_expression)
@@ -555,7 +595,7 @@ describe "Numeric expression object", ->
 
 
 
-  xit "should build a NumericExpression object from a numeric expression 'parse object'", ->
+  it "should build a NumericExpression object from a numeric expression 'parse object'", ->
 
     # TEST NUMERIC EXPRESSION:  X
     po = [
@@ -569,6 +609,7 @@ describe "Numeric expression object", ->
       name: "X" }
 
     nmx = new NumericExpression(po)
+    expect(nmx).toEqual(jasmine.any(NumericExpression))
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.name).toEqual(expected.name)
 
@@ -585,6 +626,7 @@ describe "Numeric expression object", ->
       value: 42 }
 
     nmx = new NumericExpression(po)
+    expect(nmx).toEqual(jasmine.any(NumericExpression))
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.value).toEqual(expected.value)
 
@@ -601,6 +643,7 @@ describe "Numeric expression object", ->
       value: 13.477 }
 
     nmx = new NumericExpression(po)
+    expect(nmx).toEqual(jasmine.any(NumericExpression))
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.value).toEqual(expected.value)
 
@@ -621,6 +664,7 @@ describe "Numeric expression object", ->
       op2: {exp: "<num>", value: 12 } }
 
     nmx = new NumericExpression(po)
+    expect(nmx).toEqual(jasmine.any(NumericExpression))
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.value).toEqual(expected.op1.value)
@@ -644,6 +688,7 @@ describe "Numeric expression object", ->
       op2: {exp: "<var>", name: "B" } }
 
     nmx = new NumericExpression(po)
+    expect(nmx).toEqual(jasmine.any(NumericExpression))
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.value).toEqual(expected.op1.value)
@@ -666,6 +711,7 @@ describe "Numeric expression object", ->
       op2: {exp: "<num>", value: 2 } }
 
     nmx = new NumericExpression(po)
+    expect(nmx).toEqual(jasmine.any(NumericExpression))
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.name).toEqual(expected.op1.name)
@@ -686,17 +732,18 @@ describe "Numeric expression object", ->
       "Z"
       "<num_exp_end>" ]
 
-    expected = {
-      exp: "<times>"
-      op1: {exp: "<var>", name: "X" }
-      op2: op2 }
-
     op2 = {
       exp: "<times>"
       op1: {exp: "<var>", name: "Y" }
       op2: {exp: "<var>", name: "Z" } }
 
+    expected = {
+      exp: "<times>"
+      op1: {exp: "<var>", name: "X" }
+      op2: op2 }
+
     nmx = new NumericExpression(po)
+    expect(nmx).toEqual(jasmine.any(NumericExpression))
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.name).toEqual(expected.op1.name)
@@ -721,17 +768,18 @@ describe "Numeric expression object", ->
       "<right>"
       "<num_exp_end>" ]
 
-    expected = {
-      exp: "<times>"
-      op1: {exp: "<num>", value: 28 }
-      op2: op2 }
-
     op2 = {
       exp: "<plus>"
       op1: {exp: "<var>", name: "J" }
       op2: {exp: "<num>", value: 2 } }
 
+    expected = {
+      exp: "<times>"
+      op1: {exp: "<num>", value: 28 }
+      op2: op2 }
+
     nmx = new NumericExpression(po)
+    expect(nmx).toEqual(jasmine.any(NumericExpression))
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.value).toEqual(expected.op1.value)
@@ -769,26 +817,6 @@ describe "Numeric expression object", ->
       "<right>"
       "<num_exp_end>" ]
 
-    expected = {
-      exp: "<plus>"
-      op1: {exp: "<var>", name: "W5" }
-      op2: op2 }
-
-    op2 = {
-      exp: "<minus>"
-      op1: {exp: "<var>", name: "W7" }
-      op2: op2_2 }
-
-    op2_2 = {
-      exp: "<times>"
-      op1: {exp: "<num>", value: 4 }
-      op2: op2_2_2 }
-
-    op2_2_2 = {
-      exp: "<plus>"
-      op1: op2_2_2_1
-      op2: op2_2_2_2 }
-
     op2_2_2_1 = {
       exp: "<power>"
       op1: {exp: "<var>", name: "J" }
@@ -799,8 +827,29 @@ describe "Numeric expression object", ->
       op1: {exp:"<var>", name: "K" }
       op2: {exp: "<num>", value: 3 } }
 
+    op2_2_2 = {
+      exp: "<plus>"
+      op1: op2_2_2_1
+      op2: op2_2_2_2 }
+
+    op2_2 = {
+      exp: "<times>"
+      op1: {exp: "<num>", value: 4 }
+      op2: op2_2_2 }
+
+    op2 = {
+      exp: "<minus>"
+      op1: {exp: "<var>", name: "W7" }
+      op2: op2_2 }
+
+    expected = {
+      exp: "<plus>"
+      op1: {exp: "<var>", name: "W5" }
+      op2: op2 }
+
 
     nmx = new NumericExpression(po)
+    expect(nmx).toEqual(jasmine.any(NumericExpression))
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.name).toEqual(expected.op1.name)
@@ -852,37 +901,38 @@ describe "Numeric expression object", ->
       "<right>"
       "<num_exp_end>" ]
 
-    expected = {
-      exp: "<divide>"
-      op1: op1
-      op2: op2 }
-
     op1 = {
       exp: "<minus>"
       op1: {exp: "<num>", value: 18 }
       op2: {exp: "<var>", name: "Q7" } }
 
-    op2 = {
+    op2_2_1 = {
       exp: "<times>"
-      op1: {exp: "<num>", value: 2.108 }
-      op2: op2_2 }
+      op1: {exp: "<num>", value: 14 }
+      op2: {exp: "<var>", name: "M" } }
+
+    op2_2_2 = {
+      exp: "<times>"
+      op1: {exp: "<num>", value: 17 }
+      op2: {exp: "<var>", name: "X" } }
 
     op2_2 = {
       exp: "<plus>"
       op1: op2_2_1
       op2: op2_2_2 }
 
-    op2_2_1 = {
+    op2 = {
       exp: "<times>"
-      op1: {exp: "<num>", val: 14 }
-      op2: {exp: "<var>", name: "M" } }
+      op1: {exp: "<num>", value: 2.108 }
+      op2: op2_2 }
 
-    op2_2_2 = {
-      exp: "<times>"
-      op1: {exp: "<num>", val: 17 }
-      op2: {exp: "<var>", name: "X" } }
+    expected = {
+      exp: "<divide>"
+      op1: op1
+      op2: op2 }
 
     nmx = new NumericExpression(po)
+    expect(nmx).toEqual(jasmine.any(NumericExpression))
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.op1.exp).toEqual(expected.op1.op1.exp)
