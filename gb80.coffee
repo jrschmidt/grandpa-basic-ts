@@ -781,6 +781,36 @@ class NumExpBuilder
 
 
 
+class NumericVariableRegister
+
+  constructor: () ->
+    @vars = {}
+
+
+  # (Most, if not all, of the early versions of BASIC initialized any unset
+  # numeric variables to 0.)
+  add_var: (name) ->
+    @vars[name] = 0
+
+
+  defined: (name) ->
+    if @vars.hasOwnProperty(name)
+      return "yes"
+    else
+      return "no"
+
+
+  set: (name,value) ->
+    @add_var(name) if @defined(name) == "no"
+    @vars[name] = value
+
+
+  get: (name) ->
+    @add_var(name) if @defined(name) == "no"
+    return @vars[name]
+
+
+
 class KeyHelper
 
   constructor: () ->
