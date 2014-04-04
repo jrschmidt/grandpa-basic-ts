@@ -88,6 +88,24 @@ LineParser = (function() {
     this.input_rules = this.syntax.input_statement_rules;
   }
 
+  LineParser.prototype.parse = function(string) {
+    var match, result, rule, _i, _len, _ref;
+    match = "no";
+    _ref = this.rules;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      rule = _ref[_i];
+      if (match === "no") {
+        result = this.look_for(string, rule);
+        match = result.match;
+      }
+    }
+    if (match === "yes") {
+      return result.parse_object;
+    } else {
+      return "<parse_error>";
+    }
+  };
+
   LineParser.prototype.look_for = function(string, rule) {
     var cat, parse_object, result, rule_match, tk, token, token_result, _i, _j, _len, _len1, _ref;
     parse_object = [];
