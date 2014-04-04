@@ -817,12 +817,13 @@ class NumericExpressionEvaluator
     @vars = new NumericVariableRegister
 
   val: (num_exp) ->
-    exp = num_exp.exp
-    switch exp
+    switch num_exp.exp
       when "<num>"
         value = @num_lit_eval(num_exp)
       when "<var>"
         value = @num_var_eval(num_exp)
+      when "<plus>", "<minus>", "<times>", "<divide>", "<power>"
+        value = @binary_op_eval(num_exp)
       else
         value = "error"
     return value
@@ -834,6 +835,25 @@ class NumericExpressionEvaluator
 
   num_var_eval: (num_exp) ->
     return @vars.get(num_exp.name)
+
+  binary_op_eval: (num_exp) ->
+    a = num_exp.op1
+    b = num_exp.op2
+    switch num_exp.exp
+      when "<plus>"
+        value = a + b
+      when "<minus>"
+        value = a - b
+      when "<times>"
+        value = a * b
+      when "<divide>"
+        value = a / b
+      when "<power>"
+        value = a**b
+      else
+        value = "error"
+
+
 
 
 class KeyHelper

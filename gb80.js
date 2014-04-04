@@ -1017,14 +1017,20 @@ NumericExpressionEvaluator = (function() {
   }
 
   NumericExpressionEvaluator.prototype.val = function(num_exp) {
-    var exp, value;
-    exp = num_exp.exp;
-    switch (exp) {
+    var value;
+    switch (num_exp.exp) {
       case "<num>":
         value = this.num_lit_eval(num_exp);
         break;
       case "<var>":
         value = this.num_var_eval(num_exp);
+        break;
+      case "<plus>":
+      case "<minus>":
+      case "<times>":
+      case "<divide>":
+      case "<power>":
+        value = this.binary_op_eval(num_exp);
         break;
       default:
         value = "error";
@@ -1038,6 +1044,26 @@ NumericExpressionEvaluator = (function() {
 
   NumericExpressionEvaluator.prototype.num_var_eval = function(num_exp) {
     return this.vars.get(num_exp.name);
+  };
+
+  NumericExpressionEvaluator.prototype.binary_op_eval = function(num_exp) {
+    var a, b, value;
+    a = num_exp.op1;
+    b = num_exp.op2;
+    switch (num_exp.exp) {
+      case "<plus>":
+        return value = a + b;
+      case "<minus>":
+        return value = a - b;
+      case "<times>":
+        return value = a * b;
+      case "<divide>":
+        return value = a / b;
+      case "<power>":
+        return value = Math.pow(a, b);
+      default:
+        return value = "error";
+    }
   };
 
   return NumericExpressionEvaluator;

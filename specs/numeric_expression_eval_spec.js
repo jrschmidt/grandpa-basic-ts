@@ -60,6 +60,44 @@ describe("Numeric expression evaluator", function() {
     value = this.nmx_eval.val(nmx);
     return expect(value).toEqual(944.67);
   });
+  it("should evaluate a simple binary expression", function() {
+    var nmx, value;
+    nmx = {
+      exp: "<plus>",
+      op1: 440,
+      op2: 16
+    };
+    value = this.nmx_eval.val(nmx);
+    expect(value).toEqual(456);
+    nmx = {
+      exp: "<minus>",
+      op1: 888,
+      op2: 555
+    };
+    value = this.nmx_eval.val(nmx);
+    expect(value).toEqual(333);
+    nmx = {
+      exp: "<times>",
+      op1: 3,
+      op2: 17
+    };
+    value = this.nmx_eval.val(nmx);
+    expect(value).toEqual(51);
+    nmx = {
+      exp: "<divide>",
+      op1: 1024,
+      op2: 256
+    };
+    value = this.nmx_eval.val(nmx);
+    expect(value).toEqual(4);
+    nmx = {
+      exp: "<power>",
+      op1: 2,
+      op2: 5
+    };
+    value = this.nmx_eval.val(nmx);
+    return expect(value).toEqual(32);
+  });
   return xit("should do nothing ...", function() {
     var nmx, value;
     nmx = {
