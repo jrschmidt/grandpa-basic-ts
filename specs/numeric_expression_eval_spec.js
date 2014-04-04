@@ -181,12 +181,138 @@ describe("Numeric expression evaluator", function() {
     value = this.nmx_eval.val(nmx);
     return expect(value).toEqual(808);
   });
-  return xit("should do nothing ...", function() {
-    var nmx, value;
-    nmx = {
-      exp: "<>"
+  return it("should evaluate numeric expressions with parentheses", function() {
+    var nmx, op1, op1_2, op1_2_2, op2, value;
+    op1 = {
+      exp: "<minus>",
+      op1: {
+        exp: "<var>",
+        name: "A"
+      },
+      op2: {
+        exp: "<var>",
+        name: "B"
+      }
     };
+    nmx = {
+      exp: "<divide>",
+      op1: op1,
+      op2: {
+        exp: "<num>",
+        value: 3
+      }
+    };
+    this.num_vars.set("A", 555);
+    this.num_vars.set("B", 222);
     value = this.nmx_eval.val(nmx);
-    return expect(value).toEqual();
+    expect(value).toEqual(111);
+    this.num_vars.set("A", 71);
+    this.num_vars.set("B", 20);
+    value = this.nmx_eval.val(nmx);
+    expect(value).toEqual(17);
+    op2 = {
+      exp: "<plus>",
+      op1: {
+        exp: "<num>",
+        value: 40
+      },
+      op2: {
+        exp: "<var>",
+        name: "L"
+      }
+    };
+    nmx = {
+      exp: "<times>",
+      op1: {
+        exp: "<var>",
+        name: "W"
+      },
+      op2: op2
+    };
+    this.num_vars.set("W", 100);
+    this.num_vars.set("L", 28);
+    value = this.nmx_eval.val(nmx);
+    expect(value).toEqual(6800);
+    this.num_vars.set("W", 7);
+    this.num_vars.set("L", 30);
+    value = this.nmx_eval.val(nmx);
+    expect(value).toEqual(490);
+    op1 = {
+      exp: "<plus>",
+      op1: {
+        exp: "<num>",
+        value: 14
+      },
+      op2: {
+        exp: "<var>",
+        name: "M1"
+      }
+    };
+    op2 = {
+      exp: "<plus>",
+      op1: {
+        exp: "<num>",
+        value: 11
+      },
+      op2: {
+        exp: "<var>",
+        name: "M2"
+      }
+    };
+    nmx = {
+      exp: "<divide>",
+      op1: op1,
+      op2: op2
+    };
+    this.num_vars.set("M1", 28);
+    this.num_vars.set("M2", 3);
+    value = this.nmx_eval.val(nmx);
+    expect(value).toEqual(3);
+    this.num_vars.set("M1", 16);
+    this.num_vars.set("M2", 9);
+    value = this.nmx_eval.val(nmx);
+    expect(value).toEqual(1.5);
+    op1_2_2 = {
+      tag: "op1_2_2",
+      exp: "<minus>",
+      op1: {
+        exp: "<var>",
+        name: "L"
+      },
+      op2: {
+        exp: "<num>",
+        value: 7
+      }
+    };
+    op1_2 = {
+      tag: "op1_2",
+      exp: "<times>",
+      op1: {
+        exp: "<num>",
+        value: 3
+      },
+      op2: op1_2_2
+    };
+    op1 = {
+      tag: "op1",
+      exp: "<minus>",
+      op1: {
+        exp: "<num>",
+        value: 201
+      },
+      op2: op1_2
+    };
+    nmx = {
+      tag: "nmx",
+      exp: "<divide>",
+      op1: op1,
+      op2: {
+        exp: "<num>",
+        value: 9
+      }
+    };
+    this.num_vars.set("L", 14);
+    value = this.nmx_eval.val(nmx);
+    return expect(value).toEqual(20);
   });
 });
