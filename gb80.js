@@ -1012,7 +1012,33 @@ NumericVariableRegister = (function() {
 })();
 
 NumericExpressionEvaluator = (function() {
-  function NumericExpressionEvaluator() {}
+  function NumericExpressionEvaluator() {
+    this.vars = new NumericVariableRegister;
+  }
+
+  NumericExpressionEvaluator.prototype.val = function(num_exp) {
+    var exp, value;
+    exp = num_exp.exp;
+    switch (exp) {
+      case "<num>":
+        value = this.num_lit_eval(num_exp);
+        break;
+      case "<var>":
+        value = this.num_var_eval(num_exp);
+        break;
+      default:
+        value = "error";
+    }
+    return value;
+  };
+
+  NumericExpressionEvaluator.prototype.num_lit_eval = function(num_exp) {
+    return num_exp.value;
+  };
+
+  NumericExpressionEvaluator.prototype.num_var_eval = function(num_exp) {
+    return this.vars.get(num_exp.name);
+  };
 
   return NumericExpressionEvaluator;
 

@@ -813,6 +813,27 @@ class NumericVariableRegister
 
 class NumericExpressionEvaluator
 
+  constructor: () ->
+    @vars = new NumericVariableRegister
+
+  val: (num_exp) ->
+    exp = num_exp.exp
+    switch exp
+      when "<num>"
+        value = @num_lit_eval(num_exp)
+      when "<var>"
+        value = @num_var_eval(num_exp)
+      else
+        value = "error"
+    return value
+
+
+  num_lit_eval: (num_exp) ->
+    return num_exp.value
+
+
+  num_var_eval: (num_exp) ->
+    return @vars.get(num_exp.name)
 
 
 class KeyHelper
