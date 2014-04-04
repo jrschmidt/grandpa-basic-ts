@@ -837,9 +837,10 @@ class NumericExpressionEvaluator
     return @vars.get(num_exp.name)
 
   binary_op_eval: (num_exp) ->
-    a = num_exp.op1
-    b = num_exp.op2
-    switch num_exp.exp
+    a = @val(num_exp.op1)
+    b = @val(num_exp.op2)
+    exp = num_exp.exp
+    switch exp
       when "<plus>"
         value = a + b
       when "<minus>"
@@ -852,7 +853,6 @@ class NumericExpressionEvaluator
         value = a**b
       else
         value = "error"
-
 
 
 

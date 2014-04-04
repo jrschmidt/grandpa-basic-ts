@@ -1047,10 +1047,11 @@ NumericExpressionEvaluator = (function() {
   };
 
   NumericExpressionEvaluator.prototype.binary_op_eval = function(num_exp) {
-    var a, b, value;
-    a = num_exp.op1;
-    b = num_exp.op2;
-    switch (num_exp.exp) {
+    var a, b, exp, value;
+    a = this.val(num_exp.op1);
+    b = this.val(num_exp.op2);
+    exp = num_exp.exp;
+    switch (exp) {
       case "<plus>":
         return value = a + b;
       case "<minus>":
