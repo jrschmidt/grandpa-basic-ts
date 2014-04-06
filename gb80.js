@@ -73,6 +73,7 @@ BasicProgramLine = (function() {
 ProgramLineFormatter = (function() {
   function ProgramLineFormatter() {
     this.num_exp = new NumExpBuilder;
+    this.str_exp = new StrExpBuilder;
   }
 
   ProgramLineFormatter.prototype.format = function(parse_object, line_text) {
@@ -86,7 +87,7 @@ ProgramLineFormatter = (function() {
         line = this.build_numeric_assignment(parse_object);
         break;
       case "<string_variable>":
-        line.command = "UNDEFINED-METHOD";
+        line = this.build_string_assignment(parse_object);
         break;
       case "<goto>":
       case "<gosub>":
@@ -145,6 +146,18 @@ ProgramLineFormatter = (function() {
         expression: nmx
       };
     }
+    return line;
+  };
+
+  ProgramLineFormatter.prototype.build_string_assignment = function(parse_object) {
+    var line, stack, str_exp;
+    stack = parse_object.slice(6, +(parse_object.length - 1) + 1 || 9e9);
+    str_exp = this.str_exp.build_str_exp(stack);
+    line = {
+      command: "<string_assignment>",
+      operand: parse_object[4],
+      expression: str_exp
+    };
     return line;
   };
 
@@ -1189,9 +1202,7 @@ StrExpBuilder = (function() {
       }
       parts.push([tk, stack[t + 1]]);
     }
-    return {
-      parts: parts
-    };
+    return parts;
   };
 
   return StrExpBuilder;

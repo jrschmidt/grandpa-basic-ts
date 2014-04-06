@@ -136,7 +136,7 @@ class ProgramLineFormatter
 
   constructor: () ->
     @num_exp = new NumExpBuilder
-
+    @str_exp = new StrExpBuilder
 
   format: (parse_object, line_text) ->
     cmd = parse_object[3]
@@ -146,7 +146,7 @@ class ProgramLineFormatter
       when "<number_variable>"
         line = @build_numeric_assignment(parse_object)
       when "<string_variable>"
-        line.command = "UNDEFINED-METHOD"
+        line = @build_string_assignment(parse_object)
       when "<goto>", "<gosub>"
         line = @build_cmd_with_dest(parse_object)
       when "<return>", "<clear_screen>", "<end>"
@@ -183,6 +183,16 @@ class ProgramLineFormatter
         command: "<numeric_assignment>"
         operand: parse_object[4]
         expression: nmx }
+    return line
+
+
+  build_string_assignment: (parse_object) ->
+    stack = parse_object[6..parse_object.length-1]
+    str_exp = @str_exp.build_str_exp(stack)
+    line = {
+      command:  "<string_assignment>"
+      operand: parse_object[4]
+      expression: str_exp }
     return line
 
 
@@ -924,7 +934,7 @@ class StrExpBuilder
     for t in [1..stack.length-3] by 3
       if stack[t] == "<string_variable>" then tk = "<var>" else tk = "<str>"
       parts.push( [tk, stack[t+1] ] )
-    return {parts: parts }
+    return parts
 
 
 

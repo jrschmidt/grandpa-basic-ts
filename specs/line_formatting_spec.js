@@ -34,17 +34,27 @@ describe("Program line formatting", function() {
     expect(expr.op2.exp).toEqual("<var>");
     return expect(expr.op2.name).toEqual("B");
   });
-  xit("should correctly format a program line with a string assignment statement", function() {
-    var line, line_text, parse_object, result;
+  it("should correctly format a program line with a string assignment statement", function() {
+    var expr, line, line_text, parse_object, result;
     line_text = '40 $E=$M+" IS NOT COMPLETE"';
     parse_object = ["<line_number>", 40, "<sp>", "<string_variable>", "E", "<equals>", "<string_expression>", "<string_variable>", "M", "<plus>", "<string_literal>", " IS NOT COMPLETE", "<str_exp_end>"];
+    expr = [["<var>", "M"], ["<str>", " IS NOT COMPLETE"]];
     line = {
       line_no: 40,
       command: "<string_assignment>",
       text: '40 $E=$M+" IS NOT COMPLETE"',
-      operand: "E"
+      operand: "E",
+      expression: expr
     };
-    return result = this.formatter.format(parse_object, line_text);
+    result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(40);
+    expect(result.command).toEqual("<string_assignment>");
+    expect(result.text).toEqual('40 $E=$M+" IS NOT COMPLETE"');
+    expect(result.operand).toEqual("E");
+    expect(result.expression[0][0]).toEqual("<var>");
+    expect(result.expression[0][1]).toEqual("M");
+    expect(result.expression[1][0]).toEqual("<str>");
+    return expect(result.expression[1][1]).toEqual(" IS NOT COMPLETE");
   });
   it("should correctly format a program line with a GOTO statement", function() {
     var line_text, parse_object, result;

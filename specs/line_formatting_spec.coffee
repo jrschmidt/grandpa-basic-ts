@@ -68,7 +68,7 @@ describe "Program line formatting", ->
     expect(expr.op2.name).toEqual("B")
 
 
-  xit "should correctly format a program line with a string assignment statement", ->
+  it "should correctly format a program line with a string assignment statement", ->
 
     line_text = '40 $E=$M+" IS NOT COMPLETE"'
 
@@ -87,18 +87,26 @@ describe "Program line formatting", ->
       " IS NOT COMPLETE"
       "<str_exp_end>" ]
 
+    expr = [
+      [ "<var>", "M" ]
+      [ "<str>", " IS NOT COMPLETE" ] ]
+
     line = {
       line_no: 40
       command:  "<string_assignment>"
       text: '40 $E=$M+" IS NOT COMPLETE"'
-      operand: "E" }
-      # TODO CHANGE THIS: expression: jasmine.any(StringExpression) }
+      operand: "E"
+      expression: expr }
 
     result = @formatter.format(parse_object, line_text)
-#    expect(result.line_no).toEqual()
-#    expect(result.command).toEqual()
-#    expect(result.text).toEqual()
-#    expect(result.).toEqual()
+    expect(result.line_no).toEqual(40)
+    expect(result.command).toEqual("<string_assignment>")
+    expect(result.text).toEqual('40 $E=$M+" IS NOT COMPLETE"')
+    expect(result.operand).toEqual("E")
+    expect(result.expression[0][0]).toEqual("<var>")
+    expect(result.expression[0][1]).toEqual("M")
+    expect(result.expression[1][0]).toEqual("<str>")
+    expect(result.expression[1][1]).toEqual(" IS NOT COMPLETE")
 
 
   it "should correctly format a program line with a GOTO statement", ->
