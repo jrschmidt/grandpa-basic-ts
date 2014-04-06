@@ -41,7 +41,7 @@ describe "Program line formatting", ->
     expect(result.text).toEqual('20 REM WELCOME TO GRANDPA BASIC 1980')
 
 
-  xit "should correctly format a program line with a numeric assignment statement", ->
+  it "should correctly format a program line with a numeric assignment statement", ->
 
     line_text = '30 D=477+B'
 
