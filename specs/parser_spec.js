@@ -160,17 +160,7 @@ describe("BASIC program line parser", function() {
     expect(po[31]).toEqual("<number_variable>");
     expect(po[32]).toEqual("A");
     expect(po[33]).toEqual("<right>");
-    expect(po[34]).toEqual("<num_exp_end>");
-    po = this.parser.parse('110 Q="33-7"');
-    expect(po).toEqual("<parse_error>");
-    po = this.parser.parse('404 V6=180-45DEGREES');
-    expect(po).toEqual("<parse_error>");
-    po = this.parser.parse('470 X5="NOTHING PARSEABLE AS A NUMERIC EXPRESSION"');
-    expect(po).toEqual("<parse_error>");
-    po = this.parser.parse('590 Q=2*PI');
-    expect(po).toEqual("<parse_error>");
-    po = this.parser.parse('740 J2=22,348,507');
-    return expect(po).toEqual("<parse_error>");
+    return expect(po[34]).toEqual("<num_exp_end>");
   });
   it("should correctly parse a string assignment program line", function() {
     var po;

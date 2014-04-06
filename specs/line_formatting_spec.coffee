@@ -4,7 +4,7 @@ describe "Program line formatting", ->
     @formatter = new ProgramLineFormatter
 
 
-  xit "should correctly format a program line with a REM statement", ->
+  it "should correctly format a program line with a REM statement", ->
 
     line_text = '10 REM'
 
@@ -14,13 +14,10 @@ describe "Program line formatting", ->
       "<sp>"
       "<remark>" ]
 
-    line = {
-      line_no: 10
-      type:  "<remark>"
-      text: '10 REM' }
-
     result = @formatter.format(parse_object, line_text)
-    expect(result[key]).toEqual(val) for key,val of line
+    expect(result.line_no).toEqual(10)
+    expect(result.command).toEqual("<remark>")
+    expect(result.text).toEqual('10 REM')
 
 
     line_text = '20 REM WELCOME TO GRANDPA BASIC 1980'
@@ -35,11 +32,13 @@ describe "Program line formatting", ->
 
     line = {
       line_no: 20
-      type:  "<remark>"
+      command:  "<remark>"
       text: '20 REM WELCOME TO GRANDPA BASIC 1980' }
 
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+    expect(result.line_no).toEqual(20)
+    expect(result.command).toEqual("<remark>")
+    expect(result.text).toEqual('20 REM WELCOME TO GRANDPA BASIC 1980')
 
 
   xit "should correctly format a program line with a numeric assignment statement", ->
@@ -50,26 +49,28 @@ describe "Program line formatting", ->
       "<line_number>"
       30
       "<sp>"
-      "<numeric_assignment>"
-      "<numeric_variable"
+      "<number_variable>"
       "D"
       "<equals>"
       "<numeric_expression>"
-      "numeric_literal>"
+      "<numeric_literal>"
       477
       "<plus>"
-      "<numeric_variable>"
-      "B" ]
-
-    line = {
-      line_no: 30
-      type:  "<numeric_assignment>"
-      text: '30 D=477+B'
-      operand: "D"
-      expression: jasmine.any(NumericExpression) }
+      "<number_variable>"
+      "B" 
+      "<num_exp_end>" ]
 
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+    expect(result.line_no).toEqual(30)
+    expect(result.command).toEqual("<numeric_assignment>")
+    expect(result.text).toEqual('30 D=477+B')
+    expect(result.operand).toEqual("D")
+    expr = result.expression
+    expect(expr.exp).toEqual("<plus>")
+    expect(expr.op1.exp).toEqual("<num>")
+    expect(expr.op1.value).toEqual(477)
+    expect(expr.op2.exp).toEqual("<var>")
+    expect(expr.op2.name).toEqual("B")
 
 
   xit "should correctly format a program line with a string assignment statement", ->
@@ -93,13 +94,16 @@ describe "Program line formatting", ->
 
     line = {
       line_no: 40
-      type:  "<string_assignment>"
+      command:  "<string_assignment>"
       text: '40 $E=$M+" IS NOT COMPLETE"'
-      operand: "E"
-      expression: jasmine.any(StringExpression) }
+      operand: "E" }
+      # TODO CHANGE THIS: expression: jasmine.any(StringExpression) }
 
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+#    expect(result.line_no).toEqual()
+#    expect(result.command).toEqual()
+#    expect(result.text).toEqual()
+#    expect(result.).toEqual()
 
 
   xit "should correctly format a program line with a GOTO statement", ->
@@ -115,14 +119,11 @@ describe "Program line formatting", ->
       "<line_number>"
       880 ]
 
-    line = {
-      line_no: 520
-      type:  "<goto>"
-      text: '520 GOTO 880'
-      dest: 880 }
-
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+    expect(result.line_no).toEqual(520)
+    expect(result.command).toEqual("<goto>")
+    expect(result.text).toEqual('520 GOTO 880')
+    expect(result.dest).toEqual(880)
 
 
   xit "should correctly format a program line with a GOSUB statement", ->
@@ -140,12 +141,16 @@ describe "Program line formatting", ->
 
     line = {
       line_no: 320
-      type:  "<gosub>"
+      command:  "<gosub>"
       text: '320 GOSUB 1200'
       dest: 1200 }
 
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+#    expect(result.line_no).toEqual()
+#    expect(result.command).toEqual()
+#    expect(result.text).toEqual()
+#    expect(result.).toEqual()
+
 
 
   xit "should correctly format a program line with a RETURN statement", ->
@@ -158,13 +163,11 @@ describe "Program line formatting", ->
       "<sp>"
       "<return>" ]
 
-    line = {
-      line_no: 1299
-      type:  "<return>"
-      text: '1299 RETURN' }
-
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+    expect(result.line_no).toEqual(1299)
+    expect(result.command).toEqual("<return>")
+    expect(result.text).toEqual('1299 RETURN')
+
 
 
   xit "should correctly format a program line with an IF statement", ->
@@ -178,7 +181,7 @@ describe "Program line formatting", ->
       "<if>"
       "<sp>"
       "<boolean_expression>"
-      "<numeric_variable>"
+      "<number_variable>"
       "Z"
       "<lesser_than>"
       "numeric_literal>"
@@ -192,14 +195,16 @@ describe "Program line formatting", ->
 
     line = {
       line_no: 150
-      type:  "<if>"
+      command:  "<if>"
       text: '150 IF Z<0 THEN 340'
-      cond: jasmine.any(BooleanExpression)
+      # TODO CHANGE THIS: cond: jasmine.any(BooleanExpression)
       dest: 340 }
 
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
-
+#    expect(result.line_no).toEqual()
+#    expect(result.command).toEqual()
+#    expect(result.text).toEqual()
+#    expect(result.).toEqual()}
 
     line_text = '610 IF $T="INCOMPLETE" THEN 1680'
 
@@ -224,13 +229,17 @@ describe "Program line formatting", ->
 
     line = {
       line_no: 610
-      type:  "<if>"
+      command:  "<if>"
       text: '610 IF $T="INCOMPLETE" THEN 1680'
-      cond: jasmine.any(BooleanExpression)
+      # TODO CHANGE THIS: cond: jasmine.any(BooleanExpression)
       dest: 1680 }
 
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+#    expect(result.line_no).toEqual()
+#    expect(result.command).toEqual()
+#    expect(result.text).toEqual()
+#    expect(result.).toEqual()
+
 
 
   xit "should correctly format a program line with an INPUT statement", ->
@@ -248,12 +257,16 @@ describe "Program line formatting", ->
 
     line = {
       line_no: 110
-      type:  "<input_numeric>"
+      command:  "<input_numeric>"
       text: '110 INPUT R'
       operand: "R" }
 
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+#    expect(result.line_no).toEqual()
+#    expect(result.command).toEqual()
+#    expect(result.text).toEqual()
+#    expect(result.).toEqual()
+
 
 
     line_text = '120 INPUT $V'
@@ -269,12 +282,16 @@ describe "Program line formatting", ->
 
     line = {
       line_no: 120
-      type:  "<input_string>"
+      command:  "<input_string>"
       text: '120 INPUT $V'
       operand: "V" }
 
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+#    expect(result.line_no).toEqual()
+#    expect(result.command).toEqual()
+#    expect(result.text).toEqual()
+#    expect(result.).toEqual()
+
 
 
     line_text = '130 INPUT "HOW MANY?";M'
@@ -293,13 +310,17 @@ describe "Program line formatting", ->
 
     line = {
       line_no: 130
-      type:  "<input_numeric_prompt>"
+      command:  "<input_numeric_prompt>"
       text: '130 INPUT "HOW MANY?";M'
       operand: "M"
       prompt: "HOW MANY?" }
 
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+#    expect(result.line_no).toEqual()
+#    expect(result.command).toEqual()
+#    expect(result.text).toEqual()
+#    expect(result.).toEqual()
+
 
 
     line_text = '140 INPUT "LAST NAME?";$N2'
@@ -318,13 +339,17 @@ describe "Program line formatting", ->
 
     line = {
       line_no: 140
-      type:  "<input_string_prompt>"
+      command:  "<input_string_prompt>"
       text: '140 INPUT "LAST NAME?";$N2'
       operand: "N2"
       prompt: "LAST NAME?" }
 
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+#    expect(result.line_no).toEqual()
+#    expect(result.command).toEqual()
+#    expect(result.text).toEqual()
+#    expect(result.).toEqual()
+
 
 
   xit "should correctly format a program line with a PRINT statement", ->
@@ -344,12 +369,16 @@ describe "Program line formatting", ->
 
     line = {
       line_no: 340
-      type:  "<print>"
-      text: '340 PRINT "WELCOME TO GRANDPA BASIC 1980"'
-      expression: jasmine.any(StringExpression) }
+      command:  "<print>"
+      text: '340 PRINT "WELCOME TO GRANDPA BASIC 1980"'}
+      # TODO CHANGE THIS: expression: jasmine.any(StringExpression) }
 
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+#    expect(result.line_no).toEqual()
+#    expect(result.command).toEqual()
+#    expect(result.text).toEqual()
+#    expect(result.).toEqual()
+
 
 
     line_text = '350 PRINT $Z1'
@@ -367,12 +396,16 @@ describe "Program line formatting", ->
 
     line = {
       line_no: 350
-      type:  "<print>"
-      text: '350 PRINT $Z1'
-      expression: jasmine.any(StringExpression) }
+      command:  "<print>"
+      text: '350 PRINT $Z1'}
+      # TODO CHANGE THIS: expression: jasmine.any(StringExpression) }
 
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+#    expect(result.line_no).toEqual()
+#    expect(result.command).toEqual()
+#    expect(result.text).toEqual()
+#    expect(result.).toEqual()
+
 
 
     line_text = '360 PRINT "LAST NAME = "+$N4'
@@ -393,13 +426,17 @@ describe "Program line formatting", ->
 
     line = {
       line_no: 360
-      type:  "<print>"
-      text: '360 PRINT "LAST NAME = "+$N4'
-      expression: jasmine.any(StringExpression) }
+      command:  "<print>"
+      text: '360 PRINT "LAST NAME = "+$N4'}
+      # TODO CHANGE THIS: expression: jasmine.any(StringExpression) }
 
 
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+#    expect(result.line_no).toEqual()
+#    expect(result.command).toEqual()
+#    expect(result.text).toEqual()
+#    expect(result.).toEqual()
+
 
 
   xit "should correctly format a program line with a PRINTLN statement", ->
@@ -414,12 +451,16 @@ describe "Program line formatting", ->
 
     line = {
       line_no: 470
-      type:  "<print_line>"
-      text: '470 PRINTLN'
-      expression: jasmine.any(StringExpression) }
+      command:  "<print_line>"
+      text: '470 PRINTLN'}
+      # TODO CHANGE THIS: expression: jasmine.any(StringExpression) }
 
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+#    expect(result.line_no).toEqual()
+#    expect(result.command).toEqual()
+#    expect(result.text).toEqual()
+#    expect(result.).toEqual()
+
 
 
     line_text = '480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"'
@@ -437,12 +478,16 @@ describe "Program line formatting", ->
 
     line line_480 = {
       line_no: 480
-      type:  "<print_line>"
-      text: '480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"'
-      expression: jasmine.any(StringExpression) }
+      command:  "<print_line>"
+      text: '480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"'}
+      # TODO CHANGE THIS: expression: jasmine.any(StringExpression) }
 
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+#    expect(result.line_no).toEqual()
+#    expect(result.command).toEqual()
+#    expect(result.text).toEqual()
+#    expect(result.).toEqual()
+
 
 
     line_text = '490 PRINTLN $Z1'
@@ -460,15 +505,19 @@ describe "Program line formatting", ->
 
     line = {
       line_no: 490
-      type:  "<print_line>"
-      text: '490 PRINTLN $Z1'
-      expression: jasmine.any(StringExpression) }
+      command:  "<print_line>"
+      text: '490 PRINTLN $Z1'}
+      # TODO CHANGE THIS: expression: jasmine.any(StringExpression) }
 
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+#    expect(result.line_no).toEqual()
+#    expect(result.command).toEqual()
+#    expect(result.text).toEqual()
+#    expect(result.).toEqual()
 
 
-  xit "should correctly format a program line with a CLEARSCRN statement", ->
+
+  it "should correctly format a program line with a CLEARSCRN statement", ->
 
     line_text = '940 CLEARSCRN'
 
@@ -478,13 +527,11 @@ describe "Program line formatting", ->
       "<sp>"
       "<clear_screen>" ]
 
-    line = {
-      line_no: 940
-      type:  "<clear_screen>"
-      text: '940 CLEARSCRN' }
-
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+    expect(result.line_no).toEqual(940)
+    expect(result.command).toEqual("<clear_screen>")
+    expect(result.text).toEqual('940 CLEARSCRN')
+
 
 
   xit "should correctly format a program line with a TAB statement", ->
@@ -502,12 +549,16 @@ describe "Program line formatting", ->
 
     line = {
       line_no: 870
-      type:  "<tab_col>"
+      command:  "<tab_col>"
       text: '870 TAB 28'
       col: 28 }
 
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+#    expect(result.line_no).toEqual()
+#    expect(result.command).toEqual()
+#    expect(result.text).toEqual()
+#    expect(result.).toEqual()
+
 
 
     line_text = '880 TAB 12,44'
@@ -526,13 +577,17 @@ describe "Program line formatting", ->
 
     line = {
       line_no: 880
-      type:  "<tab_line_col>"
+      command:  "<tab_line_col>"
       text: '880 TAB 12,44'
       line: 12
       col: 44 }
 
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+#    expect(result.line_no).toEqual()
+#    expect(result.command).toEqual()
+#    expect(result.text).toEqual()
+#    expect(result.).toEqual()
+
 
 
   xit "should correctly format a program line with an END statement", ->
@@ -547,10 +602,13 @@ describe "Program line formatting", ->
 
     line = {
       line_no: 999
-      type:  "<end>"
+      command:  "<end>"
       text: '999 END' }
 
     result = @formatter.format(parse_object, line_text)
-    expect(val).toEqual(line[key]) for key,val of result
+    expect(result.line_no).toEqual(999)
+    expect(result.command).toEqual("<end>")
+    expect(result.text).toEqual('999 END')
+
 
 

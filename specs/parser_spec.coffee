@@ -178,21 +178,6 @@ describe "BASIC program line parser", ->
     expect(po[33]).toEqual("<right>")
     expect(po[34]).toEqual("<num_exp_end>")
 
-    po = @parser.parse('110 Q="33-7"')
-    expect(po).toEqual("<parse_error>")
-
-    po = @parser.parse('404 V6=180-45DEGREES')
-    expect(po).toEqual("<parse_error>")
-
-    po = @parser.parse('470 X5="NOTHING PARSEABLE AS A NUMERIC EXPRESSION"')
-    expect(po).toEqual("<parse_error>")
-
-    po = @parser.parse('590 Q=2*PI')
-    expect(po).toEqual("<parse_error>")
-
-    po = @parser.parse('740 J2=22,348,507')
-    expect(po).toEqual("<parse_error>")
-
 
   it "should correctly parse a string assignment program line", ->
 

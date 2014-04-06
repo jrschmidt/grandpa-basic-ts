@@ -71,9 +71,95 @@ BasicProgramLine = (function() {
 })();
 
 ProgramLineFormatter = (function() {
-  function ProgramLineFormatter() {}
+  function ProgramLineFormatter() {
+    this.num_exp = new NumExpBuilder;
+  }
 
-  ProgramLineFormatter.prototype.format = function(parse_object, line_text) {};
+  ProgramLineFormatter.prototype.format = function(parse_object, line_text) {
+    var cmd, error, line;
+    cmd = parse_object[3];
+    switch (cmd) {
+      case "<remark>":
+        line = this.build_remark(parse_object);
+        break;
+      case "<number_variable>":
+        line = this.build_numeric_assignment(parse_object);
+        break;
+      case "<string_variable>":
+        line.command = "UNDEFINED-METHOD";
+        break;
+      case "<goto>":
+      case "<gosub>":
+        line = this.build_cmd_with_dest(parse_object);
+        break;
+      case "<return>":
+      case "<clear_screen>":
+      case "<end>":
+        line = this.build_simple_cmd(parse_object);
+        break;
+      case "<if>":
+        line.command = "UNDEFINED-METHOD";
+        break;
+      case "<input>":
+        line.command = "UNDEFINED-METHOD";
+        break;
+      case "<print>":
+      case "<print_line>":
+        line.command = "UNDEFINED-METHOD";
+        break;
+      case "<tab>":
+        line.command = "UNDEFINED-METHOD";
+        break;
+      default:
+        error = true;
+    }
+    if (error) {
+      line = {
+        command: "<formatting_error>"
+      };
+    } else {
+      line.line_no = parse_object[1];
+      line.text = line_text;
+    }
+    return line;
+  };
+
+  ProgramLineFormatter.prototype.build_remark = function(parse_object) {
+    return {
+      command: "<remark>"
+    };
+  };
+
+  ProgramLineFormatter.prototype.build_numeric_assignment = function(parse_object) {
+    var line, nmx, stack;
+    stack = parse_object.slice(6, +(parse_object.length - 1) + 1 || 9e9);
+    nmx = this.num_exp.build_nxp(stack);
+    if (nmx.malformed === "yes") {
+      line = {
+        command: "<formatting_error>"
+      };
+    } else {
+      line = {
+        command: "<numeric_assignment>",
+        operand: parse_object[4],
+        expression: nmx
+      };
+    }
+    return line;
+  };
+
+  ProgramLineFormatter.prototype.build_cmd_with_dest = function(parse_object) {
+    return {
+      command: parse_object[3],
+      dest: parse_object[6]
+    };
+  };
+
+  ProgramLineFormatter.prototype.build_simple_cmd = function(parse_object) {
+    return {
+      command: parse_object[3]
+    };
+  };
 
   return ProgramLineFormatter;
 

@@ -134,13 +134,74 @@ class BasicProgramLine
 
 class ProgramLineFormatter
 
+  constructor: () ->
+    @num_exp = new NumExpBuilder
+
+
   format: (parse_object, line_text) ->
+    cmd = parse_object[3]
+    switch cmd
+      when "<remark>"
+        line = @build_remark(parse_object)
+      when "<number_variable>"
+        line = @build_numeric_assignment(parse_object)
+      when "<string_variable>"
+        line.command = "UNDEFINED-METHOD"
+      when "<goto>", "<gosub>"
+        line = @build_cmd_with_dest(parse_object)
+      when "<return>", "<clear_screen>", "<end>"
+        line = @build_simple_cmd(parse_object)
+      when "<if>"
+        line.command = "UNDEFINED-METHOD"
+      when "<input>"
+        line.command = "UNDEFINED-METHOD"
+      when "<print>", "<print_line>"
+        line.command = "UNDEFINED-METHOD"
+      when "<tab>"
+        line.command = "UNDEFINED-METHOD"
+      else
+        error = true
+    if error
+      line = {command: "<formatting_error>" }
+    else
+      line.line_no = parse_object[1]
+      line.text = line_text
+    return line
+
+
+  build_remark: (parse_object) ->
+    return {command: "<remark>" }
+
+
+  build_numeric_assignment: (parse_object) ->
+    stack = parse_object[6..parse_object.length-1]
+    nmx = @num_exp.build_nxp(stack)
+    if nmx.malformed == "yes"
+      line = {command: "<formatting_error>" }
+    else
+      line = {
+        command: "<numeric_assignment>"
+        operand: parse_object[4]
+        expression: nmx }
+    return line
+
+
+  build_cmd_with_dest: (parse_object) ->
+    return {
+      command: parse_object[3]
+      dest: parse_object[6] }
+
+
+  build_simple_cmd: (parse_object) ->
+    return {
+      command: parse_object[3] }
 
 
 
 class LineParser
 
-  # TODO After making everything work, add a check to fail the match if result.remainder != ""
+  # TODO After making everything work, add a check to fail the match
+  # if result.remainder != ""
 
   constructor: () ->
     @helpers = new ParseHelpers
