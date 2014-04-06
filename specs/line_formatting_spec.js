@@ -35,17 +35,9 @@ describe("Program line formatting", function() {
     return expect(expr.op2.name).toEqual("B");
   });
   it("should correctly format a program line with a string assignment statement", function() {
-    var expr, line, line_text, parse_object, result;
+    var line_text, parse_object, result;
     line_text = '40 $E=$M+" IS NOT COMPLETE"';
     parse_object = ["<line_number>", 40, "<sp>", "<string_variable>", "E", "<equals>", "<string_expression>", "<string_variable>", "M", "<plus>", "<string_literal>", " IS NOT COMPLETE", "<str_exp_end>"];
-    expr = [["<var>", "M"], ["<str>", " IS NOT COMPLETE"]];
-    line = {
-      line_no: 40,
-      command: "<string_assignment>",
-      text: '40 $E=$M+" IS NOT COMPLETE"',
-      operand: "E",
-      expression: expr
-    };
     result = this.formatter.format(parse_object, line_text);
     expect(result.line_no).toEqual(40);
     expect(result.command).toEqual("<string_assignment>");
@@ -209,27 +201,23 @@ describe("Program line formatting", function() {
     expect(result.command).toEqual("<clear_screen>");
     return expect(result.text).toEqual('940 CLEARSCRN');
   });
-  xit("should correctly format a program line with a TAB statement", function() {
-    var line, line_text, parse_object, result;
+  it("should correctly format a program line with a TAB statement", function() {
+    var line_text, parse_object, result;
     line_text = '870 TAB 28';
     parse_object = ["<line_number>", 870, "<sp>", "<tab>", "<sp>", "<integer>", 28];
-    line = {
-      line_no: 870,
-      command: "<tab_col>",
-      text: '870 TAB 28',
-      col: 28
-    };
     result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(870);
+    expect(result.command).toEqual("<tab_col>");
+    expect(result.text).toEqual('870 TAB 28');
+    expect(result.col).toEqual(28);
     line_text = '880 TAB 12,44';
     parse_object = ["<line_number>", 880, "<sp>", "<tab>", "<sp>", "<integer>", 12, "<comma>", "<integer>", 44];
-    line = {
-      line_no: 880,
-      command: "<tab_line_col>",
-      text: '880 TAB 12,44',
-      line: 12,
-      col: 44
-    };
-    return result = this.formatter.format(parse_object, line_text);
+    result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(880);
+    expect(result.command).toEqual("<tab_line_col>");
+    expect(result.text).toEqual('880 TAB 12,44');
+    expect(result.line).toEqual(12);
+    return expect(result.col).toEqual(44);
   });
   return it("should correctly format a program line with an END statement", function() {
     var line_text, parse_object, result;

@@ -87,17 +87,6 @@ describe "Program line formatting", ->
       " IS NOT COMPLETE"
       "<str_exp_end>" ]
 
-    expr = [
-      [ "<var>", "M" ]
-      [ "<str>", " IS NOT COMPLETE" ] ]
-
-    line = {
-      line_no: 40
-      command:  "<string_assignment>"
-      text: '40 $E=$M+" IS NOT COMPLETE"'
-      operand: "E"
-      expression: expr }
-
     result = @formatter.format(parse_object, line_text)
     expect(result.line_no).toEqual(40)
     expect(result.command).toEqual("<string_assignment>")
@@ -470,7 +459,7 @@ describe "Program line formatting", ->
       "WELCOME TO GRANDPA BASIC 1980"
       "<str_exp_end>" ]
 
-    line  = {
+    line = {
       line_no: 480
       command:  "<print_line>"
       text: '480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"'}
@@ -526,7 +515,7 @@ describe "Program line formatting", ->
     expect(result.text).toEqual('940 CLEARSCRN')
 
 
-  xit "should correctly format a program line with a TAB statement", ->
+  it "should correctly format a program line with a TAB statement", ->
 
     line_text = '870 TAB 28'
 
@@ -539,17 +528,11 @@ describe "Program line formatting", ->
       "<integer>"
       28 ]
 
-    line = {
-      line_no: 870
-      command:  "<tab_col>"
-      text: '870 TAB 28'
-      col: 28 }
-
     result = @formatter.format(parse_object, line_text)
-#    expect(result.line_no).toEqual()
-#    expect(result.command).toEqual()
-#    expect(result.text).toEqual()
-#    expect(result.).toEqual()
+    expect(result.line_no).toEqual(870)
+    expect(result.command).toEqual("<tab_col>")
+    expect(result.text).toEqual('870 TAB 28')
+    expect(result.col).toEqual(28)
 
 
     line_text = '880 TAB 12,44'
@@ -566,18 +549,12 @@ describe "Program line formatting", ->
       "<integer>"
       44 ]
 
-    line = {
-      line_no: 880
-      command:  "<tab_line_col>"
-      text: '880 TAB 12,44'
-      line: 12
-      col: 44 }
-
     result = @formatter.format(parse_object, line_text)
-#    expect(result.line_no).toEqual()
-#    expect(result.command).toEqual()
-#    expect(result.text).toEqual()
-#    expect(result.).toEqual()
+    expect(result.line_no).toEqual(880)
+    expect(result.command).toEqual("<tab_line_col>")
+    expect(result.text).toEqual('880 TAB 12,44')
+    expect(result.line).toEqual(12)
+    expect(result.col).toEqual(44)
 
 
   it "should correctly format a program line with an END statement", ->

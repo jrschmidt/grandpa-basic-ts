@@ -152,13 +152,13 @@ class ProgramLineFormatter
       when "<return>", "<clear_screen>", "<end>"
         line = @build_simple_cmd(parse_object)
       when "<if>"
-        line.command = "UNDEFINED-METHOD"
+        line = {command: "UNDEFINED-METHOD" }
       when "<input>"
-        line.command = "UNDEFINED-METHOD"
+        line = {command: "UNDEFINED-METHOD" }
       when "<print>", "<print_line>"
-        line.command = "UNDEFINED-METHOD"
+        line = {command: "UNDEFINED-METHOD" }
       when "<tab>"
-        line.command = "UNDEFINED-METHOD"
+        line = @build_tab_cmd(parse_object)
       else
         error = true
     if error
@@ -205,6 +205,18 @@ class ProgramLineFormatter
   build_simple_cmd: (parse_object) ->
     return {
       command: parse_object[3] }
+
+
+  build_tab_cmd: (parse_object) ->
+    line = {}
+    if parse_object.length == 10
+      line.command = "<tab_line_col>"
+      line.line = parse_object[6]
+      line.col = parse_object[9]
+    else
+      line.command = "<tab_col>"
+      line.col = parse_object[6]
+    return line
 
 
 

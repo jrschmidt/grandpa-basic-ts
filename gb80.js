@@ -99,17 +99,23 @@ ProgramLineFormatter = (function() {
         line = this.build_simple_cmd(parse_object);
         break;
       case "<if>":
-        line.command = "UNDEFINED-METHOD";
+        line = {
+          command: "UNDEFINED-METHOD"
+        };
         break;
       case "<input>":
-        line.command = "UNDEFINED-METHOD";
+        line = {
+          command: "UNDEFINED-METHOD"
+        };
         break;
       case "<print>":
       case "<print_line>":
-        line.command = "UNDEFINED-METHOD";
+        line = {
+          command: "UNDEFINED-METHOD"
+        };
         break;
       case "<tab>":
-        line.command = "UNDEFINED-METHOD";
+        line = this.build_tab_cmd(parse_object);
         break;
       default:
         error = true;
@@ -172,6 +178,20 @@ ProgramLineFormatter = (function() {
     return {
       command: parse_object[3]
     };
+  };
+
+  ProgramLineFormatter.prototype.build_tab_cmd = function(parse_object) {
+    var line;
+    line = {};
+    if (parse_object.length === 10) {
+      line.command = "<tab_line_col>";
+      line.line = parse_object[6];
+      line.col = parse_object[9];
+    } else {
+      line.command = "<tab_col>";
+      line.col = parse_object[6];
+    }
+    return line;
   };
 
   return ProgramLineFormatter;
