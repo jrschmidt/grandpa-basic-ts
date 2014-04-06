@@ -4,7 +4,7 @@ describe("Program line formatting", function() {
     return this.formatter = new ProgramLineFormatter;
   });
   it("should correctly format a program line with a REM statement", function() {
-    var line, line_text, parse_object, result;
+    var line_text, parse_object, result;
     line_text = '10 REM';
     parse_object = ["<line_number>", 10, "<sp>", "<remark>"];
     result = this.formatter.format(parse_object, line_text);
@@ -13,11 +13,6 @@ describe("Program line formatting", function() {
     expect(result.text).toEqual('10 REM');
     line_text = '20 REM WELCOME TO GRANDPA BASIC 1980';
     parse_object = ["<line_number>", 20, "<sp>", "<remark>", "<characters>", "WELCOME TO GRANDPA BASIC 1980"];
-    line = {
-      line_no: 20,
-      command: "<remark>",
-      text: '20 REM WELCOME TO GRANDPA BASIC 1980'
-    };
     result = this.formatter.format(parse_object, line_text);
     expect(result.line_no).toEqual(20);
     expect(result.command).toEqual("<remark>");
@@ -62,16 +57,13 @@ describe("Program line formatting", function() {
     return expect(result.dest).toEqual(880);
   });
   it("should correctly format a program line with a GOSUB statement", function() {
-    var line, line_text, parse_object, result;
+    var line_text, parse_object, result;
     line_text = '320 GOSUB 1200';
     parse_object = ["<line_number>", 320, "<sp>", "<gosub>", "<sp>", "<line_number>", 1200];
-    line = {
-      line_no: 320,
-      command: "<gosub>",
-      text: '320 GOSUB 1200',
-      dest: 1200
-    };
-    return result = this.formatter.format(parse_object, line_text);
+    result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(320);
+    expect(result.command).toEqual("<gosub>");
+    return expect(result.text).toEqual('320 GOSUB 1200');
   });
   it("should correctly format a program line with a RETURN statement", function() {
     var line_text, parse_object, result;
@@ -172,7 +164,7 @@ describe("Program line formatting", function() {
     return result = this.formatter.format(parse_object, line_text);
   });
   xit("should correctly format a program line with a PRINTLN statement", function() {
-    var line, line_480, line_text, parse_object, result;
+    var line, line_text, parse_object, result;
     line_text = '470 PRINTLN';
     parse_object = ["<line_number>", 470, "<sp>", "<print_line>"];
     line = {
@@ -183,11 +175,11 @@ describe("Program line formatting", function() {
     result = this.formatter.format(parse_object, line_text);
     line_text = '480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"';
     parse_object = ["<line_number>", 480, "<sp>", "<print_line>", "sp>", "<string_expression>", "<string_literal>", "WELCOME TO GRANDPA BASIC 1980", "<str_exp_end>"];
-    line(line_480 = {
+    line = {
       line_no: 480,
       command: "<print_line>",
       text: '480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"'
-    });
+    };
     result = this.formatter.format(parse_object, line_text);
     line_text = '490 PRINTLN $Z1';
     parse_object = ["<line_number>", 490, "<sp>", "<print_line>", "sp>", "<string_expression>", "<string_variable>", "Z1", "<str_exp_end>"];
@@ -230,14 +222,9 @@ describe("Program line formatting", function() {
     return result = this.formatter.format(parse_object, line_text);
   });
   return it("should correctly format a program line with an END statement", function() {
-    var line, line_text, parse_object, result;
+    var line_text, parse_object, result;
     line_text = '999 END';
     parse_object = ["<line_number>", 999, "<sp>", "<end>"];
-    line = {
-      line_no: 999,
-      command: "<end>",
-      text: '999 END'
-    };
     result = this.formatter.format(parse_object, line_text);
     expect(result.line_no).toEqual(999);
     expect(result.command).toEqual("<end>");

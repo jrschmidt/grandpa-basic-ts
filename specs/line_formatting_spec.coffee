@@ -30,11 +30,6 @@ describe "Program line formatting", ->
       "<characters>"
       "WELCOME TO GRANDPA BASIC 1980" ]
 
-    line = {
-      line_no: 20
-      command:  "<remark>"
-      text: '20 REM WELCOME TO GRANDPA BASIC 1980' }
-
     result = @formatter.format(parse_object, line_text)
     expect(result.line_no).toEqual(20)
     expect(result.command).toEqual("<remark>")
@@ -139,18 +134,10 @@ describe "Program line formatting", ->
       "<line_number>"
       1200 ]
 
-    line = {
-      line_no: 320
-      command:  "<gosub>"
-      text: '320 GOSUB 1200'
-      dest: 1200 }
-
     result = @formatter.format(parse_object, line_text)
-#    expect(result.line_no).toEqual()
-#    expect(result.command).toEqual()
-#    expect(result.text).toEqual()
-#    expect(result.).toEqual()
-
+    expect(result.line_no).toEqual(320)
+    expect(result.command).toEqual("<gosub>")
+    expect(result.text).toEqual('320 GOSUB 1200')
 
 
   it "should correctly format a program line with a RETURN statement", ->
@@ -167,7 +154,6 @@ describe "Program line formatting", ->
     expect(result.line_no).toEqual(1299)
     expect(result.command).toEqual("<return>")
     expect(result.text).toEqual('1299 RETURN')
-
 
 
   xit "should correctly format a program line with an IF statement", ->
@@ -476,7 +462,7 @@ describe "Program line formatting", ->
       "WELCOME TO GRANDPA BASIC 1980"
       "<str_exp_end>" ]
 
-    line line_480 = {
+    line  = {
       line_no: 480
       command:  "<print_line>"
       text: '480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"'}
@@ -516,7 +502,6 @@ describe "Program line formatting", ->
 #    expect(result.).toEqual()
 
 
-
   it "should correctly format a program line with a CLEARSCRN statement", ->
 
     line_text = '940 CLEARSCRN'
@@ -531,7 +516,6 @@ describe "Program line formatting", ->
     expect(result.line_no).toEqual(940)
     expect(result.command).toEqual("<clear_screen>")
     expect(result.text).toEqual('940 CLEARSCRN')
-
 
 
   xit "should correctly format a program line with a TAB statement", ->
@@ -558,7 +542,6 @@ describe "Program line formatting", ->
 #    expect(result.command).toEqual()
 #    expect(result.text).toEqual()
 #    expect(result.).toEqual()
-
 
 
     line_text = '880 TAB 12,44'
@@ -589,8 +572,7 @@ describe "Program line formatting", ->
 #    expect(result.).toEqual()
 
 
-
-  xit "should correctly format a program line with an END statement", ->
+  it "should correctly format a program line with an END statement", ->
 
     line_text = '999 END'
 
@@ -600,15 +582,8 @@ describe "Program line formatting", ->
       "<sp>"
       "<end>" ]
 
-    line = {
-      line_no: 999
-      command:  "<end>"
-      text: '999 END' }
-
     result = @formatter.format(parse_object, line_text)
     expect(result.line_no).toEqual(999)
     expect(result.command).toEqual("<end>")
     expect(result.text).toEqual('999 END')
-
-
 
