@@ -106,7 +106,7 @@ describe "Program line formatting", ->
 #    expect(result.).toEqual()
 
 
-  xit "should correctly format a program line with a GOTO statement", ->
+  it "should correctly format a program line with a GOTO statement", ->
 
     line_text = '520 GOTO 880'
 
@@ -126,7 +126,7 @@ describe "Program line formatting", ->
     expect(result.dest).toEqual(880)
 
 
-  xit "should correctly format a program line with a GOSUB statement", ->
+  it "should correctly format a program line with a GOSUB statement", ->
 
     line_text = '320 GOSUB 1200'
 
@@ -153,7 +153,7 @@ describe "Program line formatting", ->
 
 
 
-  xit "should correctly format a program line with a RETURN statement", ->
+  it "should correctly format a program line with a RETURN statement", ->
 
     line_text = '1299 RETURN'
 
