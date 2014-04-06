@@ -917,6 +917,17 @@ class NumericExpressionEvaluator
 
 
 
+class StrExpBuilder
+
+  build_str_exp: (stack) ->
+    parts = []
+    for t in [1..stack.length-3] by 3
+      if stack[t] == "<string_variable>" then tk = "<var>" else tk = "<str>"
+      parts.push( [tk, stack[t+1] ] )
+    return {parts: parts }
+
+
+
 class KeyHelper
 
   constructor: () ->

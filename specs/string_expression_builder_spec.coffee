@@ -1,6 +1,6 @@
 describe "String expression builder", ->
 
-  xit "should build a usable key-value object from a string expression 'parse object' array", ->
+  it "should build a usable key-value object from a string expression 'parse object' array", ->
 
     @helper = new StrExpBuilder
 
@@ -73,10 +73,10 @@ describe "String expression builder", ->
     expected[3] = {parts: expt3 }
 
     for n in [0..3]
-      result = @helper.split(stack[n])
+      result = @helper.build_str_exp(stack[n])
       expt = expected[n].parts
       for k in [0..expt.length-1]
-        expect(result[k][0]).toEqual(expt[k][0])
-        expect(result[k][1]).toEqual(expt[k][1])
+        expect(result.parts[k][0]).toEqual(expt[k][0])
+        expect(result.parts[k][1]).toEqual(expt[k][1])
 
 
