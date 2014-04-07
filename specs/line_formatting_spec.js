@@ -138,59 +138,61 @@ describe("Program line formatting", function() {
     };
     return result = this.formatter.format(parse_object, line_text);
   });
-  xit("should correctly format a program line with a PRINT statement", function() {
-    var line, line_text, parse_object, result;
+  it("should correctly format a program line with a PRINT statement", function() {
+    var line_text, parse_object, result;
     line_text = '340 PRINT "WELCOME TO GRANDPA BASIC 1980"';
     parse_object = ["<line_number>", 340, "<sp>", "<print>", "sp>", "<string_expression>", "<string_literal>", "WELCOME TO GRANDPA BASIC 1980", "<str_exp_end>"];
-    line = {
-      line_no: 340,
-      command: "<print>",
-      text: '340 PRINT "WELCOME TO GRANDPA BASIC 1980"'
-    };
     result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(340);
+    expect(result.command).toEqual("<print>");
+    expect(result.text).toEqual('340 PRINT "WELCOME TO GRANDPA BASIC 1980"');
+    expect(result.expression[0][0]).toEqual("<str>");
+    expect(result.expression[0][1]).toEqual("WELCOME TO GRANDPA BASIC 1980");
     line_text = '350 PRINT $Z1';
     parse_object = ["<line_number>", 350, "<sp>", "<print>", "sp>", "<string_expression>", "<string_variable>", "Z1", "<str_exp_end>"];
-    line = {
-      line_no: 350,
-      command: "<print>",
-      text: '350 PRINT $Z1'
-    };
     result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(350);
+    expect(result.command).toEqual("<print>");
+    expect(result.text).toEqual('350 PRINT $Z1');
+    expect(result.expression[0][0]).toEqual("<var>");
+    expect(result.expression[0][1]).toEqual("Z1");
     line_text = '360 PRINT "LAST NAME = "+$N4';
     parse_object = ["<line_number>", 360, "<sp>", "<print>", "sp>", "<string_expression>", "<string_literal>", "LAST NAME = ", "<plus>", "<string_variable>", "N4", "<str_exp_end>"];
-    line = {
-      line_no: 360,
-      command: "<print>",
-      text: '360 PRINT "LAST NAME = "+$N4'
-    };
-    return result = this.formatter.format(parse_object, line_text);
+    result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(360);
+    expect(result.command).toEqual("<print>");
+    expect(result.text).toEqual('360 PRINT "LAST NAME = "+$N4');
+    expect(result.expression[0][0]).toEqual("<str>");
+    expect(result.expression[0][1]).toEqual("LAST NAME = ");
+    expect(result.expression[1][0]).toEqual("<var>");
+    return expect(result.expression[1][1]).toEqual("N4");
   });
-  xit("should correctly format a program line with a PRINTLN statement", function() {
-    var line, line_text, parse_object, result;
+  it("should correctly format a program line with a PRINTLN statement", function() {
+    var line_text, parse_object, result;
     line_text = '470 PRINTLN';
     parse_object = ["<line_number>", 470, "<sp>", "<print_line>"];
-    line = {
-      line_no: 470,
-      command: "<print_line>",
-      text: '470 PRINTLN'
-    };
     result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(470);
+    expect(result.command).toEqual("<print_line>");
+    expect(result.text).toEqual('470 PRINTLN');
+    expect(result.expression[0][0]).toEqual("<str>");
+    expect(result.expression[0][1]).toEqual("");
     line_text = '480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"';
     parse_object = ["<line_number>", 480, "<sp>", "<print_line>", "sp>", "<string_expression>", "<string_literal>", "WELCOME TO GRANDPA BASIC 1980", "<str_exp_end>"];
-    line = {
-      line_no: 480,
-      command: "<print_line>",
-      text: '480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"'
-    };
     result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(480);
+    expect(result.command).toEqual("<print_line>");
+    expect(result.text).toEqual('480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"');
+    expect(result.expression[0][0]).toEqual("<str>");
+    expect(result.expression[0][1]).toEqual("WELCOME TO GRANDPA BASIC 1980");
     line_text = '490 PRINTLN $Z1';
     parse_object = ["<line_number>", 490, "<sp>", "<print_line>", "sp>", "<string_expression>", "<string_variable>", "Z1", "<str_exp_end>"];
-    line = {
-      line_no: 490,
-      command: "<print_line>",
-      text: '490 PRINTLN $Z1'
-    };
-    return result = this.formatter.format(parse_object, line_text);
+    result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(490);
+    expect(result.command).toEqual("<print_line>");
+    expect(result.text).toEqual('490 PRINTLN $Z1');
+    expect(result.expression[0][0]).toEqual("<var>");
+    return expect(result.expression[0][1]).toEqual("Z1");
   });
   it("should correctly format a program line with a CLEARSCRN statement", function() {
     var line_text, parse_object, result;

@@ -335,7 +335,7 @@ describe "Program line formatting", ->
 
 
 
-  xit "should correctly format a program line with a PRINT statement", ->
+  it "should correctly format a program line with a PRINT statement", ->
 
     line_text = '340 PRINT "WELCOME TO GRANDPA BASIC 1980"'
 
@@ -350,18 +350,12 @@ describe "Program line formatting", ->
       "WELCOME TO GRANDPA BASIC 1980"
       "<str_exp_end>" ]
 
-    line = {
-      line_no: 340
-      command:  "<print>"
-      text: '340 PRINT "WELCOME TO GRANDPA BASIC 1980"'}
-      # TODO CHANGE THIS: expression: jasmine.any(StringExpression) }
-
     result = @formatter.format(parse_object, line_text)
-#    expect(result.line_no).toEqual()
-#    expect(result.command).toEqual()
-#    expect(result.text).toEqual()
-#    expect(result.).toEqual()
-
+    expect(result.line_no).toEqual(340)
+    expect(result.command).toEqual("<print>")
+    expect(result.text).toEqual('340 PRINT "WELCOME TO GRANDPA BASIC 1980"')
+    expect(result.expression[0][0]).toEqual("<str>")
+    expect(result.expression[0][1]).toEqual("WELCOME TO GRANDPA BASIC 1980")
 
 
     line_text = '350 PRINT $Z1'
@@ -377,18 +371,12 @@ describe "Program line formatting", ->
       "Z1"
       "<str_exp_end>" ]
 
-    line = {
-      line_no: 350
-      command:  "<print>"
-      text: '350 PRINT $Z1'}
-      # TODO CHANGE THIS: expression: jasmine.any(StringExpression) }
-
     result = @formatter.format(parse_object, line_text)
-#    expect(result.line_no).toEqual()
-#    expect(result.command).toEqual()
-#    expect(result.text).toEqual()
-#    expect(result.).toEqual()
-
+    expect(result.line_no).toEqual(350)
+    expect(result.command).toEqual("<print>")
+    expect(result.text).toEqual('350 PRINT $Z1')
+    expect(result.expression[0][0]).toEqual("<var>")
+    expect(result.expression[0][1]).toEqual("Z1")
 
 
     line_text = '360 PRINT "LAST NAME = "+$N4'
@@ -407,22 +395,17 @@ describe "Program line formatting", ->
       "N4"
       "<str_exp_end>" ]
 
-    line = {
-      line_no: 360
-      command:  "<print>"
-      text: '360 PRINT "LAST NAME = "+$N4'}
-      # TODO CHANGE THIS: expression: jasmine.any(StringExpression) }
-
-
     result = @formatter.format(parse_object, line_text)
-#    expect(result.line_no).toEqual()
-#    expect(result.command).toEqual()
-#    expect(result.text).toEqual()
-#    expect(result.).toEqual()
+    expect(result.line_no).toEqual(360)
+    expect(result.command).toEqual("<print>")
+    expect(result.text).toEqual('360 PRINT "LAST NAME = "+$N4')
+    expect(result.expression[0][0]).toEqual("<str>")
+    expect(result.expression[0][1]).toEqual("LAST NAME = ")
+    expect(result.expression[1][0]).toEqual("<var>")
+    expect(result.expression[1][1]).toEqual("N4")
 
 
-
-  xit "should correctly format a program line with a PRINTLN statement", ->
+  it "should correctly format a program line with a PRINTLN statement", ->
 
     line_text = '470 PRINTLN'
 
@@ -432,18 +415,12 @@ describe "Program line formatting", ->
       "<sp>"
       "<print_line>" ]
 
-    line = {
-      line_no: 470
-      command:  "<print_line>"
-      text: '470 PRINTLN'}
-      # TODO CHANGE THIS: expression: jasmine.any(StringExpression) }
-
     result = @formatter.format(parse_object, line_text)
-#    expect(result.line_no).toEqual()
-#    expect(result.command).toEqual()
-#    expect(result.text).toEqual()
-#    expect(result.).toEqual()
-
+    expect(result.line_no).toEqual(470)
+    expect(result.command).toEqual("<print_line>")
+    expect(result.text).toEqual('470 PRINTLN')
+    expect(result.expression[0][0]).toEqual("<str>")
+    expect(result.expression[0][1]).toEqual("")
 
 
     line_text = '480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"'
@@ -459,18 +436,12 @@ describe "Program line formatting", ->
       "WELCOME TO GRANDPA BASIC 1980"
       "<str_exp_end>" ]
 
-    line = {
-      line_no: 480
-      command:  "<print_line>"
-      text: '480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"'}
-      # TODO CHANGE THIS: expression: jasmine.any(StringExpression) }
-
     result = @formatter.format(parse_object, line_text)
-#    expect(result.line_no).toEqual()
-#    expect(result.command).toEqual()
-#    expect(result.text).toEqual()
-#    expect(result.).toEqual()
-
+    expect(result.line_no).toEqual(480)
+    expect(result.command).toEqual("<print_line>")
+    expect(result.text).toEqual('480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"')
+    expect(result.expression[0][0]).toEqual("<str>")
+    expect(result.expression[0][1]).toEqual("WELCOME TO GRANDPA BASIC 1980")
 
 
     line_text = '490 PRINTLN $Z1'
@@ -486,17 +457,13 @@ describe "Program line formatting", ->
       "Z1"
       "<str_exp_end>" ]
 
-    line = {
-      line_no: 490
-      command:  "<print_line>"
-      text: '490 PRINTLN $Z1'}
-      # TODO CHANGE THIS: expression: jasmine.any(StringExpression) }
-
     result = @formatter.format(parse_object, line_text)
-#    expect(result.line_no).toEqual()
-#    expect(result.command).toEqual()
-#    expect(result.text).toEqual()
-#    expect(result.).toEqual()
+    expect(result.line_no).toEqual(490)
+    expect(result.command).toEqual("<print_line>")
+    expect(result.text).toEqual('490 PRINTLN $Z1')
+    expect(result.expression[0][0]).toEqual("<var>")
+    expect(result.expression[0][1]).toEqual("Z1")
+
 
 
   it "should correctly format a program line with a CLEARSCRN statement", ->

@@ -156,7 +156,7 @@ class ProgramLineFormatter
       when "<input>"
         line = {command: "UNDEFINED-METHOD" }
       when "<print>", "<print_line>"
-        line = {command: "UNDEFINED-METHOD" }
+        line = @build_print_cmd(parse_object)
       when "<tab>"
         line = @build_tab_cmd(parse_object)
       else
@@ -205,6 +205,18 @@ class ProgramLineFormatter
   build_simple_cmd: (parse_object) ->
     return {
       command: parse_object[3] }
+
+
+  build_print_cmd: (parse_object) ->
+    if parse_object.length == 4
+      str_exp = [ ["<str>", ""] ]
+    else
+      stack = parse_object[5..parse_object.length-1]
+      str_exp = @str_exp.build_str_exp(stack)
+    line = {
+      command: parse_object[3]
+      expression: str_exp }
+    return line
 
 
   build_tab_cmd: (parse_object) ->

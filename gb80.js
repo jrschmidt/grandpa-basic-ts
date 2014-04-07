@@ -110,9 +110,7 @@ ProgramLineFormatter = (function() {
         break;
       case "<print>":
       case "<print_line>":
-        line = {
-          command: "UNDEFINED-METHOD"
-        };
+        line = this.build_print_cmd(parse_object);
         break;
       case "<tab>":
         line = this.build_tab_cmd(parse_object);
@@ -178,6 +176,21 @@ ProgramLineFormatter = (function() {
     return {
       command: parse_object[3]
     };
+  };
+
+  ProgramLineFormatter.prototype.build_print_cmd = function(parse_object) {
+    var line, stack, str_exp;
+    if (parse_object.length === 4) {
+      str_exp = [["<str>", ""]];
+    } else {
+      stack = parse_object.slice(5, +(parse_object.length - 1) + 1 || 9e9);
+      str_exp = this.str_exp.build_str_exp(stack);
+    }
+    line = {
+      command: parse_object[3],
+      expression: str_exp
+    };
+    return line;
   };
 
   ProgramLineFormatter.prototype.build_tab_cmd = function(parse_object) {
