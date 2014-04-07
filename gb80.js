@@ -104,9 +104,7 @@ ProgramLineFormatter = (function() {
         };
         break;
       case "<input>":
-        line = {
-          command: "UNDEFINED-METHOD"
-        };
+        line = this.build_input_cmd(parse_object);
         break;
       case "<print>":
       case "<print_line>":
@@ -190,6 +188,35 @@ ProgramLineFormatter = (function() {
       command: parse_object[3],
       expression: str_exp
     };
+    return line;
+  };
+
+  ProgramLineFormatter.prototype.build_input_cmd = function(parse_object) {
+    var cmd, line, op, prompt;
+    if (parse_object.length === 10) {
+      op = parse_object[9];
+      prompt = parse_object[6];
+      if (parse_object[8] === "<number_variable>") {
+        cmd = "<input_numeric_prompt>";
+      } else {
+        cmd = "<input_string_prompt>";
+      }
+    } else {
+      op = parse_object[6];
+      prompt = "<no_prompt>";
+      if (parse_object[5] === "<number_variable>") {
+        cmd = "<input_numeric>";
+      } else {
+        cmd = "<input_string>";
+      }
+    }
+    line = {
+      command: cmd,
+      operand: op
+    };
+    if (prompt !== "<no_prompt>") {
+      line.prompt = prompt;
+    }
     return line;
   };
 

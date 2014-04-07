@@ -97,46 +97,38 @@ describe("Program line formatting", function() {
     };
     return result = this.formatter.format(parse_object, line_text);
   });
-  xit("should correctly format a program line with an INPUT statement", function() {
-    var line, line_text, parse_object, result;
+  it("should correctly format a program line with an INPUT statement", function() {
+    var line_text, parse_object, result;
     line_text = '110 INPUT R';
     parse_object = ["<line_number>", 110, "<sp>", "<input>", "<sp>", "<number_variable>", "R"];
-    line = {
-      line_no: 110,
-      command: "<input_numeric>",
-      text: '110 INPUT R',
-      operand: "R"
-    };
     result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(110);
+    expect(result.command).toEqual("<input_numeric>");
+    expect(result.text).toEqual('110 INPUT R');
+    expect(result.operand).toEqual("R");
     line_text = '120 INPUT $V';
     parse_object = ["<line_number>", 120, "<sp>", "<input>", "<sp>", "<string_variable>", "V"];
-    line = {
-      line_no: 120,
-      command: "<input_string>",
-      text: '120 INPUT $V',
-      operand: "V"
-    };
     result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(120);
+    expect(result.command).toEqual("<input_string>");
+    expect(result.text).toEqual('120 INPUT $V');
+    expect(result.operand).toEqual("V");
     line_text = '130 INPUT "HOW MANY?";M';
     parse_object = ["<line_number>", 130, "<sp>", "<input>", "<sp>", "<string>", "HOW MANY?", "<semicolon>", "<number_variable>", "M"];
-    line = {
-      line_no: 130,
-      command: "<input_numeric_prompt>",
-      text: '130 INPUT "HOW MANY?";M',
-      operand: "M",
-      prompt: "HOW MANY?"
-    };
     result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(130);
+    expect(result.command).toEqual("<input_numeric_prompt>");
+    expect(result.text).toEqual('130 INPUT "HOW MANY?";M');
+    expect(result.operand).toEqual("M");
+    expect(result.prompt).toEqual("HOW MANY?");
     line_text = '140 INPUT "LAST NAME?";$N2';
     parse_object = ["<line_number>", 140, "<sp>", "<input>", "<sp>", "<string>", "LAST NAME?", "<semicolon>", "<string_variable>", "N2"];
-    line = {
-      line_no: 140,
-      command: "<input_string_prompt>",
-      text: '140 INPUT "LAST NAME?";$N2',
-      operand: "N2",
-      prompt: "LAST NAME?"
-    };
-    return result = this.formatter.format(parse_object, line_text);
+    result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(140);
+    expect(result.command).toEqual("<input_string_prompt>");
+    expect(result.text).toEqual('140 INPUT "LAST NAME?";$N2');
+    expect(result.operand).toEqual("N2");
+    return expect(result.prompt).toEqual("LAST NAME?");
   });
   it("should correctly format a program line with a PRINT statement", function() {
     var line_text, parse_object, result;
