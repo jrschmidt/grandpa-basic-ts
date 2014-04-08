@@ -152,7 +152,7 @@ class ProgramLineFormatter
       when "<return>", "<clear_screen>", "<end>"
         line = @build_simple_cmd(parse_object)
       when "<if>"
-        line = {command: "UNDEFINED-METHOD" }
+        line = @build_if_cmd(parse_object)
       when "<input>"
         line = @build_input_cmd(parse_object)
       when "<print>", "<print_line>"
@@ -207,16 +207,17 @@ class ProgramLineFormatter
       command: parse_object[3] }
 
 
-  build_print_cmd: (parse_object) ->
-    if parse_object.length == 4
-      str_exp = [ ["<str>", ""] ]
-    else
-      stack = parse_object[5..parse_object.length-1]
-      str_exp = @str_exp.build_str_exp(stack)
-    line = {
-      command: parse_object[3]
-      expression: str_exp }
-    return line
+  build_if_cmd: (parse_object) ->
+
+
+#    stack = parse_object[6..parse_object.length-1]
+#    str_exp = @str_exp.build_str_exp(stack)
+#    line = {
+#      command: "<string_assignment>"
+#      operand: parse_object[4]
+#      expression: str_exp }
+#    return line
+
 
 
   build_input_cmd: (parse_object) ->
@@ -238,6 +239,18 @@ class ProgramLineFormatter
       command: cmd
       operand: op }
     line.prompt = prompt if prompt != "<no_prompt>"
+    return line
+
+
+  build_print_cmd: (parse_object) ->
+    if parse_object.length == 4
+      str_exp = [ ["<str>", ""] ]
+    else
+      stack = parse_object[5..parse_object.length-1]
+      str_exp = @str_exp.build_str_exp(stack)
+    line = {
+      command: parse_object[3]
+      expression: str_exp }
     return line
 
 
@@ -984,6 +997,28 @@ class StrExpBuilder
 
 
 
+class BoolExpBuilder
+
+  constructor: () ->
+    @num_exp = new NumExpBuilder
+    @str_exp = new StrExpBuilder
+
+
+  build_bool_exp: (stack) ->
+    if stack[1] == "<number_variable>" then type = "num" else type = "str"
+    tag = "<"+type+"_"+stack[3].slice(1)
+    bool = {
+      exp: tag
+      var: stack[2] }
+    bx_stack = stack[4..stack.length-2]
+    if type == "num"
+      bool.num_exp = @num_exp.build_nxp(bx_stack)
+    else
+      bool.str_exp = @str_exp.build_str_exp(bx_stack)
+    return bool
+
+
+
 class KeyHelper
 
   constructor: () ->
@@ -1028,20 +1063,5 @@ class KeyHelper
     if n in @code
       i = @code.indexOf(n)
       return @xy[i]
-
-
-
-class LineBuffer
-
-  constructor: () ->
-    @text = ""
-
-
-  set_text: (string) ->
-    @text = string
-
-
-  get_text: () ->
-    return @text
 
 

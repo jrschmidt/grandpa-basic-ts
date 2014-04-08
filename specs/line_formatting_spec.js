@@ -77,25 +77,29 @@ describe("Program line formatting", function() {
     return expect(result.text).toEqual('1299 RETURN');
   });
   xit("should correctly format a program line with an IF statement", function() {
-    var line, line_text, parse_object, result;
+    var line_text, parse_object, result;
     line_text = '150 IF Z<0 THEN 340';
-    parse_object = ["<line_number>", 150, "<sp>", "<if>", "<sp>", "<boolean_expression>", "<number_variable>", "Z", "<lesser_than>", "numeric_literal>", 0, "<bool_exp_end>", "<sp>", "<then>", "<sp>", "<line_number>", 340];
-    line = {
-      line_no: 150,
-      command: "<if>",
-      text: '150 IF Z<0 THEN 340',
-      dest: 340
-    };
+    parse_object = ["<line_number>", 150, "<sp>", "<if>", "<sp>", "<boolean_expression>", "<number_variable>", "Z", "<lesser_than>", "<numeric_expression>", "<numeric_literal>", 0, "<num_exp_end>", "<bool_exp_end>", "<sp>", "<then>", "<sp>", "<line_number>", 340];
     result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(150);
+    expect(result.command).toEqual("<if>");
+    expect(result.text).toEqual('150 IF Z<0 THEN 340');
+    expect(result.cond.exp).toEqual("<num_lesser_than>");
+    expect(result.cond["var"]).toEqual("Z");
+    expect(result.cond.num_exp.exp).toEqual("<num>");
+    expect(result.cond.num_exp.value).toEqual(477);
+    expect(result.dest).toEqual(340);
     line_text = '610 IF $T="INCOMPLETE" THEN 1680';
-    parse_object = ["<line_number>", 610, "<sp>", "<if>", "<sp>", "<boolean_expression>", "<string_variable>", "T", "<equals>", "<string_literal>", "INCOMPLETE", "<bool_exp_end>", "<sp>", "<then>", "<sp>", "<line_number>", 1680];
-    line = {
-      line_no: 610,
-      command: "<if>",
-      text: '610 IF $T="INCOMPLETE" THEN 1680',
-      dest: 1680
-    };
-    return result = this.formatter.format(parse_object, line_text);
+    parse_object = ["<line_number>", 610, "<sp>", "<if>", "<sp>", "<boolean_expression>", "<string_variable>", "T", "<equals>", "<string_expression>", "<string_literal>", "INCOMPLETE", "<str_exp_end>", "<bool_exp_end>", "<sp>", "<then>", "<sp>", "<line_number>", 1680];
+    result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(610);
+    expect(result.command).toEqual("<if>");
+    expect(result.text).toEqual('610 IF $T="INCOMPLETE" THEN 1680');
+    expect(result.cond.exp).toEqual("<str_equals>");
+    expect(result.cond["var"]).toEqual("T");
+    expect(result.cond.str_exp[0][0]).toEqual("<str>");
+    expect(result.cond.str_exp[0][1]).toEqual("INCOMPLETE");
+    return expect(result.dest).toEqual(1680);
   });
   it("should correctly format a program line with an INPUT statement", function() {
     var line_text, parse_object, result;
