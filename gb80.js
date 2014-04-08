@@ -74,6 +74,7 @@ ProgramLineFormatter = (function() {
   function ProgramLineFormatter() {
     this.num_exp = new NumExpBuilder;
     this.str_exp = new StrExpBuilder;
+    this.bool_exp = new BoolExpBuilder;
   }
 
   ProgramLineFormatter.prototype.format = function(parse_object, line_text) {
@@ -174,7 +175,17 @@ ProgramLineFormatter = (function() {
     };
   };
 
-  ProgramLineFormatter.prototype.build_if_cmd = function(parse_object) {};
+  ProgramLineFormatter.prototype.build_if_cmd = function(parse_object) {
+    var bool_exp, line, stack;
+    stack = parse_object.slice(5, +(parse_object.length - 6) + 1 || 9e9);
+    bool_exp = this.bool_exp.build_bool_exp(stack);
+    line = {
+      command: "<if>",
+      dest: parse_object.pop(),
+      cond: bool_exp
+    };
+    return line;
+  };
 
   ProgramLineFormatter.prototype.build_input_cmd = function(parse_object) {
     var cmd, line, op, prompt;
@@ -1276,13 +1287,14 @@ BoolExpBuilder = (function() {
   }
 
   BoolExpBuilder.prototype.build_bool_exp = function(stack) {
-    var bool, bx_stack, tag, type;
+    var bool, bx_stack, tag, tag_end, type;
     if (stack[1] === "<number_variable>") {
       type = "num";
     } else {
       type = "str";
     }
-    tag = "<" + type + "_" + stack[3].slice(1);
+    tag_end = stack[3].slice(1);
+    tag = "<" + type + "_" + tag_end;
     bool = {
       exp: tag,
       "var": stack[2]

@@ -137,6 +137,7 @@ class ProgramLineFormatter
   constructor: () ->
     @num_exp = new NumExpBuilder
     @str_exp = new StrExpBuilder
+    @bool_exp = new BoolExpBuilder
 
   format: (parse_object, line_text) ->
     cmd = parse_object[3]
@@ -208,16 +209,14 @@ class ProgramLineFormatter
 
 
   build_if_cmd: (parse_object) ->
+    stack = parse_object[5..parse_object.length-6]
 
-
-#    stack = parse_object[6..parse_object.length-1]
-#    str_exp = @str_exp.build_str_exp(stack)
-#    line = {
-#      command: "<string_assignment>"
-#      operand: parse_object[4]
-#      expression: str_exp }
-#    return line
-
+    bool_exp = @bool_exp.build_bool_exp(stack)
+    line = {
+      command: "<if>"
+      dest: parse_object.pop()
+      cond: bool_exp }
+    return line
 
 
   build_input_cmd: (parse_object) ->
@@ -1006,7 +1005,8 @@ class BoolExpBuilder
 
   build_bool_exp: (stack) ->
     if stack[1] == "<number_variable>" then type = "num" else type = "str"
-    tag = "<"+type+"_"+stack[3].slice(1)
+    tag_end = stack[3].slice(1)
+    tag = "<"+type+"_"+tag_end
     bool = {
       exp: tag
       var: stack[2] }

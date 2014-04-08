@@ -153,7 +153,7 @@ describe "Program line formatting", ->
     expect(result.text).toEqual('1299 RETURN')
 
 
-  xit "should correctly format a program line with an IF statement", ->
+  it "should correctly format a program line with an IF statement", ->
 
     line_text = '150 IF Z<0 THEN 340'
 
@@ -185,7 +185,7 @@ describe "Program line formatting", ->
     expect(result.cond.exp).toEqual("<num_lesser_than>")
     expect(result.cond.var).toEqual("Z")
     expect(result.cond.num_exp.exp).toEqual("<num>")
-    expect(result.cond.num_exp.value).toEqual(477)
+    expect(result.cond.num_exp.value).toEqual(0)
     expect(result.dest).toEqual(340)
 
 

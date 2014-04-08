@@ -76,7 +76,7 @@ describe("Program line formatting", function() {
     expect(result.command).toEqual("<return>");
     return expect(result.text).toEqual('1299 RETURN');
   });
-  xit("should correctly format a program line with an IF statement", function() {
+  it("should correctly format a program line with an IF statement", function() {
     var line_text, parse_object, result;
     line_text = '150 IF Z<0 THEN 340';
     parse_object = ["<line_number>", 150, "<sp>", "<if>", "<sp>", "<boolean_expression>", "<number_variable>", "Z", "<lesser_than>", "<numeric_expression>", "<numeric_literal>", 0, "<num_exp_end>", "<bool_exp_end>", "<sp>", "<then>", "<sp>", "<line_number>", 340];
@@ -87,7 +87,7 @@ describe("Program line formatting", function() {
     expect(result.cond.exp).toEqual("<num_lesser_than>");
     expect(result.cond["var"]).toEqual("Z");
     expect(result.cond.num_exp.exp).toEqual("<num>");
-    expect(result.cond.num_exp.value).toEqual(477);
+    expect(result.cond.num_exp.value).toEqual(0);
     expect(result.dest).toEqual(340);
     line_text = '610 IF $T="INCOMPLETE" THEN 1680';
     parse_object = ["<line_number>", 610, "<sp>", "<if>", "<sp>", "<boolean_expression>", "<string_variable>", "T", "<equals>", "<string_expression>", "<string_literal>", "INCOMPLETE", "<str_exp_end>", "<bool_exp_end>", "<sp>", "<then>", "<sp>", "<line_number>", 1680];
