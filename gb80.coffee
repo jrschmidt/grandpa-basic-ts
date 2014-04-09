@@ -279,12 +279,6 @@ class LineParser
     @input_rules = @syntax.input_statement_rules
 
 
-#  parse: (string) ->
-#    pre = @pre_parse(string)
-#    if pre.match == "yes"
-      
-
-
   parse: (string) ->
     match = "no"
     for rule in @rules
@@ -292,6 +286,7 @@ class LineParser
         result = @look_for(string,rule)
         match = result.match
     if match == "yes"
+      result.parse_object = "<parse_error>" if result.remainder.length > 0
       return result.parse_object
     else
       return "<parse_error>"
@@ -318,15 +313,22 @@ class LineParser
             token_result = {match: "no"}
         if token_result.match == "yes"
           parse_object.push(tk) for tk in token_result.parse_object
-          string = token_result.remainder
+          if string
+            string = token_result.remainder
+          else
+            string = ""
         else
           rule_match = "no"
     if rule_match == "no"
-      result = {match: "no"}
+      result = {match: "no", remainder: "" }
     else
       result = {
         match: "yes"
         parse_object: parse_object }
+      if string
+        result.remainder = string
+      else
+        result.remainder = ""
     return result
 
 

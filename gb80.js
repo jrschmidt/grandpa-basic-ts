@@ -270,6 +270,9 @@ LineParser = (function() {
       }
     }
     if (match === "yes") {
+      if (result.remainder.length > 0) {
+        result.parse_object = "<parse_error>";
+      }
       return result.parse_object;
     } else {
       return "<parse_error>";
@@ -314,7 +317,11 @@ LineParser = (function() {
             tk = _ref[_j];
             parse_object.push(tk);
           }
-          string = token_result.remainder;
+          if (string) {
+            string = token_result.remainder;
+          } else {
+            string = "";
+          }
         } else {
           rule_match = "no";
         }
@@ -322,13 +329,19 @@ LineParser = (function() {
     }
     if (rule_match === "no") {
       result = {
-        match: "no"
+        match: "no",
+        remainder: ""
       };
     } else {
       result = {
         match: "yes",
         parse_object: parse_object
       };
+      if (string) {
+        result.remainder = string;
+      } else {
+        result.remainder = "";
+      }
     }
     return result;
   };

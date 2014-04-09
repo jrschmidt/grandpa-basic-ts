@@ -427,3 +427,62 @@ describe "BASIC program line parser", ->
     expect(po[3]).toEqual("<end>")
 
 
+  it "should reject any otherwise valid line with extra characters at the end", ->
+
+    po = @parser.parse('CLEAR ALL DATA')
+    expect(po).toEqual("<parse_error>")
+
+    po = @parser.parse('RUN PROGRAM GB80.BAS')
+    expect(po).toEqual("<parse_error>")
+
+    po = @parser.parse('INFO FOR GB80')
+    expect(po).toEqual("<parse_error>")
+
+    po = @parser.parse('LIST PROGRAM')
+    expect(po).toEqual("<parse_error>")
+
+    po = @parser.parse('1180 X=77 OR Z=77')
+    expect(po).toEqual("<parse_error>")
+
+    po = @parser.parse('330 $W="TOTAL WEIGHT" =40-3')
+    expect(po).toEqual("<parse_error>")
+
+    po = @parser.parse('650 GOTO 990 && CONTINUE')
+    expect(po).toEqual("<parse_error>")
+
+    po = @parser.parse('410 GOSUB 960 RETURN')
+    expect(po).toEqual("<parse_error>")
+
+    po = @parser.parse('1199 RETURN 870')
+    expect(po).toEqual("<parse_error>")
+
+    po = @parser.parse('690 IF T>100 THEN 1600 ELSE 1800')
+    expect(po).toEqual("<parse_error>")
+
+    po = @parser.parse('1290 INPUT X,Y,Z')
+    expect(po).toEqual("<parse_error>")
+
+    po = @parser.parse('2860 INPUT $V,$V2,$V7')
+    expect(po).toEqual("<parse_error>")
+
+    po = @parser.parse('1350 INPUT "ENTER VALUE";H;"ENTER QUANTITY";Q')
+    expect(po).toEqual("<parse_error>")
+
+    po = @parser.parse('840 PRINT "THIS IS IT" X=Y')
+    expect(po).toEqual("<parse_error>")
+
+    po = @parser.parse('720 PRINTLN; PRINTLN "SUMMARY"')
+    expect(po).toEqual("<parse_error>")
+
+    po = @parser.parse('890 PRINTLN $R+$U6+" IS "+$I4 AND RETURN')
+    expect(po).toEqual("<parse_error>")
+
+    po = @parser.parse('140 TAB 16,18,42')
+    expect(po).toEqual("<parse_error>")
+
+    po = @parser.parse('460 CLEARSCRN & TAB 10,14')
+    expect(po).toEqual("<parse_error>")
+
+    po = @parser.parse('1990 END PROGRAM')
+    expect(po).toEqual("<parse_error>")
+
