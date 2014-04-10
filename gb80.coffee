@@ -268,9 +268,6 @@ class ProgramLineFormatter
 
 class LineParser
 
-  # TODO After making everything work, add a check to fail the match
-  # if result.remainder != ""
-
   constructor: () ->
     @helpers = new ParseHelpers
     @syntax = @helpers.syntax
@@ -1018,6 +1015,30 @@ class BoolExpBuilder
     else
       bool.str_exp = @str_exp.build_str_exp(bx_stack)
     return bool
+
+
+
+class ProgramLineManager
+
+  constructor: () ->
+    @lines = {}
+
+
+  list: () ->
+    list = []
+    line_numbers = @lines_sort()
+    ln_keys = []
+    ln_keys.push(ln.toString()) for ln in ln_keys
+    list.push(@lines[ln].text) for ln in line_numbers
+    console.log(line_text) for line_text in list
+    return list
+
+
+  lines_sort: () ->
+    line_numbers = []
+    line_numbers.push(line.line_no) for ln,line of @lines
+    line_numbers.sort (a,b) -> a-b
+    return line_numbers
 
 
 
