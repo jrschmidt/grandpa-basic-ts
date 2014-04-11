@@ -1024,19 +1024,31 @@ class ProgramLineManager
     @lines = {}
 
 
+  clear: () ->
+    @lines = {}
+
+
+  add_or_change: (line_no,line_text) ->
+    @lines[line_no.toString()] = {line_no: line_no, text: line_text }
+
+
+  remove: (line_no) ->
+    delete @lines[line_no.toString()]
+
+
   list: () ->
     list = []
     line_numbers = @lines_sort()
-    ln_keys = []
-    ln_keys.push(ln.toString()) for ln in ln_keys
     list.push(@lines[ln].text) for ln in line_numbers
-    console.log(line_text) for line_text in list
+#    console.log " "
+#    console.log "    program listing:"
+#    console.log(line_text) for line_text in list
     return list
 
 
   lines_sort: () ->
     line_numbers = []
-    line_numbers.push(line.line_no) for ln,line of @lines
+    line_numbers.push(line.line_no) for ln_key,line of @lines
     line_numbers.sort (a,b) -> a-b
     return line_numbers
 

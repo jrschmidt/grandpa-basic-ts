@@ -1330,32 +1330,38 @@ ProgramLineManager = (function() {
     this.lines = {};
   }
 
+  ProgramLineManager.prototype.clear = function() {
+    return this.lines = {};
+  };
+
+  ProgramLineManager.prototype.add_or_change = function(line_no, line_text) {
+    return this.lines[line_no.toString()] = {
+      line_no: line_no,
+      text: line_text
+    };
+  };
+
+  ProgramLineManager.prototype.remove = function(line_no) {
+    return delete this.lines[line_no.toString()];
+  };
+
   ProgramLineManager.prototype.list = function() {
-    var line_numbers, line_text, list, ln, ln_keys, _i, _j, _k, _len, _len1, _len2;
+    var line_numbers, list, ln, _i, _len;
     list = [];
     line_numbers = this.lines_sort();
-    ln_keys = [];
-    for (_i = 0, _len = ln_keys.length; _i < _len; _i++) {
-      ln = ln_keys[_i];
-      ln_keys.push(ln.toString());
-    }
-    for (_j = 0, _len1 = line_numbers.length; _j < _len1; _j++) {
-      ln = line_numbers[_j];
+    for (_i = 0, _len = line_numbers.length; _i < _len; _i++) {
+      ln = line_numbers[_i];
       list.push(this.lines[ln].text);
-    }
-    for (_k = 0, _len2 = list.length; _k < _len2; _k++) {
-      line_text = list[_k];
-      console.log(line_text);
     }
     return list;
   };
 
   ProgramLineManager.prototype.lines_sort = function() {
-    var line, line_numbers, ln, _ref;
+    var line, line_numbers, ln_key, _ref;
     line_numbers = [];
     _ref = this.lines;
-    for (ln in _ref) {
-      line = _ref[ln];
+    for (ln_key in _ref) {
+      line = _ref[ln_key];
       line_numbers.push(line.line_no);
     }
     line_numbers.sort(function(a, b) {
