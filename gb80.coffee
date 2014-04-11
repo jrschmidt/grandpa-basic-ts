@@ -909,36 +909,6 @@ class NumExpBuilder
 
 
 
-class NumericVariableRegister
-
-  constructor: () ->
-    @vars = {}
-
-
-  # (Most, if not all, of the early versions of BASIC initialized any unset
-  # numeric variables to 0.)
-  add_var: (name) ->
-    @vars[name] = 0
-
-
-  defined: (name) ->
-    if @vars.hasOwnProperty(name)
-      return "yes"
-    else
-      return "no"
-
-
-  set: (name,value) ->
-    @add_var(name) if @defined(name) == "no"
-    @vars[name] = value
-
-
-  get: (name) ->
-    @add_var(name) if @defined(name) == "no"
-    return @vars[name]
-
-
-
 class NumericExpressionEvaluator
 
   constructor: () ->
@@ -995,36 +965,6 @@ class StrExpBuilder
 
 
 
-class StringVariableRegister
-
-  constructor: () ->
-    @vars = {}
-
-
-  # Most, if not all, of the early versions of BASIC initialized any unset
-  # string variables to "" (an empty string).
-  add_var: (name) ->
-    @vars[name] = ""
-
-
-  defined: (name) ->
-    if @vars.hasOwnProperty(name)
-      return "yes"
-    else
-      return "no"
-
-
-  set: (name,value) ->
-    @add_var(name) if @defined(name) == "no"
-    @vars[name] = value
-
-
-  get: (name) ->
-    @add_var(name) if @defined(name) == "no"
-    return @vars[name]
-
-
-
 class BoolExpBuilder
 
   constructor: () ->
@@ -1045,6 +985,51 @@ class BoolExpBuilder
     else
       bool.str_exp = @str_exp.build_str_exp(bx_stack)
     return bool
+
+
+
+class VariableRegister
+
+  constructor: () ->
+    @vars = {}
+
+
+  add_var: (name) ->
+    @vars[name] = null
+
+
+  defined: (name) ->
+    if @vars.hasOwnProperty(name)
+      return "yes"
+    else
+      return "no"
+
+
+  set: (name,value) ->
+    @add_var(name) if @defined(name) == "no"
+    @vars[name] = value
+
+
+  get: (name) ->
+    @add_var(name) if @defined(name) == "no"
+    return @vars[name]
+
+
+
+class NumericVariableRegister extends VariableRegister
+
+  # Most, if not all, of the early versions of BASIC initialized any unset
+  # numeric variables to 0.
+  add_var: (name) ->
+    @vars[name] = 0
+
+
+class StringVariableRegister extends VariableRegister
+
+  # Most early versions of BASIC initialized unset string variables to an
+  # empty string.
+  add_var: (name) ->
+    @vars[name] = ""
 
 
 
