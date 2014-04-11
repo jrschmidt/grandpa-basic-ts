@@ -4,11 +4,6 @@ describe "String expression parser", ->
     @parser = new StringExpressionParser
 
 
-  it "should create a StringExpressionParser object", ->
-    expect(@parser).toBeDefined
-    expect(@parser).toEqual(jasmine.any(StringExpressionParser))
-
-
   it "should split string at delimiters and tokenize the delimiters", ->
 
     str = '$A'

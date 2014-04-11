@@ -4,11 +4,6 @@ describe "Numeric expression parser", ->
     @parser = new NumericExpressionParser
 
 
-  it "should create a NumericExpressionParser object", ->
-    expect(@parser).toBeDefined
-    expect(@parser).toEqual(jasmine.any(NumericExpressionParser))
-
-
   it "should split string at delimiters and tokenize the delimiters", ->
 
     str = "X"

@@ -4,11 +4,6 @@ describe "BASIC program line parser", ->
     @parser = new LineParser
 
 
-  it "should create a LineParser object", ->
-    expect(@parser).toBeDefined
-    expect(@parser).toEqual(jasmine.any(LineParser))
-
-
   it "should correctly parse a terminal command", ->
     po = @parser.parse("CLEAR")
     expect(po).toEqual(jasmine.any(Array))

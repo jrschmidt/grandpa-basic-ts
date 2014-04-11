@@ -4,11 +4,6 @@ describe "Key helper methods", ->
     @key_help = new KeyHelper
 
 
-  it "should create a KeyHelper object", ->
-    expect(@key_help).toBeDefined
-    expect(@key_help).toEqual(jasmine.any(KeyHelper))
-
-
   it "should map character codes to characters", ->
     expect(@key_help.char(18)).toEqual(null)
     expect(@key_help.char(24)).toEqual(null)

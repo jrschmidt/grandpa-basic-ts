@@ -1,11 +1,5 @@
 describe "Numeric variable register", ->
 
-  it "should create a NumericVariableRegister object", ->
-
-    num_vars = new NumericVariableRegister
-    expect(num_vars).toEqual(jasmine.any(NumericVariableRegister))
-
-
   it "should register a new variable", ->
 
     num_vars = new NumericVariableRegister

@@ -3,10 +3,6 @@ describe("Key helper methods", function() {
   beforeEach(function() {
     return this.key_help = new KeyHelper;
   });
-  it("should create a KeyHelper object", function() {
-    expect(this.key_help).toBeDefined;
-    return expect(this.key_help).toEqual(jasmine.any(KeyHelper));
-  });
   it("should map character codes to characters", function() {
     expect(this.key_help.char(18)).toEqual(null);
     expect(this.key_help.char(24)).toEqual(null);

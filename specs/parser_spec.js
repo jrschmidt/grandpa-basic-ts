@@ -3,10 +3,6 @@ describe("BASIC program line parser", function() {
   beforeEach(function() {
     return this.parser = new LineParser;
   });
-  it("should create a LineParser object", function() {
-    expect(this.parser).toBeDefined;
-    return expect(this.parser).toEqual(jasmine.any(LineParser));
-  });
   it("should correctly parse a terminal command", function() {
     var po;
     po = this.parser.parse("CLEAR");

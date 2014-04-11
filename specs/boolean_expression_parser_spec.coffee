@@ -5,11 +5,6 @@ describe "Boolean expression parser", ->
     @parser = @helpers.bool_exp_parser
 
 
-  it "should create a BooleanExpressionParser object", ->
-    expect(@parser).toBeDefined
-    expect(@parser).toEqual(jasmine.any(BooleanExpressionParser))
-
-
   it "should separate a boolean expression from the characters that follow it", ->
 
     result = @parser.strip_remainder("Z<0 THEN 340")

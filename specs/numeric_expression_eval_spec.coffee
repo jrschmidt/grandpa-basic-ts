@@ -1,13 +1,5 @@
 describe "Numeric expression evaluator", ->
 
-  it "should create a NumericExpressionEvaluator object", ->
-
-    nmx_eval = new NumericExpressionEvaluator
-    expect(nmx_eval).toEqual(jasmine.any(NumericExpressionEvaluator))
-
-
-  # Hoping that placing the beforeEach() here, after the first it() call, will
-  # make it execute AFTER the first it(). If this doesn't work, no harm is done.
   beforeEach ->
     @nmx_eval = new NumericExpressionEvaluator
     @num_vars = @nmx_eval.vars

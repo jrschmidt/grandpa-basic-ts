@@ -3,10 +3,6 @@ describe("String expression parser", function() {
   beforeEach(function() {
     return this.parser = new StringExpressionParser;
   });
-  it("should create a StringExpressionParser object", function() {
-    expect(this.parser).toBeDefined;
-    return expect(this.parser).toEqual(jasmine.any(StringExpressionParser));
-  });
   it("should split string at delimiters and tokenize the delimiters", function() {
     var str, tokens;
     str = '$A';

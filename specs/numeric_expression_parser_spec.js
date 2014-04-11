@@ -3,10 +3,6 @@ describe("Numeric expression parser", function() {
   beforeEach(function() {
     return this.parser = new NumericExpressionParser;
   });
-  it("should create a NumericExpressionParser object", function() {
-    expect(this.parser).toBeDefined;
-    return expect(this.parser).toEqual(jasmine.any(NumericExpressionParser));
-  });
   it("should split string at delimiters and tokenize the delimiters", function() {
     var str, tokens;
     str = "X";

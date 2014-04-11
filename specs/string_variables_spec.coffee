@@ -1,11 +1,5 @@
 describe "String variable register", ->
 
-  it "should create a StringVariableRegister object", ->
-
-    str_vars = new StringVariableRegister
-    expect(str_vars).toEqual(jasmine.any(StringVariableRegister))
-
-
   it "should register a new variable", ->
 
     str_vars = new StringVariableRegister

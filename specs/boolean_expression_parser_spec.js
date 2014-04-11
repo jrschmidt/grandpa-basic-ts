@@ -4,10 +4,6 @@ describe("Boolean expression parser", function() {
     this.helpers = new ParseHelpers;
     return this.parser = this.helpers.bool_exp_parser;
   });
-  it("should create a BooleanExpressionParser object", function() {
-    expect(this.parser).toBeDefined;
-    return expect(this.parser).toEqual(jasmine.any(BooleanExpressionParser));
-  });
   it("should separate a boolean expression from the characters that follow it", function() {
     var result;
     result = this.parser.strip_remainder("Z<0 THEN 340");
