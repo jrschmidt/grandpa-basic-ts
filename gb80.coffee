@@ -965,6 +965,25 @@ class StrExpBuilder
 
 
 
+class StringExpressionConcatenator
+
+  constructor: () ->
+    @vars = new StringVariableRegister
+
+
+  val: (str_exp) ->
+    string = ""
+    for term in str_exp
+      string = string.concat(term[1]) if term[0] == "<str>"
+      string = string.concat(@vars.get(term[1])) if term[0] == "<var>"
+    return string
+
+
+  str_var_eval: (term) ->
+    return @vars.get(term[0])
+
+
+
 class BoolExpBuilder
 
   constructor: () ->
