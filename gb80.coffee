@@ -911,8 +911,9 @@ class NumExpBuilder
 
 class NumericExpressionEvaluator
 
-  constructor: () ->
-    @vars = new NumericVariableRegister
+  constructor: (helpers) ->
+    @vars = helpers.num_vars
+
 
   val: (num_exp) ->
     switch num_exp.exp
@@ -967,8 +968,8 @@ class StrExpBuilder
 
 class StringExpressionConcatenator
 
-  constructor: () ->
-    @vars = new StringVariableRegister
+  constructor: (helpers) ->
+    @vars = helpers.str_vars
 
 
   val: (str_exp) ->
@@ -1004,6 +1005,55 @@ class BoolExpBuilder
     else
       bool.str_exp = @str_exp.build_str_exp(bx_stack)
     return bool
+
+
+
+class BooleanExpressionEvaluator
+
+  constructor: (helpers) ->
+    @str_vars = helpers.str_vars
+    @num_vars = helpers.num_vars
+    @str_eval = helpers.str_eval
+    @num_eval = helpers.num_eval
+
+    @truth_table = {
+      "<num_equals>": [false,true,false]
+      "<num_not_equal>": [true,false,true]
+      "<num_lesser_than>": [true,false,false]
+      "<num_lesser_equal>": [true,true,false]
+      "<num_greater_than>": [false,false,true]
+      "<num_greater_equal>": [false,true,true]
+      "<str_equals>": [false,true]
+      "<str_not_equal>": [true,false] }
+
+
+  val: (bx) ->
+    if bx.exp in [ "<str_equals>", "<str_not_equal>" ]
+      comp = @str_compare( @str_vars.get(bx.var), @str_eval.val(bx.str_exp) )
+    else
+      comp = @num_compare( @num_vars.get(bx.var), @num_eval.val(bx.num_exp) )
+    return @truth_table[bx.exp][comp]
+
+
+  num_compare: (x1,x2) ->
+    return 0 if x1 < x2
+    return 1 if x1 == x2
+    return 2 if x1 > x2
+
+
+  str_compare: (s1,s2) ->
+    if s1 == s2 then return 1 else return 0
+
+
+
+class InterpreterHelpers
+
+  constructor: (id,msg) ->
+    @num_vars = new NumericVariableRegister
+    @str_vars = new StringVariableRegister
+    @num_eval = new NumericExpressionEvaluator(this)
+    @str_eval = new StringExpressionConcatenator(this)
+    @bx_eval = new BooleanExpressionEvaluator(this)
 
 
 

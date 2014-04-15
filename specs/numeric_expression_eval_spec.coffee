@@ -1,7 +1,8 @@
 describe "Numeric expression evaluator", ->
 
   beforeEach ->
-    @nmx_eval = new NumericExpressionEvaluator
+    @helpers = new InterpreterHelpers
+    @nmx_eval = @helpers.num_eval
     @num_vars = @nmx_eval.vars
 
 
@@ -9,28 +10,28 @@ describe "Numeric expression evaluator", ->
 
     nmx = {
       exp: "<num>"
-      value: 42 }    
+      value: 42 }
 
     value = @nmx_eval.val(nmx)
     expect(value).toEqual(42)
 
     nmx = {
       exp: "<num>"
-      value: 0 }    
+      value: 0 }
 
     value = @nmx_eval.val(nmx)
     expect(value).toEqual(0)
 
     nmx = {
       exp: "<num>"
-      value: 6 }    
+      value: 6 }
 
     value = @nmx_eval.val(nmx)
     expect(value).toEqual(6)
 
     nmx = {
       exp: "<num>"
-      value: 3.1416 }    
+      value: 3.1416 }
 
     value = @nmx_eval.val(nmx)
     expect(value).toEqual(3.1416)

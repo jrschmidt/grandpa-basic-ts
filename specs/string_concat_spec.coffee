@@ -1,7 +1,8 @@
 describe "String expression concatenator", ->
 
   beforeEach ->
-    @str_concat = new StringExpressionConcatenator
+    @helpers = new InterpreterHelpers
+    @str_concat = @helpers.str_eval
     @str_vars = @str_concat.vars
 
 
