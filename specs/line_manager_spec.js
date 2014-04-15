@@ -118,7 +118,10 @@ describe("Program line manager", function() {
     var list;
     list = this.prog_lines.list();
     expect(list.length).toEqual(23);
-    this.prog_lines.add_or_change(15, '15 REM WELCOME TO LINE 15');
+    this.prog_lines.add_or_change({
+      line_no: 15,
+      text: '15 REM WELCOME TO LINE 15'
+    });
     list = this.prog_lines.list();
     expect(list.length).toEqual(24);
     expect(list[0]).toEqual('10 REM');
@@ -127,7 +130,10 @@ describe("Program line manager", function() {
     expect(list[12]).toEqual('350 PRINT $Z1');
     expect(list[21]).toEqual('940 CLEARSCRN');
     expect(list[23]).toEqual('1299 RETURN');
-    this.prog_lines.add_or_change(400, '400 $Z7 = ""');
+    this.prog_lines.add_or_change({
+      line_no: 400,
+      text: '400 $Z7 = ""'
+    });
     list = this.prog_lines.list();
     expect(list.length).toEqual(25);
     expect(list[3]).toEqual('30 D=477+B');
@@ -136,7 +142,10 @@ describe("Program line manager", function() {
     expect(list[24]).toEqual('1299 RETURN');
     expect(list[5]).toEqual('110 INPUT R');
     expect(list.length).toEqual(25);
-    this.prog_lines.add_or_change(110, '110 INPUT R4');
+    this.prog_lines.add_or_change({
+      line_no: 110,
+      text: '110 INPUT R4'
+    });
     list = this.prog_lines.list();
     expect(list.length).toEqual(25);
     expect(list[5]).toEqual('110 INPUT R4');

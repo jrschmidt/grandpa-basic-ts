@@ -1,30 +1,30 @@
-class BasicProgram
+#class BasicProgram
 
-  constructor: () ->
-    @lines = []
-
-
-  addline: (n, text) ->
-    existing = @lines.filter( (ln) -> ln.ln_no == n )
-    if existing.length == 0
-      @lines.push( { "ln_no" : n, "text" : text } )
-    else
-      existing[0].text = text
+#  constructor: () ->
+#    @lines = []
 
 
-  fetch: (line_no) ->
-    existing = @lines.filter( (ln) -> ln.ln_no == line_no )
-    if existing.length == 0
-      return {}
-    else
-      return existing[0]
+#  addline: (n, text) ->
+#    existing = @lines.filter( (ln) -> ln.ln_no == n )
+#    if existing.length == 0
+#      @lines.push( { "ln_no" : n, "text" : text } )
+#    else
+#      existing[0].text = text
 
 
-  remove: (line_no) ->
-    line = @fetch(line_no)
-    if line != {}
-      line.ln_no = null
-      line.text = null
+#  fetch: (line_no) ->
+#    existing = @lines.filter( (ln) -> ln.ln_no == line_no )
+#    if existing.length == 0
+#      return {}
+#    else
+#      return existing[0]
+
+
+#  remove: (line_no) ->
+#    line = @fetch(line_no)
+#    if line != {}
+#      line.ln_no = null
+#      line.text = null
 
 
 
@@ -1112,8 +1112,9 @@ class ProgramLineManager
     @lines = {}
 
 
-  add_or_change: (line_no,line_text) ->
-    @lines[line_no.toString()] = {line_no: line_no, text: line_text }
+  add_or_change: (line_object) ->
+    ln = line_object.line_no
+    @lines[ln.toString()] = {line_no: ln, text: line_object.text }
 
 
   remove: (line_no) ->

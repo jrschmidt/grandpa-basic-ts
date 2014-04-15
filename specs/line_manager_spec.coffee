@@ -56,7 +56,7 @@ describe "Program line manager", ->
     list = @prog_lines.list()
     expect(list.length).toEqual(23)
 
-    @prog_lines.add_or_change(15, '15 REM WELCOME TO LINE 15')
+    @prog_lines.add_or_change( {line_no: 15, text: '15 REM WELCOME TO LINE 15' } )
     list = @prog_lines.list()
     expect(list.length).toEqual(24)
     expect(list[0]).toEqual('10 REM')
@@ -66,7 +66,7 @@ describe "Program line manager", ->
     expect(list[21]).toEqual('940 CLEARSCRN')
     expect(list[23]).toEqual('1299 RETURN')
 
-    @prog_lines.add_or_change(400, '400 $Z7 = ""')
+    @prog_lines.add_or_change( {line_no: 400, text: '400 $Z7 = ""' } )
     list = @prog_lines.list()
     expect(list.length).toEqual(25)
     expect(list[3]).toEqual('30 D=477+B')
@@ -76,7 +76,7 @@ describe "Program line manager", ->
 
     expect(list[5]).toEqual('110 INPUT R')
     expect(list.length).toEqual(25)
-    @prog_lines.add_or_change(110, '110 INPUT R4')
+    @prog_lines.add_or_change( {line_no: 110, text: '110 INPUT R4' } )
     list = @prog_lines.list()
     expect(list.length).toEqual(25)
     expect(list[5]).toEqual('110 INPUT R4')
