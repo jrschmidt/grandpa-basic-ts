@@ -1102,7 +1102,7 @@ class StringVariableRegister extends VariableRegister
 
 
 
-class ProgramLineManager
+class ProgramLineListing
 
   constructor: () ->
     @lines = {}

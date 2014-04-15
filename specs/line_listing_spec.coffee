@@ -1,9 +1,9 @@
-describe "Program line manager", ->
+describe "Program line listing", ->
 
   beforeEach ->
 
 
-    @prog_lines = new ProgramLineManager
+    @prog_lines = new ProgramLineListing
 
     @prog_lines.lines["10"] = {line_no: 10, text: '10 REM' }
     @prog_lines.lines["20"] = {line_no: 20, text: '20 REM WELCOME TO GRANDPA BASIC 1980' }
