@@ -19,7 +19,7 @@ describe "Program Controller", ->
       line_no: 350
       command: "<print>"
       text: '350 PRINT "THIS EMULATES THE EARLY"'
-      expression: [ ["<str>", ""] ] }
+      expression: [ ["<str>", "THIS EMULATES THE EARLY"] ] }
 
     @line355 = {
       line_no: 355
@@ -31,7 +31,7 @@ describe "Program Controller", ->
       line_no: 360
       command: "<print>"
       text: '360 PRINT "COMMAND LINE BASIC"'
-      expression: [ ["<str>", ""] ] }
+      expression: [ ["<str>", "COMMAND LINE BASIC"] ] }
 
     @line365 = {
       line_no: 365
@@ -43,7 +43,7 @@ describe "Program Controller", ->
       line_no: 370
       command: "<print>"
       text: '370 PRINT "THAT WAS COMMON AROUND 1980"'
-      expression: [ ["<str>", ""] ] }
+      expression: [ ["<str>", "THAT WAS COMMON AROUND 1980"] ] }
 
 
   it "should execute PRINT statements", ->
@@ -55,7 +55,7 @@ describe "Program Controller", ->
     expect(@prog.next_line_no).toEqual(0)
 
 
-  xit "should run more than one line", ->
+  it "should run more than one line", ->
 
     lines = {
       "340": @line340

@@ -1116,15 +1116,21 @@ class ProgramController
   load: (lines) ->
     @lines = lines
     @line_order = @sort_lines(lines)
+    console.log "LOAD:"
+    console.log "line order = #{@line_order}"
     if @line_order.length > 0
       @next_line_index = 0
       @next_line_no = @line_order[0] if @line_order.length > 0
+    console.log "next index = #{@next_line_index}"
+    console.log "next line = #{@next_line_no}"
 
 
   run_next_line: ->
+    console.log " "
+    console.log "RUN NEXT LINE:"
     line_object = @lines[@next_line_no.toString()]
-    @output = ""
     console.log "#{line_object.text}"
+    console.log "   cmd: #{line_object.command}"
     switch line_object.command
       when "<print>"
         @output = @commands.run_print(line_object)
@@ -1137,6 +1143,9 @@ class ProgramController
       @next_line_no = @line_order[@next_line_index]
     else
       @next_line_no = 0
+    console.log "UPDATE NEXT LINE:"
+    console.log "next index = #{@next_line_index}"
+    console.log "next line = #{@next_line_no}"
 
 
   sort_lines: (lines) ->

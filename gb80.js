@@ -1418,19 +1418,25 @@ ProgramController = (function() {
   ProgramController.prototype.load = function(lines) {
     this.lines = lines;
     this.line_order = this.sort_lines(lines);
+    console.log("LOAD:");
+    console.log("line order = " + this.line_order);
     if (this.line_order.length > 0) {
       this.next_line_index = 0;
       if (this.line_order.length > 0) {
-        return this.next_line_no = this.line_order[0];
+        this.next_line_no = this.line_order[0];
       }
     }
+    console.log("next index = " + this.next_line_index);
+    return console.log("next line = " + this.next_line_no);
   };
 
   ProgramController.prototype.run_next_line = function() {
     var line_object;
+    console.log(" ");
+    console.log("RUN NEXT LINE:");
     line_object = this.lines[this.next_line_no.toString()];
-    this.output = "";
     console.log("" + line_object.text);
+    console.log("   cmd: " + line_object.command);
     switch (line_object.command) {
       case "<print>":
         this.output = this.commands.run_print(line_object);
@@ -1441,10 +1447,13 @@ ProgramController = (function() {
   ProgramController.prototype.update_next_line = function() {
     this.next_line_index += 1;
     if (this.next_line_index < this.line_order.length) {
-      return this.next_line_no = this.line_order[this.next_line_index];
+      this.next_line_no = this.line_order[this.next_line_index];
     } else {
-      return this.next_line_no = 0;
+      this.next_line_no = 0;
     }
+    console.log("UPDATE NEXT LINE:");
+    console.log("next index = " + this.next_line_index);
+    return console.log("next line = " + this.next_line_no);
   };
 
   ProgramController.prototype.sort_lines = function(lines) {

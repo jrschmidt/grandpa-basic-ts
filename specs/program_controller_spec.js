@@ -18,7 +18,7 @@ describe("Program Controller", function() {
       line_no: 350,
       command: "<print>",
       text: '350 PRINT "THIS EMULATES THE EARLY"',
-      expression: [["<str>", ""]]
+      expression: [["<str>", "THIS EMULATES THE EARLY"]]
     };
     this.line355 = {
       line_no: 355,
@@ -30,7 +30,7 @@ describe("Program Controller", function() {
       line_no: 360,
       command: "<print>",
       text: '360 PRINT "COMMAND LINE BASIC"',
-      expression: [["<str>", ""]]
+      expression: [["<str>", "COMMAND LINE BASIC"]]
     };
     this.line365 = {
       line_no: 365,
@@ -42,7 +42,7 @@ describe("Program Controller", function() {
       line_no: 370,
       command: "<print>",
       text: '370 PRINT "THAT WAS COMMON AROUND 1980"',
-      expression: [["<str>", ""]]
+      expression: [["<str>", "THAT WAS COMMON AROUND 1980"]]
     };
   });
   it("should execute PRINT statements", function() {
@@ -56,7 +56,7 @@ describe("Program Controller", function() {
     expect(this.prog.output).toEqual("WELCOME TO GRANDPA BASIC 1980");
     return expect(this.prog.next_line_no).toEqual(0);
   });
-  xit("should run more than one line", function() {
+  it("should run more than one line", function() {
     var lines;
     lines = {
       "340": this.line340,
