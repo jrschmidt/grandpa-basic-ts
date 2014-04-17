@@ -1,6 +1,6 @@
 #class BasicProgram
 
-#  constructor: () ->
+#  constructor: ->
 #    @lines = []
 
 
@@ -30,7 +30,7 @@
 
 class SyntaxRules
 
-  constructor: () ->
+  constructor: ->
 
     @keywords = [
       "CLEAR"
@@ -134,7 +134,7 @@ class BasicProgramLine
 
 class ProgramLineFormatter
 
-  constructor: () ->
+  constructor: ->
     @num_exp = new NumExpBuilder
     @str_exp = new StrExpBuilder
     @bool_exp = new BoolExpBuilder
@@ -268,7 +268,7 @@ class ProgramLineFormatter
 
 class LineParser
 
-  constructor: () ->
+  constructor: ->
     @helpers = new ParseHelpers
     @syntax = @helpers.syntax
     @rules = @syntax.rules
@@ -417,7 +417,7 @@ class LineParser
 
 class ParseHelpers
 
-  constructor: () ->
+  constructor: ->
     @syntax = new SyntaxRules
     @rules = @syntax.rules
     @num_exp_parser = new NumericExpressionParser
@@ -524,7 +524,7 @@ class ParseHelpers
 
 class NumericExpressionParser
 
-  constructor: () ->
+  constructor: ->
     @num_exp_chars = ["0","1","2","3","4","5","6","7","8","9",".","(",")","+","-","*","/","^"]
     @delimiters = ["(", ")", "+", "-", "*", "/", "^"]
     @symbols = ["<left>",
@@ -773,7 +773,7 @@ class BooleanExpressionParser
 
 class NumExpBuilder
 
-  constructor: () ->
+  constructor: ->
 
     @search_terms = [
       ["<plus>", "<minus>" ]
@@ -987,7 +987,7 @@ class StringExpressionConcatenator
 
 class BoolExpBuilder
 
-  constructor: () ->
+  constructor: ->
     @num_exp = new NumExpBuilder
     @str_exp = new StrExpBuilder
 
@@ -1048,7 +1048,7 @@ class BooleanExpressionEvaluator
 
 class InterpreterHelpers
 
-  constructor: (id,msg) ->
+  constructor: ->
     @num_vars = new NumericVariableRegister
     @str_vars = new StringVariableRegister
     @num_eval = new NumericExpressionEvaluator(this)
@@ -1059,7 +1059,7 @@ class InterpreterHelpers
 
 class VariableRegister
 
-  constructor: () ->
+  constructor: ->
     @vars = {}
 
 
@@ -1102,13 +1102,75 @@ class StringVariableRegister extends VariableRegister
 
 
 
+class ProgramController
+
+  constructor: ->
+    @commands = new CommandRunner
+    @lines = {}
+    @line_order = []
+    @next_line_index = -1
+    @next_line_no = 0
+    @output = ""
+
+
+  load: (lines) ->
+    @lines = lines
+    @line_order = @sort_lines(lines)
+    if @line_order.length > 0
+      @next_line_index = 0
+      @next_line_no = @line_order[0] if @line_order.length > 0
+
+
+  run_next_line: ->
+    line_object = @lines[@next_line_no.toString()]
+    @output = ""
+    console.log "#{line_object.text}"
+    switch line_object.command
+      when "<print>"
+        @output = @commands.run_print(line_object)
+    @update_next_line()
+
+
+  update_next_line: ->
+    @next_line_index += 1
+    if @next_line_index < @line_order.length
+      @next_line_no = @line_order[@next_line_index]
+    else
+      @next_line_no = 0
+
+
+  sort_lines: (lines) ->
+    unsorted = []
+    unsorted.push(line.line_no) for key,line of lines
+    return unsorted.sort()
+
+
+
+class CommandRunner
+
+  constructor: ->
+    @helpers = new InterpreterHelpers
+    @num_vars = @helpers.num_vars
+    @str_vars = @helpers.str_vars
+    @num_eval = @helpers.num_eval
+    @str_eval = @helpers.str_eval
+    @bx_eval = @helpers.bx_eval
+
+
+  run_print: (line_object) ->
+    string = @str_eval.val(line_object.expression)
+    console.log "OUTPUT: #{string}" if string != ""
+    return string
+
+
+
 class ProgramLineListing
 
-  constructor: () ->
+  constructor: ->
     @lines = {}
 
 
-  clear: () ->
+  clear: ->
     @lines = {}
 
 
@@ -1121,7 +1183,7 @@ class ProgramLineListing
     delete @lines[line_no.toString()]
 
 
-  list: () ->
+  list: ->
     list = []
     line_numbers = @lines_sort()
     list.push(@lines[ln].text) for ln in line_numbers
@@ -1131,7 +1193,7 @@ class ProgramLineListing
     return list
 
 
-  lines_sort: () ->
+  lines_sort: ->
     line_numbers = []
     line_numbers.push(line.line_no) for ln_key,line of @lines
     line_numbers.sort (a,b) -> a-b
@@ -1141,7 +1203,7 @@ class ProgramLineListing
 
 class KeyHelper
 
-  constructor: () ->
+  constructor: ->
     @code = [33,34,35,36,37,38,39,
              40,41,42,43,44,45,46,47,48,49,
              50,51,52,53,54,55,56,57,58,59,
