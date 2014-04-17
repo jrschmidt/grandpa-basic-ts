@@ -1413,6 +1413,7 @@ ProgramController = (function() {
     this.next_line_index = -1;
     this.next_line_no = 0;
     this.output = "";
+    this.line_result = {};
   }
 
   ProgramController.prototype.load = function(lines) {
@@ -1434,14 +1435,31 @@ ProgramController = (function() {
     var line_object;
     console.log(" ");
     console.log("RUN NEXT LINE:");
+    console.log("   @next_line_no = " + this.next_line_no);
     line_object = this.lines[this.next_line_no.toString()];
-    console.log("" + line_object.text);
-    console.log("   cmd: " + line_object.command);
+    console.log("   line_object =");
+    console.log("     text: " + line_object.text);
+    console.log("     cmd: " + line_object.command);
     switch (line_object.command) {
       case "<print>":
-        this.output = this.commands.run_print(line_object);
+        this.line_result = this.commands.run_print(line_object);
+        break;
+      case "<goto>":
+        console.log("SWITCH: <goto>");
+        this.line_result = this.commands.run_goto(line_object);
+        break;
+      default:
+        console.log("   XX  No command match found");
     }
-    return this.update_next_line();
+    if (this.line_result.hasOwnProperty("output")) {
+      this.gb_output(this.line_result.output);
+    }
+    if (this.line_result.hasOwnProperty("jump")) {
+      console.log("** ready to JUMP <goto>");
+      return this.reset_line_no(this.line_result.jump);
+    } else {
+      return this.update_next_line();
+    }
   };
 
   ProgramController.prototype.update_next_line = function() {
@@ -1452,8 +1470,27 @@ ProgramController = (function() {
       this.next_line_no = 0;
     }
     console.log("UPDATE NEXT LINE:");
-    console.log("next index = " + this.next_line_index);
-    return console.log("next line = " + this.next_line_no);
+    console.log("   next index = " + this.next_line_index);
+    return console.log("   next line = " + this.next_line_no);
+  };
+
+  ProgramController.prototype.reset_line_no = function(dest) {
+    this.next_line_index = this.line_order.indexOf(dest);
+    if (this.next_line_index < this.line_order.length) {
+      this.next_line_no = this.line_order[this.next_line_index];
+    } else {
+      this.next_line_no = 0;
+    }
+    console.log("RESET NEXT LINE <goto>:");
+    console.log("   next index = " + this.next_line_index);
+    return console.log("   next line = " + this.next_line_no);
+  };
+
+  ProgramController.prototype.gb_output = function(string) {
+    if (string !== "") {
+      console.log("OUTPUT: " + string);
+      return this.output = string;
+    }
   };
 
   ProgramController.prototype.sort_lines = function(lines) {
@@ -1483,10 +1520,17 @@ CommandRunner = (function() {
   CommandRunner.prototype.run_print = function(line_object) {
     var string;
     string = this.str_eval.val(line_object.expression);
-    if (string !== "") {
-      console.log("OUTPUT: " + string);
-    }
-    return string;
+    return {
+      output: string
+    };
+  };
+
+  CommandRunner.prototype.run_goto = function(line_object) {
+    var dest;
+    dest = line_object.dest;
+    return {
+      jump: dest
+    };
   };
 
   return CommandRunner;

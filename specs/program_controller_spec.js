@@ -29,8 +29,8 @@ describe("Program Controller", function() {
     this.line360 = {
       line_no: 360,
       command: "<print>",
-      text: '360 PRINT "COMMAND LINE BASIC"',
-      expression: [["<str>", "COMMAND LINE BASIC"]]
+      text: '360 PRINT "LINE NUMBER BASIC"',
+      expression: [["<str>", "LINE NUMBER BASIC"]]
     };
     this.line365 = {
       line_no: 365,
@@ -73,19 +73,19 @@ describe("Program Controller", function() {
     expect(this.prog.output).toEqual("THIS EMULATES THE EARLY");
     expect(this.prog.next_line_no).toEqual(360);
     this.prog.run_next_line();
-    expect(this.prog.output).toEqual("COMMAND LINE BASIC");
+    expect(this.prog.output).toEqual("LINE NUMBER BASIC");
     expect(this.prog.next_line_no).toEqual(370);
     this.prog.run_next_line();
     expect(this.prog.output).toEqual("THAT WAS COMMON AROUND 1980");
     return expect(this.prog.next_line_no).toEqual(0);
   });
-  return xit("should jump in response to GOTO commands", function() {
+  return it("should jump in response to GOTO commands", function() {
     var lines;
     lines = {
       "340": this.line340,
       "345": this.line345,
       "350": this.line350,
-      "355": this.line365,
+      "355": this.line355,
       "360": this.line360,
       "365": this.line365,
       "370": this.line370
@@ -93,24 +93,22 @@ describe("Program Controller", function() {
     this.prog.load(lines);
     expect(this.prog.next_line_no).toEqual(340);
     this.prog.run_next_line();
-    expect(this.prog.output).toEqual("WELCOME TO GRANDPA BASIC 1980");
     expect(this.prog.next_line_no).toEqual(345);
+    expect(this.prog.output).toEqual("WELCOME TO GRANDPA BASIC 1980");
     this.prog.run_next_line();
     expect(this.prog.next_line_no).toEqual(360);
     this.prog.run_next_line();
-    expect(this.prog.output).toEqual("COMMAND LINE BASIC");
-    this.prog.run_next_line();
     expect(this.prog.next_line_no).toEqual(365);
+    expect(this.prog.output).toEqual("LINE NUMBER BASIC");
     this.prog.run_next_line();
     expect(this.prog.next_line_no).toEqual(350);
     this.prog.run_next_line();
-    expect(this.prog.output).toEqual("THIS EMULATES THE EARLY");
-    this.prog.run_next_line();
     expect(this.prog.next_line_no).toEqual(355);
+    expect(this.prog.output).toEqual("THIS EMULATES THE EARLY");
     this.prog.run_next_line();
     expect(this.prog.next_line_no).toEqual(370);
     this.prog.run_next_line();
-    expect(this.prog.output).toEqual("THAT WAS COMMON AROUND 1980");
-    return expect(this.prog.next_line_no).toEqual(0);
+    expect(this.prog.next_line_no).toEqual(0);
+    return expect(this.prog.output).toEqual("THAT WAS COMMON AROUND 1980");
   });
 });

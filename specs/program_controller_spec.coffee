@@ -30,8 +30,8 @@ describe "Program Controller", ->
     @line360 = {
       line_no: 360
       command: "<print>"
-      text: '360 PRINT "COMMAND LINE BASIC"'
-      expression: [ ["<str>", "COMMAND LINE BASIC"] ] }
+      text: '360 PRINT "LINE NUMBER BASIC"'
+      expression: [ ["<str>", "LINE NUMBER BASIC"] ] }
 
     @line365 = {
       line_no: 365
@@ -74,7 +74,7 @@ describe "Program Controller", ->
 
     expect(@prog.next_line_no).toEqual(360)
     @prog.run_next_line()
-    expect(@prog.output).toEqual("COMMAND LINE BASIC")
+    expect(@prog.output).toEqual("LINE NUMBER BASIC")
 
     expect(@prog.next_line_no).toEqual(370)
     @prog.run_next_line()
@@ -82,13 +82,13 @@ describe "Program Controller", ->
     expect(@prog.next_line_no).toEqual(0)
 
 
-  xit "should jump in response to GOTO commands", ->
+  it "should jump in response to GOTO commands", ->
 
     lines = {
       "340": @line340
       "345": @line345
       "350": @line350
-      "355": @line365
+      "355": @line355
       "360": @line360
       "365": @line365
       "370": @line370 }
@@ -97,33 +97,29 @@ describe "Program Controller", ->
     expect(@prog.next_line_no).toEqual(340)
 
     @prog.run_next_line()
-    expect(@prog.output).toEqual("WELCOME TO GRANDPA BASIC 1980")
     expect(@prog.next_line_no).toEqual(345)
+    expect(@prog.output).toEqual("WELCOME TO GRANDPA BASIC 1980")
 
     @prog.run_next_line()
     expect(@prog.next_line_no).toEqual(360)
 
     @prog.run_next_line()
-    expect(@prog.output).toEqual("COMMAND LINE BASIC")
-
-    @prog.run_next_line()
     expect(@prog.next_line_no).toEqual(365)
+    expect(@prog.output).toEqual("LINE NUMBER BASIC")
 
     @prog.run_next_line()
     expect(@prog.next_line_no).toEqual(350)
 
     @prog.run_next_line()
-    expect(@prog.output).toEqual("THIS EMULATES THE EARLY")
-
-    @prog.run_next_line()
     expect(@prog.next_line_no).toEqual(355)
+    expect(@prog.output).toEqual("THIS EMULATES THE EARLY")
 
     @prog.run_next_line()
     expect(@prog.next_line_no).toEqual(370)
 
     @prog.run_next_line()
-    expect(@prog.output).toEqual("THAT WAS COMMON AROUND 1980")
     expect(@prog.next_line_no).toEqual(0)
+    expect(@prog.output).toEqual("THAT WAS COMMON AROUND 1980")
 
 
 

@@ -1111,6 +1111,7 @@ class ProgramController
     @next_line_index = -1
     @next_line_no = 0
     @output = ""
+    @line_result = {}
 
 
   load: (lines) ->
@@ -1128,24 +1129,52 @@ class ProgramController
   run_next_line: ->
     console.log " "
     console.log "RUN NEXT LINE:"
+    console.log "   @next_line_no = #{@next_line_no}"
     line_object = @lines[@next_line_no.toString()]
-    console.log "#{line_object.text}"
-    console.log "   cmd: #{line_object.command}"
+    console.log "   line_object ="
+    console.log "     text: #{line_object.text}"
+    console.log "     cmd: #{line_object.command}"
     switch line_object.command
       when "<print>"
-        @output = @commands.run_print(line_object)
-    @update_next_line()
+        @line_result = @commands.run_print(line_object)
+      when "<goto>"
+        console.log "SWITCH: <goto>"
+        @line_result = @commands.run_goto(line_object)
+      else console.log "   XX  No command match found"
+    @gb_output(@line_result.output) if @line_result.hasOwnProperty("output")
+    if @line_result.hasOwnProperty("jump")
+      console.log "** ready to JUMP <goto>"
+      @reset_line_no(@line_result.jump)
+    else
+      @update_next_line()
 
 
-  update_next_line: ->
+  update_next_line: -> #TODO rename as increment_line_number()
     @next_line_index += 1
     if @next_line_index < @line_order.length
       @next_line_no = @line_order[@next_line_index]
     else
       @next_line_no = 0
     console.log "UPDATE NEXT LINE:"
-    console.log "next index = #{@next_line_index}"
-    console.log "next line = #{@next_line_no}"
+    console.log "   next index = #{@next_line_index}"
+    console.log "   next line = #{@next_line_no}"
+
+
+  reset_line_no: (dest) ->
+    @next_line_index = @line_order.indexOf(dest)
+    if @next_line_index < @line_order.length
+      @next_line_no = @line_order[@next_line_index]
+    else
+      @next_line_no = 0
+    console.log "RESET NEXT LINE <goto>:"
+    console.log "   next index = #{@next_line_index}"
+    console.log "   next line = #{@next_line_no}"
+
+
+  gb_output: (string) ->
+    if string != ""
+      console.log "OUTPUT: #{string}"
+      @output = string
 
 
   sort_lines: (lines) ->
@@ -1168,8 +1197,12 @@ class CommandRunner
 
   run_print: (line_object) ->
     string = @str_eval.val(line_object.expression)
-    console.log "OUTPUT: #{string}" if string != ""
-    return string
+    return {output: string}
+
+
+  run_goto: (line_object) ->
+    dest = line_object.dest
+    return {jump: dest}
 
 
 
