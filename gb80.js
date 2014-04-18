@@ -1535,6 +1535,8 @@ CommandRunner = (function() {
         return this.line_result = this.run_gosub(line_object);
       case "<return>":
         return this.line_result = this.run_return(line_object);
+      case "<end>":
+        return this.line_result = this.run_end(line_object);
       default:
         this.line_result = {};
         return console.log("   XX  No command match found");
@@ -1570,6 +1572,13 @@ CommandRunner = (function() {
   CommandRunner.prototype.run_return = function(line_object) {
     return {
       sub: "return"
+    };
+  };
+
+  CommandRunner.prototype.run_end = function(line_object) {
+    return {
+      jump: 0,
+      sub: "no"
     };
   };
 

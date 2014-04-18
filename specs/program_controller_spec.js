@@ -52,6 +52,11 @@ describe("Program Controller", function() {
       command: "<remark>",
       text: '358 REM THIS IS THE LINE 358 REMARK'
     };
+    this.line359 = {
+      line_no: 359,
+      command: "<end>",
+      text: '359 END'
+    };
     this.line360 = {
       line_no: 360,
       command: "<print>",
@@ -211,7 +216,7 @@ describe("Program Controller", function() {
     expect(this.prog.next_line_no).toEqual(0);
     return expect(this.prog.output).toEqual("THAT WAS COMMON AROUND 1980");
   });
-  return it("should jump on GOSUB then RETURN", function() {
+  it("should jump on GOSUB then RETURN", function() {
     var lines;
     lines = {
       "340": this.line340,
@@ -246,5 +251,25 @@ describe("Program Controller", function() {
     this.prog.run_next_line();
     expect(this.prog.next_line_no).toEqual(0);
     return expect(this.prog.output).toEqual("WE HAVE REACHED THE END ...");
+  });
+  return it("should stop when it reaches an END statement", function() {
+    var lines;
+    lines = {
+      "340": this.line340,
+      "350": this.line350,
+      "359": this.line359,
+      "360": this.line360,
+      "370": this.line370
+    };
+    this.prog.load(lines);
+    expect(this.prog.next_line_no).toEqual(340);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(350);
+    expect(this.prog.output).toEqual("WELCOME TO GRANDPA BASIC 1980");
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(359);
+    expect(this.prog.output).toEqual("THIS EMULATES THE EARLY");
+    this.prog.run_next_line();
+    return expect(this.prog.next_line_no).not.toBeDefined();
   });
 });

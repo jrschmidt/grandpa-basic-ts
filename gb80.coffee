@@ -1185,7 +1185,7 @@ class ProgramController
 
   sort_lines: (lines) ->
     unsorted = []
-    unsorted.push(line.line_no) for key,line of lines #FIXME Error here from undefined value for 'line'
+    unsorted.push(line.line_no) for key,line of lines
     return unsorted.sort (a,b) -> a-b
 
 
@@ -1213,6 +1213,8 @@ class CommandRunner
         @line_result = @run_gosub(line_object)
       when "<return>"
         @line_result = @run_return(line_object)
+      when "<end>"
+        @line_result = @run_end(line_object)
       else
         @line_result = {}
         console.log "   XX  No command match found"
@@ -1235,6 +1237,10 @@ class CommandRunner
 
   run_return: (line_object) ->
     return {sub: "return"}
+
+
+  run_end: (line_object) ->
+    return {jump: 0, sub: "no"}
 
 
 

@@ -53,6 +53,11 @@ describe "Program Controller", ->
       command: "<remark>"
       text: '358 REM THIS IS THE LINE 358 REMARK' }
 
+    @line359 = {
+      line_no: 359
+      command: "<end>"
+      text: '359 END' }
+
     @line360 = {
       line_no: 360
       command: "<print>"
@@ -279,5 +284,30 @@ describe "Program Controller", ->
     @prog.run_next_line()
     expect(@prog.next_line_no).toEqual(0)
     expect(@prog.output).toEqual("WE HAVE REACHED THE END ...")
+
+
+  it "should stop when it reaches an END statement", ->
+
+    lines = {
+      "340": @line340
+      "350": @line350
+      "359": @line359
+      "360": @line360
+      "370": @line370 }
+
+    @prog.load(lines)
+    expect(@prog.next_line_no).toEqual(340)
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(350)
+    expect(@prog.output).toEqual("WELCOME TO GRANDPA BASIC 1980")
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(359)
+    expect(@prog.output).toEqual("THIS EMULATES THE EARLY")
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).not.toBeDefined()
+
 
 
