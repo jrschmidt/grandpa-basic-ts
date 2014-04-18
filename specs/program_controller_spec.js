@@ -2,6 +2,16 @@
 describe("Program Controller", function() {
   beforeEach(function() {
     this.prog = new ProgramController;
+    this.line300 = {
+      line_no: 300,
+      command: "<remark>",
+      text: '300 REM'
+    };
+    this.line308 = {
+      line_no: 308,
+      command: "<remark>",
+      text: '308 REM THIS IS THE LINE 308 REMARK'
+    };
     this.line340 = {
       line_no: 340,
       command: "<print>",
@@ -20,6 +30,11 @@ describe("Program Controller", function() {
       text: '345 GOTO 360',
       dest: 360
     };
+    this.line348 = {
+      line_no: 348,
+      command: "<remark>",
+      text: '348 REM THIS IS THE LINE 348 REMARK'
+    };
     this.line350 = {
       line_no: 350,
       command: "<print>",
@@ -31,6 +46,11 @@ describe("Program Controller", function() {
       command: "<goto>",
       text: '355 GOTO 370',
       dest: 370
+    };
+    this.line358 = {
+      line_no: 358,
+      command: "<remark>",
+      text: '358 REM THIS IS THE LINE 358 REMARK'
     };
     this.line360 = {
       line_no: 360,
@@ -50,11 +70,21 @@ describe("Program Controller", function() {
       text: '365 GOTO 350',
       dest: 350
     };
+    this.line368 = {
+      line_no: 368,
+      command: "<remark>",
+      text: '368 REM THIS IS THE LINE 368 REMARK'
+    };
     this.line370 = {
       line_no: 370,
       command: "<print>",
       text: '370 PRINT "THAT WAS COMMON AROUND 1980"',
       expression: [["<str>", "THAT WAS COMMON AROUND 1980"]]
+    };
+    this.line388 = {
+      line_no: 388,
+      command: "<remark>",
+      text: '388 REM THIS IS THE LINE 388 REMARK'
     };
     this.line1200 = {
       line_no: 1200,
@@ -107,6 +137,47 @@ describe("Program Controller", function() {
     this.prog.run_next_line();
     expect(this.prog.next_line_no).toEqual(0);
     return expect(this.prog.output).toEqual("THAT WAS COMMON AROUND 1980");
+  });
+  it("should pass REM statements without doing anything", function() {
+    var lines;
+    lines = {
+      "300": this.line300,
+      "308": this.line308,
+      "340": this.line340,
+      "348": this.line348,
+      "350": this.line350,
+      "358": this.line358,
+      "360": this.line360,
+      "368": this.line368,
+      "370": this.line370,
+      "388": this.line388
+    };
+    this.prog.load(lines);
+    expect(this.prog.next_line_no).toEqual(300);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(308);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(340);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(348);
+    expect(this.prog.output).toEqual("WELCOME TO GRANDPA BASIC 1980");
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(350);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(358);
+    expect(this.prog.output).toEqual("THIS EMULATES THE EARLY");
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(360);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(368);
+    expect(this.prog.output).toEqual("LINE NUMBER BASIC");
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(370);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(388);
+    expect(this.prog.output).toEqual("THAT WAS COMMON AROUND 1980");
+    this.prog.run_next_line();
+    return expect(this.prog.next_line_no).toEqual(0);
   });
   it("should jump in response to GOTO commands", function() {
     var lines;

@@ -1111,7 +1111,7 @@ class ProgramController
     @next_line_index = -1
     @next_line_no = 0
     @return_line_no = 0
-    @return_line_index = 0 # TODO Can we say 'a,b,c = 0'  ??
+    @return_line_index = 0
     @output = ""
     @line_result = {}
 
@@ -1119,6 +1119,7 @@ class ProgramController
   load: (lines) ->
     @lines = lines
     @line_order = @sort_lines(lines)
+    console.log " "
     console.log "LOAD:"
     console.log "line order = #{@line_order}"
     if @line_order.length > 0
@@ -1136,16 +1137,7 @@ class ProgramController
     console.log "   line_object ="
     console.log "     text: #{line_object.text}"
     console.log "     cmd: #{line_object.command}"
-    switch line_object.command    # TODO  Now that we have lots of stuff after this switch, we can justify moving the switch to the CommandRunner class.
-      when "<print>"
-        @line_result = @commands.run_print(line_object)
-      when "<goto>"
-        @line_result = @commands.run_goto(line_object)
-      when "<gosub>"
-        @line_result = @commands.run_gosub(line_object)
-      when "<return>"
-        @line_result = @commands.run_return(line_object)
-      else console.log "   XX  No command match found"
+    @line_result = @commands.run_command(line_object)
     @gb_output(@line_result.output) if @line_result.hasOwnProperty("output")
     if @line_result.hasOwnProperty("sub")
       if @line_result.sub == "return"
@@ -1193,7 +1185,7 @@ class ProgramController
 
   sort_lines: (lines) ->
     unsorted = []
-    unsorted.push(line.line_no) for key,line of lines
+    unsorted.push(line.line_no) for key,line of lines #FIXME Error here from undefined value for 'line'
     return unsorted.sort (a,b) -> a-b
 
 
@@ -1207,6 +1199,23 @@ class CommandRunner
     @num_eval = @helpers.num_eval
     @str_eval = @helpers.str_eval
     @bx_eval = @helpers.bx_eval
+
+
+  run_command: (line_object) ->
+    switch line_object.command
+      when "<remark>"
+        @line_result = {}
+      when "<print>"
+        @line_result = @run_print(line_object)
+      when "<goto>"
+        @line_result = @run_goto(line_object)
+      when "<gosub>"
+        @line_result = @run_gosub(line_object)
+      when "<return>"
+        @line_result = @run_return(line_object)
+      else
+        @line_result = {}
+        console.log "   XX  No command match found"
 
 
   run_print: (line_object) ->

@@ -3,6 +3,16 @@ describe "Program Controller", ->
   beforeEach ->
     @prog = new ProgramController
 
+    @line300 = {
+      line_no: 300
+      command: "<remark>"
+      text: '300 REM' }
+
+    @line308 = {
+      line_no: 308
+      command: "<remark>"
+      text: '308 REM THIS IS THE LINE 308 REMARK' }
+
     @line340 = {
       line_no: 340
       command: "<print>"
@@ -21,6 +31,11 @@ describe "Program Controller", ->
       text: '345 GOTO 360'
       dest: 360 }
 
+    @line348 = {
+      line_no: 348
+      command: "<remark>"
+      text: '348 REM THIS IS THE LINE 348 REMARK' }
+
     @line350 = {
       line_no: 350
       command: "<print>"
@@ -32,6 +47,11 @@ describe "Program Controller", ->
       command: "<goto>"
       text: '355 GOTO 370'
       dest: 370 }
+
+    @line358 = {
+      line_no: 358
+      command: "<remark>"
+      text: '358 REM THIS IS THE LINE 358 REMARK' }
 
     @line360 = {
       line_no: 360
@@ -51,11 +71,21 @@ describe "Program Controller", ->
       text: '365 GOTO 350'
       dest: 350 }
 
+    @line368 = {
+      line_no: 368
+      command: "<remark>"
+      text: '368 REM THIS IS THE LINE 368 REMARK' }
+
     @line370 = {
       line_no: 370
       command: "<print>"
       text: '370 PRINT "THAT WAS COMMON AROUND 1980"'
       expression: [ ["<str>", "THAT WAS COMMON AROUND 1980"] ] }
+
+    @line388 = {
+      line_no: 388
+      command: "<remark>"
+      text: '388 REM THIS IS THE LINE 388 REMARK' }
 
     @line1200 = {
       line_no: 1200
@@ -111,6 +141,59 @@ describe "Program Controller", ->
     @prog.run_next_line()
     expect(@prog.next_line_no).toEqual(0)
     expect(@prog.output).toEqual("THAT WAS COMMON AROUND 1980")
+
+
+  it "should pass REM statements without doing anything", ->
+
+    lines = {
+      "300": @line300
+      "308": @line308
+      "340": @line340
+      "348": @line348
+      "350": @line350
+      "358": @line358
+      "360": @line360
+      "368": @line368
+      "370": @line370
+      "388": @line388 }
+
+    @prog.load(lines)
+
+    expect(@prog.next_line_no).toEqual(300)
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(308)
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(340)
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(348)
+    expect(@prog.output).toEqual("WELCOME TO GRANDPA BASIC 1980")
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(350)
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(358)
+    expect(@prog.output).toEqual("THIS EMULATES THE EARLY")
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(360)
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(368)
+    expect(@prog.output).toEqual("LINE NUMBER BASIC")
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(370)
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(388)
+    expect(@prog.output).toEqual("THAT WAS COMMON AROUND 1980")
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(0)
 
 
   it "should jump in response to GOTO commands", ->

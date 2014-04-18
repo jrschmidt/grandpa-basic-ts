@@ -1421,6 +1421,7 @@ ProgramController = (function() {
   ProgramController.prototype.load = function(lines) {
     this.lines = lines;
     this.line_order = this.sort_lines(lines);
+    console.log(" ");
     console.log("LOAD:");
     console.log("line order = " + this.line_order);
     if (this.line_order.length > 0) {
@@ -1442,22 +1443,7 @@ ProgramController = (function() {
     console.log("   line_object =");
     console.log("     text: " + line_object.text);
     console.log("     cmd: " + line_object.command);
-    switch (line_object.command) {
-      case "<print>":
-        this.line_result = this.commands.run_print(line_object);
-        break;
-      case "<goto>":
-        this.line_result = this.commands.run_goto(line_object);
-        break;
-      case "<gosub>":
-        this.line_result = this.commands.run_gosub(line_object);
-        break;
-      case "<return>":
-        this.line_result = this.commands.run_return(line_object);
-        break;
-      default:
-        console.log("   XX  No command match found");
-    }
+    this.line_result = this.commands.run_command(line_object);
     if (this.line_result.hasOwnProperty("output")) {
       this.gb_output(this.line_result.output);
     }
@@ -1536,6 +1522,24 @@ CommandRunner = (function() {
     this.str_eval = this.helpers.str_eval;
     this.bx_eval = this.helpers.bx_eval;
   }
+
+  CommandRunner.prototype.run_command = function(line_object) {
+    switch (line_object.command) {
+      case "<remark>":
+        return this.line_result = {};
+      case "<print>":
+        return this.line_result = this.run_print(line_object);
+      case "<goto>":
+        return this.line_result = this.run_goto(line_object);
+      case "<gosub>":
+        return this.line_result = this.run_gosub(line_object);
+      case "<return>":
+        return this.line_result = this.run_return(line_object);
+      default:
+        this.line_result = {};
+        return console.log("   XX  No command match found");
+    }
+  };
 
   CommandRunner.prototype.run_print = function(line_object) {
     var string;
