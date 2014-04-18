@@ -1412,6 +1412,8 @@ ProgramController = (function() {
     this.line_order = [];
     this.next_line_index = -1;
     this.next_line_no = 0;
+    this.return_line_no = 0;
+    this.return_line_index = 0;
     this.output = "";
     this.line_result = {};
   }
@@ -1445,8 +1447,13 @@ ProgramController = (function() {
         this.line_result = this.commands.run_print(line_object);
         break;
       case "<goto>":
-        console.log("SWITCH: <goto>");
         this.line_result = this.commands.run_goto(line_object);
+        break;
+      case "<gosub>":
+        this.line_result = this.commands.run_gosub(line_object);
+        break;
+      case "<return>":
+        this.line_result = this.commands.run_return(line_object);
         break;
       default:
         console.log("   XX  No command match found");
@@ -1454,9 +1461,20 @@ ProgramController = (function() {
     if (this.line_result.hasOwnProperty("output")) {
       this.gb_output(this.line_result.output);
     }
-    if (this.line_result.hasOwnProperty("jump")) {
-      console.log("** ready to JUMP <goto>");
-      return this.reset_line_no(this.line_result.jump);
+    if (this.line_result.hasOwnProperty("sub")) {
+      if (this.line_result.sub === "return") {
+        this.next_line_no = this.return_line_no;
+        this.next_line_index = this.return_line_index;
+        this.return_line_no = 0;
+        return this.return_line_index = 0;
+      } else {
+        if (this.line_result.sub === "yes") {
+          this.update_next_line();
+          this.return_line_no = this.next_line_no;
+          this.return_line_index = this.next_line_index;
+        }
+        return this.reset_line_no(this.line_result.jump);
+      }
     } else {
       return this.update_next_line();
     }
@@ -1500,7 +1518,9 @@ ProgramController = (function() {
       line = lines[key];
       unsorted.push(line.line_no);
     }
-    return unsorted.sort();
+    return unsorted.sort(function(a, b) {
+      return a - b;
+    });
   };
 
   return ProgramController;
@@ -1529,7 +1549,23 @@ CommandRunner = (function() {
     var dest;
     dest = line_object.dest;
     return {
-      jump: dest
+      jump: dest,
+      sub: "no"
+    };
+  };
+
+  CommandRunner.prototype.run_gosub = function(line_object) {
+    var dest;
+    dest = line_object.dest;
+    return {
+      jump: dest,
+      sub: "yes"
+    };
+  };
+
+  CommandRunner.prototype.run_return = function(line_object) {
+    return {
+      sub: "return"
     };
   };
 

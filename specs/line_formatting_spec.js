@@ -65,7 +65,8 @@ describe("Program line formatting", function() {
     result = this.formatter.format(parse_object, line_text);
     expect(result.line_no).toEqual(320);
     expect(result.command).toEqual("<gosub>");
-    return expect(result.text).toEqual('320 GOSUB 1200');
+    expect(result.text).toEqual('320 GOSUB 1200');
+    return expect(result.dest).toEqual(1200);
   });
   it("should correctly format a program line with a RETURN statement", function() {
     var line_text, parse_object, result;

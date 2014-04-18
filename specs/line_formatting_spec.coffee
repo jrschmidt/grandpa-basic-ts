@@ -135,6 +135,7 @@ describe "Program line formatting", ->
     expect(result.line_no).toEqual(320)
     expect(result.command).toEqual("<gosub>")
     expect(result.text).toEqual('320 GOSUB 1200')
+    expect(result.dest).toEqual(1200)
 
 
   it "should correctly format a program line with a RETURN statement", ->

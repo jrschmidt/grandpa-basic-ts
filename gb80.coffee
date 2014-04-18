@@ -1110,6 +1110,8 @@ class ProgramController
     @line_order = []
     @next_line_index = -1
     @next_line_no = 0
+    @return_line_no = 0
+    @return_line_index = 0 # TODO Can we say 'a,b,c = 0'  ??
     @output = ""
     @line_result = {}
 
@@ -1134,17 +1136,29 @@ class ProgramController
     console.log "   line_object ="
     console.log "     text: #{line_object.text}"
     console.log "     cmd: #{line_object.command}"
-    switch line_object.command
+    switch line_object.command    # TODO  Now that we have lots of stuff after this switch, we can justify moving the switch to the CommandRunner class.
       when "<print>"
         @line_result = @commands.run_print(line_object)
       when "<goto>"
-        console.log "SWITCH: <goto>"
         @line_result = @commands.run_goto(line_object)
+      when "<gosub>"
+        @line_result = @commands.run_gosub(line_object)
+      when "<return>"
+        @line_result = @commands.run_return(line_object)
       else console.log "   XX  No command match found"
     @gb_output(@line_result.output) if @line_result.hasOwnProperty("output")
-    if @line_result.hasOwnProperty("jump")
-      console.log "** ready to JUMP <goto>"
-      @reset_line_no(@line_result.jump)
+    if @line_result.hasOwnProperty("sub")
+      if @line_result.sub == "return"
+        @next_line_no = @return_line_no
+        @next_line_index = @return_line_index
+        @return_line_no = 0
+        @return_line_index = 0
+      else
+        if @line_result.sub == "yes"
+          @update_next_line()
+          @return_line_no = @next_line_no
+          @return_line_index = @next_line_index
+        @reset_line_no(@line_result.jump)
     else
       @update_next_line()
 
@@ -1180,7 +1194,7 @@ class ProgramController
   sort_lines: (lines) ->
     unsorted = []
     unsorted.push(line.line_no) for key,line of lines
-    return unsorted.sort()
+    return unsorted.sort (a,b) -> a-b
 
 
 
@@ -1202,7 +1216,16 @@ class CommandRunner
 
   run_goto: (line_object) ->
     dest = line_object.dest
-    return {jump: dest}
+    return {jump: dest, sub: "no"}
+
+
+  run_gosub: (line_object) ->
+    dest = line_object.dest
+    return {jump: dest, sub: "yes"}
+
+
+  run_return: (line_object) ->
+    return {sub: "return"}
 
 
 
