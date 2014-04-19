@@ -1527,14 +1527,16 @@ CommandRunner = (function() {
     switch (line_object.command) {
       case "<remark>":
         return this.line_result = {};
-      case "<print>":
-        return this.line_result = this.run_print(line_object);
+      case "<numeric_assignment>":
+        return this.line_result = this.run_num_assign(line_object);
       case "<goto>":
         return this.line_result = this.run_goto(line_object);
       case "<gosub>":
         return this.line_result = this.run_gosub(line_object);
       case "<return>":
         return this.line_result = this.run_return(line_object);
+      case "<print>":
+        return this.line_result = this.run_print(line_object);
       case "<end>":
         return this.line_result = this.run_end(line_object);
       default:
@@ -1543,12 +1545,9 @@ CommandRunner = (function() {
     }
   };
 
-  CommandRunner.prototype.run_print = function(line_object) {
-    var string;
-    string = this.str_eval.val(line_object.expression);
-    return {
-      output: string
-    };
+  CommandRunner.prototype.run_num_assign = function(line_object) {
+    this.num_vars.set(line_object.operand, this.num_eval.val(line_object.expression));
+    return {};
   };
 
   CommandRunner.prototype.run_goto = function(line_object) {
@@ -1572,6 +1571,14 @@ CommandRunner = (function() {
   CommandRunner.prototype.run_return = function(line_object) {
     return {
       sub: "return"
+    };
+  };
+
+  CommandRunner.prototype.run_print = function(line_object) {
+    var string;
+    string = this.str_eval.val(line_object.expression);
+    return {
+      output: string
     };
   };
 

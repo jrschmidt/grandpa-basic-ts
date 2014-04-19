@@ -2,6 +2,13 @@
 describe("Program Controller", function() {
   beforeEach(function() {
     this.prog = new ProgramController;
+    this.commands = this.prog.commands;
+    this.helpers = this.commands.helpers;
+    this.num_vars = this.helpers.num_vars;
+    this.str_vars = this.helpers.str_vars;
+    this.num_eval = this.helpers.num_eval;
+    this.str_eval = this.helpers.str_eval;
+    this.bx_eval = this.helpers.bx_eval;
     this.line300 = {
       line_no: 300,
       command: "<remark>",
@@ -90,6 +97,90 @@ describe("Program Controller", function() {
       line_no: 388,
       command: "<remark>",
       text: '388 REM THIS IS THE LINE 388 REMARK'
+    };
+    this.line510 = {
+      line_no: 510,
+      command: "<numeric_assignment>",
+      text: '510 A=77',
+      operand: "A",
+      expression: {
+        exp: "<num>",
+        value: 77
+      }
+    };
+    this.line520 = {
+      line_no: 520,
+      command: "<numeric_assignment>",
+      text: '520 P=3.1416',
+      operand: "P",
+      expression: {
+        exp: "<num>",
+        value: 3.1416
+      }
+    };
+    this.line530 = {
+      line_no: 530,
+      command: "<numeric_assignment>",
+      text: '530 Q=302',
+      operand: "Q",
+      expression: {
+        exp: "<num>",
+        value: 302
+      }
+    };
+    this.line540 = {
+      line_no: 540,
+      command: "<numeric_assignment>",
+      text: '540 R=203',
+      operand: "R",
+      expression: {
+        exp: "<num>",
+        value: 203
+      }
+    };
+    this.line550 = {
+      line_no: 550,
+      command: "<numeric_assignment>",
+      text: '550 T=Q+R',
+      operand: "T",
+      expression: {
+        exp: "<plus>",
+        op1: {
+          exp: "<var>",
+          name: "Q"
+        },
+        op2: {
+          exp: "<var>",
+          name: "R"
+        }
+      }
+    };
+    this.line560 = {
+      line_no: 560,
+      command: "<numeric_assignment>",
+      text: 'F2=51',
+      operand: "F2",
+      expression: {
+        exp: "<num>",
+        value: 51
+      }
+    };
+    this.line570 = {
+      line_no: 570,
+      command: "<numeric_assignment>",
+      text: '570 M=F2/3',
+      operand: "M",
+      expression: {
+        exp: "<divide>",
+        op1: {
+          exp: "<var>",
+          name: "F2"
+        },
+        op2: {
+          exp: "<num>",
+          value: 3
+        }
+      }
     };
     this.line1200 = {
       line_no: 1200,
@@ -252,7 +343,7 @@ describe("Program Controller", function() {
     expect(this.prog.next_line_no).toEqual(0);
     return expect(this.prog.output).toEqual("WE HAVE REACHED THE END ...");
   });
-  return it("should stop when it reaches an END statement", function() {
+  it("should stop when it reaches an END statement", function() {
     var lines;
     lines = {
       "340": this.line340,
@@ -271,5 +362,40 @@ describe("Program Controller", function() {
     expect(this.prog.output).toEqual("THIS EMULATES THE EARLY");
     this.prog.run_next_line();
     return expect(this.prog.next_line_no).not.toBeDefined();
+  });
+  return it("should execute numeric assignment statements", function() {
+    var lines;
+    lines = {
+      "510": this.line510,
+      "520": this.line520,
+      "530": this.line530,
+      "540": this.line540,
+      "550": this.line550,
+      "560": this.line560,
+      "570": this.line570
+    };
+    this.prog.load(lines);
+    expect(this.prog.next_line_no).toEqual(510);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(520);
+    expect(this.num_vars.get("A")).toEqual(77);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(530);
+    expect(this.num_vars.get("P")).toEqual(3.1416);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(540);
+    expect(this.num_vars.get("Q")).toEqual(302);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(550);
+    expect(this.num_vars.get("R")).toEqual(203);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(560);
+    expect(this.num_vars.get("T")).toEqual(505);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(570);
+    expect(this.num_vars.get("F2")).toEqual(51);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(0);
+    return expect(this.num_vars.get("M")).toEqual(17);
   });
 });

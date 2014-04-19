@@ -935,6 +935,7 @@ class NumericExpressionEvaluator
   num_var_eval: (num_exp) ->
     return @vars.get(num_exp.name)
 
+
   binary_op_eval: (num_exp) ->
     a = @val(num_exp.op1)
     b = @val(num_exp.op2)
@@ -1205,14 +1206,16 @@ class CommandRunner
     switch line_object.command
       when "<remark>"
         @line_result = {}
-      when "<print>"
-        @line_result = @run_print(line_object)
+      when "<numeric_assignment>"
+        @line_result = @run_num_assign(line_object)
       when "<goto>"
         @line_result = @run_goto(line_object)
       when "<gosub>"
         @line_result = @run_gosub(line_object)
       when "<return>"
         @line_result = @run_return(line_object)
+      when "<print>"
+        @line_result = @run_print(line_object)
       when "<end>"
         @line_result = @run_end(line_object)
       else
@@ -1220,9 +1223,9 @@ class CommandRunner
         console.log "   XX  No command match found"
 
 
-  run_print: (line_object) ->
-    string = @str_eval.val(line_object.expression)
-    return {output: string}
+  run_num_assign: (line_object) ->
+    @num_vars.set( line_object.operand, @num_eval.val(line_object.expression) )
+    return {}
 
 
   run_goto: (line_object) ->
@@ -1237,6 +1240,11 @@ class CommandRunner
 
   run_return: (line_object) ->
     return {sub: "return"}
+
+
+  run_print: (line_object) ->
+    string = @str_eval.val(line_object.expression)
+    return {output: string}
 
 
   run_end: (line_object) ->
