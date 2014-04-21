@@ -1684,10 +1684,10 @@ KeyHelper = (function() {
     return ch;
   };
 
-  KeyHelper.prototype.sprite_xy = function(n) {
+  KeyHelper.prototype.sprite_xy = function(ch) {
     var i;
-    if (__indexOf.call(this.code, n) >= 0) {
-      i = this.code.indexOf(n);
+    if (__indexOf.call(this.chars, ch) >= 0) {
+      i = this.chars.indexOf(ch);
       return this.xy[i];
     }
   };

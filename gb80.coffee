@@ -1346,9 +1346,9 @@ class KeyHelper
     return ch
 
 
-  sprite_xy: (n) ->
-    if n in @code
-      i = @code.indexOf(n)
+  sprite_xy: (ch) ->
+    if ch in @chars
+      i = @chars.indexOf(ch)
       return @xy[i]
 
 
