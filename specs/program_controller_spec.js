@@ -182,6 +182,45 @@ describe("Program Controller", function() {
         }
       }
     };
+    this.line610 = {
+      line_no: 610,
+      command: "<string_assignment>",
+      text: '610 $V="OHIO"',
+      operand: "V",
+      expression: [["<str>", "OHIO"]]
+    };
+    this.line620 = {
+      line_no: 620,
+      command: "<print>",
+      text: '620 PRINT $V',
+      expression: [["<var>", "V"]]
+    };
+    this.line630 = {
+      line_no: 630,
+      command: "<string_assignment>",
+      text: '630 $W="KENTUCKY"',
+      operand: "W",
+      expression: [["<str>", "KENTUCKY"]]
+    };
+    this.line640 = {
+      line_no: 640,
+      command: "<print>",
+      text: '640 PRINT $W',
+      expression: [["<var>", "W"]]
+    };
+    this.line650 = {
+      line_no: 650,
+      command: "<string_assignment>",
+      text: '650 $A=$V+" IS NORTH OF "+$W',
+      operand: "A",
+      expression: [["<var>", "V"], ["<str>", " IS NORTH OF "], ["<var>", "W"]]
+    };
+    this.line660 = {
+      line_no: 660,
+      command: "<print>",
+      text: '660 PRINT $A',
+      expression: [["<var>", "A"]]
+    };
     this.line1200 = {
       line_no: 1200,
       command: "<print>",
@@ -363,7 +402,7 @@ describe("Program Controller", function() {
     this.prog.run_next_line();
     return expect(this.prog.next_line_no).not.toBeDefined();
   });
-  return it("should execute numeric assignment statements", function() {
+  it("should execute numeric assignment statements", function() {
     var lines;
     lines = {
       "510": this.line510,
@@ -397,5 +436,36 @@ describe("Program Controller", function() {
     this.prog.run_next_line();
     expect(this.prog.next_line_no).toEqual(0);
     return expect(this.num_vars.get("M")).toEqual(17);
+  });
+  return it("should execute string assignment statements", function() {
+    var lines;
+    lines = {
+      "610": this.line610,
+      "620": this.line620,
+      "630": this.line630,
+      "640": this.line640,
+      "650": this.line650,
+      "660": this.line660
+    };
+    this.prog.load(lines);
+    expect(this.prog.next_line_no).toEqual(610);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(620);
+    expect(this.str_vars.get("V")).toEqual("OHIO");
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(630);
+    expect(this.prog.output).toEqual("OHIO");
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(640);
+    expect(this.str_vars.get("W")).toEqual("KENTUCKY");
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(650);
+    expect(this.prog.output).toEqual("KENTUCKY");
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(660);
+    expect(this.str_vars.get("A")).toEqual("OHIO IS NORTH OF KENTUCKY");
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(0);
+    return expect(this.prog.output).toEqual("OHIO IS NORTH OF KENTUCKY");
   });
 });

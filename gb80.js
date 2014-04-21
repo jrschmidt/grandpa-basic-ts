@@ -1529,6 +1529,8 @@ CommandRunner = (function() {
         return this.line_result = {};
       case "<numeric_assignment>":
         return this.line_result = this.run_num_assign(line_object);
+      case "<string_assignment>":
+        return this.line_result = this.run_str_assign(line_object);
       case "<goto>":
         return this.line_result = this.run_goto(line_object);
       case "<gosub>":
@@ -1547,6 +1549,11 @@ CommandRunner = (function() {
 
   CommandRunner.prototype.run_num_assign = function(line_object) {
     this.num_vars.set(line_object.operand, this.num_eval.val(line_object.expression));
+    return {};
+  };
+
+  CommandRunner.prototype.run_str_assign = function(line_object) {
+    this.str_vars.set(line_object.operand, this.str_eval.val(line_object.expression));
     return {};
   };
 

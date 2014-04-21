@@ -1208,6 +1208,8 @@ class CommandRunner
         @line_result = {}
       when "<numeric_assignment>"
         @line_result = @run_num_assign(line_object)
+      when "<string_assignment>"
+        @line_result = @run_str_assign(line_object)
       when "<goto>"
         @line_result = @run_goto(line_object)
       when "<gosub>"
@@ -1225,6 +1227,11 @@ class CommandRunner
 
   run_num_assign: (line_object) ->
     @num_vars.set( line_object.operand, @num_eval.val(line_object.expression) )
+    return {}
+
+
+  run_str_assign: (line_object) ->
+    @str_vars.set( line_object.operand, @str_eval.val(line_object.expression) )
     return {}
 
 

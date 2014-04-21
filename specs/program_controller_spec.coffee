@@ -148,6 +148,45 @@ describe "Program Controller", ->
       operand: "M"
       expression: {exp: "<divide>", op1: {exp: "<var>", name: "F2" }, op2: {exp: "<num>", value: 3 } } }
 
+    @line610 = {
+      line_no: 610
+      command: "<string_assignment>"
+      text: '610 $V="OHIO"'
+      operand: "V"
+      expression: [ ["<str>", "OHIO"] ] }
+
+    @line620 = {
+      line_no: 620
+      command: "<print>"
+      text: '620 PRINT $V'
+      expression: [ ["<var>", "V"] ] }
+
+    @line630 = {
+      line_no: 630
+      command: "<string_assignment>"
+      text: '630 $W="KENTUCKY"'
+      operand: "W"
+      expression: [ ["<str>", "KENTUCKY"] ] }
+
+    @line640 = {
+      line_no: 640
+      command: "<print>"
+      text: '640 PRINT $W'
+      expression: [ ["<var>", "W"] ] }
+
+    @line650 = {
+      line_no: 650
+      command: "<string_assignment>"
+      text: '650 $A=$V+" IS NORTH OF "+$W'
+      operand: "A"
+      expression: [ ["<var>", "V"], ["<str>", " IS NORTH OF "], ["<var>", "W"] ] }
+
+    @line660 = {
+      line_no: 660
+      command: "<print>"
+      text: '660 PRINT $A'
+      expression: [ ["<var>", "A"] ] }
+
     @line1200 = {
       line_no: 1200
       command: "<print>"
@@ -407,5 +446,46 @@ describe "Program Controller", ->
     @prog.run_next_line()
     expect(@prog.next_line_no).toEqual(0)
     expect(@num_vars.get("M")).toEqual(17)
+
+
+
+
+  it "should execute string assignment statements", ->
+
+    lines = {
+      "610": @line610
+      "620": @line620
+      "630": @line630
+      "640": @line640
+      "650": @line650
+      "660": @line660 }
+
+    @prog.load(lines)
+    expect(@prog.next_line_no).toEqual(610)
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(620)
+    expect(@str_vars.get("V")).toEqual("OHIO")
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(630)
+    expect(@prog.output).toEqual("OHIO")
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(640)
+    expect(@str_vars.get("W")).toEqual("KENTUCKY")
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(650)
+    expect(@prog.output).toEqual("KENTUCKY")
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(660)
+    expect(@str_vars.get("A")).toEqual("OHIO IS NORTH OF KENTUCKY")
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(0)
+    expect(@prog.output).toEqual("OHIO IS NORTH OF KENTUCKY")
+
 
 
