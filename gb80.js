@@ -1537,6 +1537,8 @@ CommandRunner = (function() {
         return this.line_result = this.run_gosub(line_object);
       case "<return>":
         return this.line_result = this.run_return(line_object);
+      case "<if>":
+        return this.line_result = this.run_if(line_object);
       case "<print>":
         return this.line_result = this.run_print(line_object);
       case "<end>":
@@ -1564,6 +1566,19 @@ CommandRunner = (function() {
       jump: dest,
       sub: "no"
     };
+  };
+
+  CommandRunner.prototype.run_if = function(line_object) {
+    var dest;
+    dest = line_object.dest;
+    if (this.bx_eval.val(line_object.cond)) {
+      return {
+        jump: dest,
+        sub: "no"
+      };
+    } else {
+      return {};
+    }
   };
 
   CommandRunner.prototype.run_gosub = function(line_object) {

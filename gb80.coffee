@@ -1216,6 +1216,8 @@ class CommandRunner
         @line_result = @run_gosub(line_object)
       when "<return>"
         @line_result = @run_return(line_object)
+      when "<if>"
+        @line_result = @run_if(line_object)
       when "<print>"
         @line_result = @run_print(line_object)
       when "<end>"
@@ -1238,6 +1240,14 @@ class CommandRunner
   run_goto: (line_object) ->
     dest = line_object.dest
     return {jump: dest, sub: "no"}
+
+
+  run_if: (line_object) ->
+    dest = line_object.dest
+    if @bx_eval.val(line_object.cond)
+      return {jump: dest, sub: "no"}
+    else
+      return {}
 
 
   run_gosub: (line_object) ->

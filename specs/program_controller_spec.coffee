@@ -187,6 +187,45 @@ describe "Program Controller", ->
       text: '660 PRINT $A'
       expression: [ ["<var>", "A"] ] }
 
+    @line710 = {
+      line_no: 710
+      command: "<numeric_assignment>"
+      text: '710 N=22'
+      operand: "N"
+      expression: {exp: "<num>", value: 22} }
+
+    @line720 = {
+      line_no: 720
+      command: "<numeric_assignment>"
+      text: '720 N=N+10'
+      operand: "N"
+      expression: {exp: "<plus>", op1: {exp: "<var>", name: "N"}, op2: {exp: "<num>", value: 10} } }
+
+    @line730 = {
+      line_no: 730
+      command: "<if>"
+      text: '730 IF N>40 THEN 760'
+      cond: {exp: "<num_greater_than>", var: "N", num_exp: {exp: "<num>", value: 40} }
+      dest: 760 }
+
+    @line740 = {
+      line_no: 740
+      command: "<print>"
+      text: '740 PRINT "NOT BIG ENOUGH YET"'
+      expression: [ ["<str>", "NOT BIG ENOUGH YET" ] ] }
+
+    @line750 = {
+      line_no: 750
+      command: "<goto>"
+      text: '750 GOTO 720'
+      dest: 720 }
+
+    @line760 = {
+      line_no: 760
+      command: "<print>"
+      text: '760 PRINT "NOW IT IS BIG ENOUGH"'
+      expression: [ ["<str>", "NOW IT IS BIG ENOUGH" ] ] }
+
     @line1200 = {
       line_no: 1200
       command: "<print>"
@@ -448,8 +487,6 @@ describe "Program Controller", ->
     expect(@num_vars.get("M")).toEqual(17)
 
 
-
-
   it "should execute string assignment statements", ->
 
     lines = {
@@ -487,5 +524,47 @@ describe "Program Controller", ->
     expect(@prog.next_line_no).toEqual(0)
     expect(@prog.output).toEqual("OHIO IS NORTH OF KENTUCKY")
 
+
+  it "should execute IF statements", ->
+
+    lines = {
+      "710": @line710
+      "720": @line720
+      "730": @line730
+      "740": @line740
+      "750": @line750
+      "760": @line760 }
+
+    @prog.load(lines)
+    expect(@prog.next_line_no).toEqual(710)
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(720)
+    expect(@num_vars.get("N")).toEqual(22)
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(730)
+    expect(@num_vars.get("N")).toEqual(32)
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(740)
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(750)
+    expect(@prog.output).toEqual("NOT BIG ENOUGH YET")
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(720)
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(730)
+    expect(@num_vars.get("N")).toEqual(42)
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(760)
+
+    @prog.run_next_line()
+    expect(@prog.next_line_no).toEqual(0)
+    expect(@prog.output).toEqual("NOW IT IS BIG ENOUGH")
 
 

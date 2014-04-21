@@ -221,6 +221,65 @@ describe("Program Controller", function() {
       text: '660 PRINT $A',
       expression: [["<var>", "A"]]
     };
+    this.line710 = {
+      line_no: 710,
+      command: "<numeric_assignment>",
+      text: '710 N=22',
+      operand: "N",
+      expression: {
+        exp: "<num>",
+        value: 22
+      }
+    };
+    this.line720 = {
+      line_no: 720,
+      command: "<numeric_assignment>",
+      text: '720 N=N+10',
+      operand: "N",
+      expression: {
+        exp: "<plus>",
+        op1: {
+          exp: "<var>",
+          name: "N"
+        },
+        op2: {
+          exp: "<num>",
+          value: 10
+        }
+      }
+    };
+    this.line730 = {
+      line_no: 730,
+      command: "<if>",
+      text: '730 IF N>40 THEN 760',
+      cond: {
+        exp: "<num_greater_than>",
+        "var": "N",
+        num_exp: {
+          exp: "<num>",
+          value: 40
+        }
+      },
+      dest: 760
+    };
+    this.line740 = {
+      line_no: 740,
+      command: "<print>",
+      text: '740 PRINT "NOT BIG ENOUGH YET"',
+      expression: [["<str>", "NOT BIG ENOUGH YET"]]
+    };
+    this.line750 = {
+      line_no: 750,
+      command: "<goto>",
+      text: '750 GOTO 720',
+      dest: 720
+    };
+    this.line760 = {
+      line_no: 760,
+      command: "<print>",
+      text: '760 PRINT "NOW IT IS BIG ENOUGH"',
+      expression: [["<str>", "NOW IT IS BIG ENOUGH"]]
+    };
     this.line1200 = {
       line_no: 1200,
       command: "<print>",
@@ -437,7 +496,7 @@ describe("Program Controller", function() {
     expect(this.prog.next_line_no).toEqual(0);
     return expect(this.num_vars.get("M")).toEqual(17);
   });
-  return it("should execute string assignment statements", function() {
+  it("should execute string assignment statements", function() {
     var lines;
     lines = {
       "610": this.line610,
@@ -467,5 +526,39 @@ describe("Program Controller", function() {
     this.prog.run_next_line();
     expect(this.prog.next_line_no).toEqual(0);
     return expect(this.prog.output).toEqual("OHIO IS NORTH OF KENTUCKY");
+  });
+  return it("should execute IF statements", function() {
+    var lines;
+    lines = {
+      "710": this.line710,
+      "720": this.line720,
+      "730": this.line730,
+      "740": this.line740,
+      "750": this.line750,
+      "760": this.line760
+    };
+    this.prog.load(lines);
+    expect(this.prog.next_line_no).toEqual(710);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(720);
+    expect(this.num_vars.get("N")).toEqual(22);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(730);
+    expect(this.num_vars.get("N")).toEqual(32);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(740);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(750);
+    expect(this.prog.output).toEqual("NOT BIG ENOUGH YET");
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(720);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(730);
+    expect(this.num_vars.get("N")).toEqual(42);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(760);
+    this.prog.run_next_line();
+    expect(this.prog.next_line_no).toEqual(0);
+    return expect(this.prog.output).toEqual("NOW IT IS BIG ENOUGH");
   });
 });
