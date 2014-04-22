@@ -8,9 +8,6 @@ describe "Key helper methods", ->
     expect(@key_help.char(18)).toEqual(null)
     expect(@key_help.char(24)).toEqual(null)
     expect(@key_help.char(32)).toEqual(null)
-    expect(@key_help.char(66)).toEqual(null)
-    expect(@key_help.char(73)).toEqual(null)
-    expect(@key_help.char(88)).toEqual(null)
 
     expect(@key_help.char(33)).toEqual("!")
     expect(@key_help.char(35)).toEqual("#")
@@ -21,8 +18,10 @@ describe "Key helper methods", ->
     expect(@key_help.char(64)).toEqual("@")
     expect(@key_help.char(97)).toEqual("A")
     expect(@key_help.char(98)).toEqual("B")
+    expect(@key_help.char(66)).toEqual("B")
     expect(@key_help.char(113)).toEqual("Q")
     expect(@key_help.char(120)).toEqual("X")
+    expect(@key_help.char(88)).toEqual("X")
     expect(@key_help.char(122)).toEqual("Z")
     expect(@key_help.char(125)).toEqual("}")
 

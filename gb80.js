@@ -1712,7 +1712,14 @@ KeyHelper = (function() {
   }
 
   KeyHelper.prototype.char = function(n) {
-    var ch, i;
+    var ch, i, _i, _results;
+    if (__indexOf.call((function() {
+      _results = [];
+      for (_i = 65; _i <= 90; _i++){ _results.push(_i); }
+      return _results;
+    }).apply(this), n) >= 0) {
+      n = n + 32;
+    }
     if (__indexOf.call(this.code, n) >= 0) {
       i = this.code.indexOf(n);
       ch = this.chars[i];

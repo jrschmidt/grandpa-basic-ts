@@ -7,9 +7,6 @@ describe("Key helper methods", function() {
     expect(this.key_help.char(18)).toEqual(null);
     expect(this.key_help.char(24)).toEqual(null);
     expect(this.key_help.char(32)).toEqual(null);
-    expect(this.key_help.char(66)).toEqual(null);
-    expect(this.key_help.char(73)).toEqual(null);
-    expect(this.key_help.char(88)).toEqual(null);
     expect(this.key_help.char(33)).toEqual("!");
     expect(this.key_help.char(35)).toEqual("#");
     expect(this.key_help.char(43)).toEqual("+");
@@ -19,8 +16,10 @@ describe("Key helper methods", function() {
     expect(this.key_help.char(64)).toEqual("@");
     expect(this.key_help.char(97)).toEqual("A");
     expect(this.key_help.char(98)).toEqual("B");
+    expect(this.key_help.char(66)).toEqual("B");
     expect(this.key_help.char(113)).toEqual("Q");
     expect(this.key_help.char(120)).toEqual("X");
+    expect(this.key_help.char(88)).toEqual("X");
     expect(this.key_help.char(122)).toEqual("Z");
     return expect(this.key_help.char(125)).toEqual("}");
   });

@@ -1390,6 +1390,7 @@ class KeyHelper
 
 
   char: (n) ->
+    n = n + 32 if n in [65..90] # Treat alpha keypress the same without regard to SHIFT
     if n in @code
       i = @code.indexOf(n)
       ch = @chars[i]
