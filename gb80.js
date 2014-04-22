@@ -1604,11 +1604,23 @@ BasicConsole = (function() {
     this.keys = new KeyHelper;
     this.canvas = document.getElementById('canvas');
     this.context = this.canvas.getContext('2d');
+    this.line = -1;
+    this.column = 80;
     this.clear();
   }
 
-  BasicConsole.prototype.clear = function() {
-    return this.msg = "";
+  BasicConsole.prototype.print = function(string) {
+    var ch, loc, _i, _len;
+    for (_i = 0, _len = string.length; _i < _len; _i++) {
+      ch = string[_i];
+      if (ch === " ") {
+        this.next_char_loc();
+      } else {
+        loc = this.next_char_loc();
+        this.ch(ch, loc[0], loc[1]);
+      }
+    }
+    return this.msg = string;
   };
 
   BasicConsole.prototype.ch = function(ch, line, col) {
@@ -1618,6 +1630,20 @@ BasicConsole = (function() {
     sprite = this.keys.sprite_xy(ch);
     console.log("   sprite x,y = " + sprite[0] + "," + sprite[1]);
     return this.context.drawImage(this.sprites, sprite[0], sprite[1], 11, 18, col * 11, line * 18, 11, 18);
+  };
+
+  BasicConsole.prototype.clear = function() {
+    return this.msg = "";
+  };
+
+  BasicConsole.prototype.next_char_loc = function() {
+    if (this.column >= 79) {
+      this.line = this.line + 1;
+      this.column = 0;
+    } else {
+      this.column = this.column + 1;
+    }
+    return [this.line, this.column];
   };
 
   return BasicConsole;

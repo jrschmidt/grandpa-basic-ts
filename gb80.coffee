@@ -1279,11 +1279,19 @@ class BasicConsole
     @keys = new KeyHelper
     @canvas = document.getElementById('canvas')
     @context = @canvas.getContext('2d')
+    @line = -1
+    @column = 80 
     @clear()
 
 
-  clear: ->
-    @msg = ""
+  print: (string) ->
+    for ch in string
+      if ch == " "
+        @next_char_loc()
+      else
+        loc = @next_char_loc()
+        @ch(ch, loc[0], loc[1])
+    @msg = string
 
 
   ch: (ch, line, col) ->
@@ -1291,9 +1299,20 @@ class BasicConsole
     console.log "draw #{ch} at line #{line}, col #{col}"
     sprite = @keys.sprite_xy(ch)
     console.log "   sprite x,y = #{sprite[0]},#{sprite[1]}"
-
     @context.drawImage(@sprites,sprite[0],sprite[1],11,18,col*11,line*18,11,18)
-#    @context.drawImage(@sprites,sprite[0],sprite[1],11,18,col*11,line*18,0,0)
+
+
+  clear: ->
+    @msg = ""
+
+
+  next_char_loc: ->
+    if @column >= 79
+      @line = @line + 1
+      @column = 0
+    else
+      @column = @column + 1
+    return [@line, @column]
 
 
 
