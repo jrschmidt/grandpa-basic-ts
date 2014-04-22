@@ -2,7 +2,8 @@
 describe("Boolean expression builder", function() {
   return it("should build a usable boolean expression object from the 'parse object' array", function() {
     var result, stack;
-    this.helper = new BoolExpBuilder;
+    this.builder = new ProgramLineBuilder;
+    this.helper = this.builder.bool_exp;
     stack = ["<boolean_expression>", "<number_variable>", "Z", "<lesser_than>", "<numeric_expression>", "<numeric_literal>", 0, "<num_exp_end>", "<bool_exp_end>"];
     result = this.helper.build_bool_exp(stack);
     expect(result.exp).toEqual("<num_lesser_than>");

@@ -986,7 +986,7 @@ ProgramLineBuilder = (function() {
   function ProgramLineBuilder() {
     this.num_exp = new NumExpBuilder;
     this.str_exp = new StrExpBuilder;
-    this.bool_exp = new BoolExpBuilder;
+    this.bool_exp = new BoolExpBuilder(this);
   }
 
   ProgramLineBuilder.prototype.format = function(parse_object, line_text) {
@@ -1391,9 +1391,10 @@ StrExpBuilder = (function() {
 })();
 
 BoolExpBuilder = (function() {
-  function BoolExpBuilder() {
-    this.num_exp = new NumExpBuilder;
-    this.str_exp = new StrExpBuilder;
+  function BoolExpBuilder(line_builder) {
+    this.line_builder = line_builder;
+    this.num_exp = this.line_builder.num_exp;
+    this.str_exp = this.line_builder.str_exp;
   }
 
   BoolExpBuilder.prototype.build_bool_exp = function(stack) {

@@ -2,7 +2,8 @@ describe "Boolean expression builder", ->
 
   it "should build a usable boolean expression object from the 'parse object' array", ->
 
-    @helper = new BoolExpBuilder
+    @builder = new ProgramLineBuilder
+    @helper = @builder.bool_exp
 
 
     #  TEST:  Z<0

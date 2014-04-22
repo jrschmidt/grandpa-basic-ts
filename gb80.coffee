@@ -841,7 +841,7 @@ class ProgramLineBuilder
   constructor: ->
     @num_exp = new NumExpBuilder
     @str_exp = new StrExpBuilder
-    @bool_exp = new BoolExpBuilder
+    @bool_exp = new BoolExpBuilder(this)
 
   format: (parse_object, line_text) ->
     cmd = parse_object[3]
@@ -1121,9 +1121,10 @@ class StrExpBuilder
 
 class BoolExpBuilder
 
-  constructor: ->
-    @num_exp = new NumExpBuilder
-    @str_exp = new StrExpBuilder
+  constructor: (line_builder) ->
+    @line_builder = line_builder
+    @num_exp = @line_builder.num_exp
+    @str_exp = @line_builder.str_exp
 
 
   build_bool_exp: (stack) ->
