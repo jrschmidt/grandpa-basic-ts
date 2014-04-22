@@ -28,6 +28,209 @@
 
 
 
+class ProgramLineListing
+
+  constructor: ->
+    @lines = {}
+
+
+  clear: ->
+    @lines = {}
+
+
+  add_or_change: (line_object) ->
+    ln = line_object.line_no
+    @lines[ln.toString()] = {line_no: ln, text: line_object.text }
+
+
+  remove: (line_no) ->
+    delete @lines[line_no.toString()]
+
+
+  list: ->
+    list = []
+    line_numbers = @lines_sort()
+    list.push(@lines[ln].text) for ln in line_numbers
+#    console.log " "
+#    console.log "    program listing:"
+#    console.log(line_text) for line_text in list
+    return list
+
+
+  lines_sort: ->
+    line_numbers = []
+    line_numbers.push(line.line_no) for ln_key,line of @lines
+    line_numbers.sort (a,b) -> a-b
+    return line_numbers
+
+
+
+class ProgramController
+
+  constructor: ->
+    @commands = new CommandRunner
+    @lines = {}
+    @line_order = []
+    @next_line_index = -1
+    @next_line_no = 0
+    @return_line_no = 0
+    @return_line_index = 0
+    @output = ""
+    @line_result = {}
+
+
+  load: (lines) ->
+    @lines = lines
+    @line_order = @sort_lines(lines)
+#    console.log " "
+#    console.log "LOAD:"
+#    console.log "line order = #{@line_order}"
+    if @line_order.length > 0
+      @next_line_index = 0
+      @next_line_no = @line_order[0] if @line_order.length > 0
+#    console.log "next index = #{@next_line_index}"
+#    console.log "next line = #{@next_line_no}"
+
+
+  run_next_line: ->
+#    console.log " "
+#    console.log "RUN NEXT LINE:"
+#    console.log "   @next_line_no = #{@next_line_no}"
+    line_object = @lines[@next_line_no.toString()]
+#    console.log "   line_object ="
+#    console.log "     text: #{line_object.text}"
+#    console.log "     cmd: #{line_object.command}"
+    @line_result = @commands.run_command(line_object)
+    @gb_output(@line_result.output) if @line_result.hasOwnProperty("output")
+    if @line_result.hasOwnProperty("sub")
+      if @line_result.sub == "return"
+        @next_line_no = @return_line_no
+        @next_line_index = @return_line_index
+        @return_line_no = 0
+        @return_line_index = 0
+      else
+        if @line_result.sub == "yes"
+          @update_next_line()
+          @return_line_no = @next_line_no
+          @return_line_index = @next_line_index
+        @reset_line_no(@line_result.jump)
+    else
+      @update_next_line()
+
+
+  update_next_line: -> #TODO rename as increment_line_number()
+    @next_line_index += 1
+    if @next_line_index < @line_order.length
+      @next_line_no = @line_order[@next_line_index]
+    else
+      @next_line_no = 0
+#    console.log "UPDATE NEXT LINE:"
+#    console.log "   next index = #{@next_line_index}"
+#    console.log "   next line = #{@next_line_no}"
+
+
+  reset_line_no: (dest) ->
+    @next_line_index = @line_order.indexOf(dest)
+    if @next_line_index < @line_order.length
+      @next_line_no = @line_order[@next_line_index]
+    else
+      @next_line_no = 0
+#    console.log "RESET NEXT LINE <goto>:"
+#    console.log "   next index = #{@next_line_index}"
+#    console.log "   next line = #{@next_line_no}"
+
+
+  gb_output: (string) ->
+    if string != ""
+#      console.log "OUTPUT: #{string}"
+      @output = string
+
+
+  sort_lines: (lines) ->
+    unsorted = []
+    unsorted.push(line.line_no) for key,line of lines
+    return unsorted.sort (a,b) -> a-b
+
+
+
+class CommandRunner
+
+  constructor: ->
+    @helpers = new InterpreterHelpers
+    @num_vars = @helpers.num_vars
+    @str_vars = @helpers.str_vars
+    @num_eval = @helpers.num_eval
+    @str_eval = @helpers.str_eval
+    @bx_eval = @helpers.bx_eval
+
+
+  run_command: (line_object) ->
+    switch line_object.command
+      when "<remark>"
+        @line_result = {}
+      when "<numeric_assignment>"
+        @line_result = @run_num_assign(line_object)
+      when "<string_assignment>"
+        @line_result = @run_str_assign(line_object)
+      when "<goto>"
+        @line_result = @run_goto(line_object)
+      when "<gosub>"
+        @line_result = @run_gosub(line_object)
+      when "<return>"
+        @line_result = @run_return(line_object)
+      when "<if>"
+        @line_result = @run_if(line_object)
+      when "<print>"
+        @line_result = @run_print(line_object)
+      when "<end>"
+        @line_result = @run_end(line_object)
+      else
+        @line_result = {}
+#        console.log "   XX  No command match found"
+
+
+  run_num_assign: (line_object) ->
+    @num_vars.set( line_object.operand, @num_eval.val(line_object.expression) )
+    return {}
+
+
+  run_str_assign: (line_object) ->
+    @str_vars.set( line_object.operand, @str_eval.val(line_object.expression) )
+    return {}
+
+
+  run_goto: (line_object) ->
+    dest = line_object.dest
+    return {jump: dest, sub: "no"}
+
+
+  run_if: (line_object) ->
+    dest = line_object.dest
+    if @bx_eval.val(line_object.cond)
+      return {jump: dest, sub: "no"}
+    else
+      return {}
+
+
+  run_gosub: (line_object) ->
+    dest = line_object.dest
+    return {jump: dest, sub: "yes"}
+
+
+  run_return: (line_object) ->
+    return {sub: "return"}
+
+
+  run_print: (line_object) ->
+    string = @str_eval.val(line_object.expression)
+    return {output: string}
+
+
+  run_end: (line_object) ->
+    return {jump: 0, sub: "no"}
+
+
+
 class SyntaxRules
 
   constructor: ->
@@ -125,144 +328,6 @@ class SyntaxRules
       ["<string>","<semicolon>","<number_variable>"]
       ["<string>","<semicolon>","<string_variable>"]
     ]
-
-
-
-class BasicProgramLine
-
-
-
-class ProgramLineFormatter
-
-  constructor: ->
-    @num_exp = new NumExpBuilder
-    @str_exp = new StrExpBuilder
-    @bool_exp = new BoolExpBuilder
-
-  format: (parse_object, line_text) ->
-    cmd = parse_object[3]
-    switch cmd
-      when "<remark>"
-        line = @build_remark(parse_object)
-      when "<number_variable>"
-        line = @build_numeric_assignment(parse_object)
-      when "<string_variable>"
-        line = @build_string_assignment(parse_object)
-      when "<goto>", "<gosub>"
-        line = @build_cmd_with_dest(parse_object)
-      when "<return>", "<clear_screen>", "<end>"
-        line = @build_simple_cmd(parse_object)
-      when "<if>"
-        line = @build_if_cmd(parse_object)
-      when "<input>"
-        line = @build_input_cmd(parse_object)
-      when "<print>", "<print_line>"
-        line = @build_print_cmd(parse_object)
-      when "<tab>"
-        line = @build_tab_cmd(parse_object)
-      else
-        error = true
-    if error
-      line = {command: "<formatting_error>" }
-    else
-      line.line_no = parse_object[1]
-      line.text = line_text
-    return line
-
-
-  build_remark: (parse_object) ->
-    return {command: "<remark>" }
-
-
-  build_numeric_assignment: (parse_object) ->
-    stack = parse_object[6..parse_object.length-1]
-    nmx = @num_exp.build_nxp(stack)
-    if nmx.malformed == "yes"
-      line = {command: "<formatting_error>" }
-    else
-      line = {
-        command: "<numeric_assignment>"
-        operand: parse_object[4]
-        expression: nmx }
-    return line
-
-
-  build_string_assignment: (parse_object) ->
-    stack = parse_object[6..parse_object.length-1]
-    str_exp = @str_exp.build_str_exp(stack)
-    line = {
-      command: "<string_assignment>"
-      operand: parse_object[4]
-      expression: str_exp }
-    return line
-
-
-  build_cmd_with_dest: (parse_object) ->
-    return {
-      command: parse_object[3]
-      dest: parse_object[6] }
-
-
-  build_simple_cmd: (parse_object) ->
-    return {
-      command: parse_object[3] }
-
-
-  build_if_cmd: (parse_object) ->
-    stack = parse_object[5..parse_object.length-6]
-
-    bool_exp = @bool_exp.build_bool_exp(stack)
-    line = {
-      command: "<if>"
-      dest: parse_object.pop()
-      cond: bool_exp }
-    return line
-
-
-  build_input_cmd: (parse_object) ->
-    if parse_object.length == 10
-      op = parse_object[9]
-      prompt = parse_object[6]
-      if parse_object[8] == "<number_variable>"
-        cmd = "<input_numeric_prompt>"
-      else
-        cmd = "<input_string_prompt>"
-    else
-      op = parse_object[6]
-      prompt = "<no_prompt>"
-      if parse_object[5] == "<number_variable>"
-        cmd = "<input_numeric>"
-      else
-        cmd = "<input_string>"
-    line = {
-      command: cmd
-      operand: op }
-    line.prompt = prompt if prompt != "<no_prompt>"
-    return line
-
-
-  build_print_cmd: (parse_object) ->
-    if parse_object.length == 4
-      str_exp = [ ["<str>", ""] ]
-    else
-      stack = parse_object[5..parse_object.length-1]
-      str_exp = @str_exp.build_str_exp(stack)
-    line = {
-      command: parse_object[3]
-      expression: str_exp }
-    return line
-
-
-  build_tab_cmd: (parse_object) ->
-    line = {}
-    if parse_object.length == 10
-      line.command = "<tab_line_col>"
-      line.line = parse_object[6]
-      line.col = parse_object[9]
-    else
-      line.command = "<tab_col>"
-      line.col = parse_object[6]
-    return line
 
 
 
@@ -771,6 +836,140 @@ class BooleanExpressionParser
 
 
 
+class ProgramLineBuilder
+
+  constructor: ->
+    @num_exp = new NumExpBuilder
+    @str_exp = new StrExpBuilder
+    @bool_exp = new BoolExpBuilder
+
+  format: (parse_object, line_text) ->
+    cmd = parse_object[3]
+    switch cmd
+      when "<remark>"
+        line = @build_remark(parse_object)
+      when "<number_variable>"
+        line = @build_numeric_assignment(parse_object)
+      when "<string_variable>"
+        line = @build_string_assignment(parse_object)
+      when "<goto>", "<gosub>"
+        line = @build_cmd_with_dest(parse_object)
+      when "<return>", "<clear_screen>", "<end>"
+        line = @build_simple_cmd(parse_object)
+      when "<if>"
+        line = @build_if_cmd(parse_object)
+      when "<input>"
+        line = @build_input_cmd(parse_object)
+      when "<print>", "<print_line>"
+        line = @build_print_cmd(parse_object)
+      when "<tab>"
+        line = @build_tab_cmd(parse_object)
+      else
+        error = true
+    if error
+      line = {command: "<formatting_error>" }
+    else
+      line.line_no = parse_object[1]
+      line.text = line_text
+    return line
+
+
+  build_remark: (parse_object) ->
+    return {command: "<remark>" }
+
+
+  build_numeric_assignment: (parse_object) ->
+    stack = parse_object[6..parse_object.length-1]
+    nmx = @num_exp.build_nxp(stack)
+    if nmx.malformed == "yes"
+      line = {command: "<formatting_error>" }
+    else
+      line = {
+        command: "<numeric_assignment>"
+        operand: parse_object[4]
+        expression: nmx }
+    return line
+
+
+  build_string_assignment: (parse_object) ->
+    stack = parse_object[6..parse_object.length-1]
+    str_exp = @str_exp.build_str_exp(stack)
+    line = {
+      command: "<string_assignment>"
+      operand: parse_object[4]
+      expression: str_exp }
+    return line
+
+
+  build_cmd_with_dest: (parse_object) ->
+    return {
+      command: parse_object[3]
+      dest: parse_object[6] }
+
+
+  build_simple_cmd: (parse_object) ->
+    return {
+      command: parse_object[3] }
+
+
+  build_if_cmd: (parse_object) ->
+    stack = parse_object[5..parse_object.length-6]
+
+    bool_exp = @bool_exp.build_bool_exp(stack)
+    line = {
+      command: "<if>"
+      dest: parse_object.pop()
+      cond: bool_exp }
+    return line
+
+
+  build_input_cmd: (parse_object) ->
+    if parse_object.length == 10
+      op = parse_object[9]
+      prompt = parse_object[6]
+      if parse_object[8] == "<number_variable>"
+        cmd = "<input_numeric_prompt>"
+      else
+        cmd = "<input_string_prompt>"
+    else
+      op = parse_object[6]
+      prompt = "<no_prompt>"
+      if parse_object[5] == "<number_variable>"
+        cmd = "<input_numeric>"
+      else
+        cmd = "<input_string>"
+    line = {
+      command: cmd
+      operand: op }
+    line.prompt = prompt if prompt != "<no_prompt>"
+    return line
+
+
+  build_print_cmd: (parse_object) ->
+    if parse_object.length == 4
+      str_exp = [ ["<str>", ""] ]
+    else
+      stack = parse_object[5..parse_object.length-1]
+      str_exp = @str_exp.build_str_exp(stack)
+    line = {
+      command: parse_object[3]
+      expression: str_exp }
+    return line
+
+
+  build_tab_cmd: (parse_object) ->
+    line = {}
+    if parse_object.length == 10
+      line.command = "<tab_line_col>"
+      line.line = parse_object[6]
+      line.col = parse_object[9]
+    else
+      line.command = "<tab_col>"
+      line.col = parse_object[6]
+    return line
+
+
+
 class NumExpBuilder
 
   constructor: ->
@@ -909,53 +1108,6 @@ class NumExpBuilder
 
 
 
-class NumericExpressionEvaluator
-
-  constructor: (helpers) ->
-    @vars = helpers.num_vars
-
-
-  val: (num_exp) ->
-    switch num_exp.exp
-      when "<num>"
-        value = @num_lit_eval(num_exp)
-      when "<var>"
-        value = @num_var_eval(num_exp)
-      when "<plus>", "<minus>", "<times>", "<divide>", "<power>"
-        value = @binary_op_eval(num_exp)
-      else
-        value = "error"
-    return value
-
-
-  num_lit_eval: (num_exp) ->
-    return num_exp.value
-
-
-  num_var_eval: (num_exp) ->
-    return @vars.get(num_exp.name)
-
-
-  binary_op_eval: (num_exp) ->
-    a = @val(num_exp.op1)
-    b = @val(num_exp.op2)
-    exp = num_exp.exp
-    switch exp
-      when "<plus>"
-        value = a + b
-      when "<minus>"
-        value = a - b
-      when "<times>"
-        value = a * b
-      when "<divide>"
-        value = a / b
-      when "<power>"
-        value = a**b
-      else
-        value = "error"
-
-
-
 class StrExpBuilder
 
   build_str_exp: (stack) ->
@@ -964,25 +1116,6 @@ class StrExpBuilder
       if stack[t] == "<string_variable>" then tk = "<var>" else tk = "<str>"
       parts.push( [tk, stack[t+1] ] )
     return parts
-
-
-
-class StringExpressionConcatenator
-
-  constructor: (helpers) ->
-    @vars = helpers.str_vars
-
-
-  val: (str_exp) ->
-    string = ""
-    for term in str_exp
-      string = string.concat(term[1]) if term[0] == "<str>"
-      string = string.concat(@vars.get(term[1])) if term[0] == "<var>"
-    return string
-
-
-  str_var_eval: (term) ->
-    return @vars.get(term[0])
 
 
 
@@ -1006,44 +1139,6 @@ class BoolExpBuilder
     else
       bool.str_exp = @str_exp.build_str_exp(bx_stack)
     return bool
-
-
-
-class BooleanExpressionEvaluator
-
-  constructor: (helpers) ->
-    @str_vars = helpers.str_vars
-    @num_vars = helpers.num_vars
-    @str_eval = helpers.str_eval
-    @num_eval = helpers.num_eval
-
-    @truth_table = {
-      "<num_equals>": [false,true,false]
-      "<num_not_equal>": [true,false,true]
-      "<num_lesser_than>": [true,false,false]
-      "<num_lesser_equal>": [true,true,false]
-      "<num_greater_than>": [false,false,true]
-      "<num_greater_equal>": [false,true,true]
-      "<str_equals>": [false,true]
-      "<str_not_equal>": [true,false] }
-
-
-  val: (bx) ->
-    if bx.exp in [ "<str_equals>", "<str_not_equal>" ]
-      comp = @str_compare( @str_vars.get(bx.var), @str_eval.val(bx.str_exp) )
-    else
-      comp = @num_compare( @num_vars.get(bx.var), @num_eval.val(bx.num_exp) )
-    return @truth_table[bx.exp][comp]
-
-
-  num_compare: (x1,x2) ->
-    return 0 if x1 < x2
-    return 1 if x1 == x2
-    return 2 if x1 > x2
-
-
-  str_compare: (s1,s2) ->
-    if s1 == s2 then return 1 else return 0
 
 
 
@@ -1103,169 +1198,107 @@ class StringVariableRegister extends VariableRegister
 
 
 
-class ProgramController
+class NumericExpressionEvaluator
 
-  constructor: ->
-    @commands = new CommandRunner
-    @lines = {}
-    @line_order = []
-    @next_line_index = -1
-    @next_line_no = 0
-    @return_line_no = 0
-    @return_line_index = 0
-    @output = ""
-    @line_result = {}
+  constructor: (helpers) ->
+    @vars = helpers.num_vars
 
 
-  load: (lines) ->
-    @lines = lines
-    @line_order = @sort_lines(lines)
-#    console.log " "
-#    console.log "LOAD:"
-#    console.log "line order = #{@line_order}"
-    if @line_order.length > 0
-      @next_line_index = 0
-      @next_line_no = @line_order[0] if @line_order.length > 0
-#    console.log "next index = #{@next_line_index}"
-#    console.log "next line = #{@next_line_no}"
-
-
-  run_next_line: ->
-#    console.log " "
-#    console.log "RUN NEXT LINE:"
-#    console.log "   @next_line_no = #{@next_line_no}"
-    line_object = @lines[@next_line_no.toString()]
-#    console.log "   line_object ="
-#    console.log "     text: #{line_object.text}"
-#    console.log "     cmd: #{line_object.command}"
-    @line_result = @commands.run_command(line_object)
-    @gb_output(@line_result.output) if @line_result.hasOwnProperty("output")
-    if @line_result.hasOwnProperty("sub")
-      if @line_result.sub == "return"
-        @next_line_no = @return_line_no
-        @next_line_index = @return_line_index
-        @return_line_no = 0
-        @return_line_index = 0
+  val: (num_exp) ->
+    switch num_exp.exp
+      when "<num>"
+        value = @num_lit_eval(num_exp)
+      when "<var>"
+        value = @num_var_eval(num_exp)
+      when "<plus>", "<minus>", "<times>", "<divide>", "<power>"
+        value = @binary_op_eval(num_exp)
       else
-        if @line_result.sub == "yes"
-          @update_next_line()
-          @return_line_no = @next_line_no
-          @return_line_index = @next_line_index
-        @reset_line_no(@line_result.jump)
-    else
-      @update_next_line()
+        value = "error"
+    return value
 
 
-  update_next_line: -> #TODO rename as increment_line_number()
-    @next_line_index += 1
-    if @next_line_index < @line_order.length
-      @next_line_no = @line_order[@next_line_index]
-    else
-      @next_line_no = 0
-#    console.log "UPDATE NEXT LINE:"
-#    console.log "   next index = #{@next_line_index}"
-#    console.log "   next line = #{@next_line_no}"
+  num_lit_eval: (num_exp) ->
+    return num_exp.value
 
 
-  reset_line_no: (dest) ->
-    @next_line_index = @line_order.indexOf(dest)
-    if @next_line_index < @line_order.length
-      @next_line_no = @line_order[@next_line_index]
-    else
-      @next_line_no = 0
-#    console.log "RESET NEXT LINE <goto>:"
-#    console.log "   next index = #{@next_line_index}"
-#    console.log "   next line = #{@next_line_no}"
+  num_var_eval: (num_exp) ->
+    return @vars.get(num_exp.name)
 
 
-  gb_output: (string) ->
-    if string != ""
-#      console.log "OUTPUT: #{string}"
-      @output = string
-
-
-  sort_lines: (lines) ->
-    unsorted = []
-    unsorted.push(line.line_no) for key,line of lines
-    return unsorted.sort (a,b) -> a-b
-
-
-
-class CommandRunner
-
-  constructor: ->
-    @helpers = new InterpreterHelpers
-    @num_vars = @helpers.num_vars
-    @str_vars = @helpers.str_vars
-    @num_eval = @helpers.num_eval
-    @str_eval = @helpers.str_eval
-    @bx_eval = @helpers.bx_eval
-
-
-  run_command: (line_object) ->
-    switch line_object.command
-      when "<remark>"
-        @line_result = {}
-      when "<numeric_assignment>"
-        @line_result = @run_num_assign(line_object)
-      when "<string_assignment>"
-        @line_result = @run_str_assign(line_object)
-      when "<goto>"
-        @line_result = @run_goto(line_object)
-      when "<gosub>"
-        @line_result = @run_gosub(line_object)
-      when "<return>"
-        @line_result = @run_return(line_object)
-      when "<if>"
-        @line_result = @run_if(line_object)
-      when "<print>"
-        @line_result = @run_print(line_object)
-      when "<end>"
-        @line_result = @run_end(line_object)
+  binary_op_eval: (num_exp) ->
+    a = @val(num_exp.op1)
+    b = @val(num_exp.op2)
+    exp = num_exp.exp
+    switch exp
+      when "<plus>"
+        value = a + b
+      when "<minus>"
+        value = a - b
+      when "<times>"
+        value = a * b
+      when "<divide>"
+        value = a / b
+      when "<power>"
+        value = a**b
       else
-        @line_result = {}
-#        console.log "   XX  No command match found"
+        value = "error"
 
 
-  run_num_assign: (line_object) ->
-    @num_vars.set( line_object.operand, @num_eval.val(line_object.expression) )
-    return {}
+
+class StringExpressionConcatenator
+
+  constructor: (helpers) ->
+    @vars = helpers.str_vars
 
 
-  run_str_assign: (line_object) ->
-    @str_vars.set( line_object.operand, @str_eval.val(line_object.expression) )
-    return {}
+  val: (str_exp) ->
+    string = ""
+    for term in str_exp
+      string = string.concat(term[1]) if term[0] == "<str>"
+      string = string.concat(@vars.get(term[1])) if term[0] == "<var>"
+    return string
 
 
-  run_goto: (line_object) ->
-    dest = line_object.dest
-    return {jump: dest, sub: "no"}
+  str_var_eval: (term) ->
+    return @vars.get(term[0])
 
 
-  run_if: (line_object) ->
-    dest = line_object.dest
-    if @bx_eval.val(line_object.cond)
-      return {jump: dest, sub: "no"}
+
+class BooleanExpressionEvaluator
+
+  constructor: (helpers) ->
+    @str_vars = helpers.str_vars
+    @num_vars = helpers.num_vars
+    @str_eval = helpers.str_eval
+    @num_eval = helpers.num_eval
+
+    @truth_table = {
+      "<num_equals>": [false,true,false]
+      "<num_not_equal>": [true,false,true]
+      "<num_lesser_than>": [true,false,false]
+      "<num_lesser_equal>": [true,true,false]
+      "<num_greater_than>": [false,false,true]
+      "<num_greater_equal>": [false,true,true]
+      "<str_equals>": [false,true]
+      "<str_not_equal>": [true,false] }
+
+
+  val: (bx) ->
+    if bx.exp in [ "<str_equals>", "<str_not_equal>" ]
+      comp = @str_compare( @str_vars.get(bx.var), @str_eval.val(bx.str_exp) )
     else
-      return {}
+      comp = @num_compare( @num_vars.get(bx.var), @num_eval.val(bx.num_exp) )
+    return @truth_table[bx.exp][comp]
 
 
-  run_gosub: (line_object) ->
-    dest = line_object.dest
-    return {jump: dest, sub: "yes"}
+  num_compare: (x1,x2) ->
+    return 0 if x1 < x2
+    return 1 if x1 == x2
+    return 2 if x1 > x2
 
 
-  run_return: (line_object) ->
-    return {sub: "return"}
-
-
-  run_print: (line_object) ->
-    string = @str_eval.val(line_object.expression)
-    return {output: string}
-
-
-  run_end: (line_object) ->
-    return {jump: 0, sub: "no"}
+  str_compare: (s1,s2) ->
+    if s1 == s2 then return 1 else return 0
 
 
 
@@ -1321,43 +1354,6 @@ class BasicConsole
     else
       @column = @column + 1
     return [@line, @column]
-
-
-
-class ProgramLineListing
-
-  constructor: ->
-    @lines = {}
-
-
-  clear: ->
-    @lines = {}
-
-
-  add_or_change: (line_object) ->
-    ln = line_object.line_no
-    @lines[ln.toString()] = {line_no: ln, text: line_object.text }
-
-
-  remove: (line_no) ->
-    delete @lines[line_no.toString()]
-
-
-  list: ->
-    list = []
-    line_numbers = @lines_sort()
-    list.push(@lines[ln].text) for ln in line_numbers
-#    console.log " "
-#    console.log "    program listing:"
-#    console.log(line_text) for line_text in list
-    return list
-
-
-  lines_sort: ->
-    line_numbers = []
-    line_numbers.push(line.line_no) for ln_key,line of @lines
-    line_numbers.sort (a,b) -> a-b
-    return line_numbers
 
 
 

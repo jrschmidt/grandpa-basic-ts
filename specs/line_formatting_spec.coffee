@@ -1,7 +1,7 @@
 describe "Program line formatting", ->
 
   beforeEach ->
-    @formatter = new ProgramLineFormatter
+    @formatter = new ProgramLineBuilder
 
 
   it "should correctly format a program line with a REM statement", ->
