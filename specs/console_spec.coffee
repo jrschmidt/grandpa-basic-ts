@@ -98,5 +98,31 @@ describe "BASIC Console", ->
     expect(@console.msg).toEqual("10 REM - WELCOME TO GRANDPA BASIC 1980")
 
 
+  it "should clear the screen of text", ->
+    @console.clear()
+    expect(@console.msg).toEqual("")
+
+
+  it "should print multiple lines of text", ->
+    @console.println('10 REM - WELCOME TO GRANDPA BASIC 1980')
+    expect(@console.msg).toEqual('10 REM - WELCOME TO GRANDPA BASIC 1980')
+
+    @console.println('20 $T = "JOHN"')
+    expect(@console.msg).toEqual('20 $T = "JOHN"')
+
+    @console.println('30 INPUT "DISPLAY NAME (Y/N)?";$Y')
+    expect(@console.msg).toEqual('30 INPUT "DISPLAY NAME (Y/N)?";$Y')
+
+    @console.println('40 IF $Y<>"Y" THEN 100')
+    expect(@console.msg).toEqual('40 IF $Y<>"Y" THEN 100')
+
+    @console.println('50 PRINT "WRITTEN BY "+$T')
+    expect(@console.msg).toEqual('50 PRINT "WRITTEN BY "+$T')
+
+    @console.println('100 PRINT "OK BYE"')
+    expect(@console.msg).toEqual('100 PRINT "OK BYE"')
+
+    @console.println('999 END')
+    expect(@console.msg).toEqual('999 END')
 
 

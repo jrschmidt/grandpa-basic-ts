@@ -78,8 +78,28 @@ describe("BASIC Console", function() {
     this.console.ch("9", 14, 29);
     return expect(this.console.msg).toEqual("9 [14,29]");
   });
-  return it("should print a string of characters", function() {
+  it("should print a string of characters", function() {
     this.console.print("10 REM - WELCOME TO GRANDPA BASIC 1980");
     return expect(this.console.msg).toEqual("10 REM - WELCOME TO GRANDPA BASIC 1980");
+  });
+  it("should clear the screen of text", function() {
+    this.console.clear();
+    return expect(this.console.msg).toEqual("");
+  });
+  return it("should print multiple lines of text", function() {
+    this.console.println('10 REM - WELCOME TO GRANDPA BASIC 1980');
+    expect(this.console.msg).toEqual('10 REM - WELCOME TO GRANDPA BASIC 1980');
+    this.console.println('20 $T = "JOHN"');
+    expect(this.console.msg).toEqual('20 $T = "JOHN"');
+    this.console.println('30 INPUT "DISPLAY NAME (Y/N)?";$Y');
+    expect(this.console.msg).toEqual('30 INPUT "DISPLAY NAME (Y/N)?";$Y');
+    this.console.println('40 IF $Y<>"Y" THEN 100');
+    expect(this.console.msg).toEqual('40 IF $Y<>"Y" THEN 100');
+    this.console.println('50 PRINT "WRITTEN BY "+$T');
+    expect(this.console.msg).toEqual('50 PRINT "WRITTEN BY "+$T');
+    this.console.println('100 PRINT "OK BYE"');
+    expect(this.console.msg).toEqual('100 PRINT "OK BYE"');
+    this.console.println('999 END');
+    return expect(this.console.msg).toEqual('999 END');
   });
 });
