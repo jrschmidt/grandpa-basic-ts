@@ -1120,24 +1120,24 @@ class ProgramController
   load: (lines) ->
     @lines = lines
     @line_order = @sort_lines(lines)
-    console.log " "
-    console.log "LOAD:"
-    console.log "line order = #{@line_order}"
+#    console.log " "
+#    console.log "LOAD:"
+#    console.log "line order = #{@line_order}"
     if @line_order.length > 0
       @next_line_index = 0
       @next_line_no = @line_order[0] if @line_order.length > 0
-    console.log "next index = #{@next_line_index}"
-    console.log "next line = #{@next_line_no}"
+#    console.log "next index = #{@next_line_index}"
+#    console.log "next line = #{@next_line_no}"
 
 
   run_next_line: ->
-    console.log " "
-    console.log "RUN NEXT LINE:"
-    console.log "   @next_line_no = #{@next_line_no}"
+#    console.log " "
+#    console.log "RUN NEXT LINE:"
+#    console.log "   @next_line_no = #{@next_line_no}"
     line_object = @lines[@next_line_no.toString()]
-    console.log "   line_object ="
-    console.log "     text: #{line_object.text}"
-    console.log "     cmd: #{line_object.command}"
+#    console.log "   line_object ="
+#    console.log "     text: #{line_object.text}"
+#    console.log "     cmd: #{line_object.command}"
     @line_result = @commands.run_command(line_object)
     @gb_output(@line_result.output) if @line_result.hasOwnProperty("output")
     if @line_result.hasOwnProperty("sub")
@@ -1162,9 +1162,9 @@ class ProgramController
       @next_line_no = @line_order[@next_line_index]
     else
       @next_line_no = 0
-    console.log "UPDATE NEXT LINE:"
-    console.log "   next index = #{@next_line_index}"
-    console.log "   next line = #{@next_line_no}"
+#    console.log "UPDATE NEXT LINE:"
+#    console.log "   next index = #{@next_line_index}"
+#    console.log "   next line = #{@next_line_no}"
 
 
   reset_line_no: (dest) ->
@@ -1173,14 +1173,14 @@ class ProgramController
       @next_line_no = @line_order[@next_line_index]
     else
       @next_line_no = 0
-    console.log "RESET NEXT LINE <goto>:"
-    console.log "   next index = #{@next_line_index}"
-    console.log "   next line = #{@next_line_no}"
+#    console.log "RESET NEXT LINE <goto>:"
+#    console.log "   next index = #{@next_line_index}"
+#    console.log "   next line = #{@next_line_no}"
 
 
   gb_output: (string) ->
     if string != ""
-      console.log "OUTPUT: #{string}"
+#      console.log "OUTPUT: #{string}"
       @output = string
 
 
@@ -1224,7 +1224,7 @@ class CommandRunner
         @line_result = @run_end(line_object)
       else
         @line_result = {}
-        console.log "   XX  No command match found"
+#        console.log "   XX  No command match found"
 
 
   run_num_assign: (line_object) ->
@@ -1266,6 +1266,34 @@ class CommandRunner
 
   run_end: (line_object) ->
     return {jump: 0, sub: "no"}
+
+
+
+class BasicConsole
+
+  constructor: ->
+    @sprites = document.getElementById("chars")
+    console.log "LOADING sprites IMAGE:"
+    console.log "  src = #{@sprites.src}"
+#    @sprites.src = "images/characters.png"
+    @keys = new KeyHelper
+    @canvas = document.getElementById('canvas')
+    @context = @canvas.getContext('2d')
+    @clear()
+
+
+  clear: ->
+    @msg = ""
+
+
+  ch: (ch, line, col) ->
+    @msg = "#{ch} [#{line},#{col}]"
+    console.log "draw #{ch} at line #{line}, col #{col}"
+    sprite = @keys.sprite_xy(ch)
+    console.log "   sprite x,y = #{sprite[0]},#{sprite[1]}"
+
+    @context.drawImage(@sprites,sprite[0],sprite[1],11,18,col*11,line*18,11,18)
+#    @context.drawImage(@sprites,sprite[0],sprite[1],11,18,col*11,line*18,0,0)
 
 
 
