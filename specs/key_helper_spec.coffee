@@ -7,7 +7,8 @@ describe "Key helper methods", ->
   it "should map character codes to characters", ->
     expect(@key_help.char(18)).toEqual(null)
     expect(@key_help.char(24)).toEqual(null)
-    expect(@key_help.char(32)).toEqual(null)
+
+    expect(@key_help.char(32)).toEqual(" ")
 
     expect(@key_help.char(33)).toEqual("!")
     expect(@key_help.char(35)).toEqual("#")

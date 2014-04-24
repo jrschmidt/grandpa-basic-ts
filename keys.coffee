@@ -3,11 +3,71 @@ class KeyTalker
 
   constructor: () ->
     console.log("new KeyTalker object")
-    @helper = new KeyHelper
+    @console = new BasicConsole
+    @keys = @console.keys
+    @buffer = @console.buffer
 
 
-  handle: (ch) ->
-    console.log "KeyTalker: #{ch} #{@helper.char(ch)}"
+  handle: (ch_num) ->
+    console.log "KeyTalker: #{ch_num} #{@keys.char(ch_num)}"
+    @console.ch(@keys.char(ch_num))
+
+
+
+class BasicConsole
+
+  constructor: ->
+    @sprites = document.getElementById("chars")
+    @keys = new KeyHelper
+    @canvas = document.getElementById('canvas')
+    @context = @canvas.getContext('2d')
+    @line = -1
+    @column = 80 
+    @clear()
+
+
+  print: (string) ->
+    for ch in string
+      if ch == " "
+        @next_char_loc()
+      else
+        @ch(ch)
+    @msg = string
+
+
+  println: (string) ->
+    if @column > 0
+      @line = @line + 1
+      @column = 0
+    console.log "PRINTLN: #{string}"
+    @print(string)
+
+
+  ch: (ch) ->
+    loc = @next_char_loc()
+    @ch_ln_col(ch, loc[0], loc[1])
+
+
+  ch_ln_col: (ch, line, col) ->
+    @msg = "#{ch} [#{line},#{col}]"
+    console.log "draw #{ch} at line #{line}, col #{col}"
+    if ch != " "
+      sprite = @keys.sprite_xy(ch)
+      @context.drawImage(@sprites,sprite[0],sprite[1],11,18,col*11,line*18,11,18)
+
+
+  clear: ->
+    @msg = ""
+    @context.clearRect(0,0,1200,400)
+
+
+  next_char_loc: ->
+    if @column >= 79
+      @line = @line + 1
+      @column = 0
+    else
+      @column = @column + 1
+    return [@line, @column]
 
 
 
@@ -43,12 +103,16 @@ class KeyHelper
 
 
   char: (n) ->
+    console.log "char(): n = #{n}"
     n = n + 32 if n in [65..90] # Treat alpha keypress the same without regard to SHIFT
     if n in @code
       i = @code.indexOf(n)
       ch = @chars[i]
     else
-      ch = null
+      if n == 32
+        ch = " "
+      else
+        ch = null
     return ch
 
 
@@ -60,9 +124,9 @@ class KeyHelper
 
 
 @keyevent = (e) ->
-  ch = e.charCode
-  console.log("[global] CHAR CODE: #{ch}")
-  @app.handle(ch)
+  ch_num = e.charCode
+  console.log("[global] CHAR CODE: #{ch_num}")
+  @app.handle(ch_num)
 
 
 start = () ->

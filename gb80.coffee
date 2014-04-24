@@ -1307,9 +1307,6 @@ class BasicConsole
 
   constructor: ->
     @sprites = document.getElementById("chars")
-    console.log "LOADING sprites IMAGE:"
-    console.log "  src = #{@sprites.src}"
-#    @sprites.src = "images/characters.png"
     @keys = new KeyHelper
     @canvas = document.getElementById('canvas')
     @context = @canvas.getContext('2d')
@@ -1323,8 +1320,7 @@ class BasicConsole
       if ch == " "
         @next_char_loc()
       else
-        loc = @next_char_loc()
-        @ch(ch, loc[0], loc[1])
+        @ch(ch)
     @msg = string
 
 
@@ -1332,15 +1328,21 @@ class BasicConsole
     if @column > 0
       @line = @line + 1
       @column = 0
+    console.log "PRINTLN: #{string}"
     @print(string)
 
 
-  ch: (ch, line, col) ->
+  ch: (ch) ->
+    loc = @next_char_loc()
+    @ch_ln_col(ch, loc[0], loc[1])
+
+
+  ch_ln_col: (ch, line, col) ->
     @msg = "#{ch} [#{line},#{col}]"
     console.log "draw #{ch} at line #{line}, col #{col}"
-    sprite = @keys.sprite_xy(ch)
-    console.log "   sprite x,y = #{sprite[0]},#{sprite[1]}"
-    @context.drawImage(@sprites,sprite[0],sprite[1],11,18,col*11,line*18,11,18)
+    if ch != " "
+      sprite = @keys.sprite_xy(ch)
+      @context.drawImage(@sprites,sprite[0],sprite[1],11,18,col*11,line*18,11,18)
 
 
   clear: ->
@@ -1395,7 +1397,10 @@ class KeyHelper
       i = @code.indexOf(n)
       ch = @chars[i]
     else
-      ch = null
+      if n == 32
+        ch = " "
+      else
+        ch = null
     return ch
 
 

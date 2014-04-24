@@ -1644,8 +1644,6 @@ BooleanExpressionEvaluator = (function() {
 BasicConsole = (function() {
   function BasicConsole() {
     this.sprites = document.getElementById("chars");
-    console.log("LOADING sprites IMAGE:");
-    console.log("  src = " + this.sprites.src);
     this.keys = new KeyHelper;
     this.canvas = document.getElementById('canvas');
     this.context = this.canvas.getContext('2d');
@@ -1655,14 +1653,13 @@ BasicConsole = (function() {
   }
 
   BasicConsole.prototype.print = function(string) {
-    var ch, loc, _i, _len;
+    var ch, _i, _len;
     for (_i = 0, _len = string.length; _i < _len; _i++) {
       ch = string[_i];
       if (ch === " ") {
         this.next_char_loc();
       } else {
-        loc = this.next_char_loc();
-        this.ch(ch, loc[0], loc[1]);
+        this.ch(ch);
       }
     }
     return this.msg = string;
@@ -1673,16 +1670,24 @@ BasicConsole = (function() {
       this.line = this.line + 1;
       this.column = 0;
     }
+    console.log("PRINTLN: " + string);
     return this.print(string);
   };
 
-  BasicConsole.prototype.ch = function(ch, line, col) {
+  BasicConsole.prototype.ch = function(ch) {
+    var loc;
+    loc = this.next_char_loc();
+    return this.ch_ln_col(ch, loc[0], loc[1]);
+  };
+
+  BasicConsole.prototype.ch_ln_col = function(ch, line, col) {
     var sprite;
     this.msg = "" + ch + " [" + line + "," + col + "]";
     console.log("draw " + ch + " at line " + line + ", col " + col);
-    sprite = this.keys.sprite_xy(ch);
-    console.log("   sprite x,y = " + sprite[0] + "," + sprite[1]);
-    return this.context.drawImage(this.sprites, sprite[0], sprite[1], 11, 18, col * 11, line * 18, 11, 18);
+    if (ch !== " ") {
+      sprite = this.keys.sprite_xy(ch);
+      return this.context.drawImage(this.sprites, sprite[0], sprite[1], 11, 18, col * 11, line * 18, 11, 18);
+    }
   };
 
   BasicConsole.prototype.clear = function() {
@@ -1724,7 +1729,11 @@ KeyHelper = (function() {
       i = this.code.indexOf(n);
       ch = this.chars[i];
     } else {
-      ch = null;
+      if (n === 32) {
+        ch = " ";
+      } else {
+        ch = null;
+      }
     }
     return ch;
   };

@@ -6,7 +6,7 @@ describe("Key helper methods", function() {
   it("should map character codes to characters", function() {
     expect(this.key_help.char(18)).toEqual(null);
     expect(this.key_help.char(24)).toEqual(null);
-    expect(this.key_help.char(32)).toEqual(null);
+    expect(this.key_help.char(32)).toEqual(" ");
     expect(this.key_help.char(33)).toEqual("!");
     expect(this.key_help.char(35)).toEqual("#");
     expect(this.key_help.char(43)).toEqual("+");
