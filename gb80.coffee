@@ -1308,6 +1308,7 @@ class BasicConsole
   constructor: ->
     @sprites = document.getElementById("chars")
     @keys = new KeyHelper
+    @buffer = new ConsoleLineBuffer(this)
     @canvas = document.getElementById('canvas')
     @context = @canvas.getContext('2d')
     @line = -1
@@ -1357,6 +1358,23 @@ class BasicConsole
     else
       @column = @column + 1
     return [@line, @column]
+
+
+
+class ConsoleLineBuffer
+
+  constructor: (console) ->
+    @console = console
+    @chars = ""
+
+
+  add: (ch) ->
+    @chars = @chars + ch
+
+
+  print: ->
+    @console.println(@chars)
+    @chars = ""
 
 
 

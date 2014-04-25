@@ -1,4 +1,4 @@
-describe "Program Controller", ->
+describe "Program controller", ->
 
   beforeEach ->
     @prog = new ProgramController
