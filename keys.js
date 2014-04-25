@@ -131,12 +131,19 @@ KeyHelper = (function() {
 
 this.keyevent = function(e) {
   var ch_num;
+  if (this.disable_key_defaults) {
+    e.preventDefault();
+  }
   ch_num = e.charCode;
   console.log("[global] CHAR CODE: " + ch_num);
   return this.app.handle(ch_num);
 };
 
 start = function() {
+  this.canvas = document.getElementById("canvas");
+  this.canvas.setAttribute('tabindex', '0');
+  this.canvas.focus();
+  this.disable_key_defaults = true;
   return this.app = new KeyTalker;
 };
 

@@ -124,12 +124,17 @@ class KeyHelper
 
 
 @keyevent = (e) ->
+  e.preventDefault() if @disable_key_defaults
   ch_num = e.charCode
   console.log("[global] CHAR CODE: #{ch_num}")
   @app.handle(ch_num)
 
 
 start = () ->
+  @canvas = document.getElementById("canvas")
+  @canvas.setAttribute('tabindex','0')
+  @canvas.focus()
+  @disable_key_defaults = true
   @app = new KeyTalker
 
 
