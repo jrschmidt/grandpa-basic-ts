@@ -37,7 +37,7 @@ describe("Console line buffer", function() {
     }
     expect(this.buffer.chars).toEqual("40 X=Y+100");
     this.buffer.print();
-    expect(this.console.msg).toEqual("40 X=Y+100");
+    expect(this.console.line_text).toEqual("40 X=Y+100");
     return expect(this.buffer.chars).toEqual("");
   });
 });

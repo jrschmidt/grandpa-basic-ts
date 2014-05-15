@@ -33,6 +33,6 @@ describe "Console line buffer", ->
     @buffer.add(ch) for ch in "40 X=Y+100"
     expect(@buffer.chars).toEqual("40 X=Y+100")
     @buffer.print()
-    expect(@console.msg).toEqual("40 X=Y+100")
+    expect(@console.line_text).toEqual("40 X=Y+100")
     expect(@buffer.chars).toEqual("")    
 

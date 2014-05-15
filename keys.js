@@ -4,14 +4,12 @@ var BasicConsole, KeyHelper, KeyTalker, start,
 
 KeyTalker = (function() {
   function KeyTalker() {
-    console.log("new KeyTalker object");
     this.console = new BasicConsole;
     this.keys = this.console.keys;
     this.buffer = this.console.buffer;
   }
 
   KeyTalker.prototype.handle = function(ch_num) {
-    console.log("KeyTalker: " + ch_num + " " + (this.keys.char(ch_num)));
     return this.console.ch(this.keys.char(ch_num));
   };
 
@@ -135,7 +133,6 @@ this.keyevent = function(e) {
     e.preventDefault();
   }
   ch_num = e.charCode;
-  console.log("[global] CHAR CODE: " + ch_num);
   return this.app.handle(ch_num);
 };
 

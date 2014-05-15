@@ -1643,11 +1643,15 @@ BooleanExpressionEvaluator = (function() {
 
 BasicConsole = (function() {
   function BasicConsole() {
+    this.console_height = 23;
     this.sprites = document.getElementById("chars");
     this.keys = new KeyHelper;
     this.buffer = new ConsoleLineBuffer(this);
+    console.log("** ** return from ConsoleLineBuffer constructor");
     this.canvas = document.getElementById('canvas');
+    console.log("@canvas =  " + this.canvas);
     this.context = this.canvas.getContext('2d');
+    this.scroll = [];
     this.line = -1;
     this.column = 80;
     this.clear();
@@ -1663,13 +1667,19 @@ BasicConsole = (function() {
         this.ch(ch);
       }
     }
-    return this.msg = string;
+    return this.line_text = string;
   };
 
   BasicConsole.prototype.println = function(string) {
     if (this.column > 0) {
-      this.line = this.line + 1;
+      if (this.line < this.console_height) {
+        this.line = this.line + 1;
+      }
       this.column = 0;
+    }
+    this.scroll.push(string);
+    if (this.line === this.console_height) {
+      this.scroll.shift();
     }
     console.log("PRINTLN: " + string);
     return this.print(string);
@@ -1683,7 +1693,7 @@ BasicConsole = (function() {
 
   BasicConsole.prototype.ch_ln_col = function(ch, line, col) {
     var sprite;
-    this.msg = "" + ch + " [" + line + "," + col + "]";
+    this.line_text = "" + ch + " [" + line + "," + col + "]";
     console.log("draw " + ch + " at line " + line + ", col " + col);
     if (ch !== " ") {
       sprite = this.keys.sprite_xy(ch);
@@ -1692,7 +1702,8 @@ BasicConsole = (function() {
   };
 
   BasicConsole.prototype.clear = function() {
-    this.msg = "";
+    this.scroll = [];
+    this.line_text = "";
     return this.context.clearRect(0, 0, 1200, 400);
   };
 

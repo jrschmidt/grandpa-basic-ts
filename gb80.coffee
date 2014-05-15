@@ -1306,13 +1306,17 @@ class BooleanExpressionEvaluator
 class BasicConsole
 
   constructor: ->
+    @console_height = 23
     @sprites = document.getElementById("chars")
     @keys = new KeyHelper
     @buffer = new ConsoleLineBuffer(this)
+    console.log "** ** return from ConsoleLineBuffer constructor"
     @canvas = document.getElementById('canvas')
+    console.log "@canvas =  #{@canvas}"
     @context = @canvas.getContext('2d')
+    @scroll = []
     @line = -1
-    @column = 80 
+    @column = 80
     @clear()
 
 
@@ -1322,13 +1326,15 @@ class BasicConsole
         @next_char_loc()
       else
         @ch(ch)
-    @msg = string
+    @line_text = string
 
 
   println: (string) ->
     if @column > 0
-      @line = @line + 1
+      @line = @line + 1 if @line < @console_height
       @column = 0
+    @scroll.push(string)
+    @scroll.shift() if @line == @console_height
     console.log "PRINTLN: #{string}"
     @print(string)
 
@@ -1339,7 +1345,7 @@ class BasicConsole
 
 
   ch_ln_col: (ch, line, col) ->
-    @msg = "#{ch} [#{line},#{col}]"
+    @line_text = "#{ch} [#{line},#{col}]"
     console.log "draw #{ch} at line #{line}, col #{col}"
     if ch != " "
       sprite = @keys.sprite_xy(ch)
@@ -1347,11 +1353,12 @@ class BasicConsole
 
 
   clear: ->
-    @msg = ""
+    @scroll = []
+    @line_text = ""
     @context.clearRect(0,0,1200,400)
 
 
-  next_char_loc: ->
+  next_char_loc: ->  # FIXME Somewhere we'll have to update this to mesh with the console scrolling changes.
     if @column >= 79
       @line = @line + 1
       @column = 0

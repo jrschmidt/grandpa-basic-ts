@@ -2,14 +2,12 @@
 class KeyTalker
 
   constructor: () ->
-    console.log("new KeyTalker object")
     @console = new BasicConsole
     @keys = @console.keys
     @buffer = @console.buffer
 
 
   handle: (ch_num) ->
-    console.log "KeyTalker: #{ch_num} #{@keys.char(ch_num)}"
     @console.ch(@keys.char(ch_num))
 
 
@@ -126,7 +124,6 @@ class KeyHelper
 @keyevent = (e) ->
   e.preventDefault() if @disable_key_defaults
   ch_num = e.charCode
-  console.log("[global] CHAR CODE: #{ch_num}")
   @app.handle(ch_num)
 
 
