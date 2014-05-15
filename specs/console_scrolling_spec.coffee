@@ -1,10 +1,11 @@
 describe "Console scrolling", ->
 
-  @console = new BasicConsole
-  @scroll = @console.scroll
+  beforeEach ->
+    @console = new BasicConsole
+    @scroll = @console.scroll
 
 
-  xit "should add lines to the scroll buffer as they are printed", ->
+  it "should add lines to the scroll buffer as they are printed", ->
     expect(@scroll.length).toEqual(0)
 
     @console.println("10 X=100")
@@ -32,7 +33,20 @@ describe "Console scrolling", ->
     expect(@scroll.length).toEqual(20)
 
 
-  xit "should move lines towards top of 'screen' as lines are added at bottom", ->
+  it "should move lines towards top of 'screen' as lines are added at bottom", ->
+
+    # First we repeat the steps above, to fill the first 20 lines:
+    expect(@scroll.length).toEqual(0)
+    @console.println("10 X=100")
+    @console.println("20 Y=33")
+    @console.println("30 Z=888")
+    @console.println("40 M=X+Y")
+    @console.println("50 W=M/Z")
+    for n in [1..15]
+      @console.println("88 REM FILLER LINE")
+    expect(@scroll.length).toEqual(20)
+
+    # Now we add more lines, expecting them to 'scroll up'
     @console.println("210 X=110")
     expect(@scroll.length).toEqual(21)
     expect(@scroll[20]).toEqual("210 X=110")
