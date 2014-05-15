@@ -420,7 +420,7 @@ class LineParser
     else
       result = {match: "no"}
     return result
-    
+
 
 
   # Delegate to the 'look_for' method associated with a specific 'action' token
@@ -1310,14 +1310,17 @@ class BasicConsole
     @sprites = document.getElementById("chars")
     @keys = new KeyHelper
     @buffer = new ConsoleLineBuffer(this)
-    console.log "** ** return from ConsoleLineBuffer constructor"
     @canvas = document.getElementById('canvas')
-    console.log "@canvas =  #{@canvas}"
     @context = @canvas.getContext('2d')
     @scroll = []
     @line = -1
     @column = 80
     @clear()
+
+
+  enter_line: () ->
+    console.log "ENTER LINE called"
+
 
 
   print: (string) ->
@@ -1350,6 +1353,10 @@ class BasicConsole
     if ch != " "
       sprite = @keys.sprite_xy(ch)
       @context.drawImage(@sprites,sprite[0],sprite[1],11,18,col*11,line*18,11,18)
+
+
+  backspace: () ->
+    console.log "BACKSPACE called"
 
 
   clear: ->
@@ -1397,6 +1404,7 @@ class KeyHelper
              110,111,112,113,114,115,116,117,118,119,
              120,121,122,123,124,125,126]
 
+    # TODO Why are '[' and ']' not inplemented?
     @chars = [ "!", '"', "#", "$", "%", "&", "'",
                "(", ")", "*", "+", ",", "-", ".", "/", "0", "1",
                "2", "3", "4", "5", "6", "7", "8", "9", ":", ";",
@@ -1433,5 +1441,3 @@ class KeyHelper
     if ch in @chars
       i = @chars.indexOf(ch)
       return @xy[i]
-
-

@@ -1647,15 +1647,17 @@ BasicConsole = (function() {
     this.sprites = document.getElementById("chars");
     this.keys = new KeyHelper;
     this.buffer = new ConsoleLineBuffer(this);
-    console.log("** ** return from ConsoleLineBuffer constructor");
     this.canvas = document.getElementById('canvas');
-    console.log("@canvas =  " + this.canvas);
     this.context = this.canvas.getContext('2d');
     this.scroll = [];
     this.line = -1;
     this.column = 80;
     this.clear();
   }
+
+  BasicConsole.prototype.enter_line = function() {
+    return console.log("ENTER LINE called");
+  };
 
   BasicConsole.prototype.print = function(string) {
     var ch, _i, _len;
@@ -1699,6 +1701,10 @@ BasicConsole = (function() {
       sprite = this.keys.sprite_xy(ch);
       return this.context.drawImage(this.sprites, sprite[0], sprite[1], 11, 18, col * 11, line * 18, 11, 18);
     }
+  };
+
+  BasicConsole.prototype.backspace = function() {
+    return console.log("BACKSPACE called");
   };
 
   BasicConsole.prototype.clear = function() {

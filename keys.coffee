@@ -7,8 +7,12 @@ class KeyTalker
     @buffer = @console.buffer
 
 
-  handle: (ch_num) ->
-    @console.ch(@keys.char(ch_num))
+  handle: (ch_num, ch_key) ->
+    if ch_num > 0
+      @console.ch(@keys.char(ch_num))
+    else
+      @console.enter_line() if ch_key == 13
+      @console.backspace() if ch_key == 8
 
 
 
@@ -20,8 +24,12 @@ class BasicConsole
     @canvas = document.getElementById('canvas')
     @context = @canvas.getContext('2d')
     @line = -1
-    @column = 80 
+    @column = 80
     @clear()
+
+
+  enter_line: () ->
+    console.log "ENTER LINE called"
 
 
   print: (string) ->
@@ -52,6 +60,10 @@ class BasicConsole
     if ch != " "
       sprite = @keys.sprite_xy(ch)
       @context.drawImage(@sprites,sprite[0],sprite[1],11,18,col*11,line*18,11,18)
+
+
+  backspace: () ->
+    console.log "BACKSPACE called"
 
 
   clear: ->
@@ -124,7 +136,9 @@ class KeyHelper
 @keyevent = (e) ->
   e.preventDefault() if @disable_key_defaults
   ch_num = e.charCode
-  @app.handle(ch_num)
+  ch_key = e.keyCode
+  console.log "key: #{ch_key} char: #{ch_num}"
+  @app.handle(ch_num, ch_key)
 
 
 start = () ->
@@ -136,4 +150,3 @@ start = () ->
 
 
 window.onload = start
-

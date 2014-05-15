@@ -9,8 +9,17 @@ KeyTalker = (function() {
     this.buffer = this.console.buffer;
   }
 
-  KeyTalker.prototype.handle = function(ch_num) {
-    return this.console.ch(this.keys.char(ch_num));
+  KeyTalker.prototype.handle = function(ch_num, ch_key) {
+    if (ch_num > 0) {
+      return this.console.ch(this.keys.char(ch_num));
+    } else {
+      if (ch_key === 13) {
+        this.console.enter_line();
+      }
+      if (ch_key === 8) {
+        return this.console.backspace();
+      }
+    }
   };
 
   return KeyTalker;
@@ -27,6 +36,10 @@ BasicConsole = (function() {
     this.column = 80;
     this.clear();
   }
+
+  BasicConsole.prototype.enter_line = function() {
+    return console.log("ENTER LINE called");
+  };
 
   BasicConsole.prototype.print = function(string) {
     var ch, _i, _len;
@@ -64,6 +77,10 @@ BasicConsole = (function() {
       sprite = this.keys.sprite_xy(ch);
       return this.context.drawImage(this.sprites, sprite[0], sprite[1], 11, 18, col * 11, line * 18, 11, 18);
     }
+  };
+
+  BasicConsole.prototype.backspace = function() {
+    return console.log("BACKSPACE called");
   };
 
   BasicConsole.prototype.clear = function() {
@@ -128,12 +145,14 @@ KeyHelper = (function() {
 })();
 
 this.keyevent = function(e) {
-  var ch_num;
+  var ch_key, ch_num;
   if (this.disable_key_defaults) {
     e.preventDefault();
   }
   ch_num = e.charCode;
-  return this.app.handle(ch_num);
+  ch_key = e.keyCode;
+  console.log("key: " + ch_key + " char: " + ch_num);
+  return this.app.handle(ch_num, ch_key);
 };
 
 start = function() {
