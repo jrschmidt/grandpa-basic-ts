@@ -4,6 +4,9 @@ describe("Console line buffer", function() {
     this.console = new BasicConsole;
     return this.buffer = this.console.buffer;
   });
+  afterEach(function() {
+    return this.console.clear();
+  });
   it("should add characters to the buffer", function() {
     expect(this.buffer.chars).toEqual("");
     this.buffer.add("4");

@@ -4,6 +4,9 @@ describe "Console scrolling", ->
     @console = new BasicConsole
     @scroll = @console.scroll
 
+  afterEach ->
+    @console.clear()
+
 
   it "should add lines to the scroll buffer as they are printed", ->
     expect(@scroll.length).toEqual(0)

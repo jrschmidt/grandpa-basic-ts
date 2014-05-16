@@ -1650,47 +1650,50 @@ BasicConsole = (function() {
     this.canvas = document.getElementById('canvas');
     this.context = this.canvas.getContext('2d');
     this.scroll = [];
-    this.line = -1;
-    this.column = 80;
-    this.clear();
+    this.line = 0;
+    this.column = 0;
   }
 
   BasicConsole.prototype.enter_line = function() {
-    return console.log("ENTER LINE called");
+    console.log("ENTER LINE called");
+    if (this.buffer.length > 0) {
+      console.log("buffer = " + this.buffer.chars);
+      this.scroll_line(this.buffer_chars);
+      return this.buffer.clear();
+    }
   };
 
   BasicConsole.prototype.print = function(string) {
     var ch, _i, _len;
     for (_i = 0, _len = string.length; _i < _len; _i++) {
       ch = string[_i];
-      if (ch === " ") {
-        this.next_char_loc();
-      } else {
-        this.ch(ch);
-      }
+      this.ch(ch);
     }
     return this.line_text = string;
   };
 
-  BasicConsole.prototype.println = function(string) {
-    if (this.column > 0) {
-      if (this.line < this.console_height) {
-        this.line = this.line + 1;
-      }
-      this.column = 0;
-    }
+  BasicConsole.prototype.scroll_line = function(string) {
+    this.column = 0;
     this.scroll.push(string);
-    if (this.line === this.console_height) {
-      this.scroll.shift();
+    if (this.line < this.console_height) {
+      this.line = this.line + 1;
     }
+    if (this.scroll.length > this.console_height) {
+      return this.scroll.shift();
+    }
+  };
+
+  BasicConsole.prototype.println = function(string) {
     console.log("PRINTLN: " + string);
-    return this.print(string);
+    this.print(string);
+    return this.scroll_line(string);
   };
 
   BasicConsole.prototype.ch = function(ch) {
-    var loc;
-    loc = this.next_char_loc();
-    return this.ch_ln_col(ch, loc[0], loc[1]);
+    this.column = this.column + 1;
+    if (this.column < 80) {
+      return this.ch_ln_col(ch, this.line, this.column);
+    }
   };
 
   BasicConsole.prototype.ch_ln_col = function(ch, line, col) {
@@ -1713,28 +1716,22 @@ BasicConsole = (function() {
     return this.context.clearRect(0, 0, 1200, 400);
   };
 
-  BasicConsole.prototype.next_char_loc = function() {
-    if (this.column >= 79) {
-      this.line = this.line + 1;
-      this.column = 0;
-    } else {
-      this.column = this.column + 1;
-    }
-    return [this.line, this.column];
-  };
-
   return BasicConsole;
 
 })();
 
 ConsoleLineBuffer = (function() {
-  function ConsoleLineBuffer(console) {
-    this.console = console;
+  function ConsoleLineBuffer(gb_console) {
+    this.console = gb_console;
     this.chars = "";
   }
 
   ConsoleLineBuffer.prototype.add = function(ch) {
     return this.chars = this.chars + ch;
+  };
+
+  ConsoleLineBuffer.prototype.clear = function() {
+    return this.chars = "";
   };
 
   ConsoleLineBuffer.prototype.print = function() {

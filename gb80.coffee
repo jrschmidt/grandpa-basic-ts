@@ -1313,38 +1313,39 @@ class BasicConsole
     @canvas = document.getElementById('canvas')
     @context = @canvas.getContext('2d')
     @scroll = []
-    @line = -1
-    @column = 80
-    @clear()
+    @line = 0
+    @column = 0
 
 
   enter_line: () ->
     console.log "ENTER LINE called"
-
+    if @buffer.length > 0
+      console.log "buffer = #{@buffer.chars}"
+      @scroll_line(@buffer_chars)
+      @buffer.clear()
 
 
   print: (string) ->
-    for ch in string
-      if ch == " "
-        @next_char_loc()
-      else
-        @ch(ch)
+    @ch(ch) for ch in string
     @line_text = string
 
 
-  println: (string) ->
-    if @column > 0
-      @line = @line + 1 if @line < @console_height
-      @column = 0
+  scroll_line: (string) ->
+    @column = 0
     @scroll.push(string)
-    @scroll.shift() if @line == @console_height
+    @line = @line + 1 if @line < @console_height
+    @scroll.shift() if @scroll.length > @console_height
+
+
+  println: (string) ->
     console.log "PRINTLN: #{string}"
     @print(string)
+    @scroll_line(string)
 
 
   ch: (ch) ->
-    loc = @next_char_loc()
-    @ch_ln_col(ch, loc[0], loc[1])
+    @column = @column + 1
+    @ch_ln_col(ch, @line, @column) if @column < 80
 
 
   ch_ln_col: (ch, line, col) ->
@@ -1355,7 +1356,7 @@ class BasicConsole
       @context.drawImage(@sprites,sprite[0],sprite[1],11,18,col*11,line*18,11,18)
 
 
-  backspace: () ->
+  backspace: ->
     console.log "BACKSPACE called"
 
 
@@ -1365,25 +1366,20 @@ class BasicConsole
     @context.clearRect(0,0,1200,400)
 
 
-  next_char_loc: ->  # FIXME Somewhere we'll have to update this to mesh with the console scrolling changes.
-    if @column >= 79
-      @line = @line + 1
-      @column = 0
-    else
-      @column = @column + 1
-    return [@line, @column]
-
-
 
 class ConsoleLineBuffer
 
-  constructor: (console) ->
-    @console = console
+  constructor: (gb_console) ->
+    @console = gb_console
     @chars = ""
 
 
   add: (ch) ->
     @chars = @chars + ch
+
+
+  clear: ->
+    @chars = ""
 
 
   print: ->

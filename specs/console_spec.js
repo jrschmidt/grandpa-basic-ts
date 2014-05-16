@@ -4,6 +4,10 @@ describe("BASIC Console", function() {
     this.console = new BasicConsole;
     return this.console.log_chars = true;
   });
+  afterEach(function() {
+    this.console.clear();
+    return this.console.log_chars = true;
+  });
   it("should print a character at a given location", function() {
     this.console.ch_ln_col("A", 1, 0);
     expect(this.console.line_text).toEqual("A [1,0]");

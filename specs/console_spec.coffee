@@ -4,6 +4,10 @@ describe "BASIC Console", ->
     @console = new BasicConsole
     @console.log_chars = true
 
+  afterEach ->
+    @console.clear()
+    @console.log_chars = true
+
 
   it "should print a character at a given location", ->
     @console.ch_ln_col("A",1,0)
@@ -124,5 +128,3 @@ describe "BASIC Console", ->
 
     @console.println('999 END')
     expect(@console.line_text).toEqual('999 END')
-
-

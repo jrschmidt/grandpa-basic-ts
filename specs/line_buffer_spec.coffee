@@ -4,6 +4,10 @@ describe "Console line buffer", ->
     @console = new BasicConsole
     @buffer = @console.buffer
 
+  afterEach ->
+    @console.clear()
+
+
   it "should add characters to the buffer", ->
     expect(@buffer.chars).toEqual("")
     @buffer.add("4")
@@ -34,5 +38,4 @@ describe "Console line buffer", ->
     expect(@buffer.chars).toEqual("40 X=Y+100")
     @buffer.print()
     expect(@console.line_text).toEqual("40 X=Y+100")
-    expect(@buffer.chars).toEqual("")    
-
+    expect(@buffer.chars).toEqual("")
