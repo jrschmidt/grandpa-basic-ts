@@ -5,7 +5,7 @@ describe("Console line buffer", function() {
     return this.buffer = this.console.buffer;
   });
   afterEach(function() {
-    return this.console.clear();
+    return this.console.clear_all();
   });
   it("should add characters to the buffer", function() {
     expect(this.buffer.chars).toEqual("");

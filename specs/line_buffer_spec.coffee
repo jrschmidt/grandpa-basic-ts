@@ -5,7 +5,7 @@ describe "Console line buffer", ->
     @buffer = @console.buffer
 
   afterEach ->
-    @console.clear()
+    @console.clear_all()
 
 
   it "should add characters to the buffer", ->

@@ -5,7 +5,7 @@ describe "Console scrolling", ->
     @scroll = @console.scroll
 
   afterEach ->
-    @console.clear()
+    @console.clear_all()
 
 
   it "should add lines to the scroll buffer as they are printed", ->

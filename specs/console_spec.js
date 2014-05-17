@@ -5,7 +5,7 @@ describe("BASIC Console", function() {
     return this.console.log_chars = true;
   });
   afterEach(function() {
-    this.console.clear();
+    this.console.clear_all();
     return this.console.log_chars = true;
   });
   it("should print a character at a given location", function() {
@@ -87,7 +87,7 @@ describe("BASIC Console", function() {
     return expect(this.console.line_text).toEqual("10 REM - WELCOME TO GRANDPA BASIC 1980");
   });
   it("should clear the screen of text", function() {
-    this.console.clear();
+    this.console.clear_all();
     return expect(this.console.line_text).toEqual("");
   });
   return it("should print multiple lines of text", function() {

@@ -5,7 +5,7 @@ describe "BASIC Console", ->
     @console.log_chars = true
 
   afterEach ->
-    @console.clear()
+    @console.clear_all()
     @console.log_chars = true
 
 
@@ -103,7 +103,7 @@ describe "BASIC Console", ->
 
 
   it "should clear the screen of text", ->
-    @console.clear()
+    @console.clear_all()
     expect(@console.line_text).toEqual("")
 
 

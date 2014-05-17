@@ -1669,6 +1669,7 @@ BasicConsole = (function() {
   function BasicConsole() {
     this.console_height = 23;
     this.sprites = document.getElementById("chars");
+    this.console_width = 80;
     this.keys = new KeyHelper;
     this.buffer = new ConsoleLineBuffer(this);
     this.canvas = document.getElementById('canvas');
@@ -1680,13 +1681,34 @@ BasicConsole = (function() {
 
   BasicConsole.prototype.enter_line = function() {
     console.log("ENTER LINE called");
-    console.log("  buffer = " + this.buffer.chars);
     console.log("  buffer length = " + this.buffer.chars.length);
     if (this.buffer.chars.length > 0) {
       console.log("buffer = " + this.buffer.chars);
       this.scroll_line(this.buffer.chars);
       return this.buffer.clear();
     }
+  };
+
+  BasicConsole.prototype.scroll_line = function(string) {
+    this.column = 0;
+    this.scroll.push(string);
+    if (this.line < this.console_height) {
+      this.line = this.line + 1;
+    }
+    if (this.scroll.length > this.console_height) {
+      this.scroll.shift();
+      return this.redraw_lines();
+    }
+  };
+
+  BasicConsole.prototype.redraw_lines = function() {
+    var ln_no, _i, _ref;
+    this.clear_screen();
+    for (ln_no = _i = 0, _ref = this.console_height - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; ln_no = 0 <= _ref ? ++_i : --_i) {
+      this.column = 0;
+      this.println_ln(ln_no, this.scroll[ln_no]);
+    }
+    return this.line = this.scroll.length;
   };
 
   BasicConsole.prototype.print = function(string) {
@@ -1698,28 +1720,20 @@ BasicConsole = (function() {
     return this.line_text = string;
   };
 
-  BasicConsole.prototype.scroll_line = function(string) {
-    this.column = 0;
-    this.scroll.push(string);
-    if (this.line < this.console_height) {
-      this.line = this.line + 1;
-    }
-    if (this.scroll.length > this.console_height) {
-      return this.scroll.shift();
-    }
-  };
-
   BasicConsole.prototype.println = function(string) {
-    console.log("PRINTLN: " + string);
     this.print(string);
     return this.scroll_line(string);
+  };
+
+  BasicConsole.prototype.println_ln = function(line_no, string) {
+    this.line = line_no;
+    return this.print(string);
   };
 
   BasicConsole.prototype.ch = function(ch) {
     this.column = this.column + 1;
     this.buffer.add(ch);
-    console.log("CH column = " + this.column + " line = " + this.line);
-    if (this.column <= 80) {
+    if (this.column <= this.console_width) {
       return this.ch_ln_col(ch, this.line, this.column);
     }
   };
@@ -1727,7 +1741,6 @@ BasicConsole = (function() {
   BasicConsole.prototype.ch_ln_col = function(ch, line, col) {
     var sprite;
     this.line_text = "" + ch + " [" + line + "," + col + "]";
-    console.log("draw " + ch + " at line " + line + ", col " + col);
     if (ch !== " ") {
       sprite = this.keys.sprite_xy(ch);
       return this.context.drawImage(this.sprites, sprite[0], sprite[1], 11, 18, 3 + col * 11, 16 + line * 18, 11, 18);
@@ -1738,10 +1751,14 @@ BasicConsole = (function() {
     return console.log("BACKSPACE called");
   };
 
-  BasicConsole.prototype.clear = function() {
+  BasicConsole.prototype.clear_screen = function() {
+    return this.context.clearRect(0, 0, 910, 440);
+  };
+
+  BasicConsole.prototype.clear_all = function() {
+    this.clear_screen();
     this.scroll = [];
-    this.line_text = "";
-    return this.context.clearRect(0, 0, 1200, 400);
+    return this.line_text = "";
   };
 
   return BasicConsole;
@@ -1819,7 +1836,6 @@ this.keyevent = function(e) {
   }
   ch_num = e.charCode;
   ch_key = e.keyCode;
-  console.log("key: " + ch_key + " char: " + ch_num);
   return this.app.handle(ch_num, ch_key);
 };
 

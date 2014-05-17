@@ -39,9 +39,6 @@ class ProgramLineListing
     list = []
     line_numbers = @lines_sort()
     list.push(@lines[ln].text) for ln in line_numbers
-#    console.log " "
-#    console.log "    program listing:"
-#    console.log(line_text) for line_text in list
     return list
 
 
@@ -70,24 +67,13 @@ class ProgramController
   load: (lines) ->
     @lines = lines
     @line_order = @sort_lines(lines)
-#    console.log " "
-#    console.log "LOAD:"
-#    console.log "line order = #{@line_order}"
     if @line_order.length > 0
       @next_line_index = 0
       @next_line_no = @line_order[0] if @line_order.length > 0
-#    console.log "next index = #{@next_line_index}"
-#    console.log "next line = #{@next_line_no}"
 
 
   run_next_line: ->
-#    console.log " "
-#    console.log "RUN NEXT LINE:"
-#    console.log "   @next_line_no = #{@next_line_no}"
     line_object = @lines[@next_line_no.toString()]
-#    console.log "   line_object ="
-#    console.log "     text: #{line_object.text}"
-#    console.log "     cmd: #{line_object.command}"
     @line_result = @commands.run_command(line_object)
     @gb_output(@line_result.output) if @line_result.hasOwnProperty("output")
     if @line_result.hasOwnProperty("sub")
@@ -112,9 +98,6 @@ class ProgramController
       @next_line_no = @line_order[@next_line_index]
     else
       @next_line_no = 0
-#    console.log "UPDATE NEXT LINE:"
-#    console.log "   next index = #{@next_line_index}"
-#    console.log "   next line = #{@next_line_no}"
 
 
   reset_line_no: (dest) ->
@@ -123,14 +106,10 @@ class ProgramController
       @next_line_no = @line_order[@next_line_index]
     else
       @next_line_no = 0
-#    console.log "RESET NEXT LINE <goto>:"
-#    console.log "   next index = #{@next_line_index}"
-#    console.log "   next line = #{@next_line_no}"
 
 
   gb_output: (string) ->
     if string != ""
-#      console.log "OUTPUT: #{string}"
       @output = string
 
 
@@ -174,7 +153,6 @@ class CommandRunner
         @line_result = @run_end(line_object)
       else
         @line_result = {}
-#        console.log "   XX  No command match found"
 
 
   run_num_assign: (line_object) ->
@@ -1296,6 +1274,7 @@ class BasicConsole
   constructor: ->
     @console_height = 23
     @sprites = document.getElementById("chars")
+    @console_width = 80
     @keys = new KeyHelper
     @buffer = new ConsoleLineBuffer(this)
     @canvas = document.getElementById('canvas')
@@ -1307,7 +1286,6 @@ class BasicConsole
 
   enter_line: () ->
     console.log "ENTER LINE called"
-    console.log "  buffer = #{@buffer.chars}"
     console.log "  buffer length = #{@buffer.chars.length}"
     if @buffer.chars.length > 0
       console.log "buffer = #{@buffer.chars}"
@@ -1315,34 +1293,46 @@ class BasicConsole
       @buffer.clear()
 
 
+  scroll_line: (string) ->
+    @column = 0
+    @scroll.push(string)
+    @line = @line + 1 if @line < @console_height
+    if @scroll.length > @console_height
+      @scroll.shift()
+      @redraw_lines()
+
+
+  redraw_lines: ->
+    @clear_screen()
+    for ln_no in [0..@console_height - 1]
+      @column = 0
+      @println_ln(ln_no, @scroll[ln_no])
+    @line = @scroll.length
+
+
   print: (string) ->
     @ch(ch) for ch in string
     @line_text = string
 
 
-  scroll_line: (string) ->
-    @column = 0
-    @scroll.push(string)
-    @line = @line + 1 if @line < @console_height
-    @scroll.shift() if @scroll.length > @console_height
-
-
   println: (string) ->
-    console.log "PRINTLN: #{string}"
     @print(string)
     @scroll_line(string)
+
+
+  println_ln: (line_no, string) ->
+    @line = line_no
+    @print(string)
 
 
   ch: (ch) ->
     @column = @column + 1
     @buffer.add(ch)
-    console.log "CH column = #{@column} line = #{@line}"
-    @ch_ln_col(ch, @line, @column) if @column <= 80
+    @ch_ln_col(ch, @line, @column) if @column <= @console_width
 
 
   ch_ln_col: (ch, line, col) ->
     @line_text = "#{ch} [#{line},#{col}]"
-    console.log "draw #{ch} at line #{line}, col #{col}"
     if ch != " "
       sprite = @keys.sprite_xy(ch)
       @context.drawImage(
@@ -1361,10 +1351,14 @@ class BasicConsole
     console.log "BACKSPACE called"
 
 
-  clear: ->
+  clear_screen: ->
+    @context.clearRect(0,0,910,440)
+
+
+  clear_all: ->
+    @clear_screen()
     @scroll = []
     @line_text = ""
-    @context.clearRect(0,0,1200,400)
 
 
 
@@ -1445,7 +1439,6 @@ class KeyHelper
   e.preventDefault() if @disable_key_defaults
   ch_num = e.charCode
   ch_key = e.keyCode
-  console.log "key: #{ch_key} char: #{ch_num}"
   @app.handle(ch_num, ch_key)
 
 

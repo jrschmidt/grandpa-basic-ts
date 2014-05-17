@@ -5,7 +5,7 @@ describe("Console scrolling", function() {
     return this.scroll = this.console.scroll;
   });
   afterEach(function() {
-    return this.console.clear();
+    return this.console.clear_all();
   });
   it("should add lines to the scroll buffer as they are printed", function() {
     var n, _i;
