@@ -1337,7 +1337,7 @@ class BasicConsole
     @column = @column + 1
     @buffer.add(ch)
     console.log "CH column = #{@column} line = #{@line}"
-    @ch_ln_col(ch, @line, @column) if @column < 80
+    @ch_ln_col(ch, @line, @column) if @column <= 80
 
 
   ch_ln_col: (ch, line, col) ->
@@ -1345,7 +1345,16 @@ class BasicConsole
     console.log "draw #{ch} at line #{line}, col #{col}"
     if ch != " "
       sprite = @keys.sprite_xy(ch)
-      @context.drawImage(@sprites,sprite[0],sprite[1],11,18,col*11,line*18,11,18)
+      @context.drawImage(
+        @sprites,
+        sprite[0],
+        sprite[1],
+        11,
+        18,
+        3 + col*11,
+        16 + line*18,
+        11,
+        18 )
 
 
   backspace: ->

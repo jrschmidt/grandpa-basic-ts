@@ -1719,7 +1719,7 @@ BasicConsole = (function() {
     this.column = this.column + 1;
     this.buffer.add(ch);
     console.log("CH column = " + this.column + " line = " + this.line);
-    if (this.column < 80) {
+    if (this.column <= 80) {
       return this.ch_ln_col(ch, this.line, this.column);
     }
   };
@@ -1730,7 +1730,7 @@ BasicConsole = (function() {
     console.log("draw " + ch + " at line " + line + ", col " + col);
     if (ch !== " ") {
       sprite = this.keys.sprite_xy(ch);
-      return this.context.drawImage(this.sprites, sprite[0], sprite[1], 11, 18, col * 11, line * 18, 11, 18);
+      return this.context.drawImage(this.sprites, sprite[0], sprite[1], 11, 18, 3 + col * 11, 16 + line * 18, 11, 18);
     }
   };
 
