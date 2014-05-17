@@ -1307,9 +1307,11 @@ class BasicConsole
 
   enter_line: () ->
     console.log "ENTER LINE called"
-    if @buffer.length > 0
+    console.log "  buffer = #{@buffer.chars}"
+    console.log "  buffer length = #{@buffer.chars.length}"
+    if @buffer.chars.length > 0
       console.log "buffer = #{@buffer.chars}"
-      @scroll_line(@buffer_chars)
+      @scroll_line(@buffer.chars)
       @buffer.clear()
 
 
@@ -1333,6 +1335,8 @@ class BasicConsole
 
   ch: (ch) ->
     @column = @column + 1
+    @buffer.add(ch)
+    console.log "CH column = #{@column} line = #{@line}"
     @ch_ln_col(ch, @line, @column) if @column < 80
 
 
@@ -1388,7 +1392,7 @@ class KeyHelper
              110,111,112,113,114,115,116,117,118,119,
              120,121,122,123,124,125,126]
 
-    # TODO Why are '[' and ']' not inplemented?
+    # TODO Why are '[' and ']' not implemented?
     @chars = [ "!", '"', "#", "$", "%", "&", "'",
                "(", ")", "*", "+", ",", "-", ".", "/", "0", "1",
                "2", "3", "4", "5", "6", "7", "8", "9", ":", ";",

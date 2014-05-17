@@ -1680,9 +1680,11 @@ BasicConsole = (function() {
 
   BasicConsole.prototype.enter_line = function() {
     console.log("ENTER LINE called");
-    if (this.buffer.length > 0) {
+    console.log("  buffer = " + this.buffer.chars);
+    console.log("  buffer length = " + this.buffer.chars.length);
+    if (this.buffer.chars.length > 0) {
       console.log("buffer = " + this.buffer.chars);
-      this.scroll_line(this.buffer_chars);
+      this.scroll_line(this.buffer.chars);
       return this.buffer.clear();
     }
   };
@@ -1715,6 +1717,8 @@ BasicConsole = (function() {
 
   BasicConsole.prototype.ch = function(ch) {
     this.column = this.column + 1;
+    this.buffer.add(ch);
+    console.log("CH column = " + this.column + " line = " + this.line);
     if (this.column < 80) {
       return this.ch_ln_col(ch, this.line, this.column);
     }
