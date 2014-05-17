@@ -40,7 +40,12 @@ BasicConsole = (function() {
   }
 
   BasicConsole.prototype.enter_line = function() {
-    return console.log("ENTER LINE called");
+    console.log("ENTER LINE called");
+    if (this.buffer.length > 0) {
+      console.log("buffer = " + this.buffer.chars);
+      this.scroll_line(this.buffer_chars);
+      return this.buffer.clear();
+    }
   };
 
   BasicConsole.prototype.print = function(string) {
@@ -52,13 +57,21 @@ BasicConsole = (function() {
     return this.line_text = string;
   };
 
-  BasicConsole.prototype.println = function(string) {
-    if (this.column > 0) {
+  BasicConsole.prototype.scroll_line = function(string) {
+    this.column = 0;
+    this.scroll.push(string);
+    if (this.line < this.console_height) {
       this.line = this.line + 1;
-      this.column = 0;
     }
+    if (this.scroll.length > this.console_height) {
+      return this.scroll.shift();
+    }
+  };
+
+  BasicConsole.prototype.println = function(string) {
     console.log("PRINTLN: " + string);
-    return this.print(string);
+    this.print(string);
+    return this.scroll_line(string);
   };
 
   BasicConsole.prototype.ch = function(ch) {
@@ -83,18 +96,9 @@ BasicConsole = (function() {
   };
 
   BasicConsole.prototype.clear = function() {
-    this.msg = "";
+    this.scroll = [];
+    this.line_text = "";
     return this.context.clearRect(0, 0, 1200, 400);
-  };
-
-  BasicConsole.prototype.next_char_loc = function() {
-    if (this.column >= 79) {
-      this.line = this.line + 1;
-      this.column = 0;
-    } else {
-      this.column = this.column + 1;
-    }
-    return [this.line, this.column];
   };
 
   return BasicConsole;
@@ -105,16 +109,20 @@ ConsoleLineBuffer = (function() {
   function ConsoleLineBuffer(gb_console) {
     this.console = gb_console;
     this.chars = "";
-    ({
-      add: function(ch) {
-        return this.chars = this.chars + ch;
-      },
-      print: function() {
-        this.console.println(this.chars);
-        return this.chars = "";
-      }
-    });
   }
+
+  ConsoleLineBuffer.prototype.add = function(ch) {
+    return this.chars = this.chars + ch;
+  };
+
+  ConsoleLineBuffer.prototype.clear = function() {
+    return this.chars = "";
+  };
+
+  ConsoleLineBuffer.prototype.print = function() {
+    this.console.println(this.chars);
+    return this.chars = "";
+  };
 
   return ConsoleLineBuffer;
 
@@ -129,7 +137,6 @@ KeyHelper = (function() {
 
   KeyHelper.prototype.char = function(n) {
     var ch, i, _i, _results;
-    console.log("char(): n = " + n);
     if (__indexOf.call((function() {
       _results = [];
       for (_i = 65; _i <= 90; _i++){ _results.push(_i); }

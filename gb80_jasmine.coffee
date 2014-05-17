@@ -1,21 +1,3 @@
-
-class KeyTalker
-
-  constructor: () ->
-    @console = new BasicConsole
-    @keys = @console.keys
-    @buffer = @console.buffer
-
-
-  handle: (ch_num, ch_key) ->
-    if ch_num > 0
-      @console.ch(@keys.char(ch_num))
-    else
-      @console.enter_line() if ch_key == 13
-      @console.backspace() if ch_key == 8
-
-
-
 class ProgramLineListing
 
   constructor: ->
@@ -1425,23 +1407,3 @@ class KeyHelper
     if ch in @chars
       i = @chars.indexOf(ch)
       return @xy[i]
-
-
-
-@keyevent = (e) ->
-  e.preventDefault() if @disable_key_defaults
-  ch_num = e.charCode
-  ch_key = e.keyCode
-  console.log "key: #{ch_key} char: #{ch_num}"
-  @app.handle(ch_num, ch_key)
-
-
-start = () ->
-  @canvas = document.getElementById("canvas")
-  @canvas.setAttribute('tabindex','0')
-  @canvas.focus()
-  @disable_key_defaults = true
-  @app = new KeyTalker
-
-
-window.onload = start
