@@ -1280,14 +1280,15 @@ class BasicConsole
     @column = 0
     @scroll.push(string)
     @line = @line + 1 if @line < @console_height
-    if @scroll.length > @console_height
+    if @scroll.length >= @console_height
       @scroll.shift()
       @redraw_lines()
+      @column = 0
 
 
   redraw_lines: ->
     @clear_screen()
-    for ln_no in [0..@console_height - 1]
+    for ln_no in [0..@scroll.length-1]
       @column = 0
       @println_ln(ln_no, @scroll[ln_no])
     @line = @scroll.length

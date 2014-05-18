@@ -1671,16 +1671,17 @@ BasicConsole = (function() {
     if (this.line < this.console_height) {
       this.line = this.line + 1;
     }
-    if (this.scroll.length > this.console_height) {
+    if (this.scroll.length >= this.console_height) {
       this.scroll.shift();
-      return this.redraw_lines();
+      this.redraw_lines();
+      return this.column = 0;
     }
   };
 
   BasicConsole.prototype.redraw_lines = function() {
     var ln_no, _i, _ref;
     this.clear_screen();
-    for (ln_no = _i = 0, _ref = this.console_height - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; ln_no = 0 <= _ref ? ++_i : --_i) {
+    for (ln_no = _i = 0, _ref = this.scroll.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; ln_no = 0 <= _ref ? ++_i : --_i) {
       this.column = 0;
       this.println_ln(ln_no, this.scroll[ln_no]);
     }
