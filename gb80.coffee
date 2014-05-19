@@ -50,6 +50,15 @@ class ProgramLineListing
 
 
 
+# class ActionController
+#
+#   process_line: (string) ->
+#     console.log "Want to process line:"
+#     console.log "   #{string}"
+#     @parser.parse(string)
+
+
+
 class ProgramController
 
   constructor: ->
@@ -92,7 +101,7 @@ class ProgramController
       @update_next_line()
 
 
-  update_next_line: -> #TODO rename as increment_line_number()
+  update_next_line: -> #TODO rename as increment_line_number() or goto_next_line()
     @next_line_index += 1
     if @next_line_index < @line_order.length
       @next_line_no = @line_order[@next_line_index]
@@ -1286,9 +1295,9 @@ class BasicConsole
 
   enter_line: () ->
     console.log "ENTER LINE called"
-    console.log "  buffer length = #{@buffer.chars.length}"
     if @buffer.chars.length > 0
       console.log "buffer = #{@buffer.chars}"
+      @controller.process_line(@buffer.chars)
       @scroll_line(@buffer.chars)
       @buffer.clear()
 

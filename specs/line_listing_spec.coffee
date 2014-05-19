@@ -40,7 +40,7 @@ describe "Program line listing", ->
     expect(list[16]).toEqual('520 GOTO 880')
     expect(list[21]).toEqual('999 END')
     expect(list[22]).toEqual('1299 RETURN')
-    
+
 
   it "should clear all program lines", ->
 
@@ -115,7 +115,3 @@ describe "Program line listing", ->
     @prog_lines.remove(720)
     list = @prog_lines.list()
     expect(list.length).toEqual(20)
-
-
-
-

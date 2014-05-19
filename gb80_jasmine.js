@@ -1657,9 +1657,9 @@ BasicConsole = (function() {
 
   BasicConsole.prototype.enter_line = function() {
     console.log("ENTER LINE called");
-    console.log("  buffer length = " + this.buffer.chars.length);
     if (this.buffer.chars.length > 0) {
       console.log("buffer = " + this.buffer.chars);
+      this.controller.process_line(this.buffer.chars);
       this.scroll_line(this.buffer.chars);
       return this.buffer.clear();
     }
