@@ -3,7 +3,25 @@ describe("Program line object builder", function() {
   beforeEach(function() {
     return this.formatter = new ProgramLineBuilder;
   });
-  xit("should build a valid console command object from a console command string");
+  it("should build a valid console command object from a console command string", function() {
+    var line_text, parse_object, result;
+    line_text = 'CLEAR';
+    parse_object = ["<clear_command>"];
+    result = this.formatter.format(parse_object, line_text);
+    expect(result.command).toEqual("<clear_command>");
+    line_text = 'RUN';
+    parse_object = ["<run_command>"];
+    result = this.formatter.format(parse_object, line_text);
+    expect(result.command).toEqual("<run_command>");
+    line_text = 'INFO';
+    parse_object = ["<info_command>"];
+    result = this.formatter.format(parse_object, line_text);
+    expect(result.command).toEqual("<info_command>");
+    line_text = 'LIST';
+    parse_object = ["<list_command>"];
+    result = this.formatter.format(parse_object, line_text);
+    return expect(result.command).toEqual("<list_command>");
+  });
   it("should build a valid program line object from a line with a REM statement", function() {
     var line_text, parse_object, result;
     line_text = '10 REM';

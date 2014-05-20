@@ -802,34 +802,55 @@ class ProgramLineBuilder
     @bool_exp = new BoolExpBuilder(this)
 
   format: (parse_object, line_text) ->
-    cmd = parse_object[3]
-    switch cmd
-      when "<remark>"
-        line = @build_remark(parse_object)
-      when "<number_variable>"
-        line = @build_numeric_assignment(parse_object)
-      when "<string_variable>"
-        line = @build_string_assignment(parse_object)
-      when "<goto>", "<gosub>"
-        line = @build_cmd_with_dest(parse_object)
-      when "<return>", "<clear_screen>", "<end>"
-        line = @build_simple_cmd(parse_object)
-      when "<if>"
-        line = @build_if_cmd(parse_object)
-      when "<input>"
-        line = @build_input_cmd(parse_object)
-      when "<print>", "<print_line>"
-        line = @build_print_cmd(parse_object)
-      when "<tab>"
-        line = @build_tab_cmd(parse_object)
+    if parse_object[0] == "<line_number>"
+      cmd = parse_object[3]
+      switch cmd
+        when "<remark>"
+          line = @build_remark(parse_object)
+        when "<number_variable>"
+          line = @build_numeric_assignment(parse_object)
+        when "<string_variable>"
+          line = @build_string_assignment(parse_object)
+        when "<goto>", "<gosub>"
+          line = @build_cmd_with_dest(parse_object)
+        when "<return>", "<clear_screen>", "<end>"
+          line = @build_simple_cmd(parse_object)
+        when "<if>"
+          line = @build_if_cmd(parse_object)
+        when "<input>"
+          line = @build_input_cmd(parse_object)
+        when "<print>", "<print_line>"
+          line = @build_print_cmd(parse_object)
+        when "<tab>"
+          line = @build_tab_cmd(parse_object)
+        else
+          error = true
+      if error
+        line = {command: "<formatting_error>" }
       else
-        error = true
-    if error
-      line = {command: "<formatting_error>" }
+        line.line_no = parse_object[1]
+        line.text = line_text
     else
-      line.line_no = parse_object[1]
-      line.text = line_text
+      line = @build_console_command(parse_object)
     return line
+
+
+  build_console_command: (parse_object) ->
+    if parse_object.length == 1
+      cmd = parse_object[0]
+      switch cmd
+        when "<clear_command>"
+          return {command: "<clear_command>" }
+        when "<run_command>"
+          return {command: "<run_command>" }
+        when "<info_command>"
+          return {command: "<info_command>" }
+        when "<list_command>"
+          return {command: "<list_command>" }
+        else
+          return {command: "<formatting_error>" }
+    else
+      return {command: "<formatting_error>" }
 
 
   build_remark: (parse_object) ->

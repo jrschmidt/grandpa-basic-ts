@@ -4,7 +4,38 @@ describe "Program line object builder", ->
     @formatter = new ProgramLineBuilder
 
 
-  xit "should build a valid console command object from a console command string"
+  it "should build a valid console command object from a console command string", ->
+
+    line_text = 'CLEAR'
+
+    parse_object = ["<clear_command>"]
+
+    result = @formatter.format(parse_object, line_text)
+    expect(result.command).toEqual("<clear_command>")
+
+
+    line_text = 'RUN'
+
+    parse_object = ["<run_command>"]
+
+    result = @formatter.format(parse_object, line_text)
+    expect(result.command).toEqual("<run_command>")
+
+
+    line_text = 'INFO'
+
+    parse_object = ["<info_command>"]
+
+    result = @formatter.format(parse_object, line_text)
+    expect(result.command).toEqual("<info_command>")
+
+
+    line_text = 'LIST'
+
+    parse_object = ["<list_command>"]
+
+    result = @formatter.format(parse_object, line_text)
+    expect(result.command).toEqual("<list_command>")
 
 
   it "should build a valid program line object from a line with a REM statement", ->

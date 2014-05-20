@@ -991,51 +991,88 @@ ProgramLineBuilder = (function() {
 
   ProgramLineBuilder.prototype.format = function(parse_object, line_text) {
     var cmd, error, line;
-    cmd = parse_object[3];
-    switch (cmd) {
-      case "<remark>":
-        line = this.build_remark(parse_object);
-        break;
-      case "<number_variable>":
-        line = this.build_numeric_assignment(parse_object);
-        break;
-      case "<string_variable>":
-        line = this.build_string_assignment(parse_object);
-        break;
-      case "<goto>":
-      case "<gosub>":
-        line = this.build_cmd_with_dest(parse_object);
-        break;
-      case "<return>":
-      case "<clear_screen>":
-      case "<end>":
-        line = this.build_simple_cmd(parse_object);
-        break;
-      case "<if>":
-        line = this.build_if_cmd(parse_object);
-        break;
-      case "<input>":
-        line = this.build_input_cmd(parse_object);
-        break;
-      case "<print>":
-      case "<print_line>":
-        line = this.build_print_cmd(parse_object);
-        break;
-      case "<tab>":
-        line = this.build_tab_cmd(parse_object);
-        break;
-      default:
-        error = true;
-    }
-    if (error) {
-      line = {
-        command: "<formatting_error>"
-      };
+    if (parse_object[0] === "<line_number>") {
+      cmd = parse_object[3];
+      switch (cmd) {
+        case "<remark>":
+          line = this.build_remark(parse_object);
+          break;
+        case "<number_variable>":
+          line = this.build_numeric_assignment(parse_object);
+          break;
+        case "<string_variable>":
+          line = this.build_string_assignment(parse_object);
+          break;
+        case "<goto>":
+        case "<gosub>":
+          line = this.build_cmd_with_dest(parse_object);
+          break;
+        case "<return>":
+        case "<clear_screen>":
+        case "<end>":
+          line = this.build_simple_cmd(parse_object);
+          break;
+        case "<if>":
+          line = this.build_if_cmd(parse_object);
+          break;
+        case "<input>":
+          line = this.build_input_cmd(parse_object);
+          break;
+        case "<print>":
+        case "<print_line>":
+          line = this.build_print_cmd(parse_object);
+          break;
+        case "<tab>":
+          line = this.build_tab_cmd(parse_object);
+          break;
+        default:
+          error = true;
+      }
+      if (error) {
+        line = {
+          command: "<formatting_error>"
+        };
+      } else {
+        line.line_no = parse_object[1];
+        line.text = line_text;
+      }
     } else {
-      line.line_no = parse_object[1];
-      line.text = line_text;
+      line = this.build_console_command(parse_object);
     }
     return line;
+  };
+
+  ProgramLineBuilder.prototype.build_console_command = function(parse_object) {
+    var cmd;
+    if (parse_object.length === 1) {
+      cmd = parse_object[0];
+      switch (cmd) {
+        case "<clear_command>":
+          return {
+            command: "<clear_command>"
+          };
+        case "<run_command>":
+          return {
+            command: "<run_command>"
+          };
+        case "<info_command>":
+          return {
+            command: "<info_command>"
+          };
+        case "<list_command>":
+          return {
+            command: "<list_command>"
+          };
+        default:
+          return {
+            command: "<formatting_error>"
+          };
+      }
+    } else {
+      return {
+        command: "<formatting_error>"
+      };
+    }
   };
 
   ProgramLineBuilder.prototype.build_remark = function(parse_object) {
