@@ -3,7 +3,7 @@ describe("Program line object builder", function() {
   beforeEach(function() {
     return this.formatter = new ProgramLineBuilder;
   });
-  it("should build a valid console command object from a console command", function() {
+  it("should build a valid console command object from a parsed console command", function() {
     var line_text, parse_object, result;
     line_text = 'CLEAR';
     parse_object = ["<clear_command>"];
@@ -22,7 +22,7 @@ describe("Program line object builder", function() {
     result = this.formatter.format(parse_object, line_text);
     return expect(result.command).toEqual("<list_command>");
   });
-  it("should build a valid program line object from a line with a REM statement", function() {
+  it("should build a valid program line object from a parsed line with a REM statement", function() {
     var line_text, parse_object, result;
     line_text = '10 REM';
     parse_object = ["<line_number>", 10, "<sp>", "<remark>"];
@@ -37,7 +37,7 @@ describe("Program line object builder", function() {
     expect(result.command).toEqual("<remark>");
     return expect(result.text).toEqual('20 REM WELCOME TO GRANDPA BASIC 1980');
   });
-  it("should build a valid program line object from a line with a numeric assignment statement", function() {
+  it("should build a valid program line object from a parsed line with a numeric assignment statement", function() {
     var expr, line_text, parse_object, result;
     line_text = '30 D=477+B';
     parse_object = ["<line_number>", 30, "<sp>", "<number_variable>", "D", "<equals>", "<numeric_expression>", "<numeric_literal>", 477, "<plus>", "<number_variable>", "B", "<num_exp_end>"];
@@ -53,7 +53,7 @@ describe("Program line object builder", function() {
     expect(expr.op2.exp).toEqual("<var>");
     return expect(expr.op2.name).toEqual("B");
   });
-  it("should build a valid program line object from a line with a string assignment statement", function() {
+  it("should build a valid program line object from a parsed line with a string assignment statement", function() {
     var line_text, parse_object, result;
     line_text = '40 $E=$M+" IS NOT COMPLETE"';
     parse_object = ["<line_number>", 40, "<sp>", "<string_variable>", "E", "<equals>", "<string_expression>", "<string_variable>", "M", "<plus>", "<string_literal>", " IS NOT COMPLETE", "<str_exp_end>"];
@@ -67,7 +67,7 @@ describe("Program line object builder", function() {
     expect(result.expression[1][0]).toEqual("<str>");
     return expect(result.expression[1][1]).toEqual(" IS NOT COMPLETE");
   });
-  it("should build a valid program line object from a line with a GOTO statement", function() {
+  it("should build a valid program line object from a parsed line with a GOTO statement", function() {
     var line_text, parse_object, result;
     line_text = '520 GOTO 880';
     parse_object = ["<line_number>", 520, "<sp>", "<goto>", "<sp>", "<line_number>", 880];
@@ -77,7 +77,7 @@ describe("Program line object builder", function() {
     expect(result.text).toEqual('520 GOTO 880');
     return expect(result.dest).toEqual(880);
   });
-  it("should build a valid program line object from a line with a GOSUB statement", function() {
+  it("should build a valid program line object from a parsed line with a GOSUB statement", function() {
     var line_text, parse_object, result;
     line_text = '320 GOSUB 1200';
     parse_object = ["<line_number>", 320, "<sp>", "<gosub>", "<sp>", "<line_number>", 1200];
@@ -87,7 +87,7 @@ describe("Program line object builder", function() {
     expect(result.text).toEqual('320 GOSUB 1200');
     return expect(result.dest).toEqual(1200);
   });
-  it("should build a valid program line object from a line with a RETURN statement", function() {
+  it("should build a valid program line object from a parsed line with a RETURN statement", function() {
     var line_text, parse_object, result;
     line_text = '1299 RETURN';
     parse_object = ["<line_number>", 1299, "<sp>", "<return>"];
@@ -96,7 +96,7 @@ describe("Program line object builder", function() {
     expect(result.command).toEqual("<return>");
     return expect(result.text).toEqual('1299 RETURN');
   });
-  it("should build a valid program line object from a line with an IF statement", function() {
+  it("should build a valid program line object from a parsed line with an IF statement", function() {
     var line_text, parse_object, result;
     line_text = '150 IF Z<0 THEN 340';
     parse_object = ["<line_number>", 150, "<sp>", "<if>", "<sp>", "<boolean_expression>", "<number_variable>", "Z", "<lesser_than>", "<numeric_expression>", "<numeric_literal>", 0, "<num_exp_end>", "<bool_exp_end>", "<sp>", "<then>", "<sp>", "<line_number>", 340];
@@ -121,7 +121,7 @@ describe("Program line object builder", function() {
     expect(result.cond.str_exp[0][1]).toEqual("INCOMPLETE");
     return expect(result.dest).toEqual(1680);
   });
-  it("should build a valid program line object from a line with an INPUT statement", function() {
+  it("should build a valid program line object from a parsed line with an INPUT statement", function() {
     var line_text, parse_object, result;
     line_text = '110 INPUT R';
     parse_object = ["<line_number>", 110, "<sp>", "<input>", "<sp>", "<number_variable>", "R"];
@@ -154,7 +154,7 @@ describe("Program line object builder", function() {
     expect(result.operand).toEqual("N2");
     return expect(result.prompt).toEqual("LAST NAME?");
   });
-  it("should build a valid program line object from a line with a PRINT statement", function() {
+  it("should build a valid program line object from a parsed line with a PRINT statement", function() {
     var line_text, parse_object, result;
     line_text = '340 PRINT "WELCOME TO GRANDPA BASIC 1980"';
     parse_object = ["<line_number>", 340, "<sp>", "<print>", "sp>", "<string_expression>", "<string_literal>", "WELCOME TO GRANDPA BASIC 1980", "<str_exp_end>"];
@@ -183,7 +183,7 @@ describe("Program line object builder", function() {
     expect(result.expression[1][0]).toEqual("<var>");
     return expect(result.expression[1][1]).toEqual("N4");
   });
-  it("should build a valid program line object from a line with a PRINTLN statement", function() {
+  it("should build a valid program line object from a parsed line with a PRINTLN statement", function() {
     var line_text, parse_object, result;
     line_text = '470 PRINTLN';
     parse_object = ["<line_number>", 470, "<sp>", "<print_line>"];
@@ -210,7 +210,7 @@ describe("Program line object builder", function() {
     expect(result.expression[0][0]).toEqual("<var>");
     return expect(result.expression[0][1]).toEqual("Z1");
   });
-  it("should build a valid program line object from a line with a CLEARSCRN statement", function() {
+  it("should build a valid program line object from a parsed line with a CLEARSCRN statement", function() {
     var line_text, parse_object, result;
     line_text = '940 CLEARSCRN';
     parse_object = ["<line_number>", 940, "<sp>", "<clear_screen>"];
@@ -219,7 +219,7 @@ describe("Program line object builder", function() {
     expect(result.command).toEqual("<clear_screen>");
     return expect(result.text).toEqual('940 CLEARSCRN');
   });
-  it("should build a valid program line object from a line with a TAB statement", function() {
+  it("should build a valid program line object from a parsed line with a TAB statement", function() {
     var line_text, parse_object, result;
     line_text = '870 TAB 28';
     parse_object = ["<line_number>", 870, "<sp>", "<tab>", "<sp>", "<integer>", 28];
@@ -237,7 +237,7 @@ describe("Program line object builder", function() {
     expect(result.line).toEqual(12);
     return expect(result.col).toEqual(44);
   });
-  return it("should build a valid program line object from a line with an END statement", function() {
+  return it("should build a valid program line object from a parsed line with an END statement", function() {
     var line_text, parse_object, result;
     line_text = '999 END';
     parse_object = ["<line_number>", 999, "<sp>", "<end>"];

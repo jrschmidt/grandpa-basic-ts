@@ -2,7 +2,8 @@
 class KeyTalker
 
   constructor: ->
-    @console = new BasicConsole
+    @controller = new ActionController
+    @console = new BasicConsole(this)
     @keys = @console.keys
     @buffer = @console.buffer
 
@@ -56,12 +57,17 @@ class ActionController
     @parser = new LineParser
     @formatter = new ProgramLineBuilder
 
+
+  process_line: (string) ->
+
+
   build_from_input: (string) ->
     parse_object = @parser.parse(string)
     if parse_object == "<parse_error>"
       return "<parse_error>"
     else
       return @formatter.format(parse_object, string)
+
 
 
 class ProgramController
@@ -1306,7 +1312,8 @@ class BooleanExpressionEvaluator
 
 class BasicConsole
 
-  constructor: ->
+  constructor: (key_talker) ->
+    @controller = key_talker.controller
     @console_height = 23
     @sprites = document.getElementById("chars")
     @console_width = 80

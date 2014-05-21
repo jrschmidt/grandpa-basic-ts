@@ -61,6 +61,8 @@ ActionController = (function() {
     this.formatter = new ProgramLineBuilder;
   }
 
+  ActionController.prototype.process_line = function(string) {};
+
   ActionController.prototype.build_from_input = function(string) {
     var parse_object;
     parse_object = this.parser.parse(string);
@@ -1719,6 +1721,8 @@ BasicConsole = (function() {
       return this.buffer.clear();
     }
   };
+
+  BasicConsole.prototype.process_line = function(string) {};
 
   BasicConsole.prototype.scroll_line = function(string) {
     this.column = 0;

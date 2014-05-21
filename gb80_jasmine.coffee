@@ -39,12 +39,17 @@ class ActionController
     @parser = new LineParser
     @formatter = new ProgramLineBuilder
 
+
+  process_line: (string) ->
+
+
   build_from_input: (string) ->
     parse_object = @parser.parse(string)
     if parse_object == "<parse_error>"
       return "<parse_error>"
     else
       return @formatter.format(parse_object, string)
+
 
 
 class ProgramController
@@ -1307,6 +1312,9 @@ class BasicConsole
       @controller.process_line(@buffer.chars)
       @scroll_line(@buffer.chars)
       @buffer.clear()
+
+
+  process_line: (string) ->
 
 
   scroll_line: (string) ->

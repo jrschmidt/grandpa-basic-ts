@@ -6,7 +6,8 @@ var ActionController, BasicConsole, BoolExpBuilder, BooleanExpressionEvaluator, 
 
 KeyTalker = (function() {
   function KeyTalker() {
-    this.console = new BasicConsole;
+    this.controller = new ActionController;
+    this.console = new BasicConsole(this);
     this.keys = this.console.keys;
     this.buffer = this.console.buffer;
   }
@@ -84,6 +85,8 @@ ActionController = (function() {
     this.parser = new LineParser;
     this.formatter = new ProgramLineBuilder;
   }
+
+  ActionController.prototype.process_line = function(string) {};
 
   ActionController.prototype.build_from_input = function(string) {
     var parse_object;
@@ -1723,7 +1726,8 @@ BooleanExpressionEvaluator = (function() {
 })();
 
 BasicConsole = (function() {
-  function BasicConsole() {
+  function BasicConsole(key_talker) {
+    this.controller = key_talker.controller;
     this.console_height = 23;
     this.sprites = document.getElementById("chars");
     this.console_width = 80;
