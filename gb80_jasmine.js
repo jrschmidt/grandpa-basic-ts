@@ -4,64 +4,25 @@ var ActionController, BasicConsole, BoolExpBuilder, BooleanExpressionEvaluator, 
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-ProgramLineListing = (function() {
-  function ProgramLineListing() {
-    this.lines = {};
-  }
-
-  ProgramLineListing.prototype.clear = function() {
-    return this.lines = {};
-  };
-
-  ProgramLineListing.prototype.add_or_change = function(line_object) {
-    var ln;
-    ln = line_object.line_no;
-    return this.lines[ln.toString()] = {
-      line_no: ln,
-      text: line_object.text
-    };
-  };
-
-  ProgramLineListing.prototype.remove = function(line_no) {
-    return delete this.lines[line_no.toString()];
-  };
-
-  ProgramLineListing.prototype.list = function() {
-    var line_numbers, list, ln, _i, _len;
-    list = [];
-    line_numbers = this.lines_sort();
-    for (_i = 0, _len = line_numbers.length; _i < _len; _i++) {
-      ln = line_numbers[_i];
-      list.push(this.lines[ln].text);
-    }
-    return list;
-  };
-
-  ProgramLineListing.prototype.lines_sort = function() {
-    var line, line_numbers, ln_key, _ref;
-    line_numbers = [];
-    _ref = this.lines;
-    for (ln_key in _ref) {
-      line = _ref[ln_key];
-      line_numbers.push(line.line_no);
-    }
-    line_numbers.sort(function(a, b) {
-      return a - b;
-    });
-    return line_numbers;
-  };
-
-  return ProgramLineListing;
-
-})();
-
 ActionController = (function() {
   function ActionController() {
     this.parser = new LineParser;
     this.formatter = new ProgramLineBuilder;
   }
 
-  ActionController.prototype.process_line = function(string) {};
+  ActionController.prototype.process_line = function(string) {
+    var k, line_object, v, _results;
+    console.log(" ");
+    console.log("ActionController#process_line");
+    console.log("  line = " + string);
+    line_object = this.build_from_input(string);
+    _results = [];
+    for (k in line_object) {
+      v = line_object[k];
+      _results.push(console.log("" + k + " : " + v));
+    }
+    return _results;
+  };
 
   ActionController.prototype.build_from_input = function(string) {
     var parse_object;
@@ -1722,8 +1683,6 @@ BasicConsole = (function() {
     }
   };
 
-  BasicConsole.prototype.process_line = function(string) {};
-
   BasicConsole.prototype.scroll_line = function(string) {
     this.column = 0;
     this.scroll.push(string);
@@ -1821,6 +1780,57 @@ ConsoleLineBuffer = (function() {
   };
 
   return ConsoleLineBuffer;
+
+})();
+
+ProgramLineListing = (function() {
+  function ProgramLineListing() {
+    this.lines = {};
+  }
+
+  ProgramLineListing.prototype.clear = function() {
+    return this.lines = {};
+  };
+
+  ProgramLineListing.prototype.add_or_change = function(line_object) {
+    var ln;
+    ln = line_object.line_no;
+    return this.lines[ln.toString()] = {
+      line_no: ln,
+      text: line_object.text
+    };
+  };
+
+  ProgramLineListing.prototype.remove = function(line_no) {
+    return delete this.lines[line_no.toString()];
+  };
+
+  ProgramLineListing.prototype.list = function() {
+    var line_numbers, list, ln, _i, _len;
+    list = [];
+    line_numbers = this.lines_sort();
+    for (_i = 0, _len = line_numbers.length; _i < _len; _i++) {
+      ln = line_numbers[_i];
+      list.push(this.lines[ln].text);
+    }
+    return list;
+  };
+
+  ProgramLineListing.prototype.lines_sort = function() {
+    var line, line_numbers, ln_key, _ref;
+    line_numbers = [];
+    _ref = this.lines;
+    for (ln_key in _ref) {
+      line = _ref[ln_key];
+      line_numbers.push(line.line_no);
+    }
+    line_numbers.sort(function(a, b) {
+      return a - b;
+    });
+    return line_numbers;
+  };
+
+  return ProgramLineListing;
 
 })();
 

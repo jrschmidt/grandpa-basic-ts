@@ -17,40 +17,6 @@ class KeyTalker
 
 
 
-class ProgramLineListing
-
-  constructor: ->
-    @lines = {}
-
-
-  clear: ->
-    @lines = {}
-
-
-  add_or_change: (line_object) ->
-    ln = line_object.line_no
-    @lines[ln.toString()] = {line_no: ln, text: line_object.text }
-
-
-  remove: (line_no) ->
-    delete @lines[line_no.toString()]
-
-
-  list: ->
-    list = []
-    line_numbers = @lines_sort()
-    list.push(@lines[ln].text) for ln in line_numbers
-    return list
-
-
-  lines_sort: ->
-    line_numbers = []
-    line_numbers.push(line.line_no) for ln_key,line of @lines
-    line_numbers.sort (a,b) -> a-b
-    return line_numbers
-
-
-
 class ActionController
 
   constructor: ->
@@ -59,6 +25,12 @@ class ActionController
 
 
   process_line: (string) ->
+    console.log " "
+    console.log "ActionController#process_line"
+    console.log "  line = #{string}"
+    line_object = @build_from_input(string)
+    for k,v of line_object
+      console.log "#{k} : #{v}"
 
 
   build_from_input: (string) ->
@@ -1421,6 +1393,40 @@ class ConsoleLineBuffer
   print: ->
     @console.println(@chars)
     @chars = ""
+
+
+
+class ProgramLineListing
+
+  constructor: ->
+    @lines = {}
+
+
+  clear: ->
+    @lines = {}
+
+
+  add_or_change: (line_object) ->
+    ln = line_object.line_no
+    @lines[ln.toString()] = {line_no: ln, text: line_object.text }
+
+
+  remove: (line_no) ->
+    delete @lines[line_no.toString()]
+
+
+  list: ->
+    list = []
+    line_numbers = @lines_sort()
+    list.push(@lines[ln].text) for ln in line_numbers
+    return list
+
+
+  lines_sort: ->
+    line_numbers = []
+    line_numbers.push(line.line_no) for ln_key,line of @lines
+    line_numbers.sort (a,b) -> a-b
+    return line_numbers
 
 
 
