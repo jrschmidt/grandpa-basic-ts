@@ -28,12 +28,12 @@ class ActionController
     console.log " "
     console.log "ActionController#process_line"
     console.log "  line = #{string}"
-    line_object = @build_from_input(string)
+    line_object = @build_line_object(string)
     for k,v of line_object
       console.log "#{k} : #{v}"
 
 
-  build_from_input: (string) ->
+  build_line_object: (string) ->
     parse_object = @parser.parse(string)
     if parse_object == "<parse_error>"
       return "<parse_error>"

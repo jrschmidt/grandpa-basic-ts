@@ -15,7 +15,7 @@ ActionController = (function() {
     console.log(" ");
     console.log("ActionController#process_line");
     console.log("  line = " + string);
-    line_object = this.build_from_input(string);
+    line_object = this.build_line_object(string);
     _results = [];
     for (k in line_object) {
       v = line_object[k];
@@ -24,7 +24,7 @@ ActionController = (function() {
     return _results;
   };
 
-  ActionController.prototype.build_from_input = function(string) {
+  ActionController.prototype.build_line_object = function(string) {
     var parse_object;
     parse_object = this.parser.parse(string);
     if (parse_object === "<parse_error>") {

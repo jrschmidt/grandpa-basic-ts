@@ -5,29 +5,29 @@ describe("Action Controller", function() {
   });
   it("should build a valid console command object from a console command string", function() {
     var result;
-    result = this.controller.build_from_input("CLEAR");
+    result = this.controller.build_line_object("CLEAR");
     expect(result.command).toEqual("<clear_command>");
-    result = this.controller.build_from_input("RUN");
+    result = this.controller.build_line_object("RUN");
     expect(result.command).toEqual("<run_command>");
-    result = this.controller.build_from_input("INFO");
+    result = this.controller.build_line_object("INFO");
     expect(result.command).toEqual("<info_command>");
-    result = this.controller.build_from_input("LIST");
+    result = this.controller.build_line_object("LIST");
     return expect(result.command).toEqual("<list_command>");
   });
   it("should build a valid program line object from a line with a REM statement", function() {
     var result;
-    result = this.controller.build_from_input('10 REM');
+    result = this.controller.build_line_object('10 REM');
     expect(result.line_no).toEqual(10);
     expect(result.command).toEqual("<remark>");
     expect(result.text).toEqual('10 REM');
-    result = this.controller.build_from_input('20 REM WELCOME TO GRANDPA BASIC 1980');
+    result = this.controller.build_line_object('20 REM WELCOME TO GRANDPA BASIC 1980');
     expect(result.line_no).toEqual(20);
     expect(result.command).toEqual("<remark>");
     return expect(result.text).toEqual('20 REM WELCOME TO GRANDPA BASIC 1980');
   });
   it("should build a valid program line object from a line with a numeric assignment statement", function() {
     var expr, result;
-    result = this.controller.build_from_input('30 D=477+B');
+    result = this.controller.build_line_object('30 D=477+B');
     expect(result.line_no).toEqual(30);
     expect(result.command).toEqual("<numeric_assignment>");
     expect(result.text).toEqual('30 D=477+B');
@@ -41,7 +41,7 @@ describe("Action Controller", function() {
   });
   it("should build a valid program line object from a line with a string assignment statement", function() {
     var result;
-    result = this.controller.build_from_input('40 $E=$M+" IS NOT COMPLETE"');
+    result = this.controller.build_line_object('40 $E=$M+" IS NOT COMPLETE"');
     expect(result.line_no).toEqual(40);
     expect(result.command).toEqual("<string_assignment>");
     expect(result.text).toEqual('40 $E=$M+" IS NOT COMPLETE"');
@@ -53,7 +53,7 @@ describe("Action Controller", function() {
   });
   it("should build a valid program line object from a line with a GOTO statement", function() {
     var result;
-    result = this.controller.build_from_input('520 GOTO 880');
+    result = this.controller.build_line_object('520 GOTO 880');
     expect(result.line_no).toEqual(520);
     expect(result.command).toEqual("<goto>");
     expect(result.text).toEqual('520 GOTO 880');
@@ -61,7 +61,7 @@ describe("Action Controller", function() {
   });
   it("should build a valid program line object from a line with a GOSUB statement", function() {
     var result;
-    result = this.controller.build_from_input('320 GOSUB 1200');
+    result = this.controller.build_line_object('320 GOSUB 1200');
     expect(result.line_no).toEqual(320);
     expect(result.command).toEqual("<gosub>");
     expect(result.text).toEqual('320 GOSUB 1200');
@@ -69,14 +69,14 @@ describe("Action Controller", function() {
   });
   it("should build a valid program line object from a line with a RETURN statement", function() {
     var result;
-    result = this.controller.build_from_input('1299 RETURN');
+    result = this.controller.build_line_object('1299 RETURN');
     expect(result.line_no).toEqual(1299);
     expect(result.command).toEqual("<return>");
     return expect(result.text).toEqual('1299 RETURN');
   });
   it("should build a valid program line object from a line with an IF statement", function() {
     var result;
-    result = this.controller.build_from_input('150 IF Z<0 THEN 340');
+    result = this.controller.build_line_object('150 IF Z<0 THEN 340');
     expect(result.line_no).toEqual(150);
     expect(result.command).toEqual("<if>");
     expect(result.text).toEqual('150 IF Z<0 THEN 340');
@@ -85,7 +85,7 @@ describe("Action Controller", function() {
     expect(result.cond.num_exp.exp).toEqual("<num>");
     expect(result.cond.num_exp.value).toEqual(0);
     expect(result.dest).toEqual(340);
-    result = this.controller.build_from_input('610 IF $T="INCOMPLETE" THEN 1680');
+    result = this.controller.build_line_object('610 IF $T="INCOMPLETE" THEN 1680');
     expect(result.line_no).toEqual(610);
     expect(result.command).toEqual("<if>");
     expect(result.text).toEqual('610 IF $T="INCOMPLETE" THEN 1680');
@@ -97,23 +97,23 @@ describe("Action Controller", function() {
   });
   it("should build a valid program line object from a line with an INPUT statement", function() {
     var result;
-    result = this.controller.build_from_input('110 INPUT R');
+    result = this.controller.build_line_object('110 INPUT R');
     expect(result.line_no).toEqual(110);
     expect(result.command).toEqual("<input_numeric>");
     expect(result.text).toEqual('110 INPUT R');
     expect(result.operand).toEqual("R");
-    result = this.controller.build_from_input('120 INPUT $V');
+    result = this.controller.build_line_object('120 INPUT $V');
     expect(result.line_no).toEqual(120);
     expect(result.command).toEqual("<input_string>");
     expect(result.text).toEqual('120 INPUT $V');
     expect(result.operand).toEqual("V");
-    result = this.controller.build_from_input('130 INPUT "HOW MANY?";M');
+    result = this.controller.build_line_object('130 INPUT "HOW MANY?";M');
     expect(result.line_no).toEqual(130);
     expect(result.command).toEqual("<input_numeric_prompt>");
     expect(result.text).toEqual('130 INPUT "HOW MANY?";M');
     expect(result.operand).toEqual("M");
     expect(result.prompt).toEqual("HOW MANY?");
-    result = this.controller.build_from_input('140 INPUT "LAST NAME?";$N2');
+    result = this.controller.build_line_object('140 INPUT "LAST NAME?";$N2');
     expect(result.line_no).toEqual(140);
     expect(result.command).toEqual("<input_string_prompt>");
     expect(result.text).toEqual('140 INPUT "LAST NAME?";$N2');
@@ -122,19 +122,19 @@ describe("Action Controller", function() {
   });
   it("should build a valid program line object from a line with a PRINT statement", function() {
     var result;
-    result = this.controller.build_from_input('340 PRINT "WELCOME TO GRANDPA BASIC 1980"');
+    result = this.controller.build_line_object('340 PRINT "WELCOME TO GRANDPA BASIC 1980"');
     expect(result.line_no).toEqual(340);
     expect(result.command).toEqual("<print>");
     expect(result.text).toEqual('340 PRINT "WELCOME TO GRANDPA BASIC 1980"');
     expect(result.expression[0][0]).toEqual("<str>");
     expect(result.expression[0][1]).toEqual("WELCOME TO GRANDPA BASIC 1980");
-    result = this.controller.build_from_input('350 PRINT $Z1');
+    result = this.controller.build_line_object('350 PRINT $Z1');
     expect(result.line_no).toEqual(350);
     expect(result.command).toEqual("<print>");
     expect(result.text).toEqual('350 PRINT $Z1');
     expect(result.expression[0][0]).toEqual("<var>");
     expect(result.expression[0][1]).toEqual("Z1");
-    result = this.controller.build_from_input('360 PRINT "LAST NAME = "+$N4');
+    result = this.controller.build_line_object('360 PRINT "LAST NAME = "+$N4');
     expect(result.line_no).toEqual(360);
     expect(result.command).toEqual("<print>");
     expect(result.text).toEqual('360 PRINT "LAST NAME = "+$N4');
@@ -145,19 +145,19 @@ describe("Action Controller", function() {
   });
   it("should build a valid program line object from a line with a PRINTLN statement", function() {
     var result;
-    result = this.controller.build_from_input('470 PRINTLN');
+    result = this.controller.build_line_object('470 PRINTLN');
     expect(result.line_no).toEqual(470);
     expect(result.command).toEqual("<print_line>");
     expect(result.text).toEqual('470 PRINTLN');
     expect(result.expression[0][0]).toEqual("<str>");
     expect(result.expression[0][1]).toEqual("");
-    result = this.controller.build_from_input('480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"');
+    result = this.controller.build_line_object('480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"');
     expect(result.line_no).toEqual(480);
     expect(result.command).toEqual("<print_line>");
     expect(result.text).toEqual('480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"');
     expect(result.expression[0][0]).toEqual("<str>");
     expect(result.expression[0][1]).toEqual("WELCOME TO GRANDPA BASIC 1980");
-    result = this.controller.build_from_input('490 PRINTLN $Z1');
+    result = this.controller.build_line_object('490 PRINTLN $Z1');
     expect(result.line_no).toEqual(490);
     expect(result.command).toEqual("<print_line>");
     expect(result.text).toEqual('490 PRINTLN $Z1');
@@ -166,19 +166,19 @@ describe("Action Controller", function() {
   });
   it("should build a valid program line object from a line with a CLEARSCRN statement", function() {
     var result;
-    result = this.controller.build_from_input('940 CLEARSCRN');
+    result = this.controller.build_line_object('940 CLEARSCRN');
     expect(result.line_no).toEqual(940);
     expect(result.command).toEqual("<clear_screen>");
     return expect(result.text).toEqual('940 CLEARSCRN');
   });
   it("should build a valid program line object from a line with a TAB statement", function() {
     var result;
-    result = this.controller.build_from_input('870 TAB 28');
+    result = this.controller.build_line_object('870 TAB 28');
     expect(result.line_no).toEqual(870);
     expect(result.command).toEqual("<tab_col>");
     expect(result.text).toEqual('870 TAB 28');
     expect(result.col).toEqual(28);
-    result = this.controller.build_from_input('880 TAB 12,44');
+    result = this.controller.build_line_object('880 TAB 12,44');
     expect(result.line_no).toEqual(880);
     expect(result.command).toEqual("<tab_line_col>");
     expect(result.text).toEqual('880 TAB 12,44');
@@ -188,7 +188,7 @@ describe("Action Controller", function() {
   return it("should build a valid program line object from a line with an END statement", function() {
     var line_text, result;
     line_text = '999 END';
-    result = this.controller.build_from_input('999 END');
+    result = this.controller.build_line_object('999 END');
     expect(result.line_no).toEqual(999);
     expect(result.command).toEqual("<end>");
     return expect(result.text).toEqual('999 END');
