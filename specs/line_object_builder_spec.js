@@ -3,7 +3,7 @@ describe("Program line object builder", function() {
   beforeEach(function() {
     return this.formatter = new ProgramLineBuilder;
   });
-  it("should build a valid console command object from a console command string", function() {
+  it("should build a valid console command object from a console command", function() {
     var line_text, parse_object, result;
     line_text = 'CLEAR';
     parse_object = ["<clear_command>"];

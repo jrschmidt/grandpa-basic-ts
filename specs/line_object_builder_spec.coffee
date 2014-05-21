@@ -4,7 +4,7 @@ describe "Program line object builder", ->
     @formatter = new ProgramLineBuilder
 
 
-  it "should build a valid console command object from a console command string", ->
+  it "should build a valid console command object from a parsed console command", ->
 
     line_text = 'CLEAR'
 
@@ -38,7 +38,7 @@ describe "Program line object builder", ->
     expect(result.command).toEqual("<list_command>")
 
 
-  it "should build a valid program line object from a line with a REM statement", ->
+  it "should build a valid program line object from a parsed line with a REM statement", ->
 
     line_text = '10 REM'
 
@@ -70,7 +70,7 @@ describe "Program line object builder", ->
     expect(result.text).toEqual('20 REM WELCOME TO GRANDPA BASIC 1980')
 
 
-  it "should build a valid program line object from a line with a numeric assignment statement", ->
+  it "should build a valid program line object from a parsed line with a numeric assignment statement", ->
 
     line_text = '30 D=477+B'
 
@@ -102,7 +102,7 @@ describe "Program line object builder", ->
     expect(expr.op2.name).toEqual("B")
 
 
-  it "should build a valid program line object from a line with a string assignment statement", ->
+  it "should build a valid program line object from a parsed line with a string assignment statement", ->
 
     line_text = '40 $E=$M+" IS NOT COMPLETE"'
 
@@ -132,7 +132,7 @@ describe "Program line object builder", ->
     expect(result.expression[1][1]).toEqual(" IS NOT COMPLETE")
 
 
-  it "should build a valid program line object from a line with a GOTO statement", ->
+  it "should build a valid program line object from a parsed line with a GOTO statement", ->
 
     line_text = '520 GOTO 880'
 
@@ -152,7 +152,7 @@ describe "Program line object builder", ->
     expect(result.dest).toEqual(880)
 
 
-  it "should build a valid program line object from a line with a GOSUB statement", ->
+  it "should build a valid program line object from a parsed line with a GOSUB statement", ->
 
     line_text = '320 GOSUB 1200'
 
@@ -172,7 +172,7 @@ describe "Program line object builder", ->
     expect(result.dest).toEqual(1200)
 
 
-  it "should build a valid program line object from a line with a RETURN statement", ->
+  it "should build a valid program line object from a parsed line with a RETURN statement", ->
 
     line_text = '1299 RETURN'
 
@@ -188,7 +188,7 @@ describe "Program line object builder", ->
     expect(result.text).toEqual('1299 RETURN')
 
 
-  it "should build a valid program line object from a line with an IF statement", ->
+  it "should build a valid program line object from a parsed line with an IF statement", ->
 
     line_text = '150 IF Z<0 THEN 340'
 
@@ -259,7 +259,7 @@ describe "Program line object builder", ->
 
 
 
-  it "should build a valid program line object from a line with an INPUT statement", ->
+  it "should build a valid program line object from a parsed line with an INPUT statement", ->
 
     line_text = '110 INPUT R'
 
@@ -342,7 +342,7 @@ describe "Program line object builder", ->
 
 
 
-  it "should build a valid program line object from a line with a PRINT statement", ->
+  it "should build a valid program line object from a parsed line with a PRINT statement", ->
 
     line_text = '340 PRINT "WELCOME TO GRANDPA BASIC 1980"'
 
@@ -412,7 +412,7 @@ describe "Program line object builder", ->
     expect(result.expression[1][1]).toEqual("N4")
 
 
-  it "should build a valid program line object from a line with a PRINTLN statement", ->
+  it "should build a valid program line object from a parsed line with a PRINTLN statement", ->
 
     line_text = '470 PRINTLN'
 
@@ -473,7 +473,7 @@ describe "Program line object builder", ->
 
 
 
-  it "should build a valid program line object from a line with a CLEARSCRN statement", ->
+  it "should build a valid program line object from a parsed line with a CLEARSCRN statement", ->
 
     line_text = '940 CLEARSCRN'
 
@@ -489,7 +489,7 @@ describe "Program line object builder", ->
     expect(result.text).toEqual('940 CLEARSCRN')
 
 
-  it "should build a valid program line object from a line with a TAB statement", ->
+  it "should build a valid program line object from a parsed line with a TAB statement", ->
 
     line_text = '870 TAB 28'
 
@@ -531,7 +531,7 @@ describe "Program line object builder", ->
     expect(result.col).toEqual(44)
 
 
-  it "should build a valid program line object from a line with an END statement", ->
+  it "should build a valid program line object from a parsed line with an END statement", ->
 
     line_text = '999 END'
 

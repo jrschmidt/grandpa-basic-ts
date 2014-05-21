@@ -33,13 +33,18 @@ class ProgramLineListing
 
 
 
-# class ActionController
-#
-#   process_line: (string) ->
-#     console.log "Want to process line:"
-#     console.log "   #{string}"
-#     @parser.parse(string)
+class ActionController
 
+  constructor: ->
+    @parser = new LineParser
+    @formatter = new ProgramLineBuilder
+
+  build_from_input: (string) ->
+    parse_object = @parser.parse(string)
+    if parse_object == "<parse_error>"
+      return "<parse_error>"
+    else
+      return @formatter.format(parse_object, string)
 
 
 class ProgramController
@@ -1298,9 +1303,7 @@ class BasicConsole
 
 
   enter_line: () ->
-    console.log "ENTER LINE called"
     if @buffer.chars.length > 0
-      console.log "buffer = #{@buffer.chars}"
       @controller.process_line(@buffer.chars)
       @scroll_line(@buffer.chars)
       @buffer.clear()
