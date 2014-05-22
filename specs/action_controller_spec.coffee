@@ -1,4 +1,4 @@
-describe "Action Controller", ->
+describe "Action Controller - build object", ->
 
   beforeEach ->
     @controller = new ActionController
@@ -228,3 +228,25 @@ describe "Action Controller", ->
     expect(result.line_no).toEqual(999)
     expect(result.command).toEqual("<end>")
     expect(result.text).toEqual('999 END')
+
+
+
+describe "Action Controller - add line", ->
+
+  beforeEach ->
+    @controller = new ActionController
+
+
+  xit "should parse, build and add a REM statement program line object", ->
+
+    @controller.process_line('20 REM WELCOME TO GRANDPA BASIC 1980')
+    line = @lines.get_line(20)
+    expect(line.command).toEqual("<remark>")
+
+
+
+
+describe "Action Controller - execute action", ->
+
+  beforeEach ->
+    @controller = new ActionController

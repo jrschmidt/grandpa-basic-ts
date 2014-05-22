@@ -26,7 +26,7 @@
 # that line number isn't yet in use, or changing the object for an existing
 # line number.
 #
-# When a RUN command is executed, the ProgramController and CommandRunner
+# When a RUN command is executed, the ProgramController and ProgramRunner
 # classes try to interpret each program line object, accessing them sequentially
 # according to line number except where program execution is rerouted to
 # another line number. Values for numeric and string variables are stored in
@@ -86,7 +86,7 @@ class ProgramController
   # Methods to manage program lines.
 
   constructor: ->
-    @commands = new CommandRunner
+    @commands = new ProgramRunner
     @lines = {}
     @line_order = []
     @next_line_index = -1
@@ -153,7 +153,7 @@ class ProgramController
 
 
 
-class CommandRunner
+class ProgramRunner
   # The class responsible for interpreting program line objects and executing
   # them when the program is run.
 

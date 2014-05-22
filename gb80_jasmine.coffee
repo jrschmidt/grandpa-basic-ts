@@ -1,9 +1,12 @@
 
+
 class ActionController
 
   constructor: ->
     @parser = new LineParser
     @formatter = new ProgramLineBuilder
+#    @lines = new ProgramLineListing
+#    @program = new ProgramController
 
 
   process_line: (string) ->
@@ -27,7 +30,7 @@ class ActionController
 class ProgramController
 
   constructor: ->
-    @commands = new CommandRunner
+    @commands = new ProgramRunner
     @lines = {}
     @line_order = []
     @next_line_index = -1
@@ -94,7 +97,7 @@ class ProgramController
 
 
 
-class CommandRunner
+class ProgramRunner
 
   constructor: ->
     @helpers = new InterpreterHelpers
