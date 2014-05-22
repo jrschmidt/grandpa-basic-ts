@@ -95,6 +95,19 @@ describe("Program line listing", function() {
       text: '999 END'
     };
   });
+  it("should fetch an individual line", function() {
+    expect(this.prog_lines.get_line(20).text).toEqual('20 REM WELCOME TO GRANDPA BASIC 1980');
+    expect(this.prog_lines.get_line(40).text).toEqual('40 $E=$M+" IS NOT COMPLETE"');
+    expect(this.prog_lines.get_line(120).text).toEqual('120 INPUT $V');
+    expect(this.prog_lines.get_line(350).text).toEqual('350 PRINT $Z1');
+    expect(this.prog_lines.get_line(490).text).toEqual('490 PRINTLN $Z1');
+    expect(this.prog_lines.get_line(870).text).toEqual('870 TAB 28');
+    expect(this.prog_lines.get_line(999).text).toEqual('999 END');
+    expect(this.prog_lines.get_line(1299).text).toEqual('1299 RETURN');
+    expect(this.prog_lines.get_line(188)).toBeUndefined();
+    expect(this.prog_lines.get_line(777)).toBeUndefined();
+    return expect(this.prog_lines.get_line(1956)).toBeUndefined();
+  });
   it("should list all program lines in correct order", function() {
     var list;
     list = this.prog_lines.list();

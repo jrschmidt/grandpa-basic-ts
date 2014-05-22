@@ -1542,6 +1542,10 @@ class ProgramLineListing
     @lines = {}
 
 
+  get_line: (line_no) ->
+    return @lines[line_no.toString()]
+
+
   add_or_change: (line_object) ->
     ln = line_object.line_no
     @lines[ln.toString()] = {line_no: ln, text: line_object.text }

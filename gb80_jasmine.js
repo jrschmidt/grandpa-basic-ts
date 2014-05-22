@@ -1792,6 +1792,10 @@ ProgramLineListing = (function() {
     return this.lines = {};
   };
 
+  ProgramLineListing.prototype.get_line = function(line_no) {
+    return this.lines[line_no.toString()];
+  };
+
   ProgramLineListing.prototype.add_or_change = function(line_object) {
     var ln;
     ln = line_object.line_no;
