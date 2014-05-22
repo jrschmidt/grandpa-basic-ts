@@ -235,9 +235,10 @@ describe "Action Controller - add line", ->
 
   beforeEach ->
     @controller = new ActionController
+    @lines = @controller.lines
 
 
-  xit "should parse, build and add a REM statement program line object", ->
+  it "should parse, build and add a REM statement program line object", ->
 
     @controller.process_line('20 REM WELCOME TO GRANDPA BASIC 1980')
     line = @lines.get_line(20)

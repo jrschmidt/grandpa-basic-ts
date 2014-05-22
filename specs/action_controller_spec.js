@@ -197,9 +197,10 @@ describe("Action Controller - build object", function() {
 
 describe("Action Controller - add line", function() {
   beforeEach(function() {
-    return this.controller = new ActionController;
+    this.controller = new ActionController;
+    return this.lines = this.controller.lines;
   });
-  return xit("should parse, build and add a REM statement program line object", function() {
+  return it("should parse, build and add a REM statement program line object", function() {
     var line;
     this.controller.process_line('20 REM WELCOME TO GRANDPA BASIC 1980');
     line = this.lines.get_line(20);

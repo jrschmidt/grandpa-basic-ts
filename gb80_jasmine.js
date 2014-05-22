@@ -8,20 +8,20 @@ ActionController = (function() {
   function ActionController() {
     this.parser = new LineParser;
     this.formatter = new ProgramLineBuilder;
+    this.lines = new ProgramLineListing;
   }
 
   ActionController.prototype.process_line = function(string) {
-    var k, line_object, v, _results;
+    var k, line_object, v;
     console.log(" ");
     console.log("ActionController#process_line");
     console.log("  line = " + string);
     line_object = this.build_line_object(string);
-    _results = [];
     for (k in line_object) {
       v = line_object[k];
-      _results.push(console.log("" + k + " : " + v));
+      console.log("" + k + " : " + v);
     }
-    return _results;
+    return this.lines.add_or_change(line_object);
   };
 
   ActionController.prototype.build_line_object = function(string) {
@@ -1799,10 +1799,7 @@ ProgramLineListing = (function() {
   ProgramLineListing.prototype.add_or_change = function(line_object) {
     var ln;
     ln = line_object.line_no;
-    return this.lines[ln.toString()] = {
-      line_no: ln,
-      text: line_object.text
-    };
+    return this.lines[ln.toString()] = line_object;
   };
 
   ProgramLineListing.prototype.remove = function(line_no) {

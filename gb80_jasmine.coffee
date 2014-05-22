@@ -5,7 +5,7 @@ class ActionController
   constructor: ->
     @parser = new LineParser
     @formatter = new ProgramLineBuilder
-#    @lines = new ProgramLineListing
+    @lines = new ProgramLineListing
 #    @program = new ProgramController
 
 
@@ -16,6 +16,7 @@ class ActionController
     line_object = @build_line_object(string)
     for k,v of line_object
       console.log "#{k} : #{v}"
+    @lines.add_or_change(line_object)
 
 
   build_line_object: (string) ->
@@ -1397,7 +1398,7 @@ class ProgramLineListing
 
   add_or_change: (line_object) ->
     ln = line_object.line_no
-    @lines[ln.toString()] = {line_no: ln, text: line_object.text }
+    @lines[ln.toString()] = line_object
 
 
   remove: (line_no) ->
