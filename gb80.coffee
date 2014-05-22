@@ -19,10 +19,12 @@
 #
 # Each line object has a "command" property which identifies the type of
 # command or program line statement it is, as well as other properties which
-# vary for each type. Console commands such as RUN or LIST are executed
-# immediately. Line numbered program statements are entered into the collection
-# of program line objects, either as a new line if that line number isn't yet
-# in use, or changing the object for an existing line number.
+# vary for each type. The test specs are a good resource for describing the
+# exact format for each type of program line object. Console commands such as
+# RUN or LIST are executed immediately. Line numbered program statements are
+# entered into the collection of program line objects, either as a new line if
+# that line number isn't yet in use, or changing the object for an existing
+# line number.
 #
 # When a RUN command is executed, the ProgramController and CommandRunner
 # classes try to interpret each program line object, accessing them sequentially
@@ -53,8 +55,9 @@ class KeyTalker
 
 
 class ActionController
-  # When a line is entered  Responds to console input by: (1)  a console command such as RUN or LIST, or
-  # a line number
+  # When a line is entered, tries to parse the string and build a line object.
+  # Adds or amends a line number object, or executes a console command such as
+  # RUN or LIST.
 
   constructor: ->
     @parser = new LineParser
@@ -80,6 +83,7 @@ class ActionController
 
 
 class ProgramController
+  # Methods to manage program lines.
 
   constructor: ->
     @commands = new CommandRunner
@@ -150,6 +154,8 @@ class ProgramController
 
 
 class CommandRunner
+  # The class responsible for interpreting program line objects and executing
+  # them when the program is run.
 
   constructor: ->
     @helpers = new InterpreterHelpers
@@ -227,6 +233,8 @@ class CommandRunner
 
 
 class SyntaxRules
+  # Constants to describe the syntax and format for valid program lines and
+  # console commands.
 
   constructor: ->
 
@@ -327,6 +335,7 @@ class SyntaxRules
 
 
 class LineParser
+  # Attempts to parse a line of input into an array of valid parse tokens.
 
   constructor: ->
     @helpers = new ParseHelpers
@@ -476,6 +485,7 @@ class LineParser
 
 
 class ParseHelpers
+  # Container class for parse helper methods and classes.
 
   constructor: ->
     @syntax = new SyntaxRules
@@ -583,6 +593,8 @@ class ParseHelpers
 
 
 class NumericExpressionParser
+  # Parses a numeric expression such as 'X' (a variable name), '3.1416' ( a
+  # numeric literal value) or 'Z+100' ( a compound expression).
 
   constructor: ->
     @num_exp_chars = ["0","1","2","3","4","5","6","7","8","9",".","(",")","+","-","*","/","^"]
@@ -666,6 +678,8 @@ class NumericExpressionParser
 
 
 class StringExpressionParser
+  # Parses a string expression such as '$M' (a variable name), "HELLO" ( a
+  # string literal value) or "$A+' IS A '+$B" ( a string expression).
 
   string_value_parse: (string) ->
     po = ["<string_expression>"]
@@ -728,6 +742,7 @@ class StringExpressionParser
 
 
 class BooleanExpressionParser
+  # Parses a boolean expression such as 'N>0'.
 
   constructor: (parse_helpers) ->
     @helpers = parse_helpers
@@ -832,6 +847,11 @@ class BooleanExpressionParser
 
 
 class ProgramLineBuilder
+  # Builds a program line object from an array of valid parse tokens. Each
+  # line object has a "command" property which identifies which type of program
+  # line statement or console command it represents, plus additional properties
+  # specific to that type. The test specs are a good resource for describing the
+  # exact format for each type of program line object.
 
   constructor: ->
     @num_exp = new NumExpBuilder
@@ -987,6 +1007,21 @@ class ProgramLineBuilder
 
 
 class NumExpBuilder
+  # Builds a numeric expression object from an array of parse tokens.
+  #
+  # The object for the simple variable name X will be:
+  #   {exp: "<var>", name: "X"}.
+  #
+  # The object for a simple numeric literal such as 3.1416 will be:
+  #   {exp: "<num>", value: 3.1416}.
+  #
+  # Compound numeric expressions are built into binary numeric expression
+  # objects with three properties: The "exp" property will be a symbol denoting
+  # the operator within the expression with the highest precedence. The values
+  # of the "op1" and "op2" properties will be nested numeric expression objects.
+  # So, for example, in the expression 3*A+2*B-5*C the "exp" property will be
+  # "<plus>", the value of "op1" will be an object representing 3*A, and the
+  # value of "op2" will be an object representing 2*B-5*C.
 
   constructor: ->
 
@@ -1125,6 +1160,26 @@ class NumExpBuilder
 
 
 class StrExpBuilder
+  # Building a string expression object is much simpler than numeric
+  # expressions, since the only operation in a string expression is
+  # concatenation. Therefore,  a string expression object is composed of an
+  # array of one or more subarrays, where each subarray has two elements. The
+  # first element is a symbol, either "<str>" for a string literal or "<var>"
+  # for a string variable. The second element for a string literal is the
+  # string itself. For a string variable, the second element is the variable
+  # name.
+  #
+  # Please note that the value for a string variable is recorded WITHOUT the
+  # dollar sign character ($). In BASIC syntax, string variable names are always
+  # preceeded with the '$' character to differentiate them from numeric variable
+  # names. However, there was no need to include them in the data objects for
+  # this app.
+  #
+  # For example, to represent:
+  #   "MY NAME IS "+$N
+  # we would use:
+  #   [ ["<str", "MY NAME IS "],
+  #      "var>", "N"] ].
 
   build_str_exp: (stack) ->
     parts = []
@@ -1136,6 +1191,37 @@ class StrExpBuilder
 
 
 class BoolExpBuilder
+  # The only allowable construct in the earliest forms of BASIC which could be
+  # construed as "boolean expressions" were the comparator statements in IF
+  # statements such as 'IF A>B THEN 200'. There were no such things as boolean
+  # variables or expressions which could be given a value of 'true' or false'.
+  #
+  # In the earliest forms of BASIC, there were no such things as boolean
+  # variables or expressions which could be given a value of 'true' or false'.
+  # The only allowable construct  which could be construed as "boolean
+  # expressions" were the comparator statements in IF statements such as:
+  #   'IF A>B THEN 200'.
+  #
+  # A "boolean expression" of this type consists of three parts, represented by
+  # the properties of the boolean expression object. These are a variable name,
+  # followed by a comparator, followed by a numeric or string expression. The
+  # object property names used for these entities are "var" for the variable,
+  # "exp" for the comparator, and either "num_exp" or "str_exp" for the
+  # expression the variable is being compared to.
+  #
+  # The only allowable comparators for a string expression are '=' for 'equals'
+  # (not '==' as is more common in modern programming languages) and '<>' for
+  # 'not equal'. Comparators allowed in a numeric boolean expression are '='
+  # (equals), '<>' (not equal), '>' (greater than), '>=' (greater or equal to),
+  # '<' (less than), and '<=' (lesser or equal to).
+  #
+  # The object for the boolean expression
+  #   W>100
+  # would be represented as:
+  #   {exp: "<num_greater_than>",
+  #    var: "W",
+  #    num_exp: {exp: "<num>", value: 100} }.
+  # Further examples can be found in the test specs.
 
   constructor: (line_builder) ->
     @line_builder = line_builder
@@ -1160,6 +1246,7 @@ class BoolExpBuilder
 
 
 class InterpreterHelpers
+  # Container class for subclasses that help evaluate expressions.
 
   constructor: ->
     @num_vars = new NumericVariableRegister
@@ -1171,6 +1258,7 @@ class InterpreterHelpers
 
 
 class VariableRegister
+  # Store values for variables.
 
   constructor: ->
     @vars = {}
@@ -1216,6 +1304,8 @@ class StringVariableRegister extends VariableRegister
 
 
 class NumericExpressionEvaluator
+  # Applies the current values of any variables involved against the numeric
+  # expression object and returns the result.
 
   constructor: (helpers) ->
     @vars = helpers.num_vars
@@ -1263,6 +1353,8 @@ class NumericExpressionEvaluator
 
 
 class StringExpressionConcatenator
+  # Concatenates the string variables and literals in a string expression into
+  # one value.
 
   constructor: (helpers) ->
     @vars = helpers.str_vars
@@ -1282,6 +1374,8 @@ class StringExpressionConcatenator
 
 
 class BooleanExpressionEvaluator
+  # Evaluates the numeric or string expression and applies it against the
+  # given variable using the designated comparator.
 
   constructor: (helpers) ->
     @str_vars = helpers.str_vars
@@ -1320,6 +1414,8 @@ class BooleanExpressionEvaluator
 
 
 class BasicConsole
+  # A representation of the 'BASIC console' emulated on an HTML5 canvas element,
+  # with the characters printed upon it.
 
   constructor: (key_talker) ->
     @controller = key_talker.controller
@@ -1413,6 +1509,7 @@ class BasicConsole
 
 
 class ConsoleLineBuffer
+  # Holds the characters typed into the console until <enter> is pressed.
 
   constructor: (gb_console) ->
     @console = gb_console
@@ -1434,6 +1531,8 @@ class ConsoleLineBuffer
 
 
 class ProgramLineListing
+  # A container for the program line objects with methods to add, change or
+  # remove them.
 
   constructor: ->
     @lines = {}
@@ -1468,6 +1567,8 @@ class ProgramLineListing
 
 
 class KeyHelper
+  # A class to interpret the parameters of key press events and print the proper
+  # character sprite to the correct location.
 
   constructor: ->
     @code = [33,34,35,36,37,38,39,
@@ -1518,6 +1619,8 @@ class KeyHelper
       return @xy[i]
 
 
+
+# GLOBAL SCOPE ITEMS #
 
 keyevent = (e) ->
   e.preventDefault() if @disable_key_defaults
