@@ -12,10 +12,10 @@ class ActionController
   process_line: (string) ->
     console.log " "
     console.log "ActionController#process_line"
-    console.log "  line = #{string}"
+    console.log "   line = #{string}"
     line_object = @build_line_object(string)
     for k,v of line_object
-      console.log "#{k} : #{v}"
+      console.log "   #{k} : #{v}"
     @lines.add_or_change(line_object)
 
 
@@ -1272,10 +1272,10 @@ class BasicConsole
 
   constructor: ->
     @console_height = 23
-    @sprites = document.getElementById("chars")
     @console_width = 80
     @keys = new KeyHelper
     @buffer = new ConsoleLineBuffer(this)
+    @sprites = document.getElementById("chars")
     @canvas = document.getElementById('canvas')
     @context = @canvas.getContext('2d')
     @scroll = []
@@ -1284,11 +1284,11 @@ class BasicConsole
 
 
   enter_line: () ->
-    if @buffer.chars.length > 0
-      @controller.process_line(@buffer.chars)
-      @scroll_line(@buffer.chars)
+    line = @buffer.chars
+    if line.length > 0
+      @scroll_line(line)
       @buffer.clear()
-
+    return line
 
 
   scroll_line: (string) ->

@@ -9,18 +9,19 @@ KeyTalker = (function() {
     this.controller = new ActionController;
     this.console = new BasicConsole(this);
     this.keys = this.console.keys;
-    this.buffer = this.console.buffer;
   }
 
   KeyTalker.prototype.handle = function(ch_num, ch_key) {
+    var line;
     if (ch_num > 0) {
       return this.console.ch(this.keys.char(ch_num));
     } else {
-      if (ch_key === 13) {
-        this.console.enter_line();
-      }
       if (ch_key === 8) {
-        return this.console.backspace();
+        this.console.backspace();
+      }
+      if (ch_key === 13) {
+        line = this.console.enter_line();
+        return this.controller.process_line(line);
       }
     }
   };
@@ -40,11 +41,11 @@ ActionController = (function() {
     var k, line_object, v;
     console.log(" ");
     console.log("ActionController#process_line");
-    console.log("  line = " + string);
+    console.log("   line = " + string);
     line_object = this.build_line_object(string);
     for (k in line_object) {
       v = line_object[k];
-      console.log("" + k + " : " + v);
+      console.log("   " + k + " : " + v);
     }
     return this.lines.add_or_change(line_object);
   };
@@ -1687,13 +1688,12 @@ BooleanExpressionEvaluator = (function() {
 })();
 
 BasicConsole = (function() {
-  function BasicConsole(key_talker) {
-    this.controller = key_talker.controller;
+  function BasicConsole() {
     this.console_height = 23;
-    this.sprites = document.getElementById("chars");
     this.console_width = 80;
     this.keys = new KeyHelper;
     this.buffer = new ConsoleLineBuffer(this);
+    this.sprites = document.getElementById("chars");
     this.canvas = document.getElementById('canvas');
     this.context = this.canvas.getContext('2d');
     this.scroll = [];
@@ -1702,11 +1702,13 @@ BasicConsole = (function() {
   }
 
   BasicConsole.prototype.enter_line = function() {
-    if (this.buffer.chars.length > 0) {
-      this.controller.process_line(this.buffer.chars);
-      this.scroll_line(this.buffer.chars);
-      return this.buffer.clear();
+    var line;
+    line = this.buffer.chars;
+    if (line.length > 0) {
+      this.scroll_line(line);
+      this.buffer.clear();
     }
+    return line;
   };
 
   BasicConsole.prototype.scroll_line = function(string) {

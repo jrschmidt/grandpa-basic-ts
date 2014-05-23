@@ -279,9 +279,3 @@ describe("Action Controller - add line", function() {
     return expect(line.command).toEqual("<end>");
   });
 });
-
-describe("Action Controller - execute action", function() {
-  return beforeEach(function() {
-    return this.controller = new ActionController;
-  });
-});

@@ -15,11 +15,11 @@ ActionController = (function() {
     var k, line_object, v;
     console.log(" ");
     console.log("ActionController#process_line");
-    console.log("  line = " + string);
+    console.log("   line = " + string);
     line_object = this.build_line_object(string);
     for (k in line_object) {
       v = line_object[k];
-      console.log("" + k + " : " + v);
+      console.log("   " + k + " : " + v);
     }
     return this.lines.add_or_change(line_object);
   };
@@ -1664,10 +1664,10 @@ BooleanExpressionEvaluator = (function() {
 BasicConsole = (function() {
   function BasicConsole() {
     this.console_height = 23;
-    this.sprites = document.getElementById("chars");
     this.console_width = 80;
     this.keys = new KeyHelper;
     this.buffer = new ConsoleLineBuffer(this);
+    this.sprites = document.getElementById("chars");
     this.canvas = document.getElementById('canvas');
     this.context = this.canvas.getContext('2d');
     this.scroll = [];
@@ -1676,11 +1676,13 @@ BasicConsole = (function() {
   }
 
   BasicConsole.prototype.enter_line = function() {
-    if (this.buffer.chars.length > 0) {
-      this.controller.process_line(this.buffer.chars);
-      this.scroll_line(this.buffer.chars);
-      return this.buffer.clear();
+    var line;
+    line = this.buffer.chars;
+    if (line.length > 0) {
+      this.scroll_line(line);
+      this.buffer.clear();
     }
+    return line;
   };
 
   BasicConsole.prototype.scroll_line = function(string) {

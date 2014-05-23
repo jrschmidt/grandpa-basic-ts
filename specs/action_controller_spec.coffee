@@ -329,7 +329,7 @@ describe "Action Controller - add line", ->
     expect(line.command).toEqual("<end>")
 
 
-describe "Action Controller - execute action", ->
-
-  beforeEach ->
-    @controller = new ActionController
+# describe "Action Controller - execute action", ->
+#
+#   beforeEach ->
+#     @controller = new ActionController

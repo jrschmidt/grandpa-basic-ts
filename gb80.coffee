@@ -42,15 +42,16 @@ class KeyTalker
     @controller = new ActionController
     @console = new BasicConsole(this)
     @keys = @console.keys
-    @buffer = @console.buffer
 
 
   handle: (ch_num, ch_key) ->
     if ch_num > 0
       @console.ch(@keys.char(ch_num)) # TODO Change ch() to add_ch() ??
     else
-      @console.enter_line() if ch_key == 13
       @console.backspace() if ch_key == 8
+      if ch_key == 13
+        line = @console.enter_line()
+        @controller.process_line(line)
 
 
 
@@ -68,10 +69,10 @@ class ActionController
   process_line: (string) ->
     console.log " "
     console.log "ActionController#process_line"
-    console.log "  line = #{string}"
+    console.log "   line = #{string}"
     line_object = @build_line_object(string)
     for k,v of line_object
-      console.log "#{k} : #{v}"
+      console.log "   #{k} : #{v}"
     @lines.add_or_change(line_object)
 
 
@@ -1415,17 +1416,18 @@ class BooleanExpressionEvaluator
 
 
 
+  # TODO This class and its associated classes are prime candidates for refactoring.
+
 class BasicConsole
   # A representation of the 'BASIC console' emulated on an HTML5 canvas element,
   # with the characters printed upon it.
 
-  constructor: (key_talker) ->
-    @controller = key_talker.controller
+  constructor: ->
     @console_height = 23
-    @sprites = document.getElementById("chars")
     @console_width = 80
     @keys = new KeyHelper
     @buffer = new ConsoleLineBuffer(this)
+    @sprites = document.getElementById("chars")
     @canvas = document.getElementById('canvas')
     @context = @canvas.getContext('2d')
     @scroll = []
@@ -1434,10 +1436,11 @@ class BasicConsole
 
 
   enter_line: () ->
-    if @buffer.chars.length > 0
-      @controller.process_line(@buffer.chars)
-      @scroll_line(@buffer.chars)
+    line = @buffer.chars
+    if line.length > 0
+      @scroll_line(line)
       @buffer.clear()
+    return line
 
 
   scroll_line: (string) ->
