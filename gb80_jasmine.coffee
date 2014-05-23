@@ -17,7 +17,7 @@ class ActionController
     line_object = @build_line_object(string)
     for k,v of line_object
       console.log "   #{k} : #{v}"
-    @lines.add_or_change(line_object)
+    @lines.add_or_change(line_object) if line_object.line_no
 
 
   build_line_object: (string) ->

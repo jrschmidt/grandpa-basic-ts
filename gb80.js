@@ -37,6 +37,7 @@ ActionController = (function() {
     this.parser = new LineParser;
     this.formatter = new ProgramLineBuilder;
     this.lines = new ProgramLineListing;
+    this.bconsole.println("ACTION CONTROLLER CONSTRUCTOR");
   }
 
   ActionController.prototype.process_line = function(string) {
@@ -49,7 +50,9 @@ ActionController = (function() {
       v = line_object[k];
       console.log("   " + k + " : " + v);
     }
-    return this.lines.add_or_change(line_object);
+    if (line_object.line_no) {
+      return this.lines.add_or_change(line_object);
+    }
   };
 
   ActionController.prototype.build_line_object = function(string) {
