@@ -1276,7 +1276,7 @@ class BasicConsole
     @keys = new KeyHelper
     @buffer = new ConsoleLineBuffer(this)
     @sprites = document.getElementById("chars")
-    @canvas = document.getElementById('canvas')
+    @canvas = document.getElementById('gb80-console')
     @context = @canvas.getContext('2d')
     @scroll = []
     @line = 0

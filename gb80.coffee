@@ -1428,7 +1428,7 @@ class BasicConsole
     @keys = new KeyHelper
     @buffer = new ConsoleLineBuffer(this)
     @sprites = document.getElementById("chars")
-    @canvas = document.getElementById('canvas')
+    @canvas = document.getElementById('gb80-console')
     @context = @canvas.getContext('2d')
     @scroll = []
     @line = 0
@@ -1510,6 +1510,11 @@ class BasicConsole
     @clear_screen()
     @scroll = []
     @line_text = ""
+
+
+
+class ConsoleOutput
+  # Controls output written to the HTML5 canvas 'console' element.
 
 
 
@@ -1639,7 +1644,7 @@ keyevent = (e) ->
 
 
 start = ->
-  @canvas = document.getElementById("canvas")
+  @canvas = document.getElementById("gb80-console")
   @canvas.setAttribute('tabindex','0')
   @canvas.focus()
   @disable_key_defaults = true
