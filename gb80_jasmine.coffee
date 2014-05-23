@@ -2,7 +2,8 @@
 
 class ActionController
 
-  constructor: ->
+  constructor: (key_talker)->
+    @bconsole = new BasicConsole
     @parser = new LineParser
     @formatter = new ProgramLineBuilder
     @lines = new ProgramLineListing
@@ -1273,8 +1274,8 @@ class BasicConsole
   constructor: ->
     @console_height = 23
     @console_width = 80
-    @keys = new KeyHelper
     @buffer = new ConsoleLineBuffer(this)
+    @keys = new KeyHelper
     @sprites = document.getElementById("chars")
     @canvas = document.getElementById('gb80-console')
     @context = @canvas.getContext('2d')
@@ -1363,8 +1364,8 @@ class BasicConsole
 
 class ConsoleLineBuffer
 
-  constructor: (gb_console) ->
-    @console = gb_console
+  constructor: (bconsole) ->
+    @bconsole = bconsole
     @chars = ""
 
 
@@ -1377,7 +1378,7 @@ class ConsoleLineBuffer
 
 
   print: ->
-    @console.println(@chars)
+    @bconsole.println(@chars)
     @chars = ""
 
 

@@ -39,18 +39,18 @@ class KeyTalker
   # appropriate action.
 
   constructor: ->
-    @controller = new ActionController
-    @console = new BasicConsole(this)
-    @keys = @console.keys
+    @bconsole = new BasicConsole
+    @controller = new ActionController(this)
+    @keys = @bconsole.keys
 
 
   handle: (ch_num, ch_key) ->
     if ch_num > 0
-      @console.ch(@keys.char(ch_num)) # TODO Change ch() to add_ch() ??
+      @bconsole.ch(@keys.char(ch_num)) # TODO Change ch() to add_ch() ??
     else
-      @console.backspace() if ch_key == 8
+      @bconsole.backspace() if ch_key == 8
       if ch_key == 13
-        line = @console.enter_line()
+        line = @bconsole.enter_line()
         @controller.process_line(line)
 
 
@@ -60,10 +60,13 @@ class ActionController
   # Adds or amends a line number object, or executes a console command such as
   # RUN or LIST.
 
-  constructor: ->
+  constructor: (key_talker)->
+    @keys = key_talker
+    @bconsole = @keys.bconsole
     @parser = new LineParser
     @formatter = new ProgramLineBuilder
     @lines = new ProgramLineListing
+#    @program = new ProgramController
 
 
   process_line: (string) ->
@@ -1425,8 +1428,9 @@ class BasicConsole
   constructor: ->
     @console_height = 23
     @console_width = 80
-    @keys = new KeyHelper
     @buffer = new ConsoleLineBuffer(this)
+    @output = new ConsoleOutput(this)
+    @keys = new KeyHelper
     @sprites = document.getElementById("chars")
     @canvas = document.getElementById('gb80-console')
     @context = @canvas.getContext('2d')
@@ -1516,13 +1520,20 @@ class BasicConsole
 class ConsoleOutput
   # Controls output written to the HTML5 canvas 'console' element.
 
+  constructor: (bconsole) ->
+    @bconsole = bconsole
+
+
+  print_line: (string) ->
+    @bconsole.println(string)
+
 
 
 class ConsoleLineBuffer
   # Holds the characters typed into the console until <enter> is pressed.
 
-  constructor: (gb_console) ->
-    @console = gb_console
+  constructor: (bconsole) ->
+    @bconsole = bconsole
     @chars = ""
 
 
@@ -1535,7 +1546,7 @@ class ConsoleLineBuffer
 
 
   print: ->
-    @console.println(@chars)
+    @bconsole.println(@chars)
     @chars = ""
 
 

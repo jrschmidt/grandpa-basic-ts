@@ -6,21 +6,21 @@ var ActionController, BasicConsole, BoolExpBuilder, BooleanExpressionEvaluator, 
 
 KeyTalker = (function() {
   function KeyTalker() {
-    this.controller = new ActionController;
-    this.console = new BasicConsole(this);
-    this.keys = this.console.keys;
+    this.bconsole = new BasicConsole;
+    this.controller = new ActionController(this);
+    this.keys = this.bconsole.keys;
   }
 
   KeyTalker.prototype.handle = function(ch_num, ch_key) {
     var line;
     if (ch_num > 0) {
-      return this.console.ch(this.keys.char(ch_num));
+      return this.bconsole.ch(this.keys.char(ch_num));
     } else {
       if (ch_key === 8) {
-        this.console.backspace();
+        this.bconsole.backspace();
       }
       if (ch_key === 13) {
-        line = this.console.enter_line();
+        line = this.bconsole.enter_line();
         return this.controller.process_line(line);
       }
     }
@@ -31,7 +31,9 @@ KeyTalker = (function() {
 })();
 
 ActionController = (function() {
-  function ActionController() {
+  function ActionController(key_talker) {
+    this.keys = key_talker;
+    this.bconsole = this.keys.bconsole;
     this.parser = new LineParser;
     this.formatter = new ProgramLineBuilder;
     this.lines = new ProgramLineListing;
@@ -1691,8 +1693,9 @@ BasicConsole = (function() {
   function BasicConsole() {
     this.console_height = 23;
     this.console_width = 80;
-    this.keys = new KeyHelper;
     this.buffer = new ConsoleLineBuffer(this);
+    this.output = new ConsoleOutput(this);
+    this.keys = new KeyHelper;
     this.sprites = document.getElementById("chars");
     this.canvas = document.getElementById('gb80-console');
     this.context = this.canvas.getContext('2d');
@@ -1789,15 +1792,21 @@ BasicConsole = (function() {
 })();
 
 ConsoleOutput = (function() {
-  function ConsoleOutput() {}
+  function ConsoleOutput(bconsole) {
+    this.bconsole = bconsole;
+  }
+
+  ConsoleOutput.prototype.print_line = function(string) {
+    return this.bconsole.println(string);
+  };
 
   return ConsoleOutput;
 
 })();
 
 ConsoleLineBuffer = (function() {
-  function ConsoleLineBuffer(gb_console) {
-    this.console = gb_console;
+  function ConsoleLineBuffer(bconsole) {
+    this.bconsole = bconsole;
     this.chars = "";
   }
 
@@ -1810,7 +1819,7 @@ ConsoleLineBuffer = (function() {
   };
 
   ConsoleLineBuffer.prototype.print = function() {
-    this.console.println(this.chars);
+    this.bconsole.println(this.chars);
     return this.chars = "";
   };
 

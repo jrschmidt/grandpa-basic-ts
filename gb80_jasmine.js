@@ -5,7 +5,8 @@ var ActionController, BasicConsole, BoolExpBuilder, BooleanExpressionEvaluator, 
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 ActionController = (function() {
-  function ActionController() {
+  function ActionController(key_talker) {
+    this.bconsole = new BasicConsole;
     this.parser = new LineParser;
     this.formatter = new ProgramLineBuilder;
     this.lines = new ProgramLineListing;
@@ -1665,8 +1666,8 @@ BasicConsole = (function() {
   function BasicConsole() {
     this.console_height = 23;
     this.console_width = 80;
-    this.keys = new KeyHelper;
     this.buffer = new ConsoleLineBuffer(this);
+    this.keys = new KeyHelper;
     this.sprites = document.getElementById("chars");
     this.canvas = document.getElementById('gb80-console');
     this.context = this.canvas.getContext('2d');
@@ -1763,8 +1764,8 @@ BasicConsole = (function() {
 })();
 
 ConsoleLineBuffer = (function() {
-  function ConsoleLineBuffer(gb_console) {
-    this.console = gb_console;
+  function ConsoleLineBuffer(bconsole) {
+    this.bconsole = bconsole;
     this.chars = "";
   }
 
@@ -1777,7 +1778,7 @@ ConsoleLineBuffer = (function() {
   };
 
   ConsoleLineBuffer.prototype.print = function() {
-    this.console.println(this.chars);
+    this.bconsole.println(this.chars);
     return this.chars = "";
   };
 
