@@ -112,12 +112,12 @@ describe("Program line listing", function() {
     var list;
     list = this.prog_lines.list();
     expect(list.length).toEqual(23);
-    expect(list[0]).toEqual('10 REM');
-    expect(list[8]).toEqual('150 IF Z<0 THEN 340');
-    expect(list[11]).toEqual('350 PRINT $Z1');
-    expect(list[16]).toEqual('520 GOTO 880');
-    expect(list[21]).toEqual('999 END');
-    return expect(list[22]).toEqual('1299 RETURN');
+    expect(list[0].text).toEqual('10 REM');
+    expect(list[8].text).toEqual('150 IF Z<0 THEN 340');
+    expect(list[11].text).toEqual('350 PRINT $Z1');
+    expect(list[16].text).toEqual('520 GOTO 880');
+    expect(list[21].text).toEqual('999 END');
+    return expect(list[22].text).toEqual('1299 RETURN');
   });
   it("should clear all program lines", function() {
     var list;
@@ -137,23 +137,23 @@ describe("Program line listing", function() {
     });
     list = this.prog_lines.list();
     expect(list.length).toEqual(24);
-    expect(list[0]).toEqual('10 REM');
-    expect(list[1]).toEqual('15 REM WELCOME TO LINE 15');
-    expect(list[6]).toEqual('120 INPUT $V');
-    expect(list[12]).toEqual('350 PRINT $Z1');
-    expect(list[21]).toEqual('940 CLEARSCRN');
-    expect(list[23]).toEqual('1299 RETURN');
+    expect(list[0].text).toEqual('10 REM');
+    expect(list[1].text).toEqual('15 REM WELCOME TO LINE 15');
+    expect(list[6].text).toEqual('120 INPUT $V');
+    expect(list[12].text).toEqual('350 PRINT $Z1');
+    expect(list[21].text).toEqual('940 CLEARSCRN');
+    expect(list[23].text).toEqual('1299 RETURN');
     this.prog_lines.add_or_change({
       line_no: 400,
       text: '400 $Z7 = ""'
     });
     list = this.prog_lines.list();
     expect(list.length).toEqual(25);
-    expect(list[3]).toEqual('30 D=477+B');
-    expect(list[14]).toEqual('400 $Z7 = ""');
-    expect(list[19]).toEqual('610 IF $T="INCOMPLETE" THEN 1680');
-    expect(list[24]).toEqual('1299 RETURN');
-    expect(list[5]).toEqual('110 INPUT R');
+    expect(list[3].text).toEqual('30 D=477+B');
+    expect(list[14].text).toEqual('400 $Z7 = ""');
+    expect(list[19].text).toEqual('610 IF $T="INCOMPLETE" THEN 1680');
+    expect(list[24].text).toEqual('1299 RETURN');
+    expect(list[5].text).toEqual('110 INPUT R');
     expect(list.length).toEqual(25);
     this.prog_lines.add_or_change({
       line_no: 110,
@@ -161,10 +161,10 @@ describe("Program line listing", function() {
     });
     list = this.prog_lines.list();
     expect(list.length).toEqual(25);
-    expect(list[5]).toEqual('110 INPUT R4');
-    expect(list[14]).toEqual('400 $Z7 = ""');
-    expect(list[19]).toEqual('610 IF $T="INCOMPLETE" THEN 1680');
-    return expect(list[24]).toEqual('1299 RETURN');
+    expect(list[5].text).toEqual('110 INPUT R4');
+    expect(list[14].text).toEqual('400 $Z7 = ""');
+    expect(list[19].text).toEqual('610 IF $T="INCOMPLETE" THEN 1680');
+    return expect(list[24].text).toEqual('1299 RETURN');
   });
   return it("should delete a designated line, or do nothing if that line number doesn't exist", function() {
     var list;
@@ -173,18 +173,18 @@ describe("Program line listing", function() {
     this.prog_lines.remove(130);
     list = this.prog_lines.list();
     expect(list.length).toEqual(22);
-    expect(list[5]).toEqual('120 INPUT $V');
-    expect(list[6]).toEqual('140 INPUT "LAST NAME?";$N2');
+    expect(list[5].text).toEqual('120 INPUT $V');
+    expect(list[6].text).toEqual('140 INPUT "LAST NAME?";$N2');
     this.prog_lines.remove(140);
     list = this.prog_lines.list();
     expect(list.length).toEqual(21);
-    expect(list[5]).toEqual('120 INPUT $V');
-    expect(list[6]).toEqual('150 IF Z<0 THEN 340');
+    expect(list[5].text).toEqual('120 INPUT $V');
+    expect(list[6].text).toEqual('150 IF Z<0 THEN 340');
     this.prog_lines.remove(20);
     list = this.prog_lines.list();
     expect(list.length).toEqual(20);
-    expect(list[0]).toEqual('10 REM');
-    expect(list[1]).toEqual('30 D=477+B');
+    expect(list[0].text).toEqual('10 REM');
+    expect(list[1].text).toEqual('30 D=477+B');
     this.prog_lines.remove(550);
     list = this.prog_lines.list();
     expect(list.length).toEqual(20);

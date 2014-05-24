@@ -37,11 +37,10 @@ ActionController = (function() {
     this.parser = new LineParser;
     this.formatter = new ProgramLineBuilder;
     this.lines = new ProgramLineListing;
-    this.bconsole.println("ACTION CONTROLLER CONSTRUCTOR");
   }
 
   ActionController.prototype.process_line = function(string) {
-    var k, line_object, v;
+    var k, line, line_object, lines, v, _i, _j, _len, _len1, _results;
     console.log(" ");
     console.log("ActionController#process_line");
     console.log("   line = " + string);
@@ -52,6 +51,32 @@ ActionController = (function() {
     }
     if (line_object.line_no) {
       return this.lines.add_or_change(line_object);
+    } else {
+      switch (line_object.command) {
+        case "<list_command>":
+          console.log("LIST");
+          lines = this.lines.list();
+          console.log("@lines.list() returned " + lines.length + " items");
+          for (_i = 0, _len = lines.length; _i < _len; _i++) {
+            line = lines[_i];
+            console.log(line.text);
+          }
+          _results = [];
+          for (_j = 0, _len1 = lines.length; _j < _len1; _j++) {
+            line = lines[_j];
+            _results.push(this.bconsole.println(line.text));
+          }
+          return _results;
+          break;
+        case "<run_command>":
+          return console.log("RUN");
+        case "<clear_command>":
+          return console.log("CLEAR");
+        case "<info_command>":
+          return console.log("INFO");
+        default:
+          return console.log("ERROR");
+      }
     }
   };
 
@@ -1746,7 +1771,8 @@ BasicConsole = (function() {
       ch = string[_i];
       this.ch(ch);
     }
-    return this.line_text = string;
+    this.line_text = string;
+    return this.buffer.clear();
   };
 
   BasicConsole.prototype.println = function(string) {
@@ -1859,7 +1885,7 @@ ProgramLineListing = (function() {
     line_numbers = this.lines_sort();
     for (_i = 0, _len = line_numbers.length; _i < _len; _i++) {
       ln = line_numbers[_i];
-      list.push(this.lines[ln].text);
+      list.push(this.lines[ln]);
     }
     return list;
   };

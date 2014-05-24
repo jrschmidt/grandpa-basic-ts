@@ -17,7 +17,24 @@ class ActionController
     line_object = @build_line_object(string)
     for k,v of line_object
       console.log "   #{k} : #{v}"
-    @lines.add_or_change(line_object) if line_object.line_no
+    if line_object.line_no
+      @lines.add_or_change(line_object)
+    else
+      switch line_object.command
+        when "<list_command>"
+          console.log "LIST"
+          lines = @lines.list()
+          console.log "@lines.list() returned #{lines.length} items"
+          console.log(line.text) for line in lines
+          @bconsole.println(line.text) for line in lines
+        when "<run_command>"
+          console.log "RUN"
+        when "<clear_command>"
+          console.log "CLEAR"
+        when "<info_command>"
+          console.log "INFO"
+        else
+          console.log "ERROR"
 
 
   build_line_object: (string) ->
@@ -1313,6 +1330,7 @@ class BasicConsole
   print: (string) ->
     @ch(ch) for ch in string
     @line_text = string
+    @buffer.clear()
 
 
   println: (string) ->
@@ -1409,7 +1427,7 @@ class ProgramLineListing
   list: ->
     list = []
     line_numbers = @lines_sort()
-    list.push(@lines[ln].text) for ln in line_numbers
+    list.push(@lines[ln]) for ln in line_numbers
     return list
 
 
