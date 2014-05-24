@@ -58,6 +58,19 @@ describe "Program line listing", ->
     expect(list[22].text).toEqual('1299 RETURN')
 
 
+  it "should return a hash of all program line objects", ->
+
+    line_objects = @prog_lines.get_program_objects()
+    expect(line_objects["20"].text).toEqual('20 REM WELCOME TO GRANDPA BASIC 1980')
+    expect(line_objects["40"].text).toEqual('40 $E=$M+" IS NOT COMPLETE"')
+    expect(line_objects["120"].text).toEqual('120 INPUT $V')
+    expect(line_objects["350"].text).toEqual('350 PRINT $Z1')
+    expect(line_objects["490"].text).toEqual('490 PRINTLN $Z1')
+    expect(line_objects["870"].text).toEqual('870 TAB 28')
+    expect(line_objects["999"].text).toEqual('999 END')
+    expect(line_objects["1299"].text).toEqual('1299 RETURN')
+
+
   it "should clear all program lines", ->
 
     list = @prog_lines.list()

@@ -10,6 +10,7 @@ ActionController = (function() {
     this.parser = new LineParser;
     this.formatter = new ProgramLineBuilder;
     this.lines = new ProgramLineListing;
+    this.program = new ProgramController(this);
   }
 
   ActionController.prototype.process_line = function(string) {
@@ -27,6 +28,7 @@ ActionController = (function() {
     } else {
       switch (line_object.command) {
         case "<list_command>":
+          console.log(" ");
           console.log("LIST");
           lines = this.lines.list();
           console.log("@lines.list() returned " + lines.length + " items");
@@ -42,7 +44,8 @@ ActionController = (function() {
           return _results;
           break;
         case "<run_command>":
-          return console.log("RUN");
+          console.log("RUN");
+          return this.run_program();
         case "<clear_command>":
           return console.log("CLEAR");
         case "<info_command>":
@@ -51,6 +54,21 @@ ActionController = (function() {
           return console.log("ERROR");
       }
     }
+  };
+
+  ActionController.prototype.run_program = function() {
+    var line_objects, _results;
+    line_objects = this.lines.get_program_objects();
+    console.log(" ");
+    console.log("RUN_PROG:");
+    console.log("   " + line_objects.length + " lines");
+    this.program.load(line_objects);
+    _results = [];
+    while (true) {
+      console.log("trying to run line ...");
+      _results.push(this.program.run_next_line());
+    }
+    return _results;
   };
 
   ActionController.prototype.build_line_object = function(string) {
@@ -68,7 +86,9 @@ ActionController = (function() {
 })();
 
 ProgramController = (function() {
-  function ProgramController() {
+  function ProgramController(action_controller) {
+    this.controller = action_controller;
+    this.bconsole = this.controller.bconsole;
     this.commands = new ProgramRunner;
     this.lines = {};
     this.line_order = [];
@@ -1826,6 +1846,10 @@ ProgramLineListing = (function() {
 
   ProgramLineListing.prototype.get_line = function(line_no) {
     return this.lines[line_no.toString()];
+  };
+
+  ProgramLineListing.prototype.get_program_objects = function() {
+    return this.lines;
   };
 
   ProgramLineListing.prototype.add_or_change = function(line_object) {

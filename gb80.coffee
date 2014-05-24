@@ -66,7 +66,7 @@ class ActionController
     @parser = new LineParser
     @formatter = new ProgramLineBuilder
     @lines = new ProgramLineListing
-#    @program = new ProgramController
+    @program = new ProgramController(this)
 
 
   process_line: (string) ->
@@ -81,6 +81,7 @@ class ActionController
     else
       switch line_object.command
         when "<list_command>"
+          console.log " "
           console.log "LIST"
           lines = @lines.list()
           console.log "@lines.list() returned #{lines.length} items"
@@ -88,12 +89,27 @@ class ActionController
           @bconsole.println(line.text) for line in lines
         when "<run_command>"
           console.log "RUN"
+          @run_program()
         when "<clear_command>"
           console.log "CLEAR"
         when "<info_command>"
           console.log "INFO"
         else
           console.log "ERROR"
+
+
+  run_program: ->
+    line_objects = @lines.get_program_objects()
+    console.log " "
+    console.log "RUN_PROG:"
+    console.log "   #{line_objects.length} lines"
+    @program.load(line_objects)
+#    next = @program.next_line_no
+#    while ( next and (next > 0) )
+#    until ( next and (next > 0) )
+    while true
+      console.log "trying to run line ..."
+      @program.run_next_line()
 
 
   build_line_object: (string) ->
@@ -108,7 +124,9 @@ class ActionController
 class ProgramController
   # Methods to manage program lines.
 
-  constructor: ->
+  constructor: (action_controller)->
+    @controller = action_controller
+    @bconsole = @controller.bconsole
     @commands = new ProgramRunner
     @lines = {}
     @line_order = []
@@ -126,9 +144,18 @@ class ProgramController
     if @line_order.length > 0
       @next_line_index = 0
       @next_line_no = @line_order[0] if @line_order.length > 0
+    console.log "   LOADED: #{@line_order.length} lines"
+    console.log "   line_order = [#{@line_order}]"
+    console.log "   lines ="
+    for line in @lines
+      console.log " "
+      console.log "      #{k} : #{v}" for k,v of line
 
 
   run_next_line: ->
+    console.log " "
+    console.log "run_next_line():"
+    console.log "   next_line_no = #{@next_line_no}"
     line_object = @lines[@next_line_no.toString()]
     @line_result = @commands.run_command(line_object)
     @gb_output(@line_result.output) if @line_result.hasOwnProperty("output")
@@ -164,9 +191,11 @@ class ProgramController
       @next_line_no = 0
 
 
+  # TODO This method should be renamed.
   gb_output: (string) ->
     if string != ""
       @output = string
+      @bconsole.println(string)
 
 
   sort_lines: (lines) ->
@@ -1437,6 +1466,7 @@ class BooleanExpressionEvaluator
 
 
   # TODO This class and its associated classes are prime candidates for refactoring.
+  #      (Also look at ProgramController#gb_output() - at least rename it??)
 
 class BasicConsole
   # A representation of the 'BASIC console' emulated on an HTML5 canvas element,
@@ -1583,6 +1613,10 @@ class ProgramLineListing
 
   get_line: (line_no) ->
     return @lines[line_no.toString()]
+
+
+  get_program_objects: ->
+    return @lines
 
 
   add_or_change: (line_object) ->

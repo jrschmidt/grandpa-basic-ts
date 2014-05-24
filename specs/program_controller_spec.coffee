@@ -1,7 +1,7 @@
 describe "Program controller", ->
 
   beforeEach ->
-    @prog = new ProgramController
+    @prog = new ProgramController( {} )
     @commands = @prog.commands
     @helpers = @commands.helpers
     @num_vars = @helpers.num_vars
@@ -566,5 +566,3 @@ describe "Program controller", ->
     @prog.run_next_line()
     expect(@prog.next_line_no).toEqual(0)
     expect(@prog.output).toEqual("NOW IT IS BIG ENOUGH")
-
-
