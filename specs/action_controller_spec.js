@@ -198,7 +198,7 @@ describe("Action Controller - build object", function() {
 describe("Action Controller - add line", function() {
   beforeEach(function() {
     this.controller = new ActionController;
-    return this.lines = this.controller.lines;
+    return this.lines = this.controller.line_listing;
   });
   it("should parse, build and add a REM statement program line object", function() {
     var line;

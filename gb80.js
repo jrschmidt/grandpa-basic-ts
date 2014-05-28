@@ -36,7 +36,7 @@ ActionController = (function() {
     this.bconsole = this.keys.bconsole;
     this.parser = new LineParser;
     this.formatter = new ProgramLineBuilder;
-    this.lines = new ProgramLineListing;
+    this.line_listing = new ProgramLineListing;
     this.program = new ProgramController(this);
   }
 
@@ -51,13 +51,13 @@ ActionController = (function() {
       console.log("   " + k + " : " + v);
     }
     if (line_object.line_no) {
-      return this.lines.add_or_change(line_object);
+      return this.line_listing.add_or_change(line_object);
     } else {
       switch (line_object.command) {
         case "<list_command>":
           console.log(" ");
           console.log("LIST");
-          lines = this.lines.list();
+          lines = this.line_listing.list();
           console.log("@lines.list() returned " + lines.length + " items");
           for (_i = 0, _len = lines.length; _i < _len; _i++) {
             line = lines[_i];
@@ -72,7 +72,7 @@ ActionController = (function() {
           break;
         case "<run_command>":
           console.log("RUN");
-          return this.run_program();
+          return this.program.run_program();
         case "<clear_command>":
           return console.log("CLEAR");
         case "<info_command>":
@@ -81,21 +81,6 @@ ActionController = (function() {
           return console.log("ERROR");
       }
     }
-  };
-
-  ActionController.prototype.run_program = function() {
-    var line_objects, _results;
-    line_objects = this.lines.get_program_objects();
-    console.log(" ");
-    console.log("RUN_PROG:");
-    console.log("   " + line_objects.length + " lines");
-    this.program.load(line_objects);
-    _results = [];
-    while (true) {
-      console.log("trying to run line ...");
-      _results.push(this.program.run_next_line());
-    }
-    return _results;
   };
 
   ActionController.prototype.build_line_object = function(string) {
@@ -116,6 +101,7 @@ ProgramController = (function() {
   function ProgramController(action_controller) {
     this.controller = action_controller;
     this.bconsole = this.controller.bconsole;
+    this.line_listing = this.controller.line_listing;
     this.commands = new ProgramRunner;
     this.lines = {};
     this.line_order = [];
@@ -127,42 +113,28 @@ ProgramController = (function() {
     this.line_result = {};
   }
 
-  ProgramController.prototype.load = function(lines) {
-    var k, line, v, _i, _len, _ref, _results;
-    this.lines = lines;
-    this.line_order = this.sort_lines(lines);
-    if (this.line_order.length > 0) {
-      this.next_line_index = 0;
-      if (this.line_order.length > 0) {
-        this.next_line_no = this.line_order[0];
-      }
-    }
-    console.log("   LOADED: " + this.line_order.length + " lines");
-    console.log("   line_order = [" + this.line_order + "]");
-    console.log("   lines =");
-    _ref = this.lines;
+  ProgramController.prototype.run_program = function() {
+    var line_objects, _results;
+    line_objects = this.line_listing.get_program_objects();
+    this.load(line_objects);
     _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      line = _ref[_i];
-      console.log(" ");
-      _results.push((function() {
-        var _results1;
-        _results1 = [];
-        for (k in line) {
-          v = line[k];
-          _results1.push(console.log("      " + k + " : " + v));
-        }
-        return _results1;
-      })());
+    while (this.next_line_no > 0) {
+      _results.push(this.run_next_line());
     }
     return _results;
   };
 
+  ProgramController.prototype.load = function(lines) {
+    this.lines = lines;
+    this.line_order = this.sort_lines(lines);
+    if (this.line_order.length > 0) {
+      this.next_line_index = 0;
+      return this.next_line_no = this.line_order[0];
+    }
+  };
+
   ProgramController.prototype.run_next_line = function() {
     var line_object;
-    console.log(" ");
-    console.log("run_next_line():");
-    console.log("   next_line_no = " + this.next_line_no);
     line_object = this.lines[this.next_line_no.toString()];
     this.line_result = this.commands.run_command(line_object);
     if (this.line_result.hasOwnProperty("output")) {

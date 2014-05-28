@@ -235,7 +235,7 @@ describe "Action Controller - add line", ->
 
   beforeEach ->
     @controller = new ActionController
-    @lines = @controller.lines
+    @lines = @controller.line_listing
 
 
   it "should parse, build and add a REM statement program line object", ->

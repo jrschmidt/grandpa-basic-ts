@@ -139,6 +139,7 @@ describe("Program line listing", function() {
     list = this.prog_lines.list();
     return expect(list.length).toEqual(0);
   });
+  xit("should load a new set of program line objects", function() {});
   it("should add a program line, or change it if it already exists", function() {
     var list;
     list = this.prog_lines.list();

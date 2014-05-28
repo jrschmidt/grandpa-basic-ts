@@ -6,7 +6,7 @@ class ActionController
     @bconsole = new BasicConsole
     @parser = new LineParser
     @formatter = new ProgramLineBuilder
-    @lines = new ProgramLineListing
+    @line_listing = new ProgramLineListing
     @program = new ProgramController(this)
 
 
@@ -18,19 +18,19 @@ class ActionController
     for k,v of line_object
       console.log "   #{k} : #{v}"
     if line_object.line_no
-      @lines.add_or_change(line_object)
+      @line_listing.add_or_change(line_object)
     else
       switch line_object.command
         when "<list_command>"
           console.log " "
           console.log "LIST"
-          lines = @lines.list()
+          lines = @line_listing.list()
           console.log "@lines.list() returned #{lines.length} items"
           console.log(line.text) for line in lines
           @bconsole.println(line.text) for line in lines
         when "<run_command>"
           console.log "RUN"
-          @run_program()
+          @program.run_program()
         when "<clear_command>"
           console.log "CLEAR"
         when "<info_command>"
@@ -38,19 +38,6 @@ class ActionController
         else
           console.log "ERROR"
 
-
-  run_program: ->
-    line_objects = @lines.get_program_objects()
-    console.log " "
-    console.log "RUN_PROG:"
-    console.log "   #{line_objects.length} lines"
-    @program.load(line_objects)
-#    next = @program.next_line_no
-#    while ( next and (next > 0) )
-#    until ( next and (next > 0) )
-    while true
-      console.log "trying to run line ..."
-      @program.run_next_line()
 
 
   build_line_object: (string) ->
@@ -67,6 +54,7 @@ class ProgramController
   constructor: (action_controller)->
     @controller = action_controller
     @bconsole = @controller.bconsole
+    @line_listing = @controller.line_listing
     @commands = new ProgramRunner
     @lines = {}
     @line_order = []
@@ -78,12 +66,19 @@ class ProgramController
     @line_result = {}
 
 
+  run_program: ->
+    line_objects = @line_listing.get_program_objects()
+    @load(line_objects)
+    while @next_line_no > 0
+      @run_next_line()
+
+
   load: (lines) ->
     @lines = lines
     @line_order = @sort_lines(lines)
     if @line_order.length > 0
       @next_line_index = 0
-      @next_line_no = @line_order[0] if @line_order.length > 0
+      @next_line_no = @line_order[0]
 
 
   run_next_line: ->
