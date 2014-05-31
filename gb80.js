@@ -1818,8 +1818,16 @@ BasicConsole = (function() {
     }
   };
 
+  BasicConsole.prototype.draw_blank_char = function(line, column) {
+    return this.context.clearRect(3 + column * 11, 16 + line * 18, 11, 18);
+  };
+
   BasicConsole.prototype.backspace = function() {
-    return console.log("BACKSPACE called");
+    if (this.column > 0) {
+      this.draw_blank_char(this.line, this.column);
+      this.buffer.trim();
+      return this.column = this.column - 1;
+    }
   };
 
   BasicConsole.prototype.clear_screen = function() {
@@ -1857,6 +1865,12 @@ ConsoleLineBuffer = (function() {
 
   ConsoleLineBuffer.prototype.add = function(ch) {
     return this.chars = this.chars + ch;
+  };
+
+  ConsoleLineBuffer.prototype.trim = function() {
+    if (this.chars.length > 0) {
+      return this.chars = this.chars.slice(0, this.chars.length - 1);
+    }
   };
 
   ConsoleLineBuffer.prototype.clear = function() {

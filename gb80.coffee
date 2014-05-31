@@ -46,7 +46,7 @@ class KeyTalker
 
   handle: (ch_num, ch_key) ->
     if ch_num > 0
-      @bconsole.ch(@keys.char(ch_num)) # TODO Change ch() to add_ch() ??
+      @bconsole.ch(@keys.char(ch_num))
     else
       @bconsole.backspace() if ch_key == 8
       if ch_key == 13
@@ -1535,8 +1535,19 @@ class BasicConsole
         18 )
 
 
+  draw_blank_char: (line, column) ->
+    @context.clearRect(
+      3 + column*11,
+      16 + line*18,
+      11,
+      18 )
+
+
   backspace: ->
-    console.log "BACKSPACE called"
+    if @column > 0
+      @draw_blank_char(@line, @column)
+      @buffer.trim()
+      @column = @column - 1
 
 
   clear_screen: ->
@@ -1572,6 +1583,10 @@ class ConsoleLineBuffer
 
   add: (ch) ->
     @chars = @chars + ch
+
+
+  trim: ->
+    @chars = @chars.slice(0,@chars.length-1) if @chars.length > 0
 
 
   clear: ->

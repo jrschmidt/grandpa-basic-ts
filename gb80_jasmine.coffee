@@ -1378,8 +1378,19 @@ class BasicConsole
         18 )
 
 
+  draw_blank_char: (line, column) ->
+    @context.clearRect(
+      3 + column*11,
+      16 + line*18,
+      11,
+      18 )
+
+
   backspace: ->
-    console.log "BACKSPACE called"
+    if @column > 0
+      @draw_blank_char(@line, @column)
+      @buffer.trim()
+      @column = @column - 1
 
 
   clear_screen: ->
@@ -1402,6 +1413,10 @@ class ConsoleLineBuffer
 
   add: (ch) ->
     @chars = @chars + ch
+
+
+  trim: ->
+    @chars = @chars.slice(0,@chars.length-1) if @chars.length > 0
 
 
   clear: ->

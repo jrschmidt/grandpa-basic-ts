@@ -30,6 +30,28 @@ describe("Console line buffer", function() {
     this.buffer.add("0");
     return expect(this.buffer.chars).toEqual("40 X=Y+100");
   });
+  it("should delete the end character from the buffer", function() {
+    this.buffer.chars = "40X";
+    expect(this.buffer.chars).toEqual("40X");
+    this.buffer.trim();
+    expect(this.buffer.chars).toEqual("40");
+    this.buffer.add(" ");
+    this.buffer.add("X");
+    this.buffer.add("=");
+    this.buffer.add("Y");
+    this.buffer.add("+");
+    this.buffer.add("+");
+    expect(this.buffer.chars).toEqual("40 X=Y++");
+    this.buffer.trim();
+    expect(this.buffer.chars).toEqual("40 X=Y+");
+    this.buffer.add("1");
+    this.buffer.add("0");
+    this.buffer.add("0");
+    this.buffer.add("0");
+    expect(this.buffer.chars).toEqual("40 X=Y+1000");
+    this.buffer.trim();
+    return expect(this.buffer.chars).toEqual("40 X=Y+100");
+  });
   return it("should print the characters in the buffer, then clear the buffer", function() {
     var ch, _i, _len, _ref;
     expect(this.buffer.chars).toEqual("");
