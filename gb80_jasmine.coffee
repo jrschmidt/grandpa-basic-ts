@@ -10,9 +10,9 @@ class ActionController
     @program = new ProgramController(this)
 
 
-  process_line: (string) ->
+  handle_line_entry: (string) ->
     console.log " "
-    console.log "ActionController#process_line"
+    console.log "ActionController#handle_line_entry"
     console.log "   line = #{string}"
     line_object = @build_line_object(string)
     for k,v of line_object

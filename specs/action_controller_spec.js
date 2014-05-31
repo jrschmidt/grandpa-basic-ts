@@ -202,79 +202,79 @@ describe("Action Controller - add line", function() {
   });
   it("should parse, build and add a REM statement program line object", function() {
     var line;
-    this.controller.process_line('20 REM WELCOME TO GRANDPA BASIC 1980');
+    this.controller.handle_line_entry('20 REM WELCOME TO GRANDPA BASIC 1980');
     line = this.lines.get_line(20);
     return expect(line.command).toEqual("<remark>");
   });
   it("should parse, build and add a numeric assignment program line object", function() {
     var line;
-    this.controller.process_line('30 D=477+B');
+    this.controller.handle_line_entry('30 D=477+B');
     line = this.lines.get_line(30);
     return expect(line.command).toEqual("<numeric_assignment>");
   });
   it("should parse, build and add a string assignment program line object", function() {
     var line;
-    this.controller.process_line('40 $E=$M+" IS NOT COMPLETE"');
+    this.controller.handle_line_entry('40 $E=$M+" IS NOT COMPLETE"');
     line = this.lines.get_line(40);
     return expect(line.command).toEqual("<string_assignment>");
   });
   it("should parse, build and add a GOTO statement program line object", function() {
     var line;
-    this.controller.process_line('520 GOTO 880');
+    this.controller.handle_line_entry('520 GOTO 880');
     line = this.lines.get_line(520);
     return expect(line.command).toEqual("<goto>");
   });
   it("should parse, build and add a GOSUB statement program line object", function() {
     var line;
-    this.controller.process_line('320 GOSUB 1200');
+    this.controller.handle_line_entry('320 GOSUB 1200');
     line = this.lines.get_line(320);
     return expect(line.command).toEqual("<gosub>");
   });
   it("should parse, build and add a RETURN statement program line object", function() {
     var line;
-    this.controller.process_line('1299 RETURN');
+    this.controller.handle_line_entry('1299 RETURN');
     line = this.lines.get_line(1299);
     return expect(line.command).toEqual("<return>");
   });
   it("should parse, build and add an IF statement program line object", function() {
     var line;
-    this.controller.process_line('150 IF Z<0 THEN 340');
+    this.controller.handle_line_entry('150 IF Z<0 THEN 340');
     line = this.lines.get_line(150);
     return expect(line.command).toEqual("<if>");
   });
   it("should parse, build and add an INPUT statement program line object", function() {
     var line;
-    this.controller.process_line('130 INPUT "HOW MANY?";M');
+    this.controller.handle_line_entry('130 INPUT "HOW MANY?";M');
     line = this.lines.get_line(130);
     return expect(line.command).toEqual("<input_numeric_prompt>");
   });
   it("should parse, build and add a PRINT statement program line object", function() {
     var line;
-    this.controller.process_line('340 PRINT "WELCOME TO GRANDPA BASIC 1980"');
+    this.controller.handle_line_entry('340 PRINT "WELCOME TO GRANDPA BASIC 1980"');
     line = this.lines.get_line(340);
     return expect(line.command).toEqual("<print>");
   });
   it("should parse, build and add a PRINTLN statement program line object", function() {
     var line;
-    this.controller.process_line('490 PRINTLN $Z1');
+    this.controller.handle_line_entry('490 PRINTLN $Z1');
     line = this.lines.get_line(490);
     return expect(line.command).toEqual("<print_line>");
   });
   it("should parse, build and add a CLEARSCRN statement program line object", function() {
     var line;
-    this.controller.process_line('940 CLEARSCRN');
+    this.controller.handle_line_entry('940 CLEARSCRN');
     line = this.lines.get_line(940);
     return expect(line.command).toEqual("<clear_screen>");
   });
   it("should parse, build and add a TAB statement program line object", function() {
     var line;
-    this.controller.process_line('870 TAB 28');
+    this.controller.handle_line_entry('870 TAB 28');
     line = this.lines.get_line(870);
     return expect(line.command).toEqual("<tab_col>");
   });
   return it("should parse, build and add an END statement program line object", function() {
     var line;
-    this.controller.process_line('999 END');
+    this.controller.handle_line_entry('999 END');
     line = this.lines.get_line(999);
     return expect(line.command).toEqual("<end>");
   });

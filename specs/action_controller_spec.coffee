@@ -240,91 +240,91 @@ describe "Action Controller - add line", ->
 
   it "should parse, build and add a REM statement program line object", ->
 
-    @controller.process_line('20 REM WELCOME TO GRANDPA BASIC 1980')
+    @controller.handle_line_entry('20 REM WELCOME TO GRANDPA BASIC 1980')
     line = @lines.get_line(20)
     expect(line.command).toEqual("<remark>")
 
 
   it "should parse, build and add a numeric assignment program line object", ->
 
-    @controller.process_line('30 D=477+B')
+    @controller.handle_line_entry('30 D=477+B')
     line = @lines.get_line(30)
     expect(line.command).toEqual("<numeric_assignment>")
 
 
   it "should parse, build and add a string assignment program line object", ->
 
-    @controller.process_line('40 $E=$M+" IS NOT COMPLETE"')
+    @controller.handle_line_entry('40 $E=$M+" IS NOT COMPLETE"')
     line = @lines.get_line(40)
     expect(line.command).toEqual("<string_assignment>")
 
 
   it "should parse, build and add a GOTO statement program line object", ->
 
-    @controller.process_line('520 GOTO 880')
+    @controller.handle_line_entry('520 GOTO 880')
     line = @lines.get_line(520)
     expect(line.command).toEqual("<goto>")
 
 
   it "should parse, build and add a GOSUB statement program line object", ->
 
-    @controller.process_line('320 GOSUB 1200')
+    @controller.handle_line_entry('320 GOSUB 1200')
     line = @lines.get_line(320)
     expect(line.command).toEqual("<gosub>")
 
 
   it "should parse, build and add a RETURN statement program line object", ->
 
-    @controller.process_line('1299 RETURN')
+    @controller.handle_line_entry('1299 RETURN')
     line = @lines.get_line(1299)
     expect(line.command).toEqual("<return>")
 
 
   it "should parse, build and add an IF statement program line object", ->
 
-    @controller.process_line('150 IF Z<0 THEN 340')
+    @controller.handle_line_entry('150 IF Z<0 THEN 340')
     line = @lines.get_line(150)
     expect(line.command).toEqual("<if>")
 
 
   it "should parse, build and add an INPUT statement program line object", ->
 
-    @controller.process_line('130 INPUT "HOW MANY?";M')
+    @controller.handle_line_entry('130 INPUT "HOW MANY?";M')
     line = @lines.get_line(130)
     expect(line.command).toEqual("<input_numeric_prompt>")
 
 
   it "should parse, build and add a PRINT statement program line object", ->
 
-    @controller.process_line('340 PRINT "WELCOME TO GRANDPA BASIC 1980"')
+    @controller.handle_line_entry('340 PRINT "WELCOME TO GRANDPA BASIC 1980"')
     line = @lines.get_line(340)
     expect(line.command).toEqual("<print>")
 
 
   it "should parse, build and add a PRINTLN statement program line object", ->
 
-    @controller.process_line('490 PRINTLN $Z1')
+    @controller.handle_line_entry('490 PRINTLN $Z1')
     line = @lines.get_line(490)
     expect(line.command).toEqual("<print_line>")
 
 
   it "should parse, build and add a CLEARSCRN statement program line object", ->
 
-    @controller.process_line('940 CLEARSCRN')
+    @controller.handle_line_entry('940 CLEARSCRN')
     line = @lines.get_line(940)
     expect(line.command).toEqual("<clear_screen>")
 
 
   it "should parse, build and add a TAB statement program line object", ->
 
-    @controller.process_line('870 TAB 28')
+    @controller.handle_line_entry('870 TAB 28')
     line = @lines.get_line(870)
     expect(line.command).toEqual("<tab_col>")
 
 
   it "should parse, build and add an END statement program line object", ->
 
-    @controller.process_line('999 END')
+    @controller.handle_line_entry('999 END')
     line = @lines.get_line(999)
     expect(line.command).toEqual("<end>")
 

@@ -51,7 +51,7 @@ class KeyTalker
       @bconsole.backspace() if ch_key == 8
       if ch_key == 13
         line = @bconsole.enter_line()
-        @controller.process_line(line)
+        @controller.handle_line_entry(line)
 
 
 
@@ -69,9 +69,9 @@ class ActionController
     @program = new ProgramController(this)
 
 
-  process_line: (string) ->
+  handle_line_entry: (string) ->
     console.log " "
-    console.log "ActionController#process_line"
+    console.log "ActionController#handle_line_entry"
     console.log "   line = #{string}"
     line_object = @build_line_object(string)
     for k,v of line_object

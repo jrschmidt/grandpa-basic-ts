@@ -21,7 +21,7 @@ KeyTalker = (function() {
       }
       if (ch_key === 13) {
         line = this.bconsole.enter_line();
-        return this.controller.process_line(line);
+        return this.controller.handle_line_entry(line);
       }
     }
   };
@@ -40,10 +40,10 @@ ActionController = (function() {
     this.program = new ProgramController(this);
   }
 
-  ActionController.prototype.process_line = function(string) {
+  ActionController.prototype.handle_line_entry = function(string) {
     var k, line, line_object, lines, v, _i, _j, _len, _len1, _results;
     console.log(" ");
-    console.log("ActionController#process_line");
+    console.log("ActionController#handle_line_entry");
     console.log("   line = " + string);
     line_object = this.build_line_object(string);
     for (k in line_object) {
