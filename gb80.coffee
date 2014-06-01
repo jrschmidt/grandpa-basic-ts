@@ -1469,11 +1469,13 @@ class BasicConsole
     @scroll = []
     @line = 0
     @column = 0
+    @draw_cursor(0,1)
 
 
   enter_line: () ->
     line = @buffer.chars
     if line.length > 0
+      @draw_blank_char(@line, @column+1)
       @scroll_line(line)
       @buffer.clear()
     return line
@@ -1487,6 +1489,7 @@ class BasicConsole
       @scroll.shift()
       @redraw_lines()
       @column = 0
+    @draw_cursor(@line, 1)
 
 
   redraw_lines: ->
@@ -1498,7 +1501,10 @@ class BasicConsole
 
 
   print: (string) ->
-    @ch(ch) for ch in string
+    @draw_blank_char(@line, 1)
+    for ch in string
+      @column = @column + 1
+      @ch_ln_col(ch, @line, @column) if @column <= @console_width
     @line_text = string
     @buffer.clear()
 
@@ -1515,12 +1521,14 @@ class BasicConsole
 
   ch: (ch) ->
     @column = @column + 1
+    @draw_blank_char(@line, @column)
     @buffer.add(ch)
     @ch_ln_col(ch, @line, @column) if @column <= @console_width
+    @draw_cursor(@line, @column + 1)
 
 
-  ch_ln_col: (ch, line, col) ->
-    @line_text = "#{ch} [#{line},#{col}]"
+  ch_ln_col: (ch, line, column) ->
+    @line_text = "#{ch} [#{line},#{column}]"
     if ch != " "
       sprite = @keys.sprite_xy(ch)
       @context.drawImage(
@@ -1529,7 +1537,7 @@ class BasicConsole
         sprite[1],
         11,
         18,
-        3 + col*11,
+        3 + column*11,
         16 + line*18,
         11,
         18 )
@@ -1543,9 +1551,24 @@ class BasicConsole
       18 )
 
 
+  draw_cursor: (line, column) ->
+    @context.drawImage(
+      @sprites,
+      110,
+      90,
+      11,
+      18,
+      3 + column*11,
+      16 + line*18,
+      11,
+      18 )
+
+
   backspace: ->
     if @column > 0
+      @draw_blank_char(@line, @column + 1)
       @draw_blank_char(@line, @column)
+      @draw_cursor(@line, @column)
       @buffer.trim()
       @column = @column - 1
 

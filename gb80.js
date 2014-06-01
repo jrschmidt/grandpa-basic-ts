@@ -1746,12 +1746,14 @@ BasicConsole = (function() {
     this.scroll = [];
     this.line = 0;
     this.column = 0;
+    this.draw_cursor(0, 1);
   }
 
   BasicConsole.prototype.enter_line = function() {
     var line;
     line = this.buffer.chars;
     if (line.length > 0) {
+      this.draw_blank_char(this.line, this.column + 1);
       this.scroll_line(line);
       this.buffer.clear();
     }
@@ -1767,8 +1769,9 @@ BasicConsole = (function() {
     if (this.scroll.length >= this.console_height) {
       this.scroll.shift();
       this.redraw_lines();
-      return this.column = 0;
+      this.column = 0;
     }
+    return this.draw_cursor(this.line, 1);
   };
 
   BasicConsole.prototype.redraw_lines = function() {
@@ -1783,9 +1786,13 @@ BasicConsole = (function() {
 
   BasicConsole.prototype.print = function(string) {
     var ch, _i, _len;
+    this.draw_blank_char(this.line, 1);
     for (_i = 0, _len = string.length; _i < _len; _i++) {
       ch = string[_i];
-      this.ch(ch);
+      this.column = this.column + 1;
+      if (this.column <= this.console_width) {
+        this.ch_ln_col(ch, this.line, this.column);
+      }
     }
     this.line_text = string;
     return this.buffer.clear();
@@ -1803,18 +1810,20 @@ BasicConsole = (function() {
 
   BasicConsole.prototype.ch = function(ch) {
     this.column = this.column + 1;
+    this.draw_blank_char(this.line, this.column);
     this.buffer.add(ch);
     if (this.column <= this.console_width) {
-      return this.ch_ln_col(ch, this.line, this.column);
+      this.ch_ln_col(ch, this.line, this.column);
     }
+    return this.draw_cursor(this.line, this.column + 1);
   };
 
-  BasicConsole.prototype.ch_ln_col = function(ch, line, col) {
+  BasicConsole.prototype.ch_ln_col = function(ch, line, column) {
     var sprite;
-    this.line_text = "" + ch + " [" + line + "," + col + "]";
+    this.line_text = "" + ch + " [" + line + "," + column + "]";
     if (ch !== " ") {
       sprite = this.keys.sprite_xy(ch);
-      return this.context.drawImage(this.sprites, sprite[0], sprite[1], 11, 18, 3 + col * 11, 16 + line * 18, 11, 18);
+      return this.context.drawImage(this.sprites, sprite[0], sprite[1], 11, 18, 3 + column * 11, 16 + line * 18, 11, 18);
     }
   };
 
@@ -1822,9 +1831,15 @@ BasicConsole = (function() {
     return this.context.clearRect(3 + column * 11, 16 + line * 18, 11, 18);
   };
 
+  BasicConsole.prototype.draw_cursor = function(line, column) {
+    return this.context.drawImage(this.sprites, 110, 90, 11, 18, 3 + column * 11, 16 + line * 18, 11, 18);
+  };
+
   BasicConsole.prototype.backspace = function() {
     if (this.column > 0) {
+      this.draw_blank_char(this.line, this.column + 1);
       this.draw_blank_char(this.line, this.column);
+      this.draw_cursor(this.line, this.column);
       this.buffer.trim();
       return this.column = this.column - 1;
     }
