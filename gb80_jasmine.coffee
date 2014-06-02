@@ -37,13 +37,13 @@ class ActionController
           console.log "INFO"
         else
           console.log "ERROR"
-
+          @bconsole.error_message()
 
 
   build_line_object: (string) ->
     parse_object = @parser.parse(string)
     if parse_object == "<parse_error>"
-      return "<parse_error>"
+      return {command: "<parse_error>"}
     else
       return @formatter.format(parse_object, string)
 
@@ -1414,6 +1414,10 @@ class BasicConsole
       @draw_cursor(@line, @column)
       @buffer.trim()
       @column = @column - 1
+
+
+  error_message: ->
+    @println("SYNTAX ERROR")
 
 
   clear_screen: ->

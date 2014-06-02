@@ -78,7 +78,8 @@ ActionController = (function() {
         case "<info_command>":
           return console.log("INFO");
         default:
-          return console.log("ERROR");
+          console.log("ERROR");
+          return this.bconsole.error_message();
       }
     }
   };
@@ -87,7 +88,9 @@ ActionController = (function() {
     var parse_object;
     parse_object = this.parser.parse(string);
     if (parse_object === "<parse_error>") {
-      return "<parse_error>";
+      return {
+        command: "<parse_error>"
+      };
     } else {
       return this.formatter.format(parse_object, string);
     }
@@ -1843,6 +1846,10 @@ BasicConsole = (function() {
       this.buffer.trim();
       return this.column = this.column - 1;
     }
+  };
+
+  BasicConsole.prototype.error_message = function() {
+    return this.println("SYNTAX ERROR");
   };
 
   BasicConsole.prototype.clear_screen = function() {
