@@ -92,6 +92,7 @@ class ActionController
           @program.run_program()
         when "<clear_command>"
           console.log "CLEAR"
+          @line_listing.clear()
         when "<info_command>"
           console.log "INFO"
         else
@@ -339,6 +340,7 @@ class SyntaxRules
       ["INFO"]
       ["LIST"]
       ["<line_number>","<sp>","<line_number_statement>"]
+      ["<line_number>"]
     ]
 
     # @line_number_rules[] and @input_statement_rules[] are written this

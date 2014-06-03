@@ -72,6 +72,21 @@ describe "BASIC program line parser", ->
     expect(po[2]).toEqual("<sp>")
 
 
+  it "should correctly parse a valid program line number with nothing following it", ->
+
+    po = @parser.parse('440')
+    expect(po).toEqual(jasmine.any(Array))
+    expect(po.length).toEqual(2)
+    expect(po[0]).toEqual("<line_number>")
+    expect(po[1]).toEqual(440)
+
+    po = @parser.parse('1280')
+    expect(po).toEqual(jasmine.any(Array))
+    expect(po.length).toEqual(2)
+    expect(po[0]).toEqual("<line_number>")
+    expect(po[1]).toEqual(1280)
+
+
   it "should correctly parse a REM program line", ->
 
     po = @parser.parse('100 REM')
@@ -480,4 +495,3 @@ describe "BASIC program line parser", ->
 
     po = @parser.parse('1990 END PROGRAM')
     expect(po).toEqual("<parse_error>")
-

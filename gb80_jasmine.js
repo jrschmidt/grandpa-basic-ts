@@ -47,7 +47,8 @@ ActionController = (function() {
           console.log("RUN");
           return this.program.run_program();
         case "<clear_command>":
-          return console.log("CLEAR");
+          console.log("CLEAR");
+          return this.line_listing.clear();
         case "<info_command>":
           return console.log("INFO");
         default:
@@ -283,7 +284,7 @@ SyntaxRules = (function() {
     this.char_tokens = ["<sp>", "<equals>", "<semicolon>", "<comma>"];
     this.chars = " =;,";
     this.action_tokens = ["<line_number>", "<line_number_statement>", "<input_statement>", "<number_variable>", "<string_variable>", "<numeric_expression>", "<string_expression>", "<boolean_expression>", "<string>", "<characters>", "<integer>"];
-    this.rules = [["CLEAR"], ["RUN"], ["INFO"], ["LIST"], ["<line_number>", "<sp>", "<line_number_statement>"]];
+    this.rules = [["CLEAR"], ["RUN"], ["INFO"], ["LIST"], ["<line_number>", "<sp>", "<line_number_statement>"], ["<line_number>"]];
     this.line_number_rules = [["REM", "<sp>", "<characters>"], ["REM"], ["<number_variable>", "<equals>", "<numeric_expression>"], ["<string_variable>", "<equals>", "<string_expression>"], ["GOTO", "<sp>", "<line_number>"], ["GOSUB", "<sp>", "<line_number>"], ["RETURN"], ["IF", "<sp>", "<boolean_expression>", "<sp>", "THEN", "<sp>", "<line_number>"], ["INPUT", "<sp>", "<input_statement>"], ["PRINT", "<sp>", "<string_expression>"], ["PRINTLN", "<sp>", "<string_expression>"], ["PRINTLN"], ["CLEARSCRN"], ["TAB", "<sp>", "<integer>", "<comma>", "<integer>"], ["TAB", "<sp>", "<integer>"], ["END"]];
     this.input_statement_rules = [["<number_variable>"], ["<string_variable>"], ["<string>", "<semicolon>", "<number_variable>"], ["<string>", "<semicolon>", "<string_variable>"]];
   }

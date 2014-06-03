@@ -60,6 +60,19 @@ describe("BASIC program line parser", function() {
     expect(po[1]).toEqual(999);
     return expect(po[2]).toEqual("<sp>");
   });
+  it("should correctly parse a valid program line number with nothing following it", function() {
+    var po;
+    po = this.parser.parse('440');
+    expect(po).toEqual(jasmine.any(Array));
+    expect(po.length).toEqual(2);
+    expect(po[0]).toEqual("<line_number>");
+    expect(po[1]).toEqual(440);
+    po = this.parser.parse('1280');
+    expect(po).toEqual(jasmine.any(Array));
+    expect(po.length).toEqual(2);
+    expect(po[0]).toEqual("<line_number>");
+    return expect(po[1]).toEqual(1280);
+  });
   it("should correctly parse a REM program line", function() {
     var po;
     po = this.parser.parse('100 REM');
