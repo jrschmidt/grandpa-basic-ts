@@ -820,30 +820,34 @@ class ProgramLineBuilder
     @str_exp = new StrExpBuilder
     @bool_exp = new BoolExpBuilder(this)
 
+
   format: (parse_object, line_text) ->
     if parse_object[0] == "<line_number>"
-      cmd = parse_object[3]
-      switch cmd
-        when "<remark>"
-          line = @build_remark(parse_object)
-        when "<number_variable>"
-          line = @build_numeric_assignment(parse_object)
-        when "<string_variable>"
-          line = @build_string_assignment(parse_object)
-        when "<goto>", "<gosub>"
-          line = @build_cmd_with_dest(parse_object)
-        when "<return>", "<clear_screen>", "<end>"
-          line = @build_simple_cmd(parse_object)
-        when "<if>"
-          line = @build_if_cmd(parse_object)
-        when "<input>"
-          line = @build_input_cmd(parse_object)
-        when "<print>", "<print_line>"
-          line = @build_print_cmd(parse_object)
-        when "<tab>"
-          line = @build_tab_cmd(parse_object)
-        else
-          error = true
+      if parse_object.length < 4
+        line = @build_line_removal(parse_object)
+      else
+        cmd = parse_object[3]
+        switch cmd
+          when "<remark>"
+            line = @build_remark(parse_object)
+          when "<number_variable>"
+            line = @build_numeric_assignment(parse_object)
+          when "<string_variable>"
+            line = @build_string_assignment(parse_object)
+          when "<goto>", "<gosub>"
+            line = @build_cmd_with_dest(parse_object)
+          when "<return>", "<clear_screen>", "<end>"
+            line = @build_simple_cmd(parse_object)
+          when "<if>"
+            line = @build_if_cmd(parse_object)
+          when "<input>"
+            line = @build_input_cmd(parse_object)
+          when "<print>", "<print_line>"
+            line = @build_print_cmd(parse_object)
+          when "<tab>"
+            line = @build_tab_cmd(parse_object)
+          else
+            error = true
       if error
         line = {command: "<formatting_error>" }
       else
@@ -870,6 +874,10 @@ class ProgramLineBuilder
           return {command: "<formatting_error>" }
     else
       return {command: "<formatting_error>" }
+
+
+  build_line_removal: ->
+    return {command: "<remove_line>"}
 
 
   build_remark: (parse_object) ->
@@ -1334,7 +1342,7 @@ class BasicConsole
       @scroll.shift()
       @redraw_lines()
       @column = 0
-      @draw_cursor(@line, 1)
+    @draw_cursor(@line, 1)
 
 
   redraw_lines: ->
@@ -1477,8 +1485,11 @@ class ProgramLineListing
 
 
   add_or_change: (line_object) ->
-    ln = line_object.line_no
-    @lines[ln.toString()] = line_object
+    if line_object.command == "<remove_line>"
+      @remove(line_object.line_no)
+    else
+      ln = line_object.line_no
+      @lines[ln.toString()] = line_object
 
 
   remove: (line_no) ->

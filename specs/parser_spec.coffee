@@ -108,6 +108,7 @@ describe "BASIC program line parser", ->
     expect(po[5]).toEqual("<characters>")
     expect(po[6]).toEqual('WELCOME TO GRANDPA BASIC 1980')
 
+
   it "should correctly parse a numeric assignment program line", ->
 
     po = @parser.parse('180 X=77')

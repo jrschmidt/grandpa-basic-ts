@@ -38,6 +38,32 @@ describe "Program line object builder", ->
     expect(result.command).toEqual("<list_command>")
 
 
+  it "should build a valid program line object from a parsed line number with nothing following it", ->
+
+    line_text = "440"
+
+    parse_object = [
+      "<line_number>"
+      440 ]
+
+    result = @formatter.format(parse_object, line_text)
+    expect(result.line_no).toEqual(440)
+    expect(result.command).toEqual("<remove_line>")
+    expect(result.text).toEqual('440')
+
+
+    line_text = "1280"
+
+    parse_object = [
+      "<line_number>"
+      1280 ]
+
+    result = @formatter.format(parse_object, line_text)
+    expect(result.line_no).toEqual(1280)
+    expect(result.command).toEqual("<remove_line>")
+    expect(result.text).toEqual('1280')
+
+
   it "should build a valid program line object from a parsed line with a REM statement", ->
 
     line_text = '10 REM'

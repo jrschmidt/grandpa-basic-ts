@@ -1023,41 +1023,45 @@ ProgramLineBuilder = (function() {
   ProgramLineBuilder.prototype.format = function(parse_object, line_text) {
     var cmd, error, line;
     if (parse_object[0] === "<line_number>") {
-      cmd = parse_object[3];
-      switch (cmd) {
-        case "<remark>":
-          line = this.build_remark(parse_object);
-          break;
-        case "<number_variable>":
-          line = this.build_numeric_assignment(parse_object);
-          break;
-        case "<string_variable>":
-          line = this.build_string_assignment(parse_object);
-          break;
-        case "<goto>":
-        case "<gosub>":
-          line = this.build_cmd_with_dest(parse_object);
-          break;
-        case "<return>":
-        case "<clear_screen>":
-        case "<end>":
-          line = this.build_simple_cmd(parse_object);
-          break;
-        case "<if>":
-          line = this.build_if_cmd(parse_object);
-          break;
-        case "<input>":
-          line = this.build_input_cmd(parse_object);
-          break;
-        case "<print>":
-        case "<print_line>":
-          line = this.build_print_cmd(parse_object);
-          break;
-        case "<tab>":
-          line = this.build_tab_cmd(parse_object);
-          break;
-        default:
-          error = true;
+      if (parse_object.length < 4) {
+        line = this.build_line_removal(parse_object);
+      } else {
+        cmd = parse_object[3];
+        switch (cmd) {
+          case "<remark>":
+            line = this.build_remark(parse_object);
+            break;
+          case "<number_variable>":
+            line = this.build_numeric_assignment(parse_object);
+            break;
+          case "<string_variable>":
+            line = this.build_string_assignment(parse_object);
+            break;
+          case "<goto>":
+          case "<gosub>":
+            line = this.build_cmd_with_dest(parse_object);
+            break;
+          case "<return>":
+          case "<clear_screen>":
+          case "<end>":
+            line = this.build_simple_cmd(parse_object);
+            break;
+          case "<if>":
+            line = this.build_if_cmd(parse_object);
+            break;
+          case "<input>":
+            line = this.build_input_cmd(parse_object);
+            break;
+          case "<print>":
+          case "<print_line>":
+            line = this.build_print_cmd(parse_object);
+            break;
+          case "<tab>":
+            line = this.build_tab_cmd(parse_object);
+            break;
+          default:
+            error = true;
+        }
       }
       if (error) {
         line = {
@@ -1104,6 +1108,12 @@ ProgramLineBuilder = (function() {
         command: "<formatting_error>"
       };
     }
+  };
+
+  ProgramLineBuilder.prototype.build_line_removal = function() {
+    return {
+      command: "<remove_line>"
+    };
   };
 
   ProgramLineBuilder.prototype.build_remark = function(parse_object) {
@@ -1745,8 +1755,8 @@ BasicConsole = (function() {
       this.scroll.shift();
       this.redraw_lines();
       this.column = 0;
-      return this.draw_cursor(this.line, 1);
     }
+    return this.draw_cursor(this.line, 1);
   };
 
   BasicConsole.prototype.redraw_lines = function() {
@@ -1886,8 +1896,12 @@ ProgramLineListing = (function() {
 
   ProgramLineListing.prototype.add_or_change = function(line_object) {
     var ln;
-    ln = line_object.line_no;
-    return this.lines[ln.toString()] = line_object;
+    if (line_object.command === "<remove_line>") {
+      return this.remove(line_object.line_no);
+    } else {
+      ln = line_object.line_no;
+      return this.lines[ln.toString()] = line_object;
+    }
   };
 
   ProgramLineListing.prototype.remove = function(line_no) {

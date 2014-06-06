@@ -22,6 +22,21 @@ describe("Program line object builder", function() {
     result = this.formatter.format(parse_object, line_text);
     return expect(result.command).toEqual("<list_command>");
   });
+  it("should build a valid program line object from a parsed line number with nothing following it", function() {
+    var line_text, parse_object, result;
+    line_text = "440";
+    parse_object = ["<line_number>", 440];
+    result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(440);
+    expect(result.command).toEqual("<remove_line>");
+    expect(result.text).toEqual('440');
+    line_text = "1280";
+    parse_object = ["<line_number>", 1280];
+    result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(1280);
+    expect(result.command).toEqual("<remove_line>");
+    return expect(result.text).toEqual('1280');
+  });
   it("should build a valid program line object from a parsed line with a REM statement", function() {
     var line_text, parse_object, result;
     line_text = '10 REM';
