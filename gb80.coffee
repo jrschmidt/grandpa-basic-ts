@@ -1750,8 +1750,27 @@ class InfoAndHelp
     @message = {}
 
     @message["menu"] = [
-      "THIS IS THE HELP & INFO MENU"
-      "FOR GRANDPA BASIC 1980" ]
+      "THIS IS THE HELP & INFO MENU FOR GRANDPA BASIC 1980"
+      " "
+      "ADD LINES TO THE PROGRAM BY TYPING A LINE NUMBER, FOLLOWED BY"
+      "THE REST OF THE LINE, THEN HIT <ENTER>."
+      " "
+      'TYPE "LIST" TO SEE A LISTING OF ALL PROGRAM LINES.'
+      "TYPE THE LINE NUMBER, THEN <ENTER>, TO REMOVE A PROGRAM LINE."
+      " "
+      "HERE'S AN EXAMPLE PROGRAM:"
+      "10 REM GRANDPA BASIC 1980 - SAMPLE PROGRAM 1"
+      "100 X=17"
+      "110 Y=13"
+      "120 S=(X-Y)/2"
+      "180 IF S=2 THEN 400"
+      '200 $Z="S DOES NOT EQUAL 2"'
+      "210 GOTO 800"
+      '400 $Z="S EQUALS 2"'
+      "410 GOTO 800"
+      "800 PRINT $Z"
+      '900 PRINT "WE ARE DONE"'
+      "999 END" ]
 
 
 
