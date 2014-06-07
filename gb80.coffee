@@ -95,6 +95,7 @@ class ActionController
           @line_listing.clear()
         when "<info_command>"
           console.log "INFO"
+          @bconsole.display_info("menu")
         else
           console.log "ERROR"
           @bconsole.error_message()
@@ -1474,6 +1475,7 @@ class BasicConsole
     @buffer = new ConsoleLineBuffer(this)
     @output = new ConsoleOutput(this)
     @keys = new KeyHelper
+    @info = new InfoAndHelp
     @sprites = document.getElementById("chars")
     @canvas = document.getElementById('gb80-console')
     @context = @canvas.getContext('2d')
@@ -1585,6 +1587,10 @@ class BasicConsole
 
   error_message: ->
     @println("SYNTAX ERROR")
+
+
+  display_info: (key) ->
+    @println(msg_line) for msg_line in @info.message[key]
 
 
   clear_screen: ->
@@ -1734,6 +1740,18 @@ class KeyHelper
     if ch in @chars
       i = @chars.indexOf(ch)
       return @xy[i]
+
+
+
+class InfoAndHelp
+  # A class to provide the content for INFO and HELP functions.
+
+  constructor: ->
+    @message = {}
+
+    @message["menu"] = [
+      "THIS IS THE HELP & INFO MENU"
+      "FOR GRANDPA BASIC 1980" ]
 
 
 
