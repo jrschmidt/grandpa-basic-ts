@@ -1245,12 +1245,6 @@ class BoolExpBuilder
   # statements such as 'IF A>B THEN 200'. There were no such things as boolean
   # variables or expressions which could be given a value of 'true' or false'.
   #
-  # In the earliest forms of BASIC, there were no such things as boolean
-  # variables or expressions which could be given a value of 'true' or false'.
-  # The only allowable construct  which could be construed as "boolean
-  # expressions" were the comparator statements in IF statements such as:
-  #   'IF A>B THEN 200'.
-  #
   # A "boolean expression" of this type consists of three parts, represented by
   # the properties of the boolean expression object. These are a variable name,
   # followed by a comparator, followed by a numeric or string expression. The
