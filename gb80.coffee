@@ -1218,7 +1218,7 @@ class StrExpBuilder
   # string itself. For a string variable, the second element is the variable
   # name.
   #
-  # Please note that the value for a string variable is recorded WITHOUT the
+  # Please note that the name for a string variable is recorded WITHOUT the
   # dollar sign character ($). In BASIC syntax, string variable names are always
   # preceeded with the '$' character to differentiate them from numeric variable
   # names. However, there was no need to include them in the data objects for
