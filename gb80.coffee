@@ -8,7 +8,7 @@
 # BASIC. ALL code was prefixed with line numbers, and execution proceeded
 # sequentially according to line number except where control structures such as
 # GOTO or IF - THEN diverted execution elsewhere. These machines, at first, had
-# monochrome monitors that only printed uppercase letters.
+# monochrome CRT monitors that only printed uppercase letters.
 #
 # This app uses Javascript code, from source written in Coffeescript, to act
 # upon an HTML5 canvas element designed to resemble the look of the original
@@ -224,6 +224,8 @@ class ProgramRunner
         @line_result = @run_if(line_object)
       when "<print>"
         @line_result = @run_print(line_object)
+      when "<print_num>"
+        @line_result = @run_print_num(line_object)
       when "<end>"
         @line_result = @run_end(line_object)
       else
@@ -264,6 +266,11 @@ class ProgramRunner
 
   run_print: (line_object) ->
     string = @str_eval.val(line_object.expression)
+    return {output: string}
+
+
+  run_print_num: (line_object) ->
+    string = @numvarclass.numvar2str(line_object.name)
     return {output: string}
 
 
@@ -357,7 +364,9 @@ class SyntaxRules
         ["RETURN"]
         ["IF","<sp>","<boolean_expression>","<sp>","THEN","<sp>","<line_number>"]
         ["INPUT","<sp>","<input_statement>"]
+        ["PRINT","<sp>","<number_variable>"]
         ["PRINT","<sp>","<string_expression>"]
+        ["PRINTLN","<sp>","<number_variable>"]
         ["PRINTLN","<sp>","<string_expression>"]
         ["PRINTLN"]
         ["CLEARSCRN"]
