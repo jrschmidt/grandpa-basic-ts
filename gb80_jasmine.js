@@ -285,7 +285,7 @@ SyntaxRules = (function() {
     this.chars = " =;,";
     this.action_tokens = ["<line_number>", "<line_number_statement>", "<input_statement>", "<number_variable>", "<string_variable>", "<numeric_expression>", "<string_expression>", "<boolean_expression>", "<string>", "<characters>", "<integer>"];
     this.rules = [["CLEAR"], ["RUN"], ["INFO"], ["LIST"], ["<line_number>", "<sp>", "<line_number_statement>"], ["<line_number>"]];
-    this.line_number_rules = [["REM", "<sp>", "<characters>"], ["REM"], ["<number_variable>", "<equals>", "<numeric_expression>"], ["<string_variable>", "<equals>", "<string_expression>"], ["GOTO", "<sp>", "<line_number>"], ["GOSUB", "<sp>", "<line_number>"], ["RETURN"], ["IF", "<sp>", "<boolean_expression>", "<sp>", "THEN", "<sp>", "<line_number>"], ["INPUT", "<sp>", "<input_statement>"], ["PRINT", "<sp>", "<string_expression>"], ["PRINTLN", "<sp>", "<string_expression>"], ["PRINTLN"], ["CLEARSCRN"], ["TAB", "<sp>", "<integer>", "<comma>", "<integer>"], ["TAB", "<sp>", "<integer>"], ["END"]];
+    this.line_number_rules = [["REM", "<sp>", "<characters>"], ["REM"], ["<number_variable>", "<equals>", "<numeric_expression>"], ["<string_variable>", "<equals>", "<string_expression>"], ["GOTO", "<sp>", "<line_number>"], ["GOSUB", "<sp>", "<line_number>"], ["RETURN"], ["IF", "<sp>", "<boolean_expression>", "<sp>", "THEN", "<sp>", "<line_number>"], ["INPUT", "<sp>", "<input_statement>"], ["PRINT", "<sp>", "<number_variable>"], ["PRINT", "<sp>", "<string_expression>"], ["PRINTLN", "<sp>", "<number_variable>"], ["PRINTLN", "<sp>", "<string_expression>"], ["PRINTLN"], ["CLEARSCRN"], ["TAB", "<sp>", "<integer>", "<comma>", "<integer>"], ["TAB", "<sp>", "<integer>"], ["END"]];
     this.input_statement_rules = [["<number_variable>"], ["<string_variable>"], ["<string>", "<semicolon>", "<number_variable>"], ["<string>", "<semicolon>", "<string_variable>"]];
   }
 
@@ -1207,17 +1207,32 @@ ProgramLineBuilder = (function() {
   };
 
   ProgramLineBuilder.prototype.build_print_cmd = function(parse_object) {
-    var line, stack, str_exp;
+    var cmd, line, stack, str_exp;
     if (parse_object.length === 4) {
-      str_exp = [["<str>", ""]];
+      line = {
+        command: parse_object[3],
+        expression: [["<str>", ""]]
+      };
     } else {
-      stack = parse_object.slice(5, +(parse_object.length - 1) + 1 || 9e9);
-      str_exp = this.str_exp.build_str_exp(stack);
+      if (parse_object[5] === "<number_variable>") {
+        if (parse_object[3] === "<print_line>") {
+          cmd = "<print_num_line>";
+        } else {
+          cmd = "<print_num>";
+        }
+        line = {
+          command: cmd,
+          name: parse_object[6]
+        };
+      } else {
+        stack = parse_object.slice(5, +(parse_object.length - 1) + 1 || 9e9);
+        str_exp = this.str_exp.build_str_exp(stack);
+        line = {
+          command: parse_object[3],
+          expression: str_exp
+        };
+      }
     }
-    line = {
-      command: parse_object[3],
-      expression: str_exp
-    };
     return line;
   };
 

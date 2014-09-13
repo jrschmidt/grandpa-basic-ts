@@ -370,6 +370,24 @@ describe "Program line object builder", ->
 
   it "should build a valid program line object from a parsed line with a PRINT statement", ->
 
+    line_text = '330 PRINT X'
+
+    parse_object = [
+      "<line_number>"
+      330
+      "<sp>"
+      "<print>"
+      "<sp>"
+      "<number_variable>"
+      "X" ]
+
+    result = @formatter.format(parse_object, line_text)
+    expect(result.line_no).toEqual(330)
+    expect(result.command).toEqual("<print_num>")
+    expect(result.text).toEqual('330 PRINT X')
+    expect(result.name).toEqual("X")
+
+
     line_text = '340 PRINT "WELCOME TO GRANDPA BASIC 1980"'
 
     parse_object = [
@@ -377,7 +395,7 @@ describe "Program line object builder", ->
       340
       "<sp>"
       "<print>"
-      "sp>"
+      "<sp>"
       "<string_expression>"
       "<string_literal>"
       "WELCOME TO GRANDPA BASIC 1980"
@@ -398,7 +416,7 @@ describe "Program line object builder", ->
       350
       "<sp>"
       "<print>"
-      "sp>"
+      "<sp>"
       "<string_expression>"
       "<string_variable>"
       "Z1"
@@ -419,7 +437,7 @@ describe "Program line object builder", ->
       360
       "<sp>"
       "<print>"
-      "sp>"
+      "<sp>"
       "<string_expression>"
       "<string_literal>"
       "LAST NAME = "
@@ -440,20 +458,38 @@ describe "Program line object builder", ->
 
   it "should build a valid program line object from a parsed line with a PRINTLN statement", ->
 
-    line_text = '470 PRINTLN'
+    line_text = '460 PRINTLN'
+
+    parse_object = [
+      "<line_number>"
+      460
+      "<sp>"
+      "<print_line>" ]
+
+    result = @formatter.format(parse_object, line_text)
+    expect(result.line_no).toEqual(460)
+    expect(result.command).toEqual("<print_line>")
+    expect(result.text).toEqual('460 PRINTLN')
+    expect(result.expression[0][0]).toEqual("<str>")
+    expect(result.expression[0][1]).toEqual("")
+
+
+    line_text = '470 PRINTLN X'
 
     parse_object = [
       "<line_number>"
       470
       "<sp>"
-      "<print_line>" ]
+      "<print_line>"
+      "<sp>"
+      "<number_variable>"
+      "X" ]
 
     result = @formatter.format(parse_object, line_text)
     expect(result.line_no).toEqual(470)
-    expect(result.command).toEqual("<print_line>")
-    expect(result.text).toEqual('470 PRINTLN')
-    expect(result.expression[0][0]).toEqual("<str>")
-    expect(result.expression[0][1]).toEqual("")
+    expect(result.command).toEqual("<print_num_line>")
+    expect(result.text).toEqual('470 PRINTLN X')
+    expect(result.name).toEqual("X")
 
 
     line_text = '480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"'
@@ -463,7 +499,7 @@ describe "Program line object builder", ->
       480
       "<sp>"
       "<print_line>"
-      "sp>"
+      "<sp>"
       "<string_expression>"
       "<string_literal>"
       "WELCOME TO GRANDPA BASIC 1980"
@@ -484,7 +520,7 @@ describe "Program line object builder", ->
       490
       "<sp>"
       "<print_line>"
-      "sp>"
+      "<sp>"
       "<string_expression>"
       "<string_variable>"
       "Z1"

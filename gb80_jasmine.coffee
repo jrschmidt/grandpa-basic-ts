@@ -290,7 +290,9 @@ class SyntaxRules
         ["RETURN"]
         ["IF","<sp>","<boolean_expression>","<sp>","THEN","<sp>","<line_number>"]
         ["INPUT","<sp>","<input_statement>"]
+        ["PRINT","<sp>","<number_variable>"]
         ["PRINT","<sp>","<string_expression>"]
+        ["PRINTLN","<sp>","<number_variable>"]
         ["PRINTLN","<sp>","<string_expression>"]
         ["PRINTLN"]
         ["CLEARSCRN"]
@@ -953,13 +955,29 @@ class ProgramLineBuilder
 
   build_print_cmd: (parse_object) ->
     if parse_object.length == 4
-      str_exp = [ ["<str>", ""] ]
+      line = {
+        command: parse_object[3]
+        expression: [ ["<str>", ""] ] }
     else
-      stack = parse_object[5..parse_object.length-1]
-      str_exp = @str_exp.build_str_exp(stack)
-    line = {
-      command: parse_object[3]
-      expression: str_exp }
+      if parse_object[5] == "<number_variable>"
+      # TODO In order to also build line objects for PRINT statements with a
+      # numeric variable, we need to decide a format for print command objects
+      # for this variant, add code here to build line objects in that format,
+      # and add functionality to the BASIC console output to properly interpret
+      # line objects in that format (ie., print the string conversion for the number.)
+        if parse_object[3] == "<print_line>"
+          cmd = "<print_num_line>"
+        else
+          cmd = "<print_num>"
+        line = {
+          command: cmd
+          name: parse_object[6] }
+      else
+        stack = parse_object[5..parse_object.length-1]
+        str_exp = @str_exp.build_str_exp(stack)
+        line = {
+          command: parse_object[3]
+          expression: str_exp }
     return line
 
 

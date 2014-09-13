@@ -171,8 +171,15 @@ describe("Program line object builder", function() {
   });
   it("should build a valid program line object from a parsed line with a PRINT statement", function() {
     var line_text, parse_object, result;
+    line_text = '330 PRINT X';
+    parse_object = ["<line_number>", 330, "<sp>", "<print>", "<sp>", "<number_variable>", "X"];
+    result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(330);
+    expect(result.command).toEqual("<print_num>");
+    expect(result.text).toEqual('330 PRINT X');
+    expect(result.name).toEqual("X");
     line_text = '340 PRINT "WELCOME TO GRANDPA BASIC 1980"';
-    parse_object = ["<line_number>", 340, "<sp>", "<print>", "sp>", "<string_expression>", "<string_literal>", "WELCOME TO GRANDPA BASIC 1980", "<str_exp_end>"];
+    parse_object = ["<line_number>", 340, "<sp>", "<print>", "<sp>", "<string_expression>", "<string_literal>", "WELCOME TO GRANDPA BASIC 1980", "<str_exp_end>"];
     result = this.formatter.format(parse_object, line_text);
     expect(result.line_no).toEqual(340);
     expect(result.command).toEqual("<print>");
@@ -180,7 +187,7 @@ describe("Program line object builder", function() {
     expect(result.expression[0][0]).toEqual("<str>");
     expect(result.expression[0][1]).toEqual("WELCOME TO GRANDPA BASIC 1980");
     line_text = '350 PRINT $Z1';
-    parse_object = ["<line_number>", 350, "<sp>", "<print>", "sp>", "<string_expression>", "<string_variable>", "Z1", "<str_exp_end>"];
+    parse_object = ["<line_number>", 350, "<sp>", "<print>", "<sp>", "<string_expression>", "<string_variable>", "Z1", "<str_exp_end>"];
     result = this.formatter.format(parse_object, line_text);
     expect(result.line_no).toEqual(350);
     expect(result.command).toEqual("<print>");
@@ -188,7 +195,7 @@ describe("Program line object builder", function() {
     expect(result.expression[0][0]).toEqual("<var>");
     expect(result.expression[0][1]).toEqual("Z1");
     line_text = '360 PRINT "LAST NAME = "+$N4';
-    parse_object = ["<line_number>", 360, "<sp>", "<print>", "sp>", "<string_expression>", "<string_literal>", "LAST NAME = ", "<plus>", "<string_variable>", "N4", "<str_exp_end>"];
+    parse_object = ["<line_number>", 360, "<sp>", "<print>", "<sp>", "<string_expression>", "<string_literal>", "LAST NAME = ", "<plus>", "<string_variable>", "N4", "<str_exp_end>"];
     result = this.formatter.format(parse_object, line_text);
     expect(result.line_no).toEqual(360);
     expect(result.command).toEqual("<print>");
@@ -200,16 +207,23 @@ describe("Program line object builder", function() {
   });
   it("should build a valid program line object from a parsed line with a PRINTLN statement", function() {
     var line_text, parse_object, result;
-    line_text = '470 PRINTLN';
-    parse_object = ["<line_number>", 470, "<sp>", "<print_line>"];
+    line_text = '460 PRINTLN';
+    parse_object = ["<line_number>", 460, "<sp>", "<print_line>"];
     result = this.formatter.format(parse_object, line_text);
-    expect(result.line_no).toEqual(470);
+    expect(result.line_no).toEqual(460);
     expect(result.command).toEqual("<print_line>");
-    expect(result.text).toEqual('470 PRINTLN');
+    expect(result.text).toEqual('460 PRINTLN');
     expect(result.expression[0][0]).toEqual("<str>");
     expect(result.expression[0][1]).toEqual("");
+    line_text = '470 PRINTLN X';
+    parse_object = ["<line_number>", 470, "<sp>", "<print_line>", "<sp>", "<number_variable>", "X"];
+    result = this.formatter.format(parse_object, line_text);
+    expect(result.line_no).toEqual(470);
+    expect(result.command).toEqual("<print_num_line>");
+    expect(result.text).toEqual('470 PRINTLN X');
+    expect(result.name).toEqual("X");
     line_text = '480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"';
-    parse_object = ["<line_number>", 480, "<sp>", "<print_line>", "sp>", "<string_expression>", "<string_literal>", "WELCOME TO GRANDPA BASIC 1980", "<str_exp_end>"];
+    parse_object = ["<line_number>", 480, "<sp>", "<print_line>", "<sp>", "<string_expression>", "<string_literal>", "WELCOME TO GRANDPA BASIC 1980", "<str_exp_end>"];
     result = this.formatter.format(parse_object, line_text);
     expect(result.line_no).toEqual(480);
     expect(result.command).toEqual("<print_line>");
@@ -217,7 +231,7 @@ describe("Program line object builder", function() {
     expect(result.expression[0][0]).toEqual("<str>");
     expect(result.expression[0][1]).toEqual("WELCOME TO GRANDPA BASIC 1980");
     line_text = '490 PRINTLN $Z1';
-    parse_object = ["<line_number>", 490, "<sp>", "<print_line>", "sp>", "<string_expression>", "<string_variable>", "Z1", "<str_exp_end>"];
+    parse_object = ["<line_number>", 490, "<sp>", "<print_line>", "<sp>", "<string_expression>", "<string_variable>", "Z1", "<str_exp_end>"];
     result = this.formatter.format(parse_object, line_text);
     expect(result.line_no).toEqual(490);
     expect(result.command).toEqual("<print_line>");
