@@ -202,6 +202,7 @@ class ProgramRunner
     @num_vars = @helpers.num_vars
     @str_vars = @helpers.str_vars
     @num_eval = @helpers.num_eval
+    @num_form = @helpers.num_form
     @str_eval = @helpers.str_eval
     @bx_eval = @helpers.bx_eval
 
@@ -270,7 +271,10 @@ class ProgramRunner
 
 
   run_print_num: (line_object) ->
-    string = @numvarclass.numvar2str(line_object.name)
+    var_name = line_object.name
+    number = @num_eval.val( {exp: "<var>", name: var_name} )
+    string = @num_form.num_to_str(number)
+    console.log "run_print_num() OUTPUT = #{string}"
     return {output: string}
 
 
@@ -1041,13 +1045,24 @@ class ProgramLineBuilder
 
   build_print_cmd: (parse_object) ->
     if parse_object.length == 4
-      str_exp = [ ["<str>", ""] ]
+      line = {
+        command: parse_object[3]
+        expression: [ ["<str>", ""] ] }
     else
-      stack = parse_object[5..parse_object.length-1]
-      str_exp = @str_exp.build_str_exp(stack)
-    line = {
-      command: parse_object[3]
-      expression: str_exp }
+      if parse_object[5] == "<number_variable>"
+        if parse_object[3] == "<print_line>"
+          cmd = "<print_num_line>"
+        else
+          cmd = "<print_num>"
+        line = {
+          command: cmd
+          name: parse_object[6] }
+      else
+        stack = parse_object[5..parse_object.length-1]
+        str_exp = @str_exp.build_str_exp(stack)
+        line = {
+          command: parse_object[3]
+          expression: str_exp }
     return line
 
 
@@ -1304,6 +1319,7 @@ class InterpreterHelpers
     @num_vars = new NumericVariableRegister
     @str_vars = new StringVariableRegister
     @num_eval = new NumericExpressionEvaluator(this)
+    @num_form = new NumericStringFormatter
     @str_eval = new StringExpressionConcatenator(this)
     @bx_eval = new BooleanExpressionEvaluator(this)
 
@@ -1355,12 +1371,14 @@ class StringVariableRegister extends VariableRegister
 
 
 
+
 class NumericExpressionEvaluator
   # Applies the current values of any variables involved against the numeric
   # expression object and returns the result.
 
   constructor: (helpers) ->
     @vars = helpers.num_vars
+
 
 
   val: (num_exp) ->
@@ -1401,6 +1419,19 @@ class NumericExpressionEvaluator
         value = a**b
       else
         value = "error"
+
+
+
+class NumericStringFormatter
+
+  constructor: ->
+    @digits = 8
+
+  num_to_str: (num) ->
+    str = num.toString()
+    if ( str.indexOf(".") > 0 ) then chars = @digits + 1 else chars = @digits
+    if str.length > chars then str = str[0..chars-1]
+    return str
 
 
 

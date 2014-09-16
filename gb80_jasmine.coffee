@@ -960,11 +960,6 @@ class ProgramLineBuilder
         expression: [ ["<str>", ""] ] }
     else
       if parse_object[5] == "<number_variable>"
-      # TODO In order to also build line objects for PRINT statements with a
-      # numeric variable, we need to decide a format for print command objects
-      # for this variant, add code here to build line objects in that format,
-      # and add functionality to the BASIC console output to properly interpret
-      # line objects in that format (ie., print the string conversion for the number.)
         if parse_object[3] == "<print_line>"
           cmd = "<print_num_line>"
         else
@@ -1173,6 +1168,7 @@ class InterpreterHelpers
     @num_vars = new NumericVariableRegister
     @str_vars = new StringVariableRegister
     @num_eval = new NumericExpressionEvaluator(this)
+    @num_form = new NumericStringFormatter
     @str_eval = new StringExpressionConcatenator(this)
     @bx_eval = new BooleanExpressionEvaluator(this)
 
@@ -1267,6 +1263,19 @@ class NumericExpressionEvaluator
         value = a**b
       else
         value = "error"
+
+
+
+class NumericStringFormatter
+
+  constructor: ->
+    @digits = 8
+
+  num_to_str: (num) ->
+    str = num.toString()
+    if ( str.indexOf(".") > 0 ) then chars = @digits + 1 else chars = @digits
+    if str.length > chars then str = str[0..chars-1]
+    return str
 
 
 
