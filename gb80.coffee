@@ -951,6 +951,9 @@ class ProgramLineBuilder
 
 
   build_console_command: (parse_object) ->
+    # These objects are built when the user types an immediately executable
+    # console command (CLEAR, RUN, INFO, LIST) instead of a BASIC program
+    # statment with a line number.
     if parse_object.length == 1
       cmd = parse_object[0]
       switch cmd
@@ -969,14 +972,22 @@ class ProgramLineBuilder
 
 
   build_line_removal: ->
+    # This object is built when the user types a plain number with nothing after
+    # it in order to remove that line from the program.
     return {command: "<remove_line>"}
 
 
   build_remark: (parse_object) ->
+    # Anything after the characters "REM" in a BASIC program line is a remark.
+    # Since the remark itself is in the text of the program line, no additional
+    # properties for the program line object are required.
     return {command: "<remark>" }
 
 
   build_numeric_assignment: (parse_object) ->
+    # The operand property is the symbol for a numeric variable such as "X",
+    # "Y", or "B1". The expression property is a simple or complex numeric
+    # expression object built by the NumExpBuilder class.
     stack = parse_object[6..parse_object.length-1]
     nmx = @num_exp.build_nxp(stack)
     if nmx.malformed == "yes"
@@ -990,6 +1001,10 @@ class ProgramLineBuilder
 
 
   build_string_assignment: (parse_object) ->
+    # The operand property is the symbol for a string variable, stripped of the
+    # "$" character. For example, the operand property for $S or $T2 would be
+    # "S" or "T2". The expression property is a string expression object built
+    # by the NumExpBuilder class.
     stack = parse_object[6..parse_object.length-1]
     str_exp = @str_exp.build_str_exp(stack)
     line = {
@@ -1000,12 +1015,18 @@ class ProgramLineBuilder
 
 
   build_cmd_with_dest: (parse_object) ->
+    # This method builds a program line object for either a GOTO or a GOSUB
+    # statement. The command property will be either "<goto>" or "<gosub>", and
+    # the dest property will be the line number to which program execution will
+    # be redirected.
     return {
       command: parse_object[3]
       dest: parse_object[6] }
 
 
   build_simple_cmd: (parse_object) ->
+    # This method builds program line objects for statements that require no
+    # parameters, such as RETURN, CLEARSCRN, or END.
     return {
       command: parse_object[3] }
 
