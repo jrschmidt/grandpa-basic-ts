@@ -5,9 +5,9 @@
 # Emulates the action of a computing platform in common use around the year
 # 1980 - a dedicated machine hard-wired for writing and executing programs
 # written in a line numbered version of BASIC, based on the original Dartmouth
-# BASIC. ALL code was prefixed with line numbers, and execution proceeded
+# BASIC. All code was prefixed with line numbers, and execution proceeded
 # sequentially according to line number except where control structures such as
-# GOTO or IF - THEN diverted execution elsewhere. These machines, at first, had
+# GOTO or IF/THEN diverted execution elsewhere. These machines, at first, had
 # monochrome CRT monitors that only printed uppercase letters.
 #
 # This app uses Javascript code, from source written in Coffeescript, to act
@@ -49,6 +49,8 @@ class KeyTalker
       @bconsole.ch(@keys.char(ch_num))
     else
       @bconsole.backspace() if ch_key == 8
+      # FIXME FIXME Here we must enter another mode if we are accepting
+      # keystrokes while executing an INPUT statement.
       if ch_key == 13
         line = @bconsole.enter_line()
         @controller.handle_line_entry(line)
@@ -67,6 +69,8 @@ class ActionController
     @formatter = new ProgramLineBuilder
     @line_listing = new ProgramLineListing
     @program = new ProgramController(this)
+    # TODO Here is probably a good place to add a flag to mark 'normal' key
+    # input mode or 'input command' mode.
 
 
   handle_line_entry: (string) ->
@@ -129,6 +133,11 @@ class ProgramController
 
 
   run_program: ->
+    #FIXME FIXME FIXME
+    # If we run a program, the variables are not cleared afterward. If we change
+    # the program, and the new program does not alter the old variables, the
+    # program will run with those variables falsely 'initialized' to their old values.
+    #FIXME FIXME FIXME
     line_objects = @line_listing.get_program_objects()
     @load(line_objects)
     while @next_line_no > 0
@@ -223,6 +232,8 @@ class ProgramRunner
         @line_result = @run_return(line_object)
       when "<if>"
         @line_result = @run_if(line_object)
+      when "<input_numeric>","<input_string>","<input_numeric_prompt>","<input_string_prompt>"
+        @line_result = @run_input(line_object)
       when "<print>"
         @line_result = @run_print(line_object)
       when "<print_num>"
@@ -263,6 +274,10 @@ class ProgramRunner
 
   run_return: (line_object) ->
     return {sub: "return"}
+
+
+  run_input: (line_object) ->
+    console.log "run_input() CALLED . . ."
 
 
   run_print: (line_object) ->

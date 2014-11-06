@@ -232,6 +232,11 @@ ProgramRunner = (function() {
         return this.line_result = this.run_return(line_object);
       case "<if>":
         return this.line_result = this.run_if(line_object);
+      case "<input_numeric>":
+      case "<input_string>":
+      case "<input_numeric_prompt>":
+      case "<input_string_prompt>":
+        return this.line_result = this.run_input(line_object);
       case "<print>":
         return this.line_result = this.run_print(line_object);
       case "<print_num>":
@@ -288,6 +293,10 @@ ProgramRunner = (function() {
     return {
       sub: "return"
     };
+  };
+
+  ProgramRunner.prototype.run_input = function(line_object) {
+    return console.log("run_input() CALLED . . .");
   };
 
   ProgramRunner.prototype.run_print = function(line_object) {
