@@ -12,6 +12,14 @@ KeyTalker = (function() {
     this.key_mode = "<normal_mode>";
   }
 
+  KeyTalker.prototype.reset_normal_mode = function() {
+    return this.key_mode = "<normal_mode>";
+  };
+
+  KeyTalker.prototype.set_input_mode = function() {
+    return this.key_mode = "<inpu_mode>";
+  };
+
   KeyTalker.prototype.handle = function(ch_num, ch_key) {
     if (this.key_mode === "<input_mode>") {
       return this.handle_input(ch_num, ch_key);
@@ -130,9 +138,10 @@ ActionController = (function() {
 ProgramController = (function() {
   function ProgramController(action_controller) {
     this.controller = action_controller;
+    this.keys = this.controller.keys;
     this.bconsole = this.controller.bconsole;
     this.line_listing = this.controller.line_listing;
-    this.commands = new ProgramRunner;
+    this.commands = new ProgramRunner(this);
     this.lines = {};
     this.line_order = [];
     this.next_line_index = -1;
@@ -231,8 +240,10 @@ ProgramController = (function() {
 })();
 
 ProgramRunner = (function() {
-  function ProgramRunner() {
-    this.helpers = new InterpreterHelpers;
+  function ProgramRunner(program_control) {
+    this.program = program_control;
+    this.keys = this.program.keys;
+    this.helpers = new InterpreterHelpers(this);
     this.num_vars = this.helpers.num_vars;
     this.str_vars = this.helpers.str_vars;
     this.num_eval = this.helpers.num_eval;
@@ -322,7 +333,9 @@ ProgramRunner = (function() {
   };
 
   ProgramRunner.prototype.run_input = function(line_object) {
-    return this.input.get_input(line_object);
+    var var_input;
+    var_input = this.input.get_input(line_object);
+    return console.log(" VAR input = " + var_input);
   };
 
   ProgramRunner.prototype.run_print = function(line_object) {
@@ -1598,14 +1611,16 @@ BoolExpBuilder = (function() {
 })();
 
 InterpreterHelpers = (function() {
-  function InterpreterHelpers() {
+  function InterpreterHelpers(prog_command_runner) {
+    this.commands = prog_command_runner;
+    this.keys = this.commands.keys;
     this.num_vars = new NumericVariableRegister;
     this.str_vars = new StringVariableRegister;
     this.num_eval = new NumericExpressionEvaluator(this);
     this.num_form = new NumericStringFormatter;
     this.str_eval = new StringExpressionConcatenator(this);
     this.bx_eval = new BooleanExpressionEvaluator(this);
-    this.input = new InputHelper;
+    this.input = new InputHelper(this);
   }
 
   return InterpreterHelpers;
@@ -1841,17 +1856,25 @@ BooleanExpressionEvaluator = (function() {
 })();
 
 InputHelper = (function() {
-  function InputHelper() {}
+  function InputHelper(helpers) {
+    this.helpers = helpers;
+    this.keys = this.helpers.keys;
+  }
 
   InputHelper.prototype.get_input = function(line_object) {
-    var prompt;
+    var entry, prompt;
     console.log("get_input() CALLED . . .");
     console.log("  line_object.command = " + line_object.command);
     console.log("  line_object.prompt = " + line_object.prompt);
     console.log("  line_object.operand = " + line_object.operand);
-    prompt = "" + line_object.prompt + " ?";
+    prompt = "" + line_object.prompt + "? ";
     console.log("  INPUT PROMPT = " + prompt);
-    return "TEST INPUT";
+    entry = this.get_entry();
+    return entry;
+  };
+
+  InputHelper.prototype.get_entry = function() {
+    return "TeSt DaTa EnTrY";
   };
 
   return InputHelper;

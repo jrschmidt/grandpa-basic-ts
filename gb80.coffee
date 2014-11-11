@@ -45,6 +45,14 @@ class KeyTalker
 		@key_mode = "<normal_mode>"
 
 
+	reset_normal_mode: ->
+		@key_mode = "<normal_mode>"
+
+
+	set_input_mode: ->
+		@key_mode = "<inpu_mode>"
+
+
 	handle: (ch_num, ch_key) ->
 		if @key_mode == "<input_mode>"
 			@handle_input(ch_num, ch_key)
@@ -137,9 +145,10 @@ class ProgramController
 
 	constructor: (action_controller)->
 		@controller = action_controller
+		@keys = @controller.keys
 		@bconsole = @controller.bconsole
 		@line_listing = @controller.line_listing
-		@commands = new ProgramRunner
+		@commands = new ProgramRunner(this)
 		@lines = {}
 		@line_order = []
 		@next_line_index = -1
@@ -224,8 +233,10 @@ class ProgramRunner
 	# The class responsible for interpreting program line objects and executing
 	# them when the program is run.
 
-	constructor: ->
-		@helpers = new InterpreterHelpers
+	constructor: (program_control) ->
+		@program = program_control
+		@keys = @program.keys
+		@helpers = new InterpreterHelpers(this)
 		@num_vars = @helpers.num_vars
 		@str_vars = @helpers.str_vars
 		@num_eval = @helpers.num_eval
@@ -296,7 +307,8 @@ class ProgramRunner
 
 
 	run_input: (line_object) ->
-		@input.get_input(line_object)
+		var_input = @input.get_input(line_object)
+		console.log " VAR input = #{var_input}"
 
 
 	run_print: (line_object) ->
@@ -1372,14 +1384,16 @@ class BoolExpBuilder
 class InterpreterHelpers
 	# Container class for subclasses that help evaluate expressions.
 
-	constructor: ->
+	constructor: (prog_command_runner) ->
+		@commands = prog_command_runner
+		@keys = @commands.keys
 		@num_vars = new NumericVariableRegister
 		@str_vars = new StringVariableRegister
 		@num_eval = new NumericExpressionEvaluator(this)
 		@num_form = new NumericStringFormatter
 		@str_eval = new StringExpressionConcatenator(this)
 		@bx_eval = new BooleanExpressionEvaluator(this)
-		@input = new InputHelper
+		@input = new InputHelper(this)
 
 
 
@@ -1556,14 +1570,23 @@ class BooleanExpressionEvaluator
 
 class InputHelper
 
+	constructor: (helpers) ->
+		@helpers = helpers
+		@keys = @helpers.keys
+
 	get_input: (line_object) ->
 		console.log "get_input() CALLED . . ."
 		console.log "  line_object.command = #{line_object.command}"
 		console.log "  line_object.prompt = #{line_object.prompt}"
 		console.log "  line_object.operand = #{line_object.operand}"
-		prompt = "#{line_object.prompt} ?"
+		prompt = "#{line_object.prompt}? "
 		console.log "  INPUT PROMPT = #{prompt}"
-		return "TEST INPUT"
+		entry = @get_entry()
+		return entry
+
+
+	get_entry: ->
+		return "TeSt DaTa EnTrY"
 
 
 
@@ -1592,6 +1615,7 @@ class BasicConsole
 	enter_line: () ->
 		line = @buffer.chars
 		if line.length > 0
+			# FIXME Probably should replace the next line with an erase_cursor() method.
 			@draw_blank_char(@line, @column+1)
 			@scroll_line(line)
 			@buffer.clear()
