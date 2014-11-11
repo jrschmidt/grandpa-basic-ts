@@ -1183,13 +1183,14 @@ ProgramLineBuilder = (function() {
       op = parse_object[9];
       prompt = parse_object[6];
       if (parse_object[8] === "<number_variable>") {
-        cmd = "<input_numeric_prompt>";
+        cmd = "<input_numeric>";
       } else {
-        cmd = "<input_string_prompt>";
+        cmd = "<input_string>";
       }
     } else {
       op = parse_object[6];
-      prompt = "<no_prompt>";
+      prompt = "";
+      console.log("*** prompt = " + prompt);
       if (parse_object[5] === "<number_variable>") {
         cmd = "<input_numeric>";
       } else {
@@ -1198,11 +1199,10 @@ ProgramLineBuilder = (function() {
     }
     line = {
       command: cmd,
-      operand: op
+      operand: op,
+      prompt: prompt
     };
-    if (prompt !== "<no_prompt>") {
-      line.prompt = prompt;
-    }
+    console.log("*** line.prompt = " + line.prompt);
     return line;
   };
 

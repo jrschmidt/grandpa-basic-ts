@@ -128,7 +128,7 @@ describe "Action Controller - build object", ->
 
     result = @controller.build_line_object('130 INPUT "HOW MANY?";M')
     expect(result.line_no).toEqual(130)
-    expect(result.command).toEqual("<input_numeric_prompt>")
+    expect(result.command).toEqual("<input_numeric>")
     expect(result.text).toEqual('130 INPUT "HOW MANY?";M')
     expect(result.operand).toEqual("M")
     expect(result.prompt).toEqual("HOW MANY?")
@@ -136,7 +136,7 @@ describe "Action Controller - build object", ->
 
     result = @controller.build_line_object('140 INPUT "LAST NAME?";$N2')
     expect(result.line_no).toEqual(140)
-    expect(result.command).toEqual("<input_string_prompt>")
+    expect(result.command).toEqual("<input_string>")
     expect(result.text).toEqual('140 INPUT "LAST NAME?";$N2')
     expect(result.operand).toEqual("N2")
     expect(result.prompt).toEqual("LAST NAME?")
@@ -291,7 +291,7 @@ describe "Action Controller - add line", ->
 
     @controller.handle_line_entry('130 INPUT "HOW MANY?";M')
     line = @lines.get_line(130)
-    expect(line.command).toEqual("<input_numeric_prompt>")
+    expect(line.command).toEqual("<input_numeric>")
 
 
   it "should parse, build and add a PRINT statement program line object", ->

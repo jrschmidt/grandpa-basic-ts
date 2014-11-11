@@ -145,6 +145,7 @@ describe("Program line object builder", function() {
     expect(result.command).toEqual("<input_numeric>");
     expect(result.text).toEqual('110 INPUT R');
     expect(result.operand).toEqual("R");
+    expect(result.prompt).toEqual("");
     line_text = '120 INPUT $V';
     parse_object = ["<line_number>", 120, "<sp>", "<input>", "<sp>", "<string_variable>", "V"];
     result = this.formatter.format(parse_object, line_text);
@@ -152,11 +153,12 @@ describe("Program line object builder", function() {
     expect(result.command).toEqual("<input_string>");
     expect(result.text).toEqual('120 INPUT $V');
     expect(result.operand).toEqual("V");
+    expect(result.prompt).toEqual("");
     line_text = '130 INPUT "HOW MANY?";M';
     parse_object = ["<line_number>", 130, "<sp>", "<input>", "<sp>", "<string>", "HOW MANY?", "<semicolon>", "<number_variable>", "M"];
     result = this.formatter.format(parse_object, line_text);
     expect(result.line_no).toEqual(130);
-    expect(result.command).toEqual("<input_numeric_prompt>");
+    expect(result.command).toEqual("<input_numeric>");
     expect(result.text).toEqual('130 INPUT "HOW MANY?";M');
     expect(result.operand).toEqual("M");
     expect(result.prompt).toEqual("HOW MANY?");
@@ -164,7 +166,7 @@ describe("Program line object builder", function() {
     parse_object = ["<line_number>", 140, "<sp>", "<input>", "<sp>", "<string>", "LAST NAME?", "<semicolon>", "<string_variable>", "N2"];
     result = this.formatter.format(parse_object, line_text);
     expect(result.line_no).toEqual(140);
-    expect(result.command).toEqual("<input_string_prompt>");
+    expect(result.command).toEqual("<input_string>");
     expect(result.text).toEqual('140 INPUT "LAST NAME?";$N2');
     expect(result.operand).toEqual("N2");
     return expect(result.prompt).toEqual("LAST NAME?");
