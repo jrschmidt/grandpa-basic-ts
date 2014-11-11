@@ -232,7 +232,7 @@ class ProgramRunner
 		@num_form = @helpers.num_form
 		@str_eval = @helpers.str_eval
 		@bx_eval = @helpers.bx_eval
-		@console_input = @helpers.console_input
+		@input = @helpers.input
 
 
 	run_command: (line_object) ->
@@ -296,7 +296,7 @@ class ProgramRunner
 
 
 	run_input: (line_object) ->
-		@console_input.get_input(line_object)
+		@input.get_input(line_object)
 
 
 	run_print: (line_object) ->
@@ -1379,7 +1379,7 @@ class InterpreterHelpers
 		@num_form = new NumericStringFormatter
 		@str_eval = new StringExpressionConcatenator(this)
 		@bx_eval = new BooleanExpressionEvaluator(this)
-		@console_input = new InputHelper
+		@input = new InputHelper
 
 
 
@@ -1561,7 +1561,7 @@ class InputHelper
 		console.log "  line_object.command = #{line_object.command}"
 		console.log "  line_object.prompt = #{line_object.prompt}"
 		console.log "  line_object.operand = #{line_object.operand}"
-		prompt = "? #{line_object.prompt}"
+		prompt = "#{line_object.prompt} ?"
 		console.log "  INPUT PROMPT = #{prompt}"
 		return "TEST INPUT"
 

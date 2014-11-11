@@ -239,7 +239,7 @@ ProgramRunner = (function() {
     this.num_form = this.helpers.num_form;
     this.str_eval = this.helpers.str_eval;
     this.bx_eval = this.helpers.bx_eval;
-    this.console_input = this.helpers.console_input;
+    this.input = this.helpers.input;
   }
 
   ProgramRunner.prototype.run_command = function(line_object) {
@@ -322,7 +322,7 @@ ProgramRunner = (function() {
   };
 
   ProgramRunner.prototype.run_input = function(line_object) {
-    return this.console_input.get_input(line_object);
+    return this.input.get_input(line_object);
   };
 
   ProgramRunner.prototype.run_print = function(line_object) {
@@ -1605,7 +1605,7 @@ InterpreterHelpers = (function() {
     this.num_form = new NumericStringFormatter;
     this.str_eval = new StringExpressionConcatenator(this);
     this.bx_eval = new BooleanExpressionEvaluator(this);
-    this.console_input = new InputHelper;
+    this.input = new InputHelper;
   }
 
   return InterpreterHelpers;
@@ -1849,7 +1849,7 @@ InputHelper = (function() {
     console.log("  line_object.command = " + line_object.command);
     console.log("  line_object.prompt = " + line_object.prompt);
     console.log("  line_object.operand = " + line_object.operand);
-    prompt = "? " + line_object.prompt;
+    prompt = "" + line_object.prompt + " ?";
     console.log("  INPUT PROMPT = " + prompt);
     return "TEST INPUT";
   };
