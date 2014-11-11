@@ -42,9 +42,17 @@ class KeyTalker
 		@bconsole = new BasicConsole
 		@controller = new ActionController(this)
 		@keys = @bconsole.keys
+		@key_mode = "<normal_mode>"
 
 
 	handle: (ch_num, ch_key) ->
+		if @key_mode == "<input_mode>"
+			@handle_input(ch_num, ch_key)
+		else
+			@handle_normal(ch_num, ch_key)
+
+
+	handle_normal: (ch_num, ch_key) ->
 		if ch_num > 0
 			@bconsole.ch(@keys.char(ch_num))
 		else
@@ -52,6 +60,18 @@ class KeyTalker
 			if ch_key == 13
 				line = @bconsole.enter_line()
 				@controller.handle_line_entry(line)
+
+
+	handle_input: (ch_num, ch_key) ->
+		console.log "   INPUT MODE "
+		if ch_num > 0
+			@bconsole.ch(@keys.char(ch_num))
+		else
+			@bconsole.backspace() if ch_key == 8
+			if ch_key == 13
+				line = @bconsole.enter_line()
+				# @controller.handle_line_entry(line)
+				console.log "the following input needs to be handled: #{line}"
 
 
 
@@ -212,7 +232,7 @@ class ProgramRunner
 		@num_form = @helpers.num_form
 		@str_eval = @helpers.str_eval
 		@bx_eval = @helpers.bx_eval
-		@console_input = new InputHelper
+		@console_input = @helpers.console_input
 
 
 	run_command: (line_object) ->
@@ -1357,6 +1377,7 @@ class InterpreterHelpers
 		@num_form = new NumericStringFormatter
 		@str_eval = new StringExpressionConcatenator(this)
 		@bx_eval = new BooleanExpressionEvaluator(this)
+		@console_input = new InputHelper
 
 
 
@@ -1535,6 +1556,11 @@ class InputHelper
 
 	get_input: (line_object) ->
 		console.log "get_input() CALLED . . ."
+		console.log "  line_object.command = #{line_object.command}"
+		console.log "  line_object.prompt = #{line_object.prompt}"
+		console.log "  line_object.operand = #{line_object.operand}"
+		prompt = "? #{line_object.prompt}"
+		console.log "  INPUT PROMPT = #{prompt}"
 		return "TEST INPUT"
 
 

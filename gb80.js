@@ -9,9 +9,18 @@ KeyTalker = (function() {
     this.bconsole = new BasicConsole;
     this.controller = new ActionController(this);
     this.keys = this.bconsole.keys;
+    this.key_mode = "<normal_mode>";
   }
 
   KeyTalker.prototype.handle = function(ch_num, ch_key) {
+    if (this.key_mode === "<input_mode>") {
+      return this.handle_input(ch_num, ch_key);
+    } else {
+      return this.handle_normal(ch_num, ch_key);
+    }
+  };
+
+  KeyTalker.prototype.handle_normal = function(ch_num, ch_key) {
     var line;
     if (ch_num > 0) {
       return this.bconsole.ch(this.keys.char(ch_num));
@@ -22,6 +31,22 @@ KeyTalker = (function() {
       if (ch_key === 13) {
         line = this.bconsole.enter_line();
         return this.controller.handle_line_entry(line);
+      }
+    }
+  };
+
+  KeyTalker.prototype.handle_input = function(ch_num, ch_key) {
+    var line;
+    console.log("   INPUT MODE ");
+    if (ch_num > 0) {
+      return this.bconsole.ch(this.keys.char(ch_num));
+    } else {
+      if (ch_key === 8) {
+        this.bconsole.backspace();
+      }
+      if (ch_key === 13) {
+        line = this.bconsole.enter_line();
+        return console.log("the following input needs to be handled: " + line);
       }
     }
   };
@@ -214,7 +239,7 @@ ProgramRunner = (function() {
     this.num_form = this.helpers.num_form;
     this.str_eval = this.helpers.str_eval;
     this.bx_eval = this.helpers.bx_eval;
-    this.console_input = new InputHelper;
+    this.console_input = this.helpers.console_input;
   }
 
   ProgramRunner.prototype.run_command = function(line_object) {
@@ -1580,6 +1605,7 @@ InterpreterHelpers = (function() {
     this.num_form = new NumericStringFormatter;
     this.str_eval = new StringExpressionConcatenator(this);
     this.bx_eval = new BooleanExpressionEvaluator(this);
+    this.console_input = new InputHelper;
   }
 
   return InterpreterHelpers;
@@ -1818,7 +1844,13 @@ InputHelper = (function() {
   function InputHelper() {}
 
   InputHelper.prototype.get_input = function(line_object) {
+    var prompt;
     console.log("get_input() CALLED . . .");
+    console.log("  line_object.command = " + line_object.command);
+    console.log("  line_object.prompt = " + line_object.prompt);
+    console.log("  line_object.operand = " + line_object.operand);
+    prompt = "? " + line_object.prompt;
+    console.log("  INPUT PROMPT = " + prompt);
     return "TEST INPUT";
   };
 
