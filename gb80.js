@@ -7,17 +7,23 @@ var ActionController, BasicConsole, BoolExpBuilder, BooleanExpressionEvaluator, 
 KeyTalker = (function() {
   function KeyTalker() {
     this.bconsole = new BasicConsole;
-    this.controller = new ActionController(this);
     this.keys = this.bconsole.keys;
     this.key_mode = "<normal_mode>";
+    this.controller = new ActionController(this);
   }
 
   KeyTalker.prototype.reset_normal_mode = function() {
-    return this.key_mode = "<normal_mode>";
+    this.key_mode = "<normal_mode>";
+    return console.log("RESET: key_mode = normal");
   };
 
   KeyTalker.prototype.set_input_mode = function() {
-    return this.key_mode = "<inpu_mode>";
+    this.key_mode = "<input_mode>";
+    return console.log("SET: key_mode = input");
+  };
+
+  KeyTalker.prototype.get_mode = function() {
+    return this.key_mode;
   };
 
   KeyTalker.prototype.handle = function(ch_num, ch_key) {
@@ -45,7 +51,7 @@ KeyTalker = (function() {
 
   KeyTalker.prototype.handle_input = function(ch_num, ch_key) {
     var line;
-    console.log("   INPUT MODE ");
+    console.log("   INPUT MODE " + key_mode);
     if (ch_num > 0) {
       return this.bconsole.ch(this.keys.char(ch_num));
     } else {
@@ -1859,21 +1865,26 @@ InputHelper = (function() {
   function InputHelper(helpers) {
     this.helpers = helpers;
     this.keys = this.helpers.keys;
+    this.bconsole = this.keys.bconsole;
   }
 
   InputHelper.prototype.get_input = function(line_object) {
-    var entry, prompt;
+    var prompt, val;
     console.log("get_input() CALLED . . .");
     console.log("  line_object.command = " + line_object.command);
     console.log("  line_object.prompt = " + line_object.prompt);
     console.log("  line_object.operand = " + line_object.operand);
     prompt = "" + line_object.prompt + "? ";
     console.log("  INPUT PROMPT = " + prompt);
-    entry = this.get_entry();
-    return entry;
+    this.bconsole.print(prompt);
+    val = this.get_entry();
+    return val;
   };
 
   InputHelper.prototype.get_entry = function() {
+    console.log("*InputHelper#get_entry() ...  ...  ...*");
+    this.keys.set_input_mode();
+    this.keys.reset_normal_mode();
     return "TeSt DaTa EnTrY";
   };
 
@@ -1934,6 +1945,7 @@ BasicConsole = (function() {
 
   BasicConsole.prototype.print = function(string) {
     var ch, _i, _len;
+    console.log("**** BasicConsole#print()  string=" + string);
     this.draw_blank_char(this.line, 1);
     for (_i = 0, _len = string.length; _i < _len; _i++) {
       ch = string[_i];

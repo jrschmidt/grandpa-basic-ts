@@ -40,17 +40,23 @@ class KeyTalker
 
 	constructor: ->
 		@bconsole = new BasicConsole
-		@controller = new ActionController(this)
 		@keys = @bconsole.keys
 		@key_mode = "<normal_mode>"
+		@controller = new ActionController(this)
 
 
 	reset_normal_mode: ->
 		@key_mode = "<normal_mode>"
+		console.log "RESET: key_mode = normal"
 
 
 	set_input_mode: ->
-		@key_mode = "<inpu_mode>"
+		@key_mode = "<input_mode>"
+		console.log "SET: key_mode = input"
+
+
+	get_mode: ->
+		return @key_mode
 
 
 	handle: (ch_num, ch_key) ->
@@ -71,7 +77,7 @@ class KeyTalker
 
 
 	handle_input: (ch_num, ch_key) ->
-		console.log "   INPUT MODE "
+		console.log "   INPUT MODE #{key_mode}"
 		if ch_num > 0
 			@bconsole.ch(@keys.char(ch_num))
 		else
@@ -307,6 +313,7 @@ class ProgramRunner
 
 
 	run_input: (line_object) ->
+
 		var_input = @input.get_input(line_object)
 		console.log " VAR input = #{var_input}"
 
@@ -1573,6 +1580,7 @@ class InputHelper
 	constructor: (helpers) ->
 		@helpers = helpers
 		@keys = @helpers.keys
+		@bconsole = @keys.bconsole
 
 	get_input: (line_object) ->
 		console.log "get_input() CALLED . . ."
@@ -1581,11 +1589,17 @@ class InputHelper
 		console.log "  line_object.operand = #{line_object.operand}"
 		prompt = "#{line_object.prompt}? "
 		console.log "  INPUT PROMPT = #{prompt}"
-		entry = @get_entry()
-		return entry
+		@bconsole.print(prompt)
+		val = @get_entry()
+		return val
 
 
 	get_entry: ->
+		console.log "*InputHelper#get_entry() ...  ...  ...*"
+		@keys.set_input_mode()
+		# FIXME while/until needs a statement BEFORE it in coffeescript.
+		# while (@keys.get_mode() == "<input_mode>")
+		@keys.reset_normal_mode()
 		return "TeSt DaTa EnTrY"
 
 
@@ -1615,7 +1629,8 @@ class BasicConsole
 	enter_line: () ->
 		line = @buffer.chars
 		if line.length > 0
-			# FIXME Probably should replace the next line with an erase_cursor() method.
+			# FIXME Probably should replace the next line with an erase_cursor() method
+			# (or does this already happen with the ConsoleLineBuffer#trim() method?).
 			@draw_blank_char(@line, @column+1)
 			@scroll_line(line)
 			@buffer.clear()
@@ -1642,6 +1657,7 @@ class BasicConsole
 
 
 	print: (string) ->
+		console.log "**** BasicConsole#print()  string=#{string}"
 		@draw_blank_char(@line, 1)
 		for ch in string
 			@column = @column + 1
