@@ -9,8 +9,13 @@ KeyTalker = (function() {
     this.bconsole = new BasicConsole;
     this.keys = this.bconsole.keys;
     this.key_mode = "<normal_mode>";
+    this.input_status = "<none>";
     this.controller = new ActionController(this);
   }
+
+  KeyTalker.prototype.get_mode = function() {
+    return this.key_mode;
+  };
 
   KeyTalker.prototype.reset_normal_mode = function() {
     this.key_mode = "<normal_mode>";
@@ -22,8 +27,23 @@ KeyTalker = (function() {
     return console.log("SET: key_mode = input");
   };
 
-  KeyTalker.prototype.get_mode = function() {
-    return this.key_mode;
+  KeyTalker.prototype.get_input_status = function() {
+    return this.input_status;
+  };
+
+  KeyTalker.prototype.reset_input_status = function() {
+    this.input_status = "<none>";
+    return console.log("RESET: input_status = -none-");
+  };
+
+  KeyTalker.prototype.set_input_status = function() {
+    this.input_status = "<input_mode>";
+    return console.log("SET: input_status = input_mode");
+  };
+
+  KeyTalker.prototype.set_input_status_complete = function() {
+    this.input_status = "<input_complete>";
+    return console.log("SET: input_status = input_complete");
   };
 
   KeyTalker.prototype.handle = function(ch_num, ch_key) {
@@ -36,6 +56,8 @@ KeyTalker = (function() {
 
   KeyTalker.prototype.handle_normal = function(ch_num, ch_key) {
     var line;
+    console.log("handle_normal()");
+    console.log("   INPUT MODE " + this.key_mode);
     if (ch_num > 0) {
       return this.bconsole.ch(this.keys.char(ch_num));
     } else {
@@ -51,7 +73,9 @@ KeyTalker = (function() {
 
   KeyTalker.prototype.handle_input = function(ch_num, ch_key) {
     var line;
-    console.log("   INPUT MODE " + key_mode);
+    console.log("handle_input");
+    console.log("   INPUT MODE " + this.key_mode);
+    console.log("   INPUT STATUS " + this.input_status);
     if (ch_num > 0) {
       return this.bconsole.ch(this.keys.char(ch_num));
     } else {
@@ -60,6 +84,7 @@ KeyTalker = (function() {
       }
       if (ch_key === 13) {
         line = this.bconsole.enter_line();
+        console.log("    * * INPUT STRING = " + line);
         return console.log("the following input needs to be handled: " + line);
       }
     }
@@ -1864,6 +1889,7 @@ BooleanExpressionEvaluator = (function() {
 InputHelper = (function() {
   function InputHelper(helpers) {
     this.helpers = helpers;
+    this.str_vars = this.helpers.str_vars;
     this.keys = this.helpers.keys;
     this.bconsole = this.keys.bconsole;
   }
@@ -1882,10 +1908,13 @@ InputHelper = (function() {
   };
 
   InputHelper.prototype.get_entry = function() {
+    var result;
     console.log("*InputHelper#get_entry() ...  ...  ...*");
     this.keys.set_input_mode();
+    this.keys.set_input_status();
+    result = "## Test Result ##";
     this.keys.reset_normal_mode();
-    return "TeSt DaTa EnTrY";
+    return result;
   };
 
   return InputHelper;
@@ -1945,7 +1974,6 @@ BasicConsole = (function() {
 
   BasicConsole.prototype.print = function(string) {
     var ch, _i, _len;
-    console.log("**** BasicConsole#print()  string=" + string);
     this.draw_blank_char(this.line, 1);
     for (_i = 0, _len = string.length; _i < _len; _i++) {
       ch = string[_i];

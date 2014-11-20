@@ -42,7 +42,12 @@ class KeyTalker
 		@bconsole = new BasicConsole
 		@keys = @bconsole.keys
 		@key_mode = "<normal_mode>"
+		@input_status = "<none>"
 		@controller = new ActionController(this)
+
+
+	get_mode: ->
+		return @key_mode
 
 
 	reset_normal_mode: ->
@@ -55,8 +60,23 @@ class KeyTalker
 		console.log "SET: key_mode = input"
 
 
-	get_mode: ->
-		return @key_mode
+	get_input_status: ->
+		return @input_status
+
+
+	reset_input_status: ->
+		@input_status = "<none>"
+		console.log "RESET: input_status = -none-"
+
+
+	set_input_status: ->
+		@input_status = "<input_mode>"
+		console.log "SET: input_status = input_mode"
+
+
+	set_input_status_complete: ->
+		@input_status = "<input_complete>"
+		console.log "SET: input_status = input_complete"
 
 
 	handle: (ch_num, ch_key) ->
@@ -67,6 +87,8 @@ class KeyTalker
 
 
 	handle_normal: (ch_num, ch_key) ->
+		console.log "handle_normal()"
+		console.log "   INPUT MODE #{@key_mode}"
 		if ch_num > 0
 			@bconsole.ch(@keys.char(ch_num))
 		else
@@ -77,13 +99,16 @@ class KeyTalker
 
 
 	handle_input: (ch_num, ch_key) ->
-		console.log "   INPUT MODE #{key_mode}"
+		console.log "handle_input"
+		console.log "   INPUT MODE #{@key_mode}"
+		console.log "   INPUT STATUS #{@input_status}"
 		if ch_num > 0
 			@bconsole.ch(@keys.char(ch_num))
 		else
 			@bconsole.backspace() if ch_key == 8
 			if ch_key == 13
 				line = @bconsole.enter_line()
+				console.log "    * * INPUT STRING = #{line}"
 				# @controller.handle_line_entry(line)
 				console.log "the following input needs to be handled: #{line}"
 
@@ -1579,6 +1604,7 @@ class InputHelper
 
 	constructor: (helpers) ->
 		@helpers = helpers
+		@str_vars = @helpers.str_vars
 		@keys = @helpers.keys
 		@bconsole = @keys.bconsole
 
@@ -1597,10 +1623,13 @@ class InputHelper
 	get_entry: ->
 		console.log "*InputHelper#get_entry() ...  ...  ...*"
 		@keys.set_input_mode()
-		# FIXME while/until needs a statement BEFORE it in coffeescript.
-		# while (@keys.get_mode() == "<input_mode>")
+		@keys.set_input_status()
+		while @keys.get_input_status() == "<input_node>"
+			# "no-op"
+		result =
 		@keys.reset_normal_mode()
-		return "TeSt DaTa EnTrY"
+		@keys.reset_input_status()
+		return result
 
 
 
@@ -1657,7 +1686,7 @@ class BasicConsole
 
 
 	print: (string) ->
-		console.log "**** BasicConsole#print()  string=#{string}"
+		# console.log "**** BasicConsole#print()  string=#{string}"
 		@draw_blank_char(@line, 1)
 		for ch in string
 			@column = @column + 1
