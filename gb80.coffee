@@ -191,14 +191,12 @@ class ProgramController
 
 
 	run_program: ->
-		#FIXME FIXME FIXME
-		# If we run a program, the variables are not cleared afterward. If we change
-		# the program, and the new program does not alter the old variables, the
-		# program will run with those variables falsely 'initialized' to their old values.
-		#FIXME FIXME FIXME
+		# FIXME FIXME WE NEED TO CLEAR THE VARIABLES AFTER RUNNING THE PROGRAM! FIXME FIXME
 		line_objects = @line_listing.get_program_objects()
 		@load(line_objects)
-		while @next_line_no > 0
+		# FIXME This should work with just one INPUT statement, but not restart program
+		# execution after the INPUT statement.
+		while @next_line_no > 0 and @keys.get_mode() == "<normal_mode>"
 			@run_next_line()
 
 
@@ -1140,7 +1138,6 @@ class ProgramLineBuilder
 			command: cmd
 			operand: op
 			prompt: prompt }
-		console.log "*** line.prompt = #{line.prompt}"
 		return line
 
 
@@ -1624,9 +1621,13 @@ class InputHelper
 		console.log "*InputHelper#get_entry() ...  ...  ...*"
 		@keys.set_input_mode()
 		@keys.set_input_status()
-		while @keys.get_input_status() == "<input_node>"
-			# "no-op"
-		result =
+
+
+		# while (@keys.get_input_status() == "<input_mode>")
+		# 	console.log "#{@keys.get_input_status()}"
+
+
+		result = "test result"
 		@keys.reset_normal_mode()
 		@keys.reset_input_status()
 		return result

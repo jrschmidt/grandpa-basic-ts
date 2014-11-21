@@ -188,7 +188,7 @@ ProgramController = (function() {
     line_objects = this.line_listing.get_program_objects();
     this.load(line_objects);
     _results = [];
-    while (this.next_line_no > 0) {
+    while (this.next_line_no > 0 && this.keys.get_mode() === "<normal_mode>") {
       _results.push(this.run_next_line());
     }
     return _results;
@@ -1327,7 +1327,6 @@ ProgramLineBuilder = (function() {
       operand: op,
       prompt: prompt
     };
-    console.log("*** line.prompt = " + line.prompt);
     return line;
   };
 
@@ -1912,8 +1911,9 @@ InputHelper = (function() {
     console.log("*InputHelper#get_entry() ...  ...  ...*");
     this.keys.set_input_mode();
     this.keys.set_input_status();
-    result = "## Test Result ##";
+    result = "test result";
     this.keys.reset_normal_mode();
+    this.keys.reset_input_status();
     return result;
   };
 
