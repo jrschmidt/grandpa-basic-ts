@@ -10,7 +10,7 @@ KeyTalker = (function() {
     this.keys = this.bconsole.keys;
     this.key_mode = "<normal_mode>";
     this.controller = new ActionController(this);
-    this.program = this.controller.program;
+    this.program_control = this.controller.program_control;
   }
 
   KeyTalker.prototype.get_mode = function() {
@@ -64,7 +64,7 @@ KeyTalker = (function() {
         line = this.bconsole.enter_line();
         console.log("    * * INPUT STRING = " + line);
         console.log("the following input needs to be handled: " + line);
-        return this.program.restart_program(line);
+        return this.program_control.restart_program(line);
       }
     }
   };
@@ -80,7 +80,7 @@ ActionController = (function() {
     this.parser = new LineParser;
     this.formatter = new ProgramLineBuilder;
     this.line_listing = new ProgramLineListing;
-    this.program = new ProgramController(this);
+    this.program_control = new ProgramController(this);
   }
 
   ActionController.prototype.handle_line_entry = function(string) {
@@ -115,7 +115,7 @@ ActionController = (function() {
           break;
         case "<run_command>":
           console.log("RUN");
-          return this.program.run_program();
+          return this.program_control.run_program();
         case "<clear_command>":
           console.log("CLEAR");
           return this.line_listing.clear();
@@ -262,8 +262,8 @@ ProgramController = (function() {
 
 StatementRunner = (function() {
   function StatementRunner(program_control) {
-    this.program = program_control;
-    this.keys = this.program.keys;
+    this.program_control = program_control;
+    this.keys = this.program_control.keys;
     this.helpers = new InterpreterHelpers(this);
     this.num_vars = this.helpers.num_vars;
     this.str_vars = this.helpers.str_vars;

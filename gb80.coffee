@@ -43,7 +43,7 @@ class KeyTalker
 		@keys = @bconsole.keys
 		@key_mode = "<normal_mode>"
 		@controller = new ActionController(this)
-		@program = @controller.program
+		@program_control = @controller.program_control
 
 
 	get_mode: ->
@@ -91,7 +91,7 @@ class KeyTalker
 				# reset 'mode' flags
 				# resume statement execution
 				console.log "the following input needs to be handled: #{line}"
-				@program.restart_program(line)
+				@program_control.restart_program(line)
 
 
 
@@ -106,7 +106,7 @@ class ActionController
 		@parser = new LineParser
 		@formatter = new ProgramLineBuilder
 		@line_listing = new ProgramLineListing
-		@program = new ProgramController(this)
+		@program_control = new ProgramController(this)
 		# TODO Here is probably a good place to add a flag to mark 'normal' key
 		# input mode or 'input command' mode.
 
@@ -131,7 +131,7 @@ class ActionController
 					@bconsole.println(line.text) for line in lines
 				when "<run_command>"
 					console.log "RUN"
-					@program.run_program()
+					@program_control.run_program()
 				when "<clear_command>"
 					console.log "CLEAR"
 					@line_listing.clear()
@@ -251,8 +251,8 @@ class StatementRunner
 	# them when the program is run.
 
 	constructor: (program_control) ->
-		@program = program_control
-		@keys = @program.keys
+		@program_control = program_control
+		@keys = @program_control.keys
 		@helpers = new InterpreterHelpers(this)
 		@num_vars = @helpers.num_vars
 		@str_vars = @helpers.str_vars
