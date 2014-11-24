@@ -151,7 +151,7 @@ ProgramController = (function() {
     this.keys = this.controller.keys;
     this.bconsole = this.controller.bconsole;
     this.line_listing = this.controller.line_listing;
-    this.commands = new StatementRunner(this);
+    this.statement_runner = new StatementRunner(this);
     this.lines = {};
     this.line_order = [];
     this.next_line_index = -1;
@@ -196,7 +196,7 @@ ProgramController = (function() {
   ProgramController.prototype.run_next_line = function() {
     var line_object;
     line_object = this.lines[this.next_line_no.toString()];
-    this.line_result = this.commands.run_command(line_object);
+    this.line_result = this.statement_runner.run_command(line_object);
     if (this.line_result.hasOwnProperty("output")) {
       this.gb_output(this.line_result.output);
     }
@@ -1631,8 +1631,8 @@ BoolExpBuilder = (function() {
 
 InterpreterHelpers = (function() {
   function InterpreterHelpers(prog_command_runner) {
-    this.commands = prog_command_runner;
-    this.keys = this.commands.keys;
+    this.statement_runner = prog_command_runner;
+    this.keys = this.statement_runner.keys;
     this.num_vars = new NumericVariableRegister;
     this.str_vars = new StringVariableRegister;
     this.num_eval = new NumericExpressionEvaluator(this);

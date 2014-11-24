@@ -160,7 +160,7 @@ class ProgramController
 		@keys = @controller.keys
 		@bconsole = @controller.bconsole
 		@line_listing = @controller.line_listing
-		@commands = new StatementRunner(this)
+		@statement_runner = new StatementRunner(this)
 		@lines = {}
 		@line_order = []
 		@next_line_index = -1
@@ -198,7 +198,7 @@ class ProgramController
 
 	run_next_line: ->
 		line_object = @lines[@next_line_no.toString()]
-		@line_result = @commands.run_command(line_object)
+		@line_result = @statement_runner.run_command(line_object)
 		@gb_output(@line_result.output) if @line_result.hasOwnProperty("output")
 		if @line_result.hasOwnProperty("sub")
 			if @line_result.sub == "return"
@@ -1401,8 +1401,8 @@ class InterpreterHelpers
 	# Container class for subclasses that help evaluate expressions.
 
 	constructor: (prog_command_runner) ->
-		@commands = prog_command_runner
-		@keys = @commands.keys
+		@statement_runner = prog_command_runner
+		@keys = @statement_runner.keys
 		@num_vars = new NumericVariableRegister
 		@str_vars = new StringVariableRegister
 		@num_eval = new NumericExpressionEvaluator(this)
