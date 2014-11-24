@@ -26,7 +26,7 @@
 # that line number isn't yet in use, or changing the object for an existing
 # line number.
 #
-# When a RUN command is executed, the ProgramController and ProgramRunner
+# When a RUN command is executed, the ProgramController and StatementRunner
 # classes try to interpret each program line object, accessing them sequentially
 # according to line number except where program execution is rerouted to
 # another line number. Values for numeric and string variables are stored in
@@ -160,7 +160,7 @@ class ProgramController
 		@keys = @controller.keys
 		@bconsole = @controller.bconsole
 		@line_listing = @controller.line_listing
-		@commands = new ProgramRunner(this)
+		@commands = new StatementRunner(this)
 		@lines = {}
 		@line_order = []
 		@next_line_index = -1
@@ -246,7 +246,7 @@ class ProgramController
 
 
 
-class ProgramRunner
+class StatementRunner
 	# The class responsible for interpreting program line objects and executing
 	# them when the program is run.
 
@@ -1599,6 +1599,8 @@ class UserInputHelper
 
 
 	process_user_input: (str) ->
+		console.log "** Call To process_user_input()"
+		console.log "    input string = #{str}"
 
 
 class BasicConsole
