@@ -44,6 +44,7 @@ class KeyTalker
 		@key_mode = "<normal_mode>"
 		@input_status = "<none>"
 		@controller = new ActionController(this)
+		@program = @controller.program
 
 
 	get_mode: ->
@@ -88,7 +89,6 @@ class KeyTalker
 
 	handle_normal: (ch_num, ch_key) ->
 		console.log "handle_normal()"
-		console.log "   INPUT MODE #{@key_mode}"
 		if ch_num > 0
 			@bconsole.ch(@keys.char(ch_num))
 		else
@@ -109,8 +109,11 @@ class KeyTalker
 			if ch_key == 13
 				line = @bconsole.enter_line()
 				console.log "    * * INPUT STRING = #{line}"
-				# @controller.handle_line_entry(line)
+				# place value in variable stack
+				# reset 'mode' flags
+				# resume statement execution
 				console.log "the following input needs to be handled: #{line}"
+				@program.restart_program()
 
 
 
@@ -196,6 +199,12 @@ class ProgramController
 		@load(line_objects)
 		# FIXME This should work with just one INPUT statement, but not restart program
 		# execution after the INPUT statement.
+		while @next_line_no > 0 and @keys.get_mode() == "<normal_mode>"
+			@run_next_line()
+
+
+	restart_program: ->
+		@keys.reset_normal_mode()
 		while @next_line_no > 0 and @keys.get_mode() == "<normal_mode>"
 			@run_next_line()
 
@@ -336,9 +345,8 @@ class ProgramRunner
 
 
 	run_input: (line_object) ->
-
-		var_input = @input.get_input(line_object)
-		console.log " VAR input = #{var_input}"
+		@input.set_up_input(line_object)
+		return {}
 
 
 	run_print: (line_object) ->
@@ -1605,32 +1613,15 @@ class InputHelper
 		@keys = @helpers.keys
 		@bconsole = @keys.bconsole
 
-	get_input: (line_object) ->
-		console.log "get_input() CALLED . . ."
-		console.log "  line_object.command = #{line_object.command}"
-		console.log "  line_object.prompt = #{line_object.prompt}"
-		console.log "  line_object.operand = #{line_object.operand}"
+	set_up_input: (line_object) ->
 		prompt = "#{line_object.prompt}? "
 		console.log "  INPUT PROMPT = #{prompt}"
-		@bconsole.print(prompt)
-		val = @get_entry()
-		return val
-
-
-	get_entry: ->
-		console.log "*InputHelper#get_entry() ...  ...  ...*"
 		@keys.set_input_mode()
 		@keys.set_input_status()
+		@bconsole.print(prompt)
 
-
-		# while (@keys.get_input_status() == "<input_mode>")
-		# 	console.log "#{@keys.get_input_status()}"
-
-
-		result = "test result"
-		@keys.reset_normal_mode()
-		@keys.reset_input_status()
-		return result
+	# @keys.reset_normal_mode()
+	# @keys.reset_input_status()
 
 
 

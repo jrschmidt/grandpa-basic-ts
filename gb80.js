@@ -11,6 +11,7 @@ KeyTalker = (function() {
     this.key_mode = "<normal_mode>";
     this.input_status = "<none>";
     this.controller = new ActionController(this);
+    this.program = this.controller.program;
   }
 
   KeyTalker.prototype.get_mode = function() {
@@ -57,7 +58,6 @@ KeyTalker = (function() {
   KeyTalker.prototype.handle_normal = function(ch_num, ch_key) {
     var line;
     console.log("handle_normal()");
-    console.log("   INPUT MODE " + this.key_mode);
     if (ch_num > 0) {
       return this.bconsole.ch(this.keys.char(ch_num));
     } else {
@@ -85,7 +85,8 @@ KeyTalker = (function() {
       if (ch_key === 13) {
         line = this.bconsole.enter_line();
         console.log("    * * INPUT STRING = " + line);
-        return console.log("the following input needs to be handled: " + line);
+        console.log("the following input needs to be handled: " + line);
+        return this.program.restart_program();
       }
     }
   };
@@ -187,6 +188,16 @@ ProgramController = (function() {
     var line_objects, _results;
     line_objects = this.line_listing.get_program_objects();
     this.load(line_objects);
+    _results = [];
+    while (this.next_line_no > 0 && this.keys.get_mode() === "<normal_mode>") {
+      _results.push(this.run_next_line());
+    }
+    return _results;
+  };
+
+  ProgramController.prototype.restart_program = function() {
+    var _results;
+    this.keys.reset_normal_mode();
     _results = [];
     while (this.next_line_no > 0 && this.keys.get_mode() === "<normal_mode>") {
       _results.push(this.run_next_line());
@@ -364,9 +375,8 @@ ProgramRunner = (function() {
   };
 
   ProgramRunner.prototype.run_input = function(line_object) {
-    var var_input;
-    var_input = this.input.get_input(line_object);
-    return console.log(" VAR input = " + var_input);
+    this.input.set_up_input(line_object);
+    return {};
   };
 
   ProgramRunner.prototype.run_print = function(line_object) {
@@ -1893,28 +1903,13 @@ InputHelper = (function() {
     this.bconsole = this.keys.bconsole;
   }
 
-  InputHelper.prototype.get_input = function(line_object) {
-    var prompt, val;
-    console.log("get_input() CALLED . . .");
-    console.log("  line_object.command = " + line_object.command);
-    console.log("  line_object.prompt = " + line_object.prompt);
-    console.log("  line_object.operand = " + line_object.operand);
+  InputHelper.prototype.set_up_input = function(line_object) {
+    var prompt;
     prompt = "" + line_object.prompt + "? ";
     console.log("  INPUT PROMPT = " + prompt);
-    this.bconsole.print(prompt);
-    val = this.get_entry();
-    return val;
-  };
-
-  InputHelper.prototype.get_entry = function() {
-    var result;
-    console.log("*InputHelper#get_entry() ...  ...  ...*");
     this.keys.set_input_mode();
     this.keys.set_input_status();
-    result = "test result";
-    this.keys.reset_normal_mode();
-    this.keys.reset_input_status();
-    return result;
+    return this.bconsole.print(prompt);
   };
 
   return InputHelper;
