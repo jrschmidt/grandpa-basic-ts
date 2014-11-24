@@ -91,7 +91,7 @@ class KeyTalker
 				# reset 'mode' flags
 				# resume statement execution
 				console.log "the following input needs to be handled: #{line}"
-				@program.restart_program()
+				@program.restart_program(line)
 
 
 
@@ -181,8 +181,9 @@ class ProgramController
 			@run_next_line()
 
 
-	restart_program: ->
+	restart_program: (input_line)->
 		@keys.reset_normal_mode()
+		console.log "input_line = #{input_line}"
 		while @next_line_no > 0 and @keys.get_mode() == "<normal_mode>"
 			@run_next_line()
 
@@ -1408,7 +1409,7 @@ class InterpreterHelpers
 		@num_form = new NumericStringFormatter
 		@str_eval = new StringExpressionConcatenator(this)
 		@bx_eval = new BooleanExpressionEvaluator(this)
-		@input = new InputHelper(this)
+		@input = new UserInputHelper(this)
 
 
 
@@ -1583,7 +1584,7 @@ class BooleanExpressionEvaluator
 
 
 
-class InputHelper
+class UserInputHelper
 
 	constructor: (helpers) ->
 		@helpers = helpers
@@ -1595,6 +1596,9 @@ class InputHelper
 		prompt = "#{line_object.prompt}? "
 		@keys.set_input_mode()
 		@bconsole.print(prompt)
+
+
+	process_user_input: (str) ->
 
 
 class BasicConsole

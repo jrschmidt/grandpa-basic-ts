@@ -64,7 +64,7 @@ KeyTalker = (function() {
         line = this.bconsole.enter_line();
         console.log("    * * INPUT STRING = " + line);
         console.log("the following input needs to be handled: " + line);
-        return this.program.restart_program();
+        return this.program.restart_program(line);
       }
     }
   };
@@ -173,9 +173,10 @@ ProgramController = (function() {
     return _results;
   };
 
-  ProgramController.prototype.restart_program = function() {
+  ProgramController.prototype.restart_program = function(input_line) {
     var _results;
     this.keys.reset_normal_mode();
+    console.log("input_line = " + input_line);
     _results = [];
     while (this.next_line_no > 0 && this.keys.get_mode() === "<normal_mode>") {
       _results.push(this.run_next_line());
