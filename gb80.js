@@ -9,7 +9,6 @@ KeyTalker = (function() {
     this.bconsole = new BasicConsole;
     this.keys = this.bconsole.keys;
     this.key_mode = "<normal_mode>";
-    this.input_status = "<none>";
     this.controller = new ActionController(this);
     this.program = this.controller.program;
   }
@@ -20,31 +19,12 @@ KeyTalker = (function() {
 
   KeyTalker.prototype.reset_normal_mode = function() {
     this.key_mode = "<normal_mode>";
-    return console.log("RESET: key_mode = normal");
+    return console.log("key_mode = normal");
   };
 
   KeyTalker.prototype.set_input_mode = function() {
     this.key_mode = "<input_mode>";
-    return console.log("SET: key_mode = input");
-  };
-
-  KeyTalker.prototype.get_input_status = function() {
-    return this.input_status;
-  };
-
-  KeyTalker.prototype.reset_input_status = function() {
-    this.input_status = "<none>";
-    return console.log("RESET: input_status = -none-");
-  };
-
-  KeyTalker.prototype.set_input_status = function() {
-    this.input_status = "<input_mode>";
-    return console.log("SET: input_status = input_mode");
-  };
-
-  KeyTalker.prototype.set_input_status_complete = function() {
-    this.input_status = "<input_complete>";
-    return console.log("SET: input_status = input_complete");
+    return console.log("key_mode = input");
   };
 
   KeyTalker.prototype.handle = function(ch_num, ch_key) {
@@ -73,9 +53,7 @@ KeyTalker = (function() {
 
   KeyTalker.prototype.handle_input = function(ch_num, ch_key) {
     var line;
-    console.log("handle_input");
-    console.log("   INPUT MODE " + this.key_mode);
-    console.log("   INPUT STATUS " + this.input_status);
+    console.log("handle_input()");
     if (ch_num > 0) {
       return this.bconsole.ch(this.keys.char(ch_num));
     } else {
@@ -1906,9 +1884,7 @@ InputHelper = (function() {
   InputHelper.prototype.set_up_input = function(line_object) {
     var prompt;
     prompt = "" + line_object.prompt + "? ";
-    console.log("  INPUT PROMPT = " + prompt);
     this.keys.set_input_mode();
-    this.keys.set_input_status();
     return this.bconsole.print(prompt);
   };
 

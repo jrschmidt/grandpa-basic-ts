@@ -42,7 +42,6 @@ class KeyTalker
 		@bconsole = new BasicConsole
 		@keys = @bconsole.keys
 		@key_mode = "<normal_mode>"
-		@input_status = "<none>"
 		@controller = new ActionController(this)
 		@program = @controller.program
 
@@ -53,31 +52,12 @@ class KeyTalker
 
 	reset_normal_mode: ->
 		@key_mode = "<normal_mode>"
-		console.log "RESET: key_mode = normal"
+		console.log "key_mode = normal"
 
 
 	set_input_mode: ->
 		@key_mode = "<input_mode>"
-		console.log "SET: key_mode = input"
-
-
-	get_input_status: ->
-		return @input_status
-
-
-	reset_input_status: ->
-		@input_status = "<none>"
-		console.log "RESET: input_status = -none-"
-
-
-	set_input_status: ->
-		@input_status = "<input_mode>"
-		console.log "SET: input_status = input_mode"
-
-
-	set_input_status_complete: ->
-		@input_status = "<input_complete>"
-		console.log "SET: input_status = input_complete"
+		console.log "key_mode = input"
 
 
 	handle: (ch_num, ch_key) ->
@@ -99,9 +79,7 @@ class KeyTalker
 
 
 	handle_input: (ch_num, ch_key) ->
-		console.log "handle_input"
-		console.log "   INPUT MODE #{@key_mode}"
-		console.log "   INPUT STATUS #{@input_status}"
+		console.log "handle_input()"
 		if ch_num > 0
 			@bconsole.ch(@keys.char(ch_num))
 		else
@@ -1615,14 +1593,8 @@ class InputHelper
 
 	set_up_input: (line_object) ->
 		prompt = "#{line_object.prompt}? "
-		console.log "  INPUT PROMPT = #{prompt}"
 		@keys.set_input_mode()
-		@keys.set_input_status()
 		@bconsole.print(prompt)
-
-	# @keys.reset_normal_mode()
-	# @keys.reset_input_status()
-
 
 
 class BasicConsole
