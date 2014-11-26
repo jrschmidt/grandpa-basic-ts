@@ -62,9 +62,9 @@ KeyTalker = (function() {
       }
       if (ch_key === 13) {
         line = this.bconsole.enter_line();
-        console.log("    * * INPUT STRING = " + line);
         console.log("the following input needs to be handled: " + line);
-        return this.program_control.restart_program(line);
+        this.program_control.handle_user_input(line);
+        return this.program_control.restart_program();
       }
     }
   };
@@ -152,6 +152,7 @@ ProgramController = (function() {
     this.bconsole = this.controller.bconsole;
     this.line_listing = this.controller.line_listing;
     this.statement_runner = new StatementRunner(this);
+    this.input = this.statement_runner.input;
     this.lines = {};
     this.line_order = [];
     this.next_line_index = -1;
@@ -173,10 +174,9 @@ ProgramController = (function() {
     return _results;
   };
 
-  ProgramController.prototype.restart_program = function(input_line) {
+  ProgramController.prototype.restart_program = function() {
     var _results;
     this.keys.reset_normal_mode();
-    console.log("input_line = " + input_line);
     _results = [];
     while (this.next_line_no > 0 && this.keys.get_mode() === "<normal_mode>") {
       _results.push(this.run_next_line());
@@ -242,6 +242,12 @@ ProgramController = (function() {
       this.output = string;
       return this.bconsole.println(string);
     }
+  };
+
+  ProgramController.prototype.handle_user_input = function(input_results) {
+    console.log("   *  *  handle_user input");
+    console.log("         string = " + input_results.string);
+    return this.input.process_user_input(input_results);
   };
 
   ProgramController.prototype.sort_lines = function(lines) {
@@ -1880,18 +1886,21 @@ UserInputHelper = (function() {
     this.str_vars = this.helpers.str_vars;
     this.keys = this.helpers.keys;
     this.bconsole = this.keys.bconsole;
+    this.line_object = {};
   }
 
   UserInputHelper.prototype.set_up_input = function(line_object) {
     var prompt;
-    prompt = "" + line_object.prompt + "? ";
+    this.line_object = line_object;
+    prompt = "" + this.line_object.prompt + "? ";
     this.keys.set_input_mode();
     return this.bconsole.print(prompt);
   };
 
   UserInputHelper.prototype.process_user_input = function(str) {
-    console.log("** Call To process_user_input()");
-    return console.log("    input string = " + str);
+    console.log("**  Call To process_user_input()");
+    console.log("**  Set value of $" + this.line_object.operand + " to " + str);
+    return this.str_vars.set(this.line_object.operand, str);
   };
 
   return UserInputHelper;

@@ -86,12 +86,9 @@ class KeyTalker
 			@bconsole.backspace() if ch_key == 8
 			if ch_key == 13
 				line = @bconsole.enter_line()
-				console.log "    * * INPUT STRING = #{line}"
-				# place value in variable stack
-				# reset 'mode' flags
-				# resume statement execution
 				console.log "the following input needs to be handled: #{line}"
-				@program_control.restart_program(line)
+				@program_control.handle_user_input(line)
+				@program_control.restart_program()
 
 
 
@@ -161,6 +158,7 @@ class ProgramController
 		@bconsole = @controller.bconsole
 		@line_listing = @controller.line_listing
 		@statement_runner = new StatementRunner(this)
+		@input = @statement_runner.input
 		@lines = {}
 		@line_order = []
 		@next_line_index = -1
@@ -181,9 +179,8 @@ class ProgramController
 			@run_next_line()
 
 
-	restart_program: (input_line)->
+	restart_program: ->
 		@keys.reset_normal_mode()
-		console.log "input_line = #{input_line}"
 		while @next_line_no > 0 and @keys.get_mode() == "<normal_mode>"
 			@run_next_line()
 
@@ -237,6 +234,12 @@ class ProgramController
 		if string != ""
 			@output = string
 			@bconsole.println(string)
+
+
+	handle_user_input: (input_results) ->
+		console.log "   *  *  handle_user input"
+		console.log "         string = #{input_results.string}"
+		@input.process_user_input(input_results)
 
 
 	sort_lines: (lines) ->
@@ -1591,16 +1594,19 @@ class UserInputHelper
 		@str_vars = @helpers.str_vars
 		@keys = @helpers.keys
 		@bconsole = @keys.bconsole
+		@line_object = {}
 
 	set_up_input: (line_object) ->
-		prompt = "#{line_object.prompt}? "
+		@line_object = line_object
+		prompt = "#{@line_object.prompt}? "
 		@keys.set_input_mode()
 		@bconsole.print(prompt)
 
 
 	process_user_input: (str) ->
-		console.log "** Call To process_user_input()"
-		console.log "    input string = #{str}"
+		console.log "**  Call To process_user_input()"
+		console.log "**  Set value of $#{@line_object.operand} to #{str}"
+		@str_vars.set(@line_object.operand, str)
 
 
 class BasicConsole
