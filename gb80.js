@@ -1884,6 +1884,7 @@ UserInputHelper = (function() {
   function UserInputHelper(helpers) {
     this.helpers = helpers;
     this.str_vars = this.helpers.str_vars;
+    this.num_vars = this.helpers.num_vars;
     this.keys = this.helpers.keys;
     this.bconsole = this.keys.bconsole;
     this.line_object = {};
@@ -1898,9 +1899,23 @@ UserInputHelper = (function() {
   };
 
   UserInputHelper.prototype.process_user_input = function(str) {
+    var number, result;
     console.log("**  Call To process_user_input()");
-    console.log("**  Set value of $" + this.line_object.operand + " to " + str);
-    return this.str_vars.set(this.line_object.operand, str);
+    if (this.line_object.command === "<input_numeric>") {
+      console.log("   ** NEED to process " + str + " as numeric input **");
+      number = Number(str);
+      if (isFinite(number)) {
+        this.num_vars.set(this.line_object.operand, number);
+        result = "<numeric_input:success>";
+      } else {
+        result = "<numeric_input:fail>";
+      }
+    } else {
+      console.log("**  Set value of $" + this.line_object.operand + " to " + str);
+      this.str_vars.set(this.line_object.operand, str);
+      result = "<string_input:success>";
+    }
+    return result;
   };
 
   return UserInputHelper;

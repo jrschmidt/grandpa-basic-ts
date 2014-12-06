@@ -1592,6 +1592,7 @@ class UserInputHelper
 	constructor: (helpers) ->
 		@helpers = helpers
 		@str_vars = @helpers.str_vars
+		@num_vars = @helpers.num_vars
 		@keys = @helpers.keys
 		@bconsole = @keys.bconsole
 		@line_object = {}
@@ -1605,8 +1606,20 @@ class UserInputHelper
 
 	process_user_input: (str) ->
 		console.log "**  Call To process_user_input()"
-		console.log "**  Set value of $#{@line_object.operand} to #{str}"
-		@str_vars.set(@line_object.operand, str)
+		if @line_object.command == "<input_numeric>"
+			console.log "   ** NEED to process #{str} as numeric input **"
+			number = Number(str)
+			if isFinite(number)
+				@num_vars.set(@line_object.operand, number)
+				result = "<numeric_input:success>"
+			else
+				result = "<numeric_input:fail>"
+		else
+			console.log "**  Set value of $#{@line_object.operand} to #{str}"
+			@str_vars.set(@line_object.operand, str)
+			result = "<string_input:success>"
+		return result
+
 
 
 class BasicConsole
