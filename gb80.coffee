@@ -1635,7 +1635,8 @@ class BasicConsole
 		@buffer = new ConsoleLineBuffer(this)
 		@keys = new KeyHelper
 		@info = new InfoAndHelp
-		@sprites = document.getElementById("chars")
+		@sprites = new Image()
+		@sprites.src = 'app/characters.png'
 		@canvas = document.getElementById('gb80-console')
 		@context = @canvas.getContext('2d')
 		@scroll = []
