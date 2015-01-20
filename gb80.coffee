@@ -978,6 +978,10 @@ class ProgramLineBuilder
 		@str_exp = new StrExpBuilder
 		@bool_exp = new BoolExpBuilder(this)
 
+		# 32767 (which is 2^15 - 1) was the original line number limit on a lot of
+		# BASIC platforms.
+		@max_line_number = 32767
+
 
 	format: (parse_object, line_text) ->
 		if parse_object[0] == "<line_number>"
@@ -1006,6 +1010,8 @@ class ProgramLineBuilder
 						line = @build_tab_cmd(parse_object)
 					else
 						error = true
+			line_number = parse_object[1]
+			error = true if (line_number > @max_line_number)
 			if error
 				line = {command: "<formatting_error>" }
 			else

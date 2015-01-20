@@ -1138,10 +1138,11 @@ ProgramLineBuilder = (function() {
     this.num_exp = new NumExpBuilder;
     this.str_exp = new StrExpBuilder;
     this.bool_exp = new BoolExpBuilder(this);
+    this.max_line_number = 32767;
   }
 
   ProgramLineBuilder.prototype.format = function(parse_object, line_text) {
-    var cmd, error, line;
+    var cmd, error, line, line_number;
     if (parse_object[0] === "<line_number>") {
       if (parse_object.length < 4) {
         line = this.build_line_removal(parse_object);
@@ -1182,6 +1183,10 @@ ProgramLineBuilder = (function() {
           default:
             error = true;
         }
+      }
+      line_number = parse_object[1];
+      if (line_number > this.max_line_number) {
+        error = true;
       }
       if (error) {
         line = {
