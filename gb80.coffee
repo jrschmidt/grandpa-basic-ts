@@ -52,12 +52,10 @@ class KeyTalker
 
 	reset_normal_mode: ->
 		@key_mode = "<normal_mode>"
-		console.log "key_mode = normal"
 
 
 	set_input_mode: ->
 		@key_mode = "<input_mode>"
-		console.log "key_mode = input"
 
 
 	handle: (ch_num, ch_key) ->
@@ -68,7 +66,6 @@ class KeyTalker
 
 
 	handle_normal: (ch_num, ch_key) ->
-		console.log "handle_normal()"
 		if ch_num > 0
 			@bconsole.ch(@keys.char(ch_num))
 		else
@@ -79,17 +76,22 @@ class KeyTalker
 
 
 	handle_input: (ch_num, ch_key) ->
-		console.log "handle_input()"
 		if ch_num > 0
 			@bconsole.ch(@keys.char(ch_num))
 		else
 			@bconsole.backspace() if ch_key == 8
 			if ch_key == 13
 				line = @bconsole.enter_line()
-				console.log "the following input needs to be handled: #{line}"
 				@program_control.handle_user_input(line)
 				@program_control.restart_program()
 
+
+	monitor_amber: ->
+		@bconsole.monitor_amber()
+
+
+	monitor_green: ->
+		@bconsole.monitor_green()
 
 
 class ActionController
@@ -109,34 +111,21 @@ class ActionController
 
 
 	handle_line_entry: (string) ->
-		console.log " "
-		console.log "ActionController#handle_line_entry"
-		console.log "	 line = #{string}"
 		line_object = @build_line_object(string)
-		for k,v of line_object
-			console.log "	 #{k} : #{v}"
 		if line_object.line_no
 			@line_listing.add_or_change(line_object)
 		else
 			switch line_object.command
 				when "<list_command>"
-					console.log " "
-					console.log "LIST"
 					lines = @line_listing.list()
-					console.log "@lines.list() returned #{lines.length} items"
-					console.log(line.text) for line in lines
 					@bconsole.println(line.text) for line in lines
 				when "<run_command>"
-					console.log "RUN"
 					@program_control.run_program()
 				when "<clear_command>"
-					console.log "CLEAR"
 					@line_listing.clear()
 				when "<info_command>"
-					console.log "INFO"
 					@bconsole.display_info("menu")
 				else
-					console.log "ERROR"
 					@bconsole.error_message()
 
 
@@ -237,8 +226,6 @@ class ProgramController
 
 
 	handle_user_input: (input_results) ->
-		console.log "   *  *  handle_user input"
-		console.log "         string = #{input_results.string}"
 		@input.process_user_input(input_results)
 
 
@@ -340,7 +327,6 @@ class StatementRunner
 		var_name = line_object.name
 		number = @num_eval.val( {exp: "<var>", name: var_name} )
 		string = @num_form.num_to_str(number)
-		console.log "run_print_num() OUTPUT = #{string}"
 		return {output: string}
 
 
@@ -1125,7 +1111,6 @@ class ProgramLineBuilder
 		else
 			op = parse_object[6]
 			prompt = ""
-			console.log "*** prompt = #{prompt}"
 			if parse_object[5] == "<number_variable>"
 				cmd = "<input_numeric>"
 			else
@@ -1611,9 +1596,7 @@ class UserInputHelper
 
 
 	process_user_input: (str) ->
-		console.log "**  Call To process_user_input()"
 		if @line_object.command == "<input_numeric>"
-			console.log "   ** NEED to process #{str} as numeric input **"
 			number = Number(str)
 			if isFinite(number)
 				@num_vars.set(@line_object.operand, number)
@@ -1621,7 +1604,6 @@ class UserInputHelper
 			else
 				result = "<numeric_input:fail>"
 		else
-			console.log "**  Set value of $#{@line_object.operand} to #{str}"
 			@str_vars.set(@line_object.operand, str)
 			result = "<string_input:success>"
 		return result
@@ -1665,24 +1647,26 @@ class BasicConsole
 	scroll_line: (string) ->
 		@column = 0
 		@scroll.push(string)
-		@line = @line + 1 if @line < @console_height
 		if @scroll.length >= @console_height
 			@scroll.shift()
 			@redraw_lines()
 			@column = 0
+		else
+			@line = @line + 1
 		@draw_cursor(@line, 1)
 
 
 	redraw_lines: ->
 		@clear_screen()
-		for ln_no in [0..@scroll.length-1]
+		@line = 0
+		for str in @scroll
 			@column = 0
-			@println_ln(ln_no, @scroll[ln_no])
-		@line = @scroll.length
+			@print(str)
+			@line = @line + 1
+		@draw_cursor(@line, 1)
 
 
 	print: (string) ->
-		# console.log "**** BasicConsole#print()  string=#{string}"
 		@draw_blank_char(@line, 1)
 		for ch in string
 			@column = @column + 1
@@ -1734,9 +1718,13 @@ class BasicConsole
 
 
 	draw_cursor: (line, column) ->
+		if (@keys.monitor_color == "green")
+			x = 255
+		else
+			x = 110
 		@context.drawImage(
 			@sprites,
-			110,
+			x,
 			90,
 			11,
 			18,
@@ -1753,6 +1741,7 @@ class BasicConsole
 			@draw_cursor(@line, @column)
 			@buffer.trim()
 			@column = @column - 1
+
 
 	error_message: ->
 		@println("SYNTAX ERROR")
@@ -1771,6 +1760,15 @@ class BasicConsole
 		@scroll = []
 		@line_text = ""
 
+
+	monitor_amber: ->
+		@keys.monitor_color = "amber"
+		@redraw_lines()
+
+
+	monitor_green: ->
+		@keys.monitor_color = "green"
+		@redraw_lines()
 
 
 class ConsoleLineBuffer
@@ -1851,6 +1849,8 @@ class KeyHelper
 	# character sprite to the correct location.
 
 	constructor: ->
+		@monitor_color = "amber"
+
 		@code = [33,34,35,36,37,38,39,
 						 40,41,42,43,44,45,46,47,48,49,
 						 50,51,52,53,54,55,56,57,58,59,
@@ -1896,7 +1896,10 @@ class KeyHelper
 	sprite_xy: (ch) ->
 		if ch in @chars
 			i = @chars.indexOf(ch)
-			return @xy[i]
+			xx = @xy[i][0]
+			yy = @xy[i][1]
+			xx = xx + 145 if @monitor_color == "green"
+			return [xx, yy]
 
 
 
@@ -1947,6 +1950,19 @@ start = ->
 	@canvas.focus()
 	@disable_key_defaults = true
 	@app = new KeyTalker
+	if monitor_color == "green"
+		@monitor_green()
+	else
+		@monitor_amber()
+
+
+monitor_green = ->
+	@app.monitor_green()
+
+
+monitor_amber = ->
+	@app.monitor_amber()
+
 
 
 window.onload = start
