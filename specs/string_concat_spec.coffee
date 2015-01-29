@@ -1,10 +1,9 @@
 describe "String expression concatenator", ->
 
   beforeEach ->
-    @helpers = new InterpreterHelpers
-    @str_concat = @helpers.str_eval
-    @str_vars = @str_concat.vars
-
+    @str_vars = new StringVariableRegister
+    hh = {str_vars: @str_vars}
+    @str_concat = new StringExpressionConcatenator(hh)
 
   it "should evaluate a string literal", ->
 
@@ -70,5 +69,3 @@ describe "String expression concatenator", ->
     @str_vars.set("C3", "TINY CIRCLES")
     value = @str_concat.val(str)
     expect(value).toEqual("POLYGONS WITH DOTS OR TINY CIRCLES")
-
-
