@@ -1,9 +1,8 @@
 describe "Numeric expression evaluator", ->
 
   beforeEach ->
-    @helpers = new InterpreterHelpers
-    @nmx_eval = @helpers.num_eval
-    @num_vars = @nmx_eval.vars
+    hh = {num_vars: new NumericVariableRegister}
+    @nmx_eval = new NumericExpressionEvaluator(hh)
 
 
   it "should evaluate a numeric literal", ->
@@ -265,6 +264,3 @@ describe "Numeric expression evaluator", ->
 
     value = @nmx_eval.val(nmx)
     expect(value).toEqual(20)
-
-
-
