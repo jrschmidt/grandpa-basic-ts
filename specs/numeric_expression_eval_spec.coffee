@@ -1,7 +1,8 @@
 describe "Numeric expression evaluator", ->
 
   beforeEach ->
-    hh = {num_vars: new NumericVariableRegister}
+    @num_vars = new NumericVariableRegister
+    hh = {num_vars: @num_vars}
     @nmx_eval = new NumericExpressionEvaluator(hh)
 
 

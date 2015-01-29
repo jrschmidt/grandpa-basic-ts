@@ -2,8 +2,9 @@
 describe("Numeric expression evaluator", function() {
   beforeEach(function() {
     var hh;
+    this.num_vars = new NumericVariableRegister;
     hh = {
-      num_vars: new NumericVariableRegister
+      num_vars: this.num_vars
     };
     return this.nmx_eval = new NumericExpressionEvaluator(hh);
   });
