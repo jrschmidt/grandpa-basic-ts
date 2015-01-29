@@ -1,8 +1,7 @@
 describe "Numeric string formatter", ->
 
   beforeEach ->
-    @helpers = new InterpreterHelpers
-    @num_form = @helpers.num_form
+    @num_form = new NumericStringFormatter
 
 
   it "should format a number to a string with no more than 8 digits", ->
