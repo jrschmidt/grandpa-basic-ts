@@ -1,7 +1,8 @@
 describe "Action Controller - build object", ->
 
   beforeEach ->
-    @controller = new ActionController
+    @keys = new KeyTalker
+    @controller = @keys.controller
 
 
   it "should build a valid console command object from a console command string", ->
@@ -170,55 +171,55 @@ describe "Action Controller - build object", ->
     expect(result.expression[1][1]).toEqual("N4")
 
 
-  it "should build a valid program line object from a line with a PRINTLN statement", ->
-
-    result = @controller.build_line_object('470 PRINTLN')
-    expect(result.line_no).toEqual(470)
-    expect(result.command).toEqual("<print_line>")
-    expect(result.text).toEqual('470 PRINTLN')
-    expect(result.expression[0][0]).toEqual("<str>")
-    expect(result.expression[0][1]).toEqual("")
-
-
-    result = @controller.build_line_object('480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"')
-    expect(result.line_no).toEqual(480)
-    expect(result.command).toEqual("<print_line>")
-    expect(result.text).toEqual('480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"')
-    expect(result.expression[0][0]).toEqual("<str>")
-    expect(result.expression[0][1]).toEqual("WELCOME TO GRANDPA BASIC 1980")
-
-
-    result = @controller.build_line_object('490 PRINTLN $Z1')
-    expect(result.line_no).toEqual(490)
-    expect(result.command).toEqual("<print_line>")
-    expect(result.text).toEqual('490 PRINTLN $Z1')
-    expect(result.expression[0][0]).toEqual("<var>")
-    expect(result.expression[0][1]).toEqual("Z1")
-
-
-  it "should build a valid program line object from a line with a CLEARSCRN statement", ->
-
-    result = @controller.build_line_object('940 CLEARSCRN')
-    expect(result.line_no).toEqual(940)
-    expect(result.command).toEqual("<clear_screen>")
-    expect(result.text).toEqual('940 CLEARSCRN')
-
-
-  it "should build a valid program line object from a line with a TAB statement", ->
-
-    result = @controller.build_line_object('870 TAB 28')
-    expect(result.line_no).toEqual(870)
-    expect(result.command).toEqual("<tab_col>")
-    expect(result.text).toEqual('870 TAB 28')
-    expect(result.col).toEqual(28)
-
-
-    result = @controller.build_line_object('880 TAB 12,44')
-    expect(result.line_no).toEqual(880)
-    expect(result.command).toEqual("<tab_line_col>")
-    expect(result.text).toEqual('880 TAB 12,44')
-    expect(result.line).toEqual(12)
-    expect(result.col).toEqual(44)
+  # it "should build a valid program line object from a line with a PRINTLN statement", ->
+  #
+  #   result = @controller.build_line_object('470 PRINTLN')
+  #   expect(result.line_no).toEqual(470)
+  #   expect(result.command).toEqual("<print_line>")
+  #   expect(result.text).toEqual('470 PRINTLN')
+  #   expect(result.expression[0][0]).toEqual("<str>")
+  #   expect(result.expression[0][1]).toEqual("")
+  #
+  #
+  #   result = @controller.build_line_object('480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"')
+  #   expect(result.line_no).toEqual(480)
+  #   expect(result.command).toEqual("<print_line>")
+  #   expect(result.text).toEqual('480 PRINTLN "WELCOME TO GRANDPA BASIC 1980"')
+  #   expect(result.expression[0][0]).toEqual("<str>")
+  #   expect(result.expression[0][1]).toEqual("WELCOME TO GRANDPA BASIC 1980")
+  #
+  #
+  #   result = @controller.build_line_object('490 PRINTLN $Z1')
+  #   expect(result.line_no).toEqual(490)
+  #   expect(result.command).toEqual("<print_line>")
+  #   expect(result.text).toEqual('490 PRINTLN $Z1')
+  #   expect(result.expression[0][0]).toEqual("<var>")
+  #   expect(result.expression[0][1]).toEqual("Z1")
+  #
+  #
+  # it "should build a valid program line object from a line with a CLEARSCRN statement", ->
+  #
+  #   result = @controller.build_line_object('940 CLEARSCRN')
+  #   expect(result.line_no).toEqual(940)
+  #   expect(result.command).toEqual("<clear_screen>")
+  #   expect(result.text).toEqual('940 CLEARSCRN')
+  #
+  #
+  # it "should build a valid program line object from a line with a TAB statement", ->
+  #
+  #   result = @controller.build_line_object('870 TAB 28')
+  #   expect(result.line_no).toEqual(870)
+  #   expect(result.command).toEqual("<tab_col>")
+  #   expect(result.text).toEqual('870 TAB 28')
+  #   expect(result.col).toEqual(28)
+  #
+  #
+  #   result = @controller.build_line_object('880 TAB 12,44')
+  #   expect(result.line_no).toEqual(880)
+  #   expect(result.command).toEqual("<tab_line_col>")
+  #   expect(result.text).toEqual('880 TAB 12,44')
+  #   expect(result.line).toEqual(12)
+  #   expect(result.col).toEqual(44)
 
 
   it "should build a valid program line object from a line with an END statement", ->
@@ -234,7 +235,8 @@ describe "Action Controller - build object", ->
 describe "Action Controller - add line", ->
 
   beforeEach ->
-    @controller = new ActionController
+    @keys = new KeyTalker
+    @controller = @keys.controller
     @lines = @controller.line_listing
 
 
@@ -301,25 +303,25 @@ describe "Action Controller - add line", ->
     expect(line.command).toEqual("<print>")
 
 
-  it "should parse, build and add a PRINTLN statement program line object", ->
-
-    @controller.handle_line_entry('490 PRINTLN $Z1')
-    line = @lines.get_line(490)
-    expect(line.command).toEqual("<print_line>")
-
-
-  it "should parse, build and add a CLEARSCRN statement program line object", ->
-
-    @controller.handle_line_entry('940 CLEARSCRN')
-    line = @lines.get_line(940)
-    expect(line.command).toEqual("<clear_screen>")
-
-
-  it "should parse, build and add a TAB statement program line object", ->
-
-    @controller.handle_line_entry('870 TAB 28')
-    line = @lines.get_line(870)
-    expect(line.command).toEqual("<tab_col>")
+  # it "should parse, build and add a PRINTLN statement program line object", ->
+  #
+  #   @controller.handle_line_entry('490 PRINTLN $Z1')
+  #   line = @lines.get_line(490)
+  #   expect(line.command).toEqual("<print_line>")
+  #
+  #
+  # it "should parse, build and add a CLEARSCRN statement program line object", ->
+  #
+  #   @controller.handle_line_entry('940 CLEARSCRN')
+  #   line = @lines.get_line(940)
+  #   expect(line.command).toEqual("<clear_screen>")
+  #
+  #
+  # it "should parse, build and add a TAB statement program line object", ->
+  #
+  #   @controller.handle_line_entry('870 TAB 28')
+  #   line = @lines.get_line(870)
+  #   expect(line.command).toEqual("<tab_col>")
 
 
   it "should parse, build and add an END statement program line object", ->
@@ -327,9 +329,3 @@ describe "Action Controller - add line", ->
     @controller.handle_line_entry('999 END')
     line = @lines.get_line(999)
     expect(line.command).toEqual("<end>")
-
-
-# describe "Action Controller - execute action", ->
-#
-#   beforeEach ->
-#     @controller = new ActionController
