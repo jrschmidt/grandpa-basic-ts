@@ -1,10 +1,17 @@
 describe "Boolean expression evaluator", ->
 
   beforeEach ->
-    @helpers = new InterpreterHelpers("vars1_bx_eval", "BoolExpEval SPEC: beforeEach") #ABC
-    @bx_eval = @helpers.bx_eval
-    @num_vars = @helpers.num_vars
-    @str_vars = @helpers.str_vars
+    @num_vars = new NumericVariableRegister
+    @str_vars = new StringVariableRegister
+    @str_eval = new StringExpressionConcatenator( {str_vars: @str_vars} )
+    @num_eval = new NumericExpressionEvaluator( {num_vars: @num_vars} )
+    hh = {
+      str_vars: @str_vars
+      num_vars: @num_vars
+      str_eval: @str_eval
+      num_eval: @num_eval
+    }
+    @bx_eval = new BooleanExpressionEvaluator(hh)
 
 
   it "should calculate the value of a boolean expression", ->
@@ -152,5 +159,3 @@ describe "Boolean expression evaluator", ->
     @num_vars.set("B", 99)
     tf = @bx_eval.val(bx)
     expect(tf).toEqual(false)
-
-
