@@ -1,9 +1,10 @@
 describe "Program controller", ->
 
   beforeEach ->
-    @prog = new ProgramController( {} )
-    @commands = @prog.commands
-    @helpers = @commands.helpers
+    @keys = new KeyTalker
+    @prog = @keys.controller.program_control
+    @statement_runner = @prog.statement_runner
+    @helpers = @statement_runner.helpers
     @num_vars = @helpers.num_vars
     @str_vars = @helpers.str_vars
     @num_eval = @helpers.num_eval
