@@ -8,6 +8,7 @@ KeyTalker = (function() {
   function KeyTalker() {
     this.bconsole = new BasicConsole;
     this.keys = this.bconsole.keys;
+    this.shift = "<no-shift>";
     this.key_mode = "<normal_mode>";
     this.controller = new ActionController(this);
     this.program_control = this.controller.program_control;
@@ -25,42 +26,46 @@ KeyTalker = (function() {
     return this.key_mode = "<input_mode>";
   };
 
-  KeyTalker.prototype.handle = function(ch_num, ch_key) {
+  KeyTalker.prototype.handle = function(key_code) {
     if (this.key_mode === "<input_mode>") {
-      return this.handle_input(ch_num, ch_key);
+      return this.handle_input(key_code);
     } else {
-      return this.handle_normal(ch_num, ch_key);
+      return this.handle_normal(key_code);
     }
   };
 
-  KeyTalker.prototype.handle_normal = function(ch_num, ch_key) {
+  KeyTalker.prototype.handle_normal = function(key_code) {
     var line;
-    if (ch_num > 0) {
-      return this.bconsole.ch(this.keys.char(ch_num));
+    if (key_code === 13) {
+      line = this.bconsole.enter_line();
+      return this.controller.handle_line_entry(line);
+    } else if (key_code === 8) {
+      return this.bconsole.backspace();
+    } else if (key_code === 16) {
+      return this.shift = "<shift>";
     } else {
-      if (ch_key === 8) {
-        this.bconsole.backspace();
-      }
-      if (ch_key === 13) {
-        line = this.bconsole.enter_line();
-        return this.controller.handle_line_entry(line);
-      }
+      return this.bconsole.ch(this.keys.char(key_code, this.shift));
     }
   };
 
-  KeyTalker.prototype.handle_input = function(ch_num, ch_key) {
+  KeyTalker.prototype.handle_input = function(key_code) {
     var line;
-    if (ch_num > 0) {
-      return this.bconsole.ch(this.keys.char(ch_num));
+    if (key_code === 13) {
+      line = this.bconsole.enter_line();
+      this.program_control.handle_user_input(line);
+      return this.program_control.restart_program();
+    } else if (key_code === 8) {
+      return this.bconsole.backspace();
+    } else if (key_code === 16) {
+      return this.shift = "<shift>";
     } else {
-      if (ch_key === 8) {
-        this.bconsole.backspace();
-      }
-      if (ch_key === 13) {
-        line = this.bconsole.enter_line();
-        this.program_control.handle_user_input(line);
-        return this.program_control.restart_program();
-      }
+      return this.bconsole.ch(this.keys.char(key_code, this.shift));
+    }
+  };
+
+  KeyTalker.prototype.handle_keyup = function(key_code) {
+    if (key_code === 16) {
+      return this.shift = "<no-shift>";
     }
   };
 
@@ -2157,24 +2162,22 @@ ProgramLineListing = (function() {
 
 KeyHelper = (function() {
   function KeyHelper() {
-    this.monitor_color = "amber";
-    this.code = [33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126];
+    this.monitor_color = "green";
+    this.code = [173, 61, 59, 189, 187, 186, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 107, 109, 106, 111, 110, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 188, 190, 191, 192, 219, 221, 222];
+    this.keys = [["-", "_"], ["=", "+"], [";", ":"], ["-", "_"], ["=", "+"], [";", ":"], ["0", ")"], ["1", "!"], ["2", "@"], ["3", "#"], ["4", "$"], ["5", "%"], ["6", "^"], ["7", "&"], ["8", "*"], ["9", "("], ["0", "0"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"], ["6", "6"], ["7", "7"], ["8", "8"], ["9", "9"], ["+", "+"], ["-", "-"], ["*", "*"], ["/", "/"], [".", "."], ["A", "A"], ["B", "B"], ["C", "C"], ["D", "D"], ["E", "E"], ["F", "F"], ["G", "G"], ["H", "H"], ["I", "I"], ["J", "J"], ["K", "K"], ["L", "L"], ["M", "M"], ["N", "N"], ["O", "O"], ["P", "P"], ["Q", "Q"], ["R", "R"], ["S", "S"], ["T", "T"], ["U", "U"], ["V", "V"], ["W", "W"], ["X", "X"], ["Y", "Y"], ["Z", "Z"], [",", "<"], [".", ">"], ["/", "?"], ["`", "~"], ["[", "{"], ["]", "}"], ["'", '"']];
     this.chars = ["!", '"', "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "^", "_", "`", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "{", "|", "}", "~"];
     this.xy = [[99, 72], [33, 72], [33, 90], [77, 72], [88, 72], [44, 90], [22, 72], [66, 54], [77, 54], [33, 54], [11, 54], [55, 72], [22, 54], [44, 72], [44, 54], [0, 36], [11, 36], [22, 36], [33, 36], [44, 36], [55, 36], [66, 36], [77, 36], [88, 36], [99, 36], [0, 72], [11, 72], [88, 54], [0, 54], [99, 54], [66, 72], [22, 90], [55, 54], [55, 90], [0, 90], [0, 0], [11, 0], [22, 0], [33, 0], [44, 0], [55, 0], [66, 0], [77, 0], [88, 0], [99, 0], [110, 0], [121, 0], [132, 0], [0, 18], [11, 18], [22, 18], [33, 18], [44, 18], [55, 18], [66, 18], [77, 18], [88, 18], [99, 18], [110, 18], [121, 18], [132, 18], [66, 90], [99, 90], [77, 90], [11, 90]];
   }
 
-  KeyHelper.prototype.char = function(n) {
-    var ch, i, _i, _results;
-    if (__indexOf.call((function() {
-      _results = [];
-      for (_i = 65; _i <= 90; _i++){ _results.push(_i); }
-      return _results;
-    }).apply(this), n) >= 0) {
-      n = n + 32;
-    }
+  KeyHelper.prototype.char = function(n, shift_status) {
+    var ch, i;
     if (__indexOf.call(this.code, n) >= 0) {
       i = this.code.indexOf(n);
-      ch = this.chars[i];
+      if (shift_status === "<shift>") {
+        ch = this.keys[i][1];
+      } else {
+        ch = this.keys[i][0];
+      }
     } else {
       if (n === 32) {
         ch = " ";
@@ -2195,6 +2198,8 @@ KeyHelper = (function() {
         xx = xx + 145;
       }
       return [xx, yy];
+    } else {
+      return [121, 54];
     }
   };
 

@@ -41,6 +41,7 @@ class KeyTalker
 	constructor: ->
 		@bconsole = new BasicConsole
 		@keys = @bconsole.keys
+		@shift = "<no-shift>"
 		@key_mode = "<normal_mode>"
 		@controller = new ActionController(this)
 		@program_control = @controller.program_control
@@ -58,32 +59,40 @@ class KeyTalker
 		@key_mode = "<input_mode>"
 
 
-	handle: (ch_num, ch_key) ->
+	handle: (key_code) ->
 		if @key_mode == "<input_mode>"
-			@handle_input(ch_num, ch_key)
+			@handle_input(key_code)
 		else
-			@handle_normal(ch_num, ch_key)
+			@handle_normal(key_code)
 
 
-	handle_normal: (ch_num, ch_key) ->
-		if ch_num > 0
-			@bconsole.ch(@keys.char(ch_num))
+	handle_normal: (key_code) ->
+		if key_code == 13
+			line = @bconsole.enter_line()
+			@controller.handle_line_entry(line)
+		else if key_code == 8
+			@bconsole.backspace()
+		else if key_code == 16
+			@shift = "<shift>"
 		else
-			@bconsole.backspace() if ch_key == 8
-			if ch_key == 13
-				line = @bconsole.enter_line()
-				@controller.handle_line_entry(line)
+			@bconsole.ch(@keys.char(key_code, @shift))
 
 
-	handle_input: (ch_num, ch_key) ->
-		if ch_num > 0
-			@bconsole.ch(@keys.char(ch_num))
+	handle_input: (key_code) ->
+		if key_code == 13
+			line = @bconsole.enter_line()
+			@program_control.handle_user_input(line)
+			@program_control.restart_program()
+		else if key_code == 8
+			@bconsole.backspace()
+		else if key_code == 16
+			@shift = "<shift>"
 		else
-			@bconsole.backspace() if ch_key == 8
-			if ch_key == 13
-				line = @bconsole.enter_line()
-				@program_control.handle_user_input(line)
-				@program_control.restart_program()
+			@bconsole.ch(@keys.char(key_code, @shift))
+
+
+	handle_keyup: (key_code) ->
+		@shift = "<no-shift>" if key_code == 16
 
 
 	monitor_amber: ->
@@ -1849,16 +1858,28 @@ class KeyHelper
 	# character sprite to the correct location.
 
 	constructor: ->
-		@monitor_color = "amber"
+		@monitor_color = "green"
 
-		@code = [33,34,35,36,37,38,39,
-						 40,41,42,43,44,45,46,47,48,49,
-						 50,51,52,53,54,55,56,57,58,59,
-						 60,61,62,63,64,
-						 94,95,96,97,98,99,
-						 100,101,102,103,104,105,106,107,108,109,
-						 110,111,112,113,114,115,116,117,118,119,
-						 120,121,122,123,124,125,126]
+		@code = [
+			173,61,59,189,187,186,
+			48,49,50,51,52,53,54,55,56,57,
+			96,97,98,99,100,101,102,103,104,105,
+			107,109,106,111,110,
+			65,66,67,68,69,70,71,72,73,74,75,76,77,
+			78,79,80,81,82,83,84,85,86,87,88,89,90,
+			188,190,191,192,219,221,222
+			]
+
+		@keys = [
+			["-","_"], ["=","+"], [";",":"], ["-","_"], ["=","+"], [";",":"],
+			["0",")"], ["1","!"], ["2","@"], ["3","#"], ["4","$"], ["5","%"], ["6","^"], ["7","&"], ["8","*"], ["9","("],
+			["0","0"], ["1","1"], ["2","2"], ["3","3"], ["4","4"], ["5","5"], ["6","6"], ["7","7"], ["8","8"], ["9","9"],
+			["+","+"], ["-","-"], ["*","*"], ["/","/"], [".","."],
+			["A","A"], ["B","B"], ["C","C"], ["D","D"], ["E","E"], ["F","F"], ["G","G"], ["H","H"], ["I","I"],
+			["J","J"], ["K","K"], ["L","L"], ["M","M"], ["N","N"], ["O","O"], ["P","P"], ["Q","Q"], ["R","R"],
+			["S","S"], ["T","T"], ["U","U"], ["V","V"], ["W","W"], ["X","X"], ["Y","Y"], ["Z","Z"],
+			[",","<"], [".",">"], ["/","?"], ["`","~"], ["[","{"], ["]","}"], ["'",'"']
+		]
 
 		# TODO Why are '[' and ']' not implemented?
 		@chars = [ "!", '"', "#", "$", "%", "&", "'",
@@ -1880,11 +1901,13 @@ class KeyHelper
 						[110,18], [121,18], [132,18], [66,90], [99,90], [77,90],[11,90] ]
 
 
-	char: (n) ->
-		n = n + 32 if n in [65..90] # Treat alpha keypress the same without regard to SHIFT
+	char: (n, shift_status) ->
 		if n in @code
 			i = @code.indexOf(n)
-			ch = @chars[i]
+			if shift_status == "<shift>"
+				ch = @keys[i][1]
+			else
+				ch = @keys[i][0]
 		else
 			if n == 32
 				ch = " "
@@ -1900,6 +1923,8 @@ class KeyHelper
 			yy = @xy[i][1]
 			xx = xx + 145 if @monitor_color == "green"
 			return [xx, yy]
+		else
+			return [121,54] # (blank sprite)
 
 
 
@@ -1935,13 +1960,17 @@ class InfoAndHelp
 
 
 
-# GLOBAL SCOPE ITEMS #
-
+# # GLOBAL SCOPE ITEMS #
+#
 # keyevent = (e) ->
 # 	e.preventDefault() if @disable_key_defaults
-# 	ch_num = e.charCode
-# 	ch_key = e.keyCode
-# 	@app.handle(ch_num, ch_key)
+# 	key_code = e.keyCode
+# 	@app.handle(key_code)
+#
+#
+# keyup = (e) ->
+# 	key_code = e.keyCode
+# 	@app.handle_keyup(key_code)
 #
 #
 # start = ->
@@ -1950,10 +1979,10 @@ class InfoAndHelp
 # 	@canvas.focus()
 # 	@disable_key_defaults = true
 # 	@app = new KeyTalker
-# 	if monitor_color == "green"
-# 		@monitor_green()
-# 	else
+# 	if monitor_color == "amber"
 # 		@monitor_amber()
+# 	else
+# 		@monitor_green()
 #
 #
 # monitor_green = ->
