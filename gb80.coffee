@@ -127,7 +127,7 @@ class ActionController
 			switch line_object.command
 				when "<list_command>"
 					lines = @line_listing.list()
-					@bconsole.println(line.text) for line in lines
+					@bconsole.print_program(lines)
 				when "<run_command>"
 					@program_control.run_program()
 				when "<clear_command>"
@@ -1687,6 +1687,10 @@ class BasicConsole
 	println: (string) ->
 		@print(string)
 		@scroll_line(string)
+
+
+	print_program: (lines) ->
+		@println(line.text) for line in lines
 
 
 	println_ln: (line_no, string) ->

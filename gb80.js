@@ -92,7 +92,7 @@ ActionController = (function() {
   }
 
   ActionController.prototype.handle_line_entry = function(string) {
-    var line, line_object, lines, _i, _len, _results;
+    var line_object, lines;
     line_object = this.build_line_object(string);
     if (line_object.line_no) {
       return this.line_listing.add_or_change(line_object);
@@ -100,13 +100,7 @@ ActionController = (function() {
       switch (line_object.command) {
         case "<list_command>":
           lines = this.line_listing.list();
-          _results = [];
-          for (_i = 0, _len = lines.length; _i < _len; _i++) {
-            line = lines[_i];
-            _results.push(this.bconsole.println(line.text));
-          }
-          return _results;
-          break;
+          return this.bconsole.print_program(lines);
         case "<run_command>":
           return this.program_control.run_program();
         case "<clear_command>":
@@ -1982,6 +1976,16 @@ BasicConsole = (function() {
   BasicConsole.prototype.println = function(string) {
     this.print(string);
     return this.scroll_line(string);
+  };
+
+  BasicConsole.prototype.print_program = function(lines) {
+    var line, _i, _len, _results;
+    _results = [];
+    for (_i = 0, _len = lines.length; _i < _len; _i++) {
+      line = lines[_i];
+      _results.push(this.println(line.text));
+    }
+    return _results;
   };
 
   BasicConsole.prototype.println_ln = function(line_no, string) {
