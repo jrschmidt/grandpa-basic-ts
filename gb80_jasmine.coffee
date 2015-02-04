@@ -1706,25 +1706,18 @@ class BasicConsole
 
 
 	print_program: (lines) ->
-		console.log "start LIST"
-		console.log "lines.length = #{lines.length}"
 		page = lines.splice(0, @console_height - 2)
-		console.log "page.length = #{page.length}"
-		console.log "lines.length = #{lines.length}"
 		for line in page
-			console.log "#{line.text}"
 			@println(line.text)
 		@pause_scroll(lines) if lines.length > 0
 
 
 	pause_scroll: (lines) ->
-		console.log "##pause scroll##"
 		@lines = lines
 		@key_talker.set_scroll_pause()
 
 
 	resume_scroll: ->
-		console.log "%%resume scroll%%"
 		@print_program(@lines)
 
 

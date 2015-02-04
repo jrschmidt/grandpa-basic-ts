@@ -1993,14 +1993,9 @@ BasicConsole = (function() {
 
   BasicConsole.prototype.print_program = function(lines) {
     var line, page, _i, _len;
-    console.log("start LIST");
-    console.log("lines.length = " + lines.length);
     page = lines.splice(0, this.console_height - 2);
-    console.log("page.length = " + page.length);
-    console.log("lines.length = " + lines.length);
     for (_i = 0, _len = page.length; _i < _len; _i++) {
       line = page[_i];
-      console.log("" + line.text);
       this.println(line.text);
     }
     if (lines.length > 0) {
@@ -2009,13 +2004,11 @@ BasicConsole = (function() {
   };
 
   BasicConsole.prototype.pause_scroll = function(lines) {
-    console.log("##pause scroll##");
     this.lines = lines;
     return this.key_talker.set_scroll_pause();
   };
 
   BasicConsole.prototype.resume_scroll = function() {
-    console.log("%%resume scroll%%");
     return this.print_program(this.lines);
   };
 
