@@ -6,7 +6,7 @@ var ActionController, BasicConsole, BoolExpBuilder, BooleanExpressionEvaluator, 
 
 KeyTalker = (function() {
   function KeyTalker() {
-    this.bconsole = new BasicConsole;
+    this.bconsole = new BasicConsole(this);
     this.keys = this.bconsole.keys;
     this.shift = "<no-shift>";
     this.key_mode = "<normal_mode>";
@@ -26,9 +26,15 @@ KeyTalker = (function() {
     return this.key_mode = "<input_mode>";
   };
 
+  KeyTalker.prototype.set_scroll_pause = function() {
+    return this.key_mode = "<scroll_pause>";
+  };
+
   KeyTalker.prototype.handle = function(key_code) {
     if (this.key_mode === "<input_mode>") {
       return this.handle_input(key_code);
+    } else if (this.key_mode === "<scroll_pause>") {
+      return this.resume_scroll();
     } else {
       return this.handle_normal(key_code);
     }
@@ -61,6 +67,11 @@ KeyTalker = (function() {
     } else {
       return this.bconsole.ch(this.keys.char(key_code, this.shift));
     }
+  };
+
+  KeyTalker.prototype.resume_scroll = function() {
+    this.key_mode = "<normal_mode>";
+    return this.bconsole.resume_scroll();
   };
 
   KeyTalker.prototype.handle_keyup = function(key_code) {
@@ -1905,9 +1916,10 @@ UserInputHelper = (function() {
 })();
 
 BasicConsole = (function() {
-  function BasicConsole() {
+  function BasicConsole(key_talker) {
     this.console_height = 23;
     this.console_width = 80;
+    this.key_talker = key_talker;
     this.buffer = new ConsoleLineBuffer(this);
     this.keys = new KeyHelper;
     this.info = new InfoAndHelp;
@@ -1915,8 +1927,9 @@ BasicConsole = (function() {
     this.sprites.src = 'app/characters.png';
     this.canvas = document.getElementById('gb80-console');
     this.context = this.canvas.getContext('2d');
-    this.scroll = [];
     this.line = 0;
+    this.scroll = [];
+    this.lines = [];
     this.column = 0;
     this.draw_cursor(0, 1);
   }
@@ -1979,13 +1992,31 @@ BasicConsole = (function() {
   };
 
   BasicConsole.prototype.print_program = function(lines) {
-    var line, _i, _len, _results;
-    _results = [];
-    for (_i = 0, _len = lines.length; _i < _len; _i++) {
-      line = lines[_i];
-      _results.push(this.println(line.text));
+    var line, page, _i, _len;
+    console.log("start LIST");
+    console.log("lines.length = " + lines.length);
+    page = lines.splice(0, this.console_height - 2);
+    console.log("page.length = " + page.length);
+    console.log("lines.length = " + lines.length);
+    for (_i = 0, _len = page.length; _i < _len; _i++) {
+      line = page[_i];
+      console.log("" + line.text);
+      this.println(line.text);
     }
-    return _results;
+    if (lines.length > 0) {
+      return this.pause_scroll(lines);
+    }
+  };
+
+  BasicConsole.prototype.pause_scroll = function(lines) {
+    console.log("##pause scroll##");
+    this.lines = lines;
+    return this.key_talker.set_scroll_pause();
+  };
+
+  BasicConsole.prototype.resume_scroll = function() {
+    console.log("%%resume scroll%%");
+    return this.print_program(this.lines);
   };
 
   BasicConsole.prototype.println_ln = function(line_no, string) {

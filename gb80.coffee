@@ -1,6 +1,7 @@
 # *** ***												*** ***
-# *** ***	 GRANDPA BASIC 1980	 *** ***
+# *** ***	 GRANDPA BASIC 1980	  *** ***
 # *** ***												*** ***
+# *** ***	 by JR Schmidt        *** ***
 
 # Emulates the action of a computing platform in common use around the year
 # 1980 - a dedicated machine hard-wired for writing and executing programs
@@ -8,7 +9,9 @@
 # BASIC. All code was prefixed with line numbers, and execution proceeded
 # sequentially according to line number except where control structures such as
 # GOTO or IF/THEN diverted execution elsewhere. These machines, at first, had
-# monochrome CRT monitors that only printed uppercase letters.
+# monochrome CRT (cathode ray tube) monitors that only printed uppercase letters.
+# Many of the small machines produced for household or small office use prior to
+# the introduction of PCs were of this type.
 #
 # This app uses Javascript code, from source written in Coffeescript, to act
 # upon an HTML5 canvas element designed to resemble the look of the original
@@ -39,7 +42,7 @@ class KeyTalker
 	# appropriate action.
 
 	constructor: ->
-		@bconsole = new BasicConsole
+		@bconsole = new BasicConsole(this)
 		@keys = @bconsole.keys
 		@shift = "<no-shift>"
 		@key_mode = "<normal_mode>"
@@ -59,9 +62,15 @@ class KeyTalker
 		@key_mode = "<input_mode>"
 
 
+	set_scroll_pause: ->
+		@key_mode = "<scroll_pause>"
+
+
 	handle: (key_code) ->
 		if @key_mode == "<input_mode>"
 			@handle_input(key_code)
+		else if @key_mode == "<scroll_pause>"
+			@resume_scroll()
 		else
 			@handle_normal(key_code)
 
@@ -89,6 +98,11 @@ class KeyTalker
 			@shift = "<shift>"
 		else
 			@bconsole.ch(@keys.char(key_code, @shift))
+
+
+	resume_scroll: ->
+		@key_mode = "<normal_mode>"
+		@bconsole.resume_scroll()
 
 
 	handle_keyup: (key_code) ->
@@ -1626,9 +1640,10 @@ class BasicConsole
 	# TODO This class and its associated classes are prime candidates for refactoring.
 	#			(Also look at ProgramController#gb_output() - at least rename it??)
 
-	constructor: ->
+	constructor: (key_talker)->
 		@console_height = 23
 		@console_width = 80
+		@key_talker = key_talker
 		@buffer = new ConsoleLineBuffer(this)
 		@keys = new KeyHelper
 		@info = new InfoAndHelp
@@ -1636,8 +1651,9 @@ class BasicConsole
 		@sprites.src = 'app/characters.png'
 		@canvas = document.getElementById('gb80-console')
 		@context = @canvas.getContext('2d')
-		@scroll = []
 		@line = 0
+		@scroll = []
+		@lines = []
 		@column = 0
 		@draw_cursor(0,1)
 
@@ -1690,7 +1706,26 @@ class BasicConsole
 
 
 	print_program: (lines) ->
-		@println(line.text) for line in lines
+		console.log "start LIST"
+		console.log "lines.length = #{lines.length}"
+		page = lines.splice(0, @console_height - 2)
+		console.log "page.length = #{page.length}"
+		console.log "lines.length = #{lines.length}"
+		for line in page
+			console.log "#{line.text}"
+			@println(line.text)
+		@pause_scroll(lines) if lines.length > 0
+
+
+	pause_scroll: (lines) ->
+		console.log "##pause scroll##"
+		@lines = lines
+		@key_talker.set_scroll_pause()
+
+
+	resume_scroll: ->
+		console.log "%%resume scroll%%"
+		@print_program(@lines)
 
 
 	println_ln: (line_no, string) ->
