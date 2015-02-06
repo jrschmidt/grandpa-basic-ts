@@ -169,7 +169,22 @@ describe("BASIC program line parser", function() {
     expect(po[31]).toEqual("<number_variable>");
     expect(po[32]).toEqual("A");
     expect(po[33]).toEqual("<right>");
-    return expect(po[34]).toEqual("<num_exp_end>");
+    expect(po[34]).toEqual("<num_exp_end>");
+    po = this.parser.parse('940 F=20*RND');
+    expect(po).toEqual(jasmine.any(Array));
+    expect(po.length).toEqual(12);
+    expect(po[0]).toEqual("<line_number>");
+    expect(po[1]).toEqual(940);
+    expect(po[2]).toEqual("<sp>");
+    expect(po[3]).toEqual("<number_variable>");
+    expect(po[4]).toEqual("F");
+    expect(po[5]).toEqual("<equals>");
+    expect(po[6]).toEqual("<numeric_expression>");
+    expect(po[7]).toEqual("<numeric_literal>");
+    expect(po[8]).toEqual(20);
+    expect(po[9]).toEqual("<times>");
+    expect(po[10]).toEqual("<random>");
+    return expect(po[11]).toEqual("<num_exp_end>");
   });
   it("should correctly parse a string assignment program line", function() {
     var po;

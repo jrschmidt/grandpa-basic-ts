@@ -391,8 +391,8 @@ StatementRunner = (function() {
 
 SyntaxRules = (function() {
   function SyntaxRules() {
-    this.keywords = ["CLEAR", "RUN", "INFO", "LIST", "REM", "GOTO", "GOSUB", "RETURN", "IF", "THEN", "INPUT", "PRINT", "PRINTLN", "CLEARSCRN", "TAB", "END"];
-    this.keyword_tokens = ["<clear_command>", "<run_command>", "<info_command>", "<list_command>", "<remark>", "<goto>", "<gosub>", "<return>", "<if>", "<then>", "<input>", "<print>", "<print_line>", "<clear_screen>", "<tab>", "<end>"];
+    this.keywords = ["CLEAR", "RUN", "INFO", "LIST", "REM", "GOTO", "GOSUB", "RETURN", "IF", "THEN", "INPUT", "PRINT", "PRINTLN", "CLEARSCRN", "TAB", "END", "RND"];
+    this.keyword_tokens = ["<clear_command>", "<run_command>", "<info_command>", "<list_command>", "<remark>", "<goto>", "<gosub>", "<return>", "<if>", "<then>", "<input>", "<print>", "<print_line>", "<clear_screen>", "<tab>", "<end>", "<random>"];
     this.char_tokens = ["<sp>", "<equals>", "<semicolon>", "<comma>"];
     this.chars = " =;,";
     this.action_tokens = ["<line_number>", "<line_number_statement>", "<input_statement>", "<number_variable>", "<string_variable>", "<numeric_expression>", "<string_expression>", "<boolean_expression>", "<string>", "<characters>", "<integer>"];
@@ -779,9 +779,90 @@ NumericExpressionParser = (function() {
     this.num_exp_chars = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "(", ")", "+", "-", "*", "/", "^"];
     this.delimiters = ["(", ")", "+", "-", "*", "/", "^"];
     this.symbols = ["<left>", "<right>", "<plus>", "<minus>", "<times>", "<divide>", "<power>"];
+    this.keywords = ["RND"];
+    this.tokens = ["<random>"];
   }
 
   NumericExpressionParser.prototype.numeric_parse = function(string) {
+    var first, last, po, po1, po2, result, split_string, tk, _i, _len;
+    split_string = this.sub_split(string);
+    if (split_string.is_split === "no") {
+      return result = this.parse_substring(string);
+    } else {
+      first = this.numeric_parse(split_string.first);
+      last = this.numeric_parse(split_string.last);
+      if (first.match === "no" || last.match === "no") {
+        return result = {
+          match: "no"
+        };
+      } else {
+        po1 = first.parse_object;
+        po1.pop();
+        po = po1;
+        console.log("po1 = " + po1);
+        po.push(split_string.split_token);
+        console.log("split = " + split_string.split_token);
+        po2 = last.parse_object;
+        po2.shift();
+        for (_i = 0, _len = po2.length; _i < _len; _i++) {
+          tk = po2[_i];
+          po.push(tk);
+        }
+        console.log("po2 = " + po2);
+        console.log("po = " + po);
+        return result = {
+          match: "yes",
+          parse_object: po
+        };
+      }
+    }
+  };
+
+  NumericExpressionParser.prototype.sub_split = function(string) {
+    var first, i, is_split, key, kw, last, _i, _len, _ref;
+    is_split = "no";
+    key = "";
+    _ref = this.keywords;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      kw = _ref[_i];
+      if (is_split === "no") {
+        i = string.indexOf(kw);
+        if (i >= 0) {
+          is_split = "yes";
+          key = kw;
+          first = string.slice(0, i);
+          last = string.slice(i + kw.length);
+        }
+      }
+    }
+    if (is_split === "no") {
+      return {
+        is_split: "no"
+      };
+    } else {
+      return {
+        is_split: "yes",
+        split_token: this.get_token(key),
+        first: first,
+        last: last
+      };
+    }
+  };
+
+  NumericExpressionParser.prototype.get_token = function(key) {
+    var i;
+    console.log("get_token: key = " + key);
+    i = this.keywords.indexOf(key);
+    console.log("i = " + i);
+    if (i < 0) {
+      return null;
+    } else {
+      console.log("" + this.tokens[i]);
+      return this.tokens[i];
+    }
+  };
+
+  NumericExpressionParser.prototype.parse_substring = function(string) {
     var bad_chars, ok, po, result, tk, tokens, val, _i, _len;
     bad_chars = string.search(/[^A-Z0-9\.+\-*/\^()]/);
     if (bad_chars === -1) {
@@ -1993,14 +2074,9 @@ BasicConsole = (function() {
 
   BasicConsole.prototype.print_program = function(lines) {
     var line, page, _i, _len;
-    console.log("start LIST");
-    console.log("lines.length = " + lines.length);
     page = lines.splice(0, this.console_height - 2);
-    console.log("page.length = " + page.length);
-    console.log("lines.length = " + lines.length);
     for (_i = 0, _len = page.length; _i < _len; _i++) {
       line = page[_i];
-      console.log("" + line.text);
       this.println(line.text);
     }
     if (lines.length > 0) {
@@ -2009,13 +2085,11 @@ BasicConsole = (function() {
   };
 
   BasicConsole.prototype.pause_scroll = function(lines) {
-    console.log("##pause scroll##");
     this.lines = lines;
     return this.key_talker.set_scroll_pause();
   };
 
   BasicConsole.prototype.resume_scroll = function() {
-    console.log("%%resume scroll%%");
     return this.print_program(this.lines);
   };
 

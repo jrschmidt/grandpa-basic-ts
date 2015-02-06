@@ -380,7 +380,8 @@ class SyntaxRules
 			"PRINTLN"
 			"CLEARSCRN"
 			"TAB"
-			"END"]
+			"END"
+			"RND"]
 
 		@keyword_tokens = [
 			"<clear_command>"
@@ -398,7 +399,8 @@ class SyntaxRules
 			"<print_line>"
 			"<clear_screen>"
 			"<tab>"
-			"<end>"]
+			"<end>"
+			"<random>"]
 
 		@char_tokens = [
 			"<sp>"
@@ -735,9 +737,69 @@ class NumericExpressionParser
 							 "<times>",
 							 "<divide>",
 							 "<power>"]
+		@keywords = ["RND"]
+		@tokens = ["<random>"]
 
 
 	numeric_parse: (string) ->
+		split_string = @sub_split(string)
+		if (split_string.is_split == "no")
+			result = @parse_substring(string)
+		else
+			first = @numeric_parse(split_string.first)
+			last = @numeric_parse(split_string.last)
+			if (first.match == "no" or last.match == "no")
+				result = {match: "no"}
+			else
+				po1 = first.parse_object
+				po1.pop()
+				po = po1
+				console.log "po1 = #{po1}"
+				po.push(split_string.split_token)
+				console.log "split = #{split_string.split_token}"
+				po2 = last.parse_object
+				po2.shift()
+				po.push(tk) for tk in po2
+				console.log "po2 = #{po2}"
+				console.log "po = #{po}"
+				result = {
+					match: "yes"
+					parse_object: po }
+
+
+	sub_split: (string) ->
+		is_split = "no"
+		key = ""
+		for kw in @keywords
+			if is_split == "no"
+				i = string.indexOf(kw)
+				if i >= 0
+					is_split = "yes"
+					key =kw
+					first = string.slice(0,i)
+					last = string.slice(i + kw.length)
+		if is_split == "no"
+			return {is_split: "no"}
+		else
+			return {
+				is_split: "yes"
+				split_token: @get_token(key)
+				first: first
+				last: last }
+
+
+	get_token: (key) ->
+		console.log "get_token: key = #{key}"
+		i = @keywords.indexOf(key)
+		console.log "i = #{i}"
+		if i < 0
+			return null
+		else
+			console.log "#{@tokens[i]}"
+			return @tokens[i]
+
+
+	parse_substring: (string) ->
 		bad_chars = string.search(/[^A-Z0-9\.+\-*/\^()]/)
 		if bad_chars == -1
 			po = ["<numeric_expression>"]

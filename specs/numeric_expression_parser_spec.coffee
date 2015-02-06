@@ -266,6 +266,16 @@ describe "Numeric expression parser", ->
     expect(po[5]).toEqual(2)
     expect(po[6]).toEqual("<num_exp_end>")
 
+    result = @parser.numeric_parse("20*RND")
+    expect(result.match).toEqual("yes")
+    po = result.parse_object
+    expect(po[0]).toEqual("<numeric_expression>")
+    expect(po[1]).toEqual("<numeric_literal>")
+    expect(po[2]).toEqual(20)
+    expect(po[3]).toEqual("<times>")
+    expect(po[4]).toEqual("<random>")
+    expect(po[5]).toEqual("<num_exp_end>")
+
     result = @parser.numeric_parse("X*Y*Z")
     expect(result.match).toEqual("yes")
     po = result.parse_object
@@ -355,6 +365,3 @@ describe "Numeric expression parser", ->
     expect(po[25]).toEqual("<right>")
     expect(po[26]).toEqual("<right>")
     expect(po[27]).toEqual("<num_exp_end>")
-
-
-
