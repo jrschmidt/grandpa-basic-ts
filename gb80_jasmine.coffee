@@ -754,14 +754,11 @@ class NumericExpressionParser
 				po1 = first.parse_object
 				po1.pop()
 				po = po1
-				console.log "po1 = #{po1}"
+				po.push("<num_keyword>")
 				po.push(split_string.split_token)
-				console.log "split = #{split_string.split_token}"
 				po2 = last.parse_object
 				po2.shift()
 				po.push(tk) for tk in po2
-				console.log "po2 = #{po2}"
-				console.log "po = #{po}"
 				result = {
 					match: "yes"
 					parse_object: po }
@@ -789,13 +786,10 @@ class NumericExpressionParser
 
 
 	get_token: (key) ->
-		console.log "get_token: key = #{key}"
 		i = @keywords.indexOf(key)
-		console.log "i = #{i}"
 		if i < 0
 			return null
 		else
-			console.log "#{@tokens[i]}"
 			return @tokens[i]
 
 
@@ -1266,7 +1260,7 @@ class NumExpBuilder
 			["<plus>", "<minus>" ]
 			["<times>", "<divide>" ]
 			["<power>"]
-			["<numeric_literal>", "<number_variable>" ] ]
+			["<numeric_literal>", "<number_variable>", "<num_keyword>" ] ]
 
 
 	build_nxp: (stack) ->
@@ -1276,7 +1270,6 @@ class NumExpBuilder
 			nxp = @build_num_exp(stack)
 		else
 			nxp = { malformed: "yes" }
-		this[kk] = vv for kk, vv of nxp
 		return nxp
 
 	# TODO Combine these two methods, then look for refactoring.
@@ -1293,6 +1286,8 @@ class NumExpBuilder
 					nxp = @build_numeric_literal(split_stack)
 				when "<number_variable>"
 					nxp = @build_number_variable(split_stack)
+				when "<num_keyword>"
+					nxp = @build_numeric_keyword(split_stack)
 				else
 					nxp = { malformed: "yes" }
 		return nxp
@@ -1303,6 +1298,12 @@ class NumExpBuilder
 		left = @build_nxp(split_stack.left)
 		right = @build_nxp(split_stack.right)
 		if right.malformed == "yes" or left.malformed == "yes"
+			console.log "malformed at build_binary_expression()"
+			console.log "exp = #{split_stack.exp}"
+			console.log "left = #{left}"
+			console.log "right = #{right}"
+			console.log "right malformed? #{right.malformed}"
+			console.log "left malformed? #{left.malformed}"
 			result = { malformed: "yes" }
 		else
 			result = {
@@ -1328,6 +1329,23 @@ class NumExpBuilder
 			result = {
 				exp: "<var>"
 				name: split_stack.right[0] }
+		else result = { malformed: "yes" }
+		return result
+
+
+	build_numeric_keyword: (split_stack) ->
+		console.log "build_numeric_keyword()"
+		console.log "    split_stack = "
+		console.log "    exp: #{split_stack.exp}"
+		console.log "    left: #{split_stack.left}"
+		console.log "    left.length = #{split_stack.left.length}"
+		console.log "    right: #{split_stack.right}"
+		console.log "    right.length = #{split_stack.right.length}"
+		result = {}
+		if split_stack.right.length == 1
+			result = {
+				exp: "<num_keyword>"
+				keyword: split_stack.right[0] }
 		else result = { malformed: "yes" }
 		return result
 

@@ -799,17 +799,14 @@ NumericExpressionParser = (function() {
         po1 = first.parse_object;
         po1.pop();
         po = po1;
-        console.log("po1 = " + po1);
+        po.push("<num_keyword>");
         po.push(split_string.split_token);
-        console.log("split = " + split_string.split_token);
         po2 = last.parse_object;
         po2.shift();
         for (_i = 0, _len = po2.length; _i < _len; _i++) {
           tk = po2[_i];
           po.push(tk);
         }
-        console.log("po2 = " + po2);
-        console.log("po = " + po);
         return result = {
           match: "yes",
           parse_object: po
@@ -851,13 +848,10 @@ NumericExpressionParser = (function() {
 
   NumericExpressionParser.prototype.get_token = function(key) {
     var i;
-    console.log("get_token: key = " + key);
     i = this.keywords.indexOf(key);
-    console.log("i = " + i);
     if (i < 0) {
       return null;
     } else {
-      console.log("" + this.tokens[i]);
       return this.tokens[i];
     }
   };
@@ -1452,11 +1446,11 @@ ProgramLineBuilder = (function() {
 
 NumExpBuilder = (function() {
   function NumExpBuilder() {
-    this.search_terms = [["<plus>", "<minus>"], ["<times>", "<divide>"], ["<power>"], ["<numeric_literal>", "<number_variable>"]];
+    this.search_terms = [["<plus>", "<minus>"], ["<times>", "<divide>"], ["<power>"], ["<numeric_literal>", "<number_variable>", "<num_keyword>"]];
   }
 
   NumExpBuilder.prototype.build_nxp = function(stack) {
-    var first, kk, last, nxp, vv;
+    var first, last, nxp;
     first = stack.shift();
     last = stack.pop();
     if (first === "<numeric_expression>" && last === "<num_exp_end>") {
@@ -1465,10 +1459,6 @@ NumExpBuilder = (function() {
       nxp = {
         malformed: "yes"
       };
-    }
-    for (kk in nxp) {
-      vv = nxp[kk];
-      this[kk] = vv;
     }
     return nxp;
   };
@@ -1495,6 +1485,9 @@ NumExpBuilder = (function() {
         case "<number_variable>":
           nxp = this.build_number_variable(split_stack);
           break;
+        case "<num_keyword>":
+          nxp = this.build_numeric_keyword(split_stack);
+          break;
         default:
           nxp = {
             malformed: "yes"
@@ -1510,6 +1503,12 @@ NumExpBuilder = (function() {
     left = this.build_nxp(split_stack.left);
     right = this.build_nxp(split_stack.right);
     if (right.malformed === "yes" || left.malformed === "yes") {
+      console.log("malformed at build_binary_expression()");
+      console.log("exp = " + split_stack.exp);
+      console.log("left = " + left);
+      console.log("right = " + right);
+      console.log("right malformed? " + right.malformed);
+      console.log("left malformed? " + left.malformed);
       result = {
         malformed: "yes"
       };
@@ -1546,6 +1545,29 @@ NumExpBuilder = (function() {
       result = {
         exp: "<var>",
         name: split_stack.right[0]
+      };
+    } else {
+      result = {
+        malformed: "yes"
+      };
+    }
+    return result;
+  };
+
+  NumExpBuilder.prototype.build_numeric_keyword = function(split_stack) {
+    var result;
+    console.log("build_numeric_keyword()");
+    console.log("    split_stack = ");
+    console.log("    exp: " + split_stack.exp);
+    console.log("    left: " + split_stack.left);
+    console.log("    left.length = " + split_stack.left.length);
+    console.log("    right: " + split_stack.right);
+    console.log("    right.length = " + split_stack.right.length);
+    result = {};
+    if (split_stack.right.length === 1) {
+      result = {
+        exp: "<num_keyword>",
+        keyword: split_stack.right[0]
       };
     } else {
       result = {

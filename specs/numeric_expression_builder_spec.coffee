@@ -1,7 +1,7 @@
 describe "Numeric expression builder", ->
 
   beforeEach ->
-    @helper = new NumExpBuilder
+    @builder = new NumExpBuilder
 
   it "should strip parentheses in an expression and replace them with nested arrays of tokens", ->
 
@@ -15,7 +15,7 @@ describe "Numeric expression builder", ->
       "K"
       "<right>" ]
 
-    result = @helper.deparenthesize(stack)
+    result = @builder.deparenthesize(stack)
     expect(result.length).toEqual(5)
     expect(result[0]).toEqual("<number_variable>")
     expect(result[1]).toEqual("J")
@@ -43,7 +43,7 @@ describe "Numeric expression builder", ->
       "<number_variable>"
       "B" ]
 
-    result = @helper.deparenthesize(stack)
+    result = @builder.deparenthesize(stack)
     expect(result.length).toEqual(7)
     expect(result[0]).toEqual("<numeric_literal>")
     expect(result[1]).toEqual(1)
@@ -84,7 +84,7 @@ describe "Numeric expression builder", ->
       7
       "<right>" ]
 
-    result = @helper.deparenthesize(stack)
+    result = @builder.deparenthesize(stack)
     expect(result.length).toEqual(3)
     expect(result[0]).toEqual(jasmine.any(Array))
     expect(result[0].length).toEqual(5)
@@ -127,7 +127,7 @@ describe "Numeric expression builder", ->
       "<numeric_literal>"
       11 ]
 
-    result = @helper.deparenthesize(stack)
+    result = @builder.deparenthesize(stack)
     expect(result.length).toEqual(4)
     expect(result[0]).toEqual(jasmine.any(Array))
     expect(result[0].length).toEqual(7)
@@ -167,7 +167,7 @@ describe "Numeric expression builder", ->
       1.7
       "<right>" ]
 
-    result = @helper.deparenthesize(stack)
+    result = @builder.deparenthesize(stack)
     expect(result.length).toEqual(6)
     expect(result[0]).toEqual("<numeric_literal>")
     expect(result[1]).toEqual(2)
@@ -190,7 +190,7 @@ describe "Numeric expression builder", ->
 
 
 
-  it "should find the designated splitter token", ->
+  it "should find the designated splitter token in an expression", ->
 
     test_data = []
 
@@ -212,7 +212,7 @@ describe "Numeric expression builder", ->
     right = [
       "<numeric_expression>"
       "<number_variable>"
-      "B" 
+      "B"
       "<num_exp_end>"]
 
     test_data[0] = {
@@ -332,7 +332,7 @@ describe "Numeric expression builder", ->
 
     # {4}  SCAN: '21*T'
     #    RESULT:  '21' <times> "T"
- 
+
     stack = [
       "<numeric_literal>"
       21
@@ -585,8 +585,27 @@ describe "Numeric expression builder", ->
       left: left
       right: right }
 
+
+    # {12}  SCAN:  RND
+    #    RESULT:  <num_keyword> 'RND'
+    stack = [
+      "<num_keyword>"
+      "<random>" ]
+
+    left = []
+
+    right = [
+      "<random>" ]
+
+    test_data[8] = {
+      stack: stack
+      expected_expression: "<num_keyword>"
+      left: left
+      right: right }
+
+
     for test_set in test_data
-      result = @helper.split(test_set.stack)
+      result = @builder.split(test_set.stack)
       expect(result.left.length).toEqual(test_set.left.length)
       expect(result.right.length).toEqual(test_set.right.length)
       expect(result.exp).toEqual(test_set.expected_expression)
@@ -608,7 +627,7 @@ describe "Numeric expression builder", ->
       exp: "<var>"
       name: "X" }
 
-    nmx = @helper.build_nxp(stack)
+    nmx = @builder.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.name).toEqual(expected.name)
 
@@ -624,7 +643,7 @@ describe "Numeric expression builder", ->
       exp: "<num>"
       value: 42 }
 
-    nmx = @helper.build_nxp(stack)
+    nmx = @builder.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.value).toEqual(expected.value)
 
@@ -640,7 +659,7 @@ describe "Numeric expression builder", ->
       exp: "<num>"
       value: 13.477 }
 
-    nmx = @helper.build_nxp(stack)
+    nmx = @builder.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.value).toEqual(expected.value)
 
@@ -657,10 +676,10 @@ describe "Numeric expression builder", ->
 
     expected = {
       exp: "<divide>"
-      op1: {exp: "<num>", value: 7 } 
+      op1: {exp: "<num>", value: 7 }
       op2: {exp: "<num>", value: 12 } }
 
-    nmx = @helper.build_nxp(stack)
+    nmx = @builder.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.value).toEqual(expected.op1.value)
@@ -683,7 +702,7 @@ describe "Numeric expression builder", ->
       op1: {exp: "<num>", value: 477 }
       op2: {exp: "<var>", name: "B" } }
 
-    nmx = @helper.build_nxp(stack)
+    nmx = @builder.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.value).toEqual(expected.op1.value)
@@ -705,12 +724,35 @@ describe "Numeric expression builder", ->
       op1: {exp: "<var>", name: "C" }
       op2: {exp: "<num>", value: 2 } }
 
-    nmx = @helper.build_nxp(stack)
+    nmx = @builder.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.name).toEqual(expected.op1.name)
     expect(nmx.op2.exp).toEqual(expected.op2.exp)
     expect(nmx.op2.value).toEqual(expected.op2.value)
+
+
+    # TEST NUMERIC EXPRESSION:  8*RND
+    stack = [
+      "<numeric_expression>"
+      "<numeric_literal>"
+      8
+      "<times>"
+      "<num_keyword>"
+      "<random>"
+      "<num_exp_end>" ]
+
+    expected = {
+      exp: "<times>"
+      op1: {exp: "<num>", value: 8 }
+      op2: {exp: "<num_keyword>", keyword: "<random>" } }
+
+    nmx = @builder.build_nxp(stack)
+    expect(nmx.exp).toEqual(expected.exp)
+    expect(nmx.op1.exp).toEqual(expected.op1.exp)
+    expect(nmx.op1.value).toEqual(expected.op1.value)
+    expect(nmx.op2.exp).toEqual(expected.op2.exp)
+    expect(nmx.op2.keyword).toEqual(expected.op2.keyword)
 
 
     # TEST NUMERIC EXPRESSION:  X*Y*Z
@@ -736,7 +778,7 @@ describe "Numeric expression builder", ->
       op1: {exp: "<var>", name: "X" }
       op2: op2 }
 
-    nmx = @helper.build_nxp(stack)
+    nmx = @builder.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.name).toEqual(expected.op1.name)
@@ -771,7 +813,7 @@ describe "Numeric expression builder", ->
       op1: {exp: "<num>", value: 28 }
       op2: op2 }
 
-    nmx = @helper.build_nxp(stack)
+    nmx = @builder.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.value).toEqual(expected.op1.value)
@@ -840,7 +882,7 @@ describe "Numeric expression builder", ->
       op2: op2 }
 
 
-    nmx = @helper.build_nxp(stack)
+    nmx = @builder.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.name).toEqual(expected.op1.name)
@@ -922,7 +964,7 @@ describe "Numeric expression builder", ->
       op1: op1
       op2: op2 }
 
-    nmx = @helper.build_nxp(stack)
+    nmx = @builder.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.op1.exp).toEqual(expected.op1.op1.exp)
@@ -943,5 +985,3 @@ describe "Numeric expression builder", ->
     expect(nmx.op2.op2.op2.op1.value).toEqual(expected.op2.op2.op2.op1.value)
     expect(nmx.op2.op2.op2.op2.exp).toEqual(expected.op2.op2.op2.op2.exp)
     expect(nmx.op2.op2.op2.op2.name).toEqual(expected.op2.op2.op2.op2.name)
-
-

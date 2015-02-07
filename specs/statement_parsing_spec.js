@@ -108,6 +108,18 @@ describe("Statement parsing", function() {
     expect(po[10]).toEqual("<number_variable>");
     expect(po[11]).toEqual("Z");
     expect(po[12]).toEqual("<num_exp_end>");
+    result = this.parser.look_for("E3=RND*256", this.syntax.line_number_rules[2]);
+    po = result.parse_object;
+    expect(po[0]).toEqual("<number_variable>");
+    expect(po[1]).toEqual("E3");
+    expect(po[2]).toEqual("<equals>");
+    expect(po[3]).toEqual("<numeric_expression>");
+    expect(po[4]).toEqual("<num_keyword>");
+    expect(po[5]).toEqual("<random>");
+    expect(po[6]).toEqual("<times>");
+    expect(po[7]).toEqual("<numeric_literal>");
+    expect(po[8]).toEqual(256);
+    expect(po[9]).toEqual("<num_exp_end>");
     result = this.parser.look_for("M=28*(J+2)", this.syntax.line_number_rules[2]);
     po = result.parse_object;
     expect(po[0]).toEqual("<number_variable>");

@@ -235,8 +235,9 @@ describe("Numeric expression parser", function() {
     expect(po[1]).toEqual("<numeric_literal>");
     expect(po[2]).toEqual(20);
     expect(po[3]).toEqual("<times>");
-    expect(po[4]).toEqual("<random>");
-    expect(po[5]).toEqual("<num_exp_end>");
+    expect(po[4]).toEqual("<num_keyword>");
+    expect(po[5]).toEqual("<random>");
+    expect(po[6]).toEqual("<num_exp_end>");
     result = this.parser.numeric_parse("X*Y*Z");
     expect(result.match).toEqual("yes");
     po = result.parse_object;
