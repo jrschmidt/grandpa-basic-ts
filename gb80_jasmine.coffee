@@ -1298,12 +1298,6 @@ class NumExpBuilder
 		left = @build_nxp(split_stack.left)
 		right = @build_nxp(split_stack.right)
 		if right.malformed == "yes" or left.malformed == "yes"
-			console.log "malformed at build_binary_expression()"
-			console.log "exp = #{split_stack.exp}"
-			console.log "left = #{left}"
-			console.log "right = #{right}"
-			console.log "right malformed? #{right.malformed}"
-			console.log "left malformed? #{left.malformed}"
 			result = { malformed: "yes" }
 		else
 			result = {
@@ -1334,13 +1328,6 @@ class NumExpBuilder
 
 
 	build_numeric_keyword: (split_stack) ->
-		console.log "build_numeric_keyword()"
-		console.log "    split_stack = "
-		console.log "    exp: #{split_stack.exp}"
-		console.log "    left: #{split_stack.left}"
-		console.log "    left.length = #{split_stack.left.length}"
-		console.log "    right: #{split_stack.right}"
-		console.log "    right.length = #{split_stack.right.length}"
 		result = {}
 		if split_stack.right.length == 1
 			result = {
@@ -1574,6 +1561,8 @@ class NumericExpressionEvaluator
 				value = @num_var_eval(num_exp)
 			when "<plus>", "<minus>", "<times>", "<divide>", "<power>"
 				value = @binary_op_eval(num_exp)
+			when "<num_keyword>"
+				value = @num_keyword_eval(num_exp)
 			else
 				value = "error"
 		return value
@@ -1585,6 +1574,13 @@ class NumericExpressionEvaluator
 
 	num_var_eval: (num_exp) ->
 		return @vars.get(num_exp.name)
+
+
+	num_keyword_eval: (num_exp) ->
+		if num_exp.keyword == "<random>"
+			return Math.random()
+		else
+			return NaN
 
 
 	binary_op_eval: (num_exp) ->

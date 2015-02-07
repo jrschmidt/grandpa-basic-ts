@@ -64,6 +64,17 @@ describe "Numeric expression evaluator", ->
     expect(value).toEqual(944.67)
 
 
+  it "should evaluate a reference to an RND keyword", ->
+
+    nmx = {
+      exp: "<num_keyword>"
+      keyword: "<random>" }
+
+    value = @nmx_eval.val(nmx)
+    expect(value).toBeGreaterThan(0)
+    expect(value).toBeLessThan(1)
+
+
   it "should evaluate a simple binary expression", ->
 
     # TEST  440+16
@@ -94,6 +105,17 @@ describe "Numeric expression evaluator", ->
 
     value = @nmx_eval.val(nmx)
     expect(value).toEqual(51)
+
+
+    # TEST  8*RND
+    nmx = {
+      exp: "<times>"
+      op1: {exp: "<num>", value: 8 }
+      op2: {exp: "<num_keyword>", keyword: "<random>" } }
+
+    value = @nmx_eval.val(nmx)
+    expect(value).toBeGreaterThan(0)
+    expect(value).toBeLessThan(8)
 
 
     # TEST  1024/256

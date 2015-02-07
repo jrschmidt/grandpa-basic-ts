@@ -1503,12 +1503,6 @@ NumExpBuilder = (function() {
     left = this.build_nxp(split_stack.left);
     right = this.build_nxp(split_stack.right);
     if (right.malformed === "yes" || left.malformed === "yes") {
-      console.log("malformed at build_binary_expression()");
-      console.log("exp = " + split_stack.exp);
-      console.log("left = " + left);
-      console.log("right = " + right);
-      console.log("right malformed? " + right.malformed);
-      console.log("left malformed? " + left.malformed);
       result = {
         malformed: "yes"
       };
@@ -1556,13 +1550,6 @@ NumExpBuilder = (function() {
 
   NumExpBuilder.prototype.build_numeric_keyword = function(split_stack) {
     var result;
-    console.log("build_numeric_keyword()");
-    console.log("    split_stack = ");
-    console.log("    exp: " + split_stack.exp);
-    console.log("    left: " + split_stack.left);
-    console.log("    left.length = " + split_stack.left.length);
-    console.log("    right: " + split_stack.right);
-    console.log("    right.length = " + split_stack.right.length);
     result = {};
     if (split_stack.right.length === 1) {
       result = {
@@ -1837,6 +1824,9 @@ NumericExpressionEvaluator = (function() {
       case "<power>":
         value = this.binary_op_eval(num_exp);
         break;
+      case "<num_keyword>":
+        value = this.num_keyword_eval(num_exp);
+        break;
       default:
         value = "error";
     }
@@ -1849,6 +1839,14 @@ NumericExpressionEvaluator = (function() {
 
   NumericExpressionEvaluator.prototype.num_var_eval = function(num_exp) {
     return this.vars.get(num_exp.name);
+  };
+
+  NumericExpressionEvaluator.prototype.num_keyword_eval = function(num_exp) {
+    if (num_exp.keyword === "<random>") {
+      return Math.random();
+    } else {
+      return NaN;
+    }
   };
 
   NumericExpressionEvaluator.prototype.binary_op_eval = function(num_exp) {

@@ -59,6 +59,16 @@ describe("Numeric expression evaluator", function() {
     value = this.nmx_eval.val(nmx);
     return expect(value).toEqual(944.67);
   });
+  it("should evaluate a reference to an RND keyword", function() {
+    var nmx, value;
+    nmx = {
+      exp: "<num_keyword>",
+      keyword: "<random>"
+    };
+    value = this.nmx_eval.val(nmx);
+    expect(value).toBeGreaterThan(0);
+    return expect(value).toBeLessThan(1);
+  });
   it("should evaluate a simple binary expression", function() {
     var nmx, value;
     nmx = {
@@ -100,6 +110,20 @@ describe("Numeric expression evaluator", function() {
     };
     value = this.nmx_eval.val(nmx);
     expect(value).toEqual(51);
+    nmx = {
+      exp: "<times>",
+      op1: {
+        exp: "<num>",
+        value: 8
+      },
+      op2: {
+        exp: "<num_keyword>",
+        keyword: "<random>"
+      }
+    };
+    value = this.nmx_eval.val(nmx);
+    expect(value).toBeGreaterThan(0);
+    expect(value).toBeLessThan(8);
     nmx = {
       exp: "<divide>",
       op1: {
