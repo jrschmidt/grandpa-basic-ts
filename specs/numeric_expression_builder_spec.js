@@ -32,6 +32,30 @@ describe("Numeric expression builder", function() {
     expect(result[4]).toEqual("<divide>");
     expect(result[5]).toEqual("<number_variable>");
     expect(result[6]).toEqual("B");
+    stack = ["<integer>", "<left>", "<number_variable>", "W", "<right>"];
+    result = this.builder.deparenthesize(stack);
+    expect(result.length).toEqual(2);
+    expect(result[0]).toEqual("<integer>");
+    expect(result[1]).toEqual(jasmine.any(Array));
+    expect(result[1].length).toEqual(2);
+    expect(result[1][0]).toEqual("<number_variable>");
+    expect(result[1][1]).toEqual("W");
+    stack = ["<left>", "<numeric_literal>", 200, "<plus>", "<integer>", "<left>", "<number_variable>", "S7", "<right>", "<right>", "<times>", "<numeric_literal>", 44];
+    result = this.builder.deparenthesize(stack);
+    expect(result.length).toEqual(4);
+    expect(result[0]).toEqual(jasmine.any(Array));
+    expect(result[0].length).toEqual(5);
+    expect(result[0][0]).toEqual("<numeric_literal>");
+    expect(result[0][1]).toEqual(200);
+    expect(result[0][2]).toEqual("<plus>");
+    expect(result[0][3]).toEqual("<integer>");
+    expect(result[0][4]).toEqual(jasmine.any(Array));
+    expect(result[0][4].length).toEqual(2);
+    expect(result[0][4][0]).toEqual("<number_variable>");
+    expect(result[0][4][1]).toEqual("S7");
+    expect(result[1]).toEqual("<times>");
+    expect(result[2]).toEqual("<numeric_literal>");
+    expect(result[3]).toEqual(44);
     stack = ["<left>", "<number_variable>", "S2", "<plus>", "<numeric_literal>", 7, "<right>", "<divide>", "<left>", "<number_variable>", "E4", "<power>", "<numeric_literal>", 2, "<minus>", "<numeric_literal>", 7, "<right>"];
     result = this.builder.deparenthesize(stack);
     expect(result.length).toEqual(3);
@@ -94,143 +118,273 @@ describe("Numeric expression builder", function() {
     return expect(result[5][4]).toEqual(1.7);
   });
   it("should find the designated splitter token in an expression", function() {
-    var i, left, result, right, stack, test_data, test_set, _i, _j, _len, _ref, _results;
-    test_data = [];
+    var i, left, result, right, stack, test_data, _aa, _ab, _ac, _ad, _ae, _af, _ag, _ah, _ai, _aj, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _ref, _ref1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _ref17, _ref18, _ref19, _ref2, _ref20, _ref21, _ref22, _ref23, _ref24, _ref25, _ref26, _ref27, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9, _results, _s, _t, _u, _v, _w, _x, _y, _z;
     stack = ["<number_variable>", "A", "<plus>", "<number_variable>", "B"];
     left = ["<numeric_expression>", "<number_variable>", "A", "<num_exp_end>"];
     right = ["<numeric_expression>", "<number_variable>", "B", "<num_exp_end>"];
-    test_data[0] = {
+    test_data = {
       stack: stack,
       expected_expression: "<plus>",
       left: left,
       right: right
     };
+    result = this.builder.split(test_data.stack);
+    expect(result.left.length).toEqual(test_data.left.length);
+    expect(result.right.length).toEqual(test_data.right.length);
+    expect(result.exp).toEqual(test_data.expected_expression);
+    for (i = _i = 0, _ref = test_data.left.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+      expect(result.left[i]).toEqual(test_data.left[i]);
+    }
+    for (i = _j = 0, _ref1 = test_data.right.length - 1; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
+      expect(result.right[i]).toEqual(test_data.right[i]);
+    }
     stack = ["<number_variable>", "X", "<minus>", "<numeric_literal>", 200];
     left = ["<numeric_expression>", "<number_variable>", "X", "<num_exp_end>"];
     right = ["<numeric_expression>", "<numeric_literal>", 200, "<num_exp_end>"];
-    test_data[1] = {
+    test_data = {
       stack: stack,
       expected_expression: "<minus>",
       left: left,
       right: right
     };
+    result = this.builder.split(test_data.stack);
+    expect(result.left.length).toEqual(test_data.left.length);
+    expect(result.right.length).toEqual(test_data.right.length);
+    expect(result.exp).toEqual(test_data.expected_expression);
+    for (i = _k = 0, _ref2 = test_data.left.length - 1; 0 <= _ref2 ? _k <= _ref2 : _k >= _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
+      expect(result.left[i]).toEqual(test_data.left[i]);
+    }
+    for (i = _l = 0, _ref3 = test_data.right.length - 1; 0 <= _ref3 ? _l <= _ref3 : _l >= _ref3; i = 0 <= _ref3 ? ++_l : --_l) {
+      expect(result.right[i]).toEqual(test_data.right[i]);
+    }
     stack = ["<number_variable>", "P", "<plus>", "<number_variable>", "Q", "<plus>", "<number_variable>", "R", "<plus>", "<number_variable>", "S"];
     left = ["<numeric_expression>", "<number_variable>", "P", "<num_exp_end>"];
     right = ["<numeric_expression>", "<number_variable>", "Q", "<plus>", "<number_variable>", "R", "<plus>", "<number_variable>", "S", "<num_exp_end>"];
-    test_data[2] = {
+    test_data = {
       stack: stack,
       expected_expression: "<plus>",
       left: left,
       right: right
     };
+    result = this.builder.split(test_data.stack);
+    expect(result.left.length).toEqual(test_data.left.length);
+    expect(result.right.length).toEqual(test_data.right.length);
+    expect(result.exp).toEqual(test_data.expected_expression);
+    for (i = _m = 0, _ref4 = test_data.left.length - 1; 0 <= _ref4 ? _m <= _ref4 : _m >= _ref4; i = 0 <= _ref4 ? ++_m : --_m) {
+      expect(result.left[i]).toEqual(test_data.left[i]);
+    }
+    for (i = _n = 0, _ref5 = test_data.right.length - 1; 0 <= _ref5 ? _n <= _ref5 : _n >= _ref5; i = 0 <= _ref5 ? ++_n : --_n) {
+      expect(result.right[i]).toEqual(test_data.right[i]);
+    }
     stack = ["<number_variable>", "J", "<times>", "<number_variable>", "Z1", "<minus>", "<number_variable>", "K", "<times>", "<number_variable>", "Z2"];
     left = ["<numeric_expression>", "<number_variable>", "J", "<times>", "<number_variable>", "Z1", "<num_exp_end>"];
     right = ["<numeric_expression>", "<number_variable>", "K", "<times>", "<number_variable>", "Z2", "<num_exp_end>"];
-    test_data[3] = {
+    test_data = {
       stack: stack,
       expected_expression: "<minus>",
       left: left,
       right: right
     };
+    result = this.builder.split(test_data.stack);
+    expect(result.left.length).toEqual(test_data.left.length);
+    expect(result.right.length).toEqual(test_data.right.length);
+    expect(result.exp).toEqual(test_data.expected_expression);
+    for (i = _o = 0, _ref6 = test_data.left.length - 1; 0 <= _ref6 ? _o <= _ref6 : _o >= _ref6; i = 0 <= _ref6 ? ++_o : --_o) {
+      expect(result.left[i]).toEqual(test_data.left[i]);
+    }
+    for (i = _p = 0, _ref7 = test_data.right.length - 1; 0 <= _ref7 ? _p <= _ref7 : _p >= _ref7; i = 0 <= _ref7 ? ++_p : --_p) {
+      expect(result.right[i]).toEqual(test_data.right[i]);
+    }
     stack = ["<numeric_literal>", 21, "<times>", "<number_variable>", "T"];
     left = ["<numeric_expression>", "<numeric_literal>", 21, "<num_exp_end>"];
     right = ["<numeric_expression>", "<number_variable>", "T", "<num_exp_end>"];
-    test_data[4] = {
+    test_data = {
       stack: stack,
       expected_expression: "<times>",
       left: left,
       right: right
     };
+    result = this.builder.split(test_data.stack);
+    expect(result.left.length).toEqual(test_data.left.length);
+    expect(result.right.length).toEqual(test_data.right.length);
+    expect(result.exp).toEqual(test_data.expected_expression);
+    for (i = _q = 0, _ref8 = test_data.left.length - 1; 0 <= _ref8 ? _q <= _ref8 : _q >= _ref8; i = 0 <= _ref8 ? ++_q : --_q) {
+      expect(result.left[i]).toEqual(test_data.left[i]);
+    }
+    for (i = _r = 0, _ref9 = test_data.right.length - 1; 0 <= _ref9 ? _r <= _ref9 : _r >= _ref9; i = 0 <= _ref9 ? ++_r : --_r) {
+      expect(result.right[i]).toEqual(test_data.right[i]);
+    }
     stack = ["<numeric_literal>", 3.1416, "<divide>", "<numeric_literal>", 2];
     left = ["<numeric_expression>", "<numeric_literal>", 3.1416, "<num_exp_end>"];
     right = ["<numeric_expression>", "<numeric_literal>", 2, "<num_exp_end>"];
-    test_data[5] = {
+    test_data = {
       stack: stack,
       expected_expression: "<divide>",
       left: left,
       right: right
     };
+    result = this.builder.split(test_data.stack);
+    expect(result.left.length).toEqual(test_data.left.length);
+    expect(result.right.length).toEqual(test_data.right.length);
+    expect(result.exp).toEqual(test_data.expected_expression);
+    for (i = _s = 0, _ref10 = test_data.left.length - 1; 0 <= _ref10 ? _s <= _ref10 : _s >= _ref10; i = 0 <= _ref10 ? ++_s : --_s) {
+      expect(result.left[i]).toEqual(test_data.left[i]);
+    }
+    for (i = _t = 0, _ref11 = test_data.right.length - 1; 0 <= _ref11 ? _t <= _ref11 : _t >= _ref11; i = 0 <= _ref11 ? ++_t : --_t) {
+      expect(result.right[i]).toEqual(test_data.right[i]);
+    }
     stack = ["<numeric_literal>", 3.3333, "<times>", "<number_variable>", "Z", "<times>", "<number_variable>", "A", "<divide>", "<number_variable>", "M"];
     left = ["<numeric_expression>", "<numeric_literal>", 3.3333, "<num_exp_end>"];
     right = ["<numeric_expression>", "<number_variable>", "Z", "<times>", "<number_variable>", "A", "<divide>", "<number_variable>", "M", "<num_exp_end>"];
-    test_data[6] = {
+    test_data = {
       stack: stack,
       expected_expression: "<times>",
       left: left,
       right: right
     };
+    result = this.builder.split(test_data.stack);
+    expect(result.left.length).toEqual(test_data.left.length);
+    expect(result.right.length).toEqual(test_data.right.length);
+    expect(result.exp).toEqual(test_data.expected_expression);
+    for (i = _u = 0, _ref12 = test_data.left.length - 1; 0 <= _ref12 ? _u <= _ref12 : _u >= _ref12; i = 0 <= _ref12 ? ++_u : --_u) {
+      expect(result.left[i]).toEqual(test_data.left[i]);
+    }
+    for (i = _v = 0, _ref13 = test_data.right.length - 1; 0 <= _ref13 ? _v <= _ref13 : _v >= _ref13; i = 0 <= _ref13 ? ++_v : --_v) {
+      expect(result.right[i]).toEqual(test_data.right[i]);
+    }
     stack = ["<number_variable>", "M", "<power>", "<numeric_literal>", 3];
     left = ["<numeric_expression>", "<number_variable>", "M", "<num_exp_end>"];
     right = ["<numeric_expression>", "<numeric_literal>", 3, "<num_exp_end>"];
-    test_data[7] = {
+    test_data = {
       stack: stack,
       expected_expression: "<power>",
       left: left,
       right: right
     };
+    result = this.builder.split(test_data.stack);
+    expect(result.left.length).toEqual(test_data.left.length);
+    expect(result.right.length).toEqual(test_data.right.length);
+    expect(result.exp).toEqual(test_data.expected_expression);
+    for (i = _w = 0, _ref14 = test_data.left.length - 1; 0 <= _ref14 ? _w <= _ref14 : _w >= _ref14; i = 0 <= _ref14 ? ++_w : --_w) {
+      expect(result.left[i]).toEqual(test_data.left[i]);
+    }
+    for (i = _x = 0, _ref15 = test_data.right.length - 1; 0 <= _ref15 ? _x <= _ref15 : _x >= _ref15; i = 0 <= _ref15 ? ++_x : --_x) {
+      expect(result.right[i]).toEqual(test_data.right[i]);
+    }
     stack = ["<numeric_literal>", 3.1416];
     left = [];
     right = [3.1416];
-    test_data[8] = {
+    test_data = {
       stack: stack,
       expected_expression: "<numeric_literal>",
       left: left,
       right: right
     };
+    result = this.builder.split(test_data.stack);
+    expect(result.left.length).toEqual(test_data.left.length);
+    expect(result.right.length).toEqual(test_data.right.length);
+    expect(result.exp).toEqual(test_data.expected_expression);
+    for (i = _y = 0, _ref16 = test_data.left.length - 1; 0 <= _ref16 ? _y <= _ref16 : _y >= _ref16; i = 0 <= _ref16 ? ++_y : --_y) {
+      expect(result.left[i]).toEqual(test_data.left[i]);
+    }
+    for (i = _z = 0, _ref17 = test_data.right.length - 1; 0 <= _ref17 ? _z <= _ref17 : _z >= _ref17; i = 0 <= _ref17 ? ++_z : --_z) {
+      expect(result.right[i]).toEqual(test_data.right[i]);
+    }
     stack = ["<number_variable>", "X"];
     left = [];
     right = ["X"];
-    test_data[9] = {
+    test_data = {
       stack: stack,
       expected_expression: "<number_variable>",
       left: left,
       right: right
     };
+    result = this.builder.split(test_data.stack);
+    expect(result.left.length).toEqual(test_data.left.length);
+    expect(result.right.length).toEqual(test_data.right.length);
+    expect(result.exp).toEqual(test_data.expected_expression);
+    for (i = _aa = 0, _ref18 = test_data.left.length - 1; 0 <= _ref18 ? _aa <= _ref18 : _aa >= _ref18; i = 0 <= _ref18 ? ++_aa : --_aa) {
+      expect(result.left[i]).toEqual(test_data.left[i]);
+    }
+    for (i = _ab = 0, _ref19 = test_data.right.length - 1; 0 <= _ref19 ? _ab <= _ref19 : _ab >= _ref19; i = 0 <= _ref19 ? ++_ab : --_ab) {
+      expect(result.right[i]).toEqual(test_data.right[i]);
+    }
     stack = ["<left>", "<numeric_literal>", 1, "<plus>", "<number_variable>", "W", "<right>", "<divide>", "<left>", "<number_variable>", "Z1", "<plus>", "<number_variable>", "Z2", "plus", "<number_variable>", "Z3", "<right>"];
     left = ["<numeric_expression>", "<numeric_literal>", 1, "<plus>", "<number_variable>", "W", "<num_exp_end>"];
     right = ["<numeric_expression>", "<number_variable>", "Z1", "<plus>", "<number_variable>", "Z2", "plus", "<number_variable>", "Z3", "<num_exp_end>"];
-    test_data[10] = {
+    test_data = {
       stack: stack,
       expected_expression: "<divide>",
       left: left,
       right: right
     };
+    result = this.builder.split(test_data.stack);
+    expect(result.left.length).toEqual(test_data.left.length);
+    expect(result.right.length).toEqual(test_data.right.length);
+    expect(result.exp).toEqual(test_data.expected_expression);
+    for (i = _ac = 0, _ref20 = test_data.left.length - 1; 0 <= _ref20 ? _ac <= _ref20 : _ac >= _ref20; i = 0 <= _ref20 ? ++_ac : --_ac) {
+      expect(result.left[i]).toEqual(test_data.left[i]);
+    }
+    for (i = _ad = 0, _ref21 = test_data.right.length - 1; 0 <= _ref21 ? _ad <= _ref21 : _ad >= _ref21; i = 0 <= _ref21 ? ++_ad : --_ad) {
+      expect(result.right[i]).toEqual(test_data.right[i]);
+    }
     stack = ["<left>", "<numeric_literal>", 6, "<times>", "<number_variable>", "A", "<minus>", "<left>", "<numeric_literal>", 400, "<plus>", "<number_variable>", "X2", "<right>", "<right>", "<times>", "<numeric_literal>", 11];
     left = ["<numeric_expression>", "<numeric_literal>", 6, "<times>", "<number_variable>", "A", "<minus>", ["<numeric_literal>", 400, "<plus>", "<number_variable>", "X2"], "<num_exp_end>"];
     right = ["<numeric_expression>", "<numeric_literal>", 11, "<num_exp_end>"];
-    test_data[11] = {
+    test_data = {
       stack: stack,
       expected_expression: "<times>",
       left: left,
       right: right
     };
-    stack = ["<num_keyword>", "<random>"];
+    result = this.builder.split(test_data.stack);
+    expect(result.left.length).toEqual(test_data.left.length);
+    expect(result.right.length).toEqual(test_data.right.length);
+    expect(result.exp).toEqual(test_data.expected_expression);
+    for (i = _ae = 0, _ref22 = test_data.left.length - 1; 0 <= _ref22 ? _ae <= _ref22 : _ae >= _ref22; i = 0 <= _ref22 ? ++_ae : --_ae) {
+      expect(result.left[i]).toEqual(test_data.left[i]);
+    }
+    for (i = _af = 0, _ref23 = test_data.right.length - 1; 0 <= _ref23 ? _af <= _ref23 : _af >= _ref23; i = 0 <= _ref23 ? ++_af : --_af) {
+      expect(result.right[i]).toEqual(test_data.right[i]);
+    }
+    stack = ["<random>"];
     left = [];
-    right = ["<random>"];
-    test_data[8] = {
+    right = [];
+    test_data = {
       stack: stack,
-      expected_expression: "<num_keyword>",
+      expected_expression: "<random>",
       left: left,
       right: right
     };
+    result = this.builder.split(test_data.stack);
+    expect(result.left.length).toEqual(test_data.left.length);
+    expect(result.right.length).toEqual(test_data.right.length);
+    expect(result.exp).toEqual(test_data.expected_expression);
+    for (i = _ag = 0, _ref24 = test_data.left.length - 1; 0 <= _ref24 ? _ag <= _ref24 : _ag >= _ref24; i = 0 <= _ref24 ? ++_ag : --_ag) {
+      expect(result.left[i]).toEqual(test_data.left[i]);
+    }
+    for (i = _ah = 0, _ref25 = test_data.right.length - 1; 0 <= _ref25 ? _ah <= _ref25 : _ah >= _ref25; i = 0 <= _ref25 ? ++_ah : --_ah) {
+      expect(result.right[i]).toEqual(test_data.right[i]);
+    }
+    stack = ["<integer>", "<left>", "<number_variable>", "Z6", "<right>"];
+    left = [];
+    right = ["<numeric_expression>", "<number_variable>", "Z6", "<num_exp_end>"];
+    test_data = {
+      stack: stack,
+      expected_expression: "<integer>",
+      left: left,
+      right: right
+    };
+    result = this.builder.split(test_data.stack);
+    expect(result.left.length).toEqual(test_data.left.length);
+    expect(result.right.length).toEqual(test_data.right.length);
+    expect(result.exp).toEqual(test_data.expected_expression);
+    for (i = _ai = 0, _ref26 = test_data.left.length - 1; 0 <= _ref26 ? _ai <= _ref26 : _ai >= _ref26; i = 0 <= _ref26 ? ++_ai : --_ai) {
+      expect(result.left[i]).toEqual(test_data.left[i]);
+    }
     _results = [];
-    for (_i = 0, _len = test_data.length; _i < _len; _i++) {
-      test_set = test_data[_i];
-      result = this.builder.split(test_set.stack);
-      expect(result.left.length).toEqual(test_set.left.length);
-      expect(result.right.length).toEqual(test_set.right.length);
-      expect(result.exp).toEqual(test_set.expected_expression);
-      for (i = _j = 0, _ref = test_set.left.length - 1; 0 <= _ref ? _j <= _ref : _j >= _ref; i = 0 <= _ref ? ++_j : --_j) {
-        expect(result.left[i]).toEqual(test_set.left[i]);
-      }
-      _results.push((function() {
-        var _k, _ref1, _results1;
-        _results1 = [];
-        for (i = _k = 0, _ref1 = test_set.right.length - 1; 0 <= _ref1 ? _k <= _ref1 : _k >= _ref1; i = 0 <= _ref1 ? ++_k : --_k) {
-          _results1.push(expect(result.right[i]).toEqual(test_set.right[i]));
-        }
-        return _results1;
-      })());
+    for (i = _aj = 0, _ref27 = test_data.right.length - 1; 0 <= _ref27 ? _aj <= _ref27 : _aj >= _ref27; i = 0 <= _ref27 ? ++_aj : --_aj) {
+      _results.push(expect(result.right[i]).toEqual(test_data.right[i]));
     }
     return _results;
   });
@@ -314,7 +468,7 @@ describe("Numeric expression builder", function() {
     expect(nmx.op1.name).toEqual(expected.op1.name);
     expect(nmx.op2.exp).toEqual(expected.op2.exp);
     expect(nmx.op2.value).toEqual(expected.op2.value);
-    stack = ["<numeric_expression>", "<numeric_literal>", 8, "<times>", "<num_keyword>", "<random>", "<num_exp_end>"];
+    stack = ["<numeric_expression>", "<numeric_literal>", 8, "<times>", "<random>", "<num_exp_end>"];
     expected = {
       exp: "<times>",
       op1: {
@@ -322,8 +476,7 @@ describe("Numeric expression builder", function() {
         value: 8
       },
       op2: {
-        exp: "<num_keyword>",
-        keyword: "<random>"
+        exp: "<random>"
       }
     };
     nmx = this.builder.build_nxp(stack);
@@ -331,7 +484,6 @@ describe("Numeric expression builder", function() {
     expect(nmx.op1.exp).toEqual(expected.op1.exp);
     expect(nmx.op1.value).toEqual(expected.op1.value);
     expect(nmx.op2.exp).toEqual(expected.op2.exp);
-    expect(nmx.op2.keyword).toEqual(expected.op2.keyword);
     stack = ["<numeric_expression>", "<number_variable>", "X", "<times>", "<number_variable>", "Y", "<times>", "<number_variable>", "Z", "<num_exp_end>"];
     op2 = {
       exp: "<times>",

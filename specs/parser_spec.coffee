@@ -191,7 +191,7 @@ describe "BASIC program line parser", ->
 
     po = @parser.parse('940 F=20*RND')
     expect(po).toEqual(jasmine.any(Array))
-    expect(po.length).toEqual(13)
+    expect(po.length).toEqual(12)
     expect(po[0]).toEqual("<line_number>")
     expect(po[1]).toEqual(940)
     expect(po[2]).toEqual("<sp>")
@@ -202,9 +202,8 @@ describe "BASIC program line parser", ->
     expect(po[7]).toEqual("<numeric_literal>")
     expect(po[8]).toEqual(20)
     expect(po[9]).toEqual("<times>")
-    expect(po[10]).toEqual("<num_keyword>")
-    expect(po[11]).toEqual("<random>")
-    expect(po[12]).toEqual("<num_exp_end>")
+    expect(po[10]).toEqual("<random>")
+    expect(po[11]).toEqual("<num_exp_end>")
 
 
   it "should correctly parse a string assignment program line", ->

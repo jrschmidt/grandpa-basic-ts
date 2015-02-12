@@ -779,8 +779,8 @@ NumericExpressionParser = (function() {
     this.num_exp_chars = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "(", ")", "+", "-", "*", "/", "^"];
     this.delimiters = ["(", ")", "+", "-", "*", "/", "^"];
     this.symbols = ["<left>", "<right>", "<plus>", "<minus>", "<times>", "<divide>", "<power>"];
-    this.keywords = ["RND"];
-    this.tokens = ["<random>"];
+    this.keywords = ["RND", "INT"];
+    this.tokens = ["<random>", "<integer>"];
   }
 
   NumericExpressionParser.prototype.numeric_parse = function(string) {
@@ -799,7 +799,6 @@ NumericExpressionParser = (function() {
         po1 = first.parse_object;
         po1.pop();
         po = po1;
-        po.push("<num_keyword>");
         po.push(split_string.split_token);
         po2 = last.parse_object;
         po2.shift();
@@ -1446,7 +1445,7 @@ ProgramLineBuilder = (function() {
 
 NumExpBuilder = (function() {
   function NumExpBuilder() {
-    this.search_terms = [["<plus>", "<minus>"], ["<times>", "<divide>"], ["<power>"], ["<numeric_literal>", "<number_variable>", "<num_keyword>"]];
+    this.search_terms = [["<plus>", "<minus>"], ["<times>", "<divide>"], ["<power>"], ["<numeric_literal>", "<number_variable>"], ["<random>", "<integer>"]];
   }
 
   NumExpBuilder.prototype.build_nxp = function(stack) {
@@ -1485,8 +1484,11 @@ NumExpBuilder = (function() {
         case "<number_variable>":
           nxp = this.build_number_variable(split_stack);
           break;
-        case "<num_keyword>":
-          nxp = this.build_numeric_keyword(split_stack);
+        case "<random>":
+          nxp = this.build_random(split_stack);
+          break;
+        case "<integer>":
+          nxp = this.build_integer_function(split_stack);
           break;
         default:
           nxp = {
@@ -1548,19 +1550,11 @@ NumExpBuilder = (function() {
     return result;
   };
 
-  NumExpBuilder.prototype.build_numeric_keyword = function(split_stack) {
+  NumExpBuilder.prototype.build_random = function(split_stack) {
     var result;
-    result = {};
-    if (split_stack.right.length === 1) {
-      result = {
-        exp: "<num_keyword>",
-        keyword: split_stack.right[0]
-      };
-    } else {
-      result = {
-        malformed: "yes"
-      };
-    }
+    result = {
+      exp: "<random>"
+    };
     return result;
   };
 
@@ -1584,6 +1578,13 @@ NumExpBuilder = (function() {
             exp = stack[0];
             left = [];
             right = stack.slice(1);
+            if (Array.isArray(right[0])) {
+              right = right[0];
+            }
+            if (right.length > 1) {
+              right.unshift("<numeric_expression>");
+              right.push("<num_exp_end>");
+            }
           } else {
             exp = stack[index];
             left = stack.slice(0, +(index - 1) + 1 || 9e9);
@@ -1648,11 +1649,11 @@ NumExpBuilder = (function() {
           stack = new_stack;
           nesting = 0;
           i = -1;
+          if (stack.length === 1) {
+            stack = stack[0];
+          }
         }
       }
-    }
-    if (stack.length === 1) {
-      stack = stack[0];
     }
     if (ok === "bad") {
       return {

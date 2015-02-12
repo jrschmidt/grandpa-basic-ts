@@ -737,8 +737,10 @@ class NumericExpressionParser
 							 "<times>",
 							 "<divide>",
 							 "<power>"]
-		@keywords = ["RND"]
-		@tokens = ["<random>"]
+		@keywords = ["RND",
+								"INT"]
+		@tokens = ["<random>",
+								"<integer>"]
 
 
 	numeric_parse: (string) ->
@@ -754,7 +756,6 @@ class NumericExpressionParser
 				po1 = first.parse_object
 				po1.pop()
 				po = po1
-				po.push("<num_keyword>")
 				po.push(split_string.split_token)
 				po2 = last.parse_object
 				po2.shift()
@@ -1260,7 +1261,8 @@ class NumExpBuilder
 			["<plus>", "<minus>" ]
 			["<times>", "<divide>" ]
 			["<power>"]
-			["<numeric_literal>", "<number_variable>", "<num_keyword>" ] ]
+			["<numeric_literal>", "<number_variable>"]
+			["<random>", "<integer>"] ]
 
 
 	build_nxp: (stack) ->
@@ -1272,7 +1274,6 @@ class NumExpBuilder
 			nxp = { malformed: "yes" }
 		return nxp
 
-	# TODO Combine these two methods, then look for refactoring.
 
 	build_num_exp: (stack) ->
 		split_stack = @split(stack)
@@ -1286,8 +1287,10 @@ class NumExpBuilder
 					nxp = @build_numeric_literal(split_stack)
 				when "<number_variable>"
 					nxp = @build_number_variable(split_stack)
-				when "<num_keyword>"
-					nxp = @build_numeric_keyword(split_stack)
+				when "<random>"
+					nxp = @build_random(split_stack)
+				when "<integer>"
+					nxp = @build_integer_function(split_stack)
 				else
 					nxp = { malformed: "yes" }
 		return nxp
@@ -1327,14 +1330,19 @@ class NumExpBuilder
 		return result
 
 
-	build_numeric_keyword: (split_stack) ->
-		result = {}
-		if split_stack.right.length == 1
-			result = {
-				exp: "<num_keyword>"
-				keyword: split_stack.right[0] }
-		else result = { malformed: "yes" }
+	build_random: (split_stack) ->
+		result = {exp: "<random>"}
 		return result
+
+
+	# build_numeric_keyword: (split_stack) ->
+	# 	result = {}
+	# 	if split_stack.right.length == 1
+	# 		result = {
+	# 			exp: "<num_keyword>"
+	# 			keyword: split_stack.right[0] }
+	# 	else result = { malformed: "yes" }
+	# 	return result
 
 
 	split: (stack) ->
@@ -1350,6 +1358,10 @@ class NumExpBuilder
 						exp = stack[0]
 						left = []
 						right = stack.slice(1)
+						right = right[0] if Array.isArray(right[0])
+						if right.length > 1
+							right.unshift("<numeric_expression>")
+							right.push("<num_exp_end>")
 					else
 						exp = stack[index]
 						left = stack[0..index-1]
@@ -1393,7 +1405,7 @@ class NumExpBuilder
 					stack = new_stack
 					nesting = 0
 					i = -1
-		stack = stack[0] if stack.length == 1
+					stack = stack[0] if stack.length == 1
 		if ok == "bad"
 			return { malformed: "yes" }
 		else

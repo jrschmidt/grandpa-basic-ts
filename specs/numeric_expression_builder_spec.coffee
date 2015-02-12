@@ -63,6 +63,56 @@ describe "Numeric expression builder", ->
     expect(result[6]).toEqual("B")
 
 
+    # TEST  INT(W)
+    stack = [
+      "<integer>"
+      "<left>"
+      "<number_variable>"
+      "W"
+      "<right>" ]
+
+    result = @builder.deparenthesize(stack)
+    expect(result.length).toEqual(2)
+    expect(result[0]).toEqual("<integer>")
+    expect(result[1]).toEqual(jasmine.any(Array))
+    expect(result[1].length).toEqual(2)
+    expect(result[1][0]).toEqual("<number_variable>")
+    expect(result[1][1]).toEqual("W")
+
+
+    # TEST  (200+INT(S7))*44
+    stack = [
+      "<left>"
+      "<numeric_literal>"
+      200
+      "<plus>"
+      "<integer>"
+      "<left>"
+      "<number_variable>"
+      "S7"
+      "<right>"
+      "<right>"
+      "<times>"
+      "<numeric_literal>"
+      44 ]
+
+    result = @builder.deparenthesize(stack)
+    expect(result.length).toEqual(4)
+    expect(result[0]).toEqual(jasmine.any(Array))
+    expect(result[0].length).toEqual(5)
+    expect(result[0][0]).toEqual("<numeric_literal>")
+    expect(result[0][1]).toEqual(200)
+    expect(result[0][2]).toEqual("<plus>")
+    expect(result[0][3]).toEqual("<integer>")
+    expect(result[0][4]).toEqual(jasmine.any(Array))
+    expect(result[0][4].length).toEqual(2)
+    expect(result[0][4][0]).toEqual("<number_variable>")
+    expect(result[0][4][1]).toEqual("S7")
+    expect(result[1]).toEqual("<times>")
+    expect(result[2]).toEqual("<numeric_literal>")
+    expect(result[3]).toEqual(44)
+
+
     # TEST  (S2+7)/(E4^2-7)
     stack = [
       "<left>"
@@ -192,10 +242,8 @@ describe "Numeric expression builder", ->
 
   it "should find the designated splitter token in an expression", ->
 
-    test_data = []
-
-    # {0}  SCAN:  A+B
-    #    RESULT:  'A' <plus> 'B'
+    # SCAN:  A+B
+    # RESULT:  'A' <plus> 'B'
     stack = [
       "<number_variable>"
       "A"
@@ -215,15 +263,22 @@ describe "Numeric expression builder", ->
       "B"
       "<num_exp_end>"]
 
-    test_data[0] = {
+    test_data = {
       stack: stack
       expected_expression: "<plus>"
       left: left
       right: right }
 
+    result = @builder.split(test_data.stack)
+    expect(result.left.length).toEqual(test_data.left.length)
+    expect(result.right.length).toEqual(test_data.right.length)
+    expect(result.exp).toEqual(test_data.expected_expression)
+    expect(result.left[i]).toEqual(test_data.left[i]) for i in [0..test_data.left.length-1]
+    expect(result.right[i]).toEqual(test_data.right[i]) for i in [0..test_data.right.length-1]
 
-    # {1}  SCAN:  X-200
-    #    RESULT:  'X' <minus> '200'
+
+    # SCAN:  X-200
+    # RESULT:  'X' <minus> '200'
     stack = [
       "<number_variable>"
       "X"
@@ -243,15 +298,22 @@ describe "Numeric expression builder", ->
       200
       "<num_exp_end>" ]
 
-    test_data[1] = {
+    test_data = {
       stack: stack
       expected_expression: "<minus>"
       left: left
       right: right }
 
+    result = @builder.split(test_data.stack)
+    expect(result.left.length).toEqual(test_data.left.length)
+    expect(result.right.length).toEqual(test_data.right.length)
+    expect(result.exp).toEqual(test_data.expected_expression)
+    expect(result.left[i]).toEqual(test_data.left[i]) for i in [0..test_data.left.length-1]
+    expect(result.right[i]).toEqual(test_data.right[i]) for i in [0..test_data.right.length-1]
 
-    # {2}  SCAN:  'P+Q+R+S'
-    #    RESULT:  'P' <plus> 'Q+R+S'
+
+    # SCAN:  'P+Q+R+S'
+    # RESULT:  'P' <plus> 'Q+R+S'
     stack = [
       "<number_variable>"
       "P"
@@ -283,15 +345,22 @@ describe "Numeric expression builder", ->
       "S"
       "<num_exp_end>" ]
 
-    test_data[2] = {
+    test_data = {
       stack: stack
       expected_expression: "<plus>"
       left: left
       right: right }
 
+    result = @builder.split(test_data.stack)
+    expect(result.left.length).toEqual(test_data.left.length)
+    expect(result.right.length).toEqual(test_data.right.length)
+    expect(result.exp).toEqual(test_data.expected_expression)
+    expect(result.left[i]).toEqual(test_data.left[i]) for i in [0..test_data.left.length-1]
+    expect(result.right[i]).toEqual(test_data.right[i]) for i in [0..test_data.right.length-1]
 
-    # {3}  SCAN:  J*Z1-K*Z2
-    #    RESULT:  'J*Z1' <minus> 'K*Z2'
+
+    # SCAN:  J*Z1-K*Z2
+    # RESULT:  'J*Z1' <minus> 'K*Z2'
     stack = [
       "<number_variable>"
       "J"
@@ -323,15 +392,22 @@ describe "Numeric expression builder", ->
       "Z2"
       "<num_exp_end>" ]
 
-    test_data[3] = {
+    test_data = {
       stack: stack
       expected_expression: "<minus>"
       left: left
       right: right }
 
+    result = @builder.split(test_data.stack)
+    expect(result.left.length).toEqual(test_data.left.length)
+    expect(result.right.length).toEqual(test_data.right.length)
+    expect(result.exp).toEqual(test_data.expected_expression)
+    expect(result.left[i]).toEqual(test_data.left[i]) for i in [0..test_data.left.length-1]
+    expect(result.right[i]).toEqual(test_data.right[i]) for i in [0..test_data.right.length-1]
 
-    # {4}  SCAN: '21*T'
-    #    RESULT:  '21' <times> "T"
+
+    # SCAN: '21*T'
+    # RESULT:  '21' <times> "T"
 
     stack = [
       "<numeric_literal>"
@@ -352,15 +428,22 @@ describe "Numeric expression builder", ->
       "T"
       "<num_exp_end>" ]
 
-    test_data[4] = {
+    test_data = {
       stack: stack
       expected_expression: "<times>"
       left: left
       right: right }
 
+    result = @builder.split(test_data.stack)
+    expect(result.left.length).toEqual(test_data.left.length)
+    expect(result.right.length).toEqual(test_data.right.length)
+    expect(result.exp).toEqual(test_data.expected_expression)
+    expect(result.left[i]).toEqual(test_data.left[i]) for i in [0..test_data.left.length-1]
+    expect(result.right[i]).toEqual(test_data.right[i]) for i in [0..test_data.right.length-1]
 
-    # {5}  SCAN:  3.1416/2
-    #    RESULT:  '3.1416' <divide> '2'
+
+    # SCAN:  3.1416/2
+    # RESULT:  '3.1416' <divide> '2'
     stack = [
       "<numeric_literal>"
       3.1416
@@ -380,15 +463,22 @@ describe "Numeric expression builder", ->
       2
       "<num_exp_end>" ]
 
-    test_data[5] = {
+    test_data = {
       stack: stack
       expected_expression: "<divide>"
       left: left
       right: right }
 
+    result = @builder.split(test_data.stack)
+    expect(result.left.length).toEqual(test_data.left.length)
+    expect(result.right.length).toEqual(test_data.right.length)
+    expect(result.exp).toEqual(test_data.expected_expression)
+    expect(result.left[i]).toEqual(test_data.left[i]) for i in [0..test_data.left.length-1]
+    expect(result.right[i]).toEqual(test_data.right[i]) for i in [0..test_data.right.length-1]
 
-    # {6}  SCAN:  3.3333*Z*A/M
-    #    RESULT:  '3.3333' <times> 'Z*A/M'
+
+    # SCAN:  3.3333*Z*A/M
+    # RESULT:  '3.3333' <times> 'Z*A/M'
     stack = [
       "<numeric_literal>"
       3.3333
@@ -420,15 +510,22 @@ describe "Numeric expression builder", ->
       "M"
       "<num_exp_end>" ]
 
-    test_data[6] = {
+    test_data = {
       stack: stack
       expected_expression: "<times>"
       left: left
       right: right }
 
+    result = @builder.split(test_data.stack)
+    expect(result.left.length).toEqual(test_data.left.length)
+    expect(result.right.length).toEqual(test_data.right.length)
+    expect(result.exp).toEqual(test_data.expected_expression)
+    expect(result.left[i]).toEqual(test_data.left[i]) for i in [0..test_data.left.length-1]
+    expect(result.right[i]).toEqual(test_data.right[i]) for i in [0..test_data.right.length-1]
 
-    # {7}  SCAN:  'M^3'
-    #    RESULT:  'M' <power> '3'
+
+    # SCAN:  'M^3'
+    # RESULT:  'M' <power> '3'
     stack = [
       "<number_variable>"
       "M"
@@ -448,15 +545,22 @@ describe "Numeric expression builder", ->
       3
       "<num_exp_end>" ]
 
-    test_data[7] = {
+    test_data = {
       stack: stack
       expected_expression: "<power>"
       left: left
       right: right }
 
+    result = @builder.split(test_data.stack)
+    expect(result.left.length).toEqual(test_data.left.length)
+    expect(result.right.length).toEqual(test_data.right.length)
+    expect(result.exp).toEqual(test_data.expected_expression)
+    expect(result.left[i]).toEqual(test_data.left[i]) for i in [0..test_data.left.length-1]
+    expect(result.right[i]).toEqual(test_data.right[i]) for i in [0..test_data.right.length-1]
 
-    # {8}  SCAN:  3.1416
-    #    RESULT:  <numeric_literal> '3.1416'
+
+    # SCAN:  3.1416
+    # RESULT:  <numeric_literal> '3.1416'
     stack = [
       "<numeric_literal>"
       3.1416 ]
@@ -465,15 +569,22 @@ describe "Numeric expression builder", ->
 
     right = [3.1416]
 
-    test_data[8] = {
+    test_data = {
       stack: stack
       expected_expression: "<numeric_literal>"
       left: left
       right: right }
 
+    result = @builder.split(test_data.stack)
+    expect(result.left.length).toEqual(test_data.left.length)
+    expect(result.right.length).toEqual(test_data.right.length)
+    expect(result.exp).toEqual(test_data.expected_expression)
+    expect(result.left[i]).toEqual(test_data.left[i]) for i in [0..test_data.left.length-1]
+    expect(result.right[i]).toEqual(test_data.right[i]) for i in [0..test_data.right.length-1]
 
-    # {9}  SCAN:  X
-    #    RESULT:  <number_variable> 'X'
+
+    # SCAN:  X
+    # RESULT:  <number_variable> 'X'
     stack = [
       "<number_variable>"
       "X" ]
@@ -482,15 +593,22 @@ describe "Numeric expression builder", ->
 
     right = ["X"]
 
-    test_data[9] = {
+    test_data = {
       stack: stack
       expected_expression: "<number_variable>"
       left: left
       right: right }
 
+    result = @builder.split(test_data.stack)
+    expect(result.left.length).toEqual(test_data.left.length)
+    expect(result.right.length).toEqual(test_data.right.length)
+    expect(result.exp).toEqual(test_data.expected_expression)
+    expect(result.left[i]).toEqual(test_data.left[i]) for i in [0..test_data.left.length-1]
+    expect(result.right[i]).toEqual(test_data.right[i]) for i in [0..test_data.right.length-1]
 
-    # {10}  SCAN:  (1+W)/(Z1+Z2+Z3)
-    #    RESULT:  '1+W' <divide> 'Z1+Z2+Z3'
+
+    # SCAN:  (1+W)/(Z1+Z2+Z3)
+    # RESULT:  '1+W' <divide> 'Z1+Z2+Z3'
 
     stack = [
       "<left>"
@@ -533,15 +651,22 @@ describe "Numeric expression builder", ->
       "Z3"
       "<num_exp_end>" ]
 
-    test_data[10] = {
+    test_data = {
       stack: stack
       expected_expression: "<divide>"
       left: left
       right: right }
 
+    result = @builder.split(test_data.stack)
+    expect(result.left.length).toEqual(test_data.left.length)
+    expect(result.right.length).toEqual(test_data.right.length)
+    expect(result.exp).toEqual(test_data.expected_expression)
+    expect(result.left[i]).toEqual(test_data.left[i]) for i in [0..test_data.left.length-1]
+    expect(result.right[i]).toEqual(test_data.right[i]) for i in [0..test_data.right.length-1]
 
-    # {11}  SCAN:  (6*A-(400+X2))*11
-    #    RESULT:  '6*A-[400+X2]' <times> '11'
+
+    # SCAN:  (6*A-(400+X2))*11
+    # RESULT:  '6*A-[400+X2]' <times> '11'
     stack = [
       "<left>"
       "<numeric_literal>"
@@ -579,38 +704,74 @@ describe "Numeric expression builder", ->
       11
       "<num_exp_end>" ]
 
-    test_data[11] = {
+    test_data = {
       stack: stack
       expected_expression: "<times>"
       left: left
       right: right }
 
+    result = @builder.split(test_data.stack)
+    expect(result.left.length).toEqual(test_data.left.length)
+    expect(result.right.length).toEqual(test_data.right.length)
+    expect(result.exp).toEqual(test_data.expected_expression)
+    expect(result.left[i]).toEqual(test_data.left[i]) for i in [0..test_data.left.length-1]
+    expect(result.right[i]).toEqual(test_data.right[i]) for i in [0..test_data.right.length-1]
 
-    # {12}  SCAN:  RND
-    #    RESULT:  <num_keyword> 'RND'
+
+    # SCAN:  RND
+    # RESULT:  '<random>'
     stack = [
-      "<num_keyword>"
       "<random>" ]
 
     left = []
 
-    right = [
-      "<random>" ]
+    right = []
 
-    test_data[8] = {
+    test_data = {
       stack: stack
-      expected_expression: "<num_keyword>"
+      expected_expression: "<random>"
       left: left
       right: right }
 
+    result = @builder.split(test_data.stack)
+    expect(result.left.length).toEqual(test_data.left.length)
+    expect(result.right.length).toEqual(test_data.right.length)
+    expect(result.exp).toEqual(test_data.expected_expression)
+    expect(result.left[i]).toEqual(test_data.left[i]) for i in [0..test_data.left.length-1]
+    expect(result.right[i]).toEqual(test_data.right[i]) for i in [0..test_data.right.length-1]
 
-    for test_set in test_data
-      result = @builder.split(test_set.stack)
-      expect(result.left.length).toEqual(test_set.left.length)
-      expect(result.right.length).toEqual(test_set.right.length)
-      expect(result.exp).toEqual(test_set.expected_expression)
-      expect(result.left[i]).toEqual(test_set.left[i]) for i in [0..test_set.left.length-1]
-      expect(result.right[i]).toEqual(test_set.right[i]) for i in [0..test_set.right.length-1]
+
+    # SCAN:  INT(Z6)
+    # RESULT:  <integer> "Z6"
+    stack = [
+      "<integer>"
+      "<left>"
+      "<number_variable>"
+      "Z6"
+      "<right>"
+      ]
+
+    left = []
+
+    right = [
+      "<numeric_expression>"
+      "<number_variable>"
+      "Z6"
+      "<num_exp_end>" ]
+
+
+    test_data = {
+      stack: stack
+      expected_expression: "<integer>"
+      left: left
+      right: right }
+
+    result = @builder.split(test_data.stack)
+    expect(result.left.length).toEqual(test_data.left.length)
+    expect(result.right.length).toEqual(test_data.right.length)
+    expect(result.exp).toEqual(test_data.expected_expression)
+    expect(result.left[i]).toEqual(test_data.left[i]) for i in [0..test_data.left.length-1]
+    expect(result.right[i]).toEqual(test_data.right[i]) for i in [0..test_data.right.length-1]
 
 
 
@@ -738,21 +899,19 @@ describe "Numeric expression builder", ->
       "<numeric_literal>"
       8
       "<times>"
-      "<num_keyword>"
       "<random>"
       "<num_exp_end>" ]
 
     expected = {
       exp: "<times>"
       op1: {exp: "<num>", value: 8 }
-      op2: {exp: "<num_keyword>", keyword: "<random>" } }
+      op2: {exp: "<random>" } }
 
     nmx = @builder.build_nxp(stack)
     expect(nmx.exp).toEqual(expected.exp)
     expect(nmx.op1.exp).toEqual(expected.op1.exp)
     expect(nmx.op1.value).toEqual(expected.op1.value)
     expect(nmx.op2.exp).toEqual(expected.op2.exp)
-    expect(nmx.op2.keyword).toEqual(expected.op2.keyword)
 
 
     # TEST NUMERIC EXPRESSION:  X*Y*Z
