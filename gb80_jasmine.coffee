@@ -1579,6 +1579,8 @@ class NumericExpressionEvaluator
 				value = @binary_op_eval(num_exp)
 			when "<random>"
 				value = @random_eval()
+			when "<integer>"
+				value = @integer_eval(num_exp)
 			else
 				value = "error"
 		return value
@@ -1594,6 +1596,10 @@ class NumericExpressionEvaluator
 
 	random_eval: () ->
 		return Math.random()
+
+
+	integer_eval: (num_exp) ->
+		return Math.floor(@val(num_exp.op))
 
 
 	binary_op_eval: (num_exp) ->
@@ -2080,7 +2086,7 @@ class InfoAndHelp
 			"999 END" ]
 
 
-#
+
 # # GLOBAL SCOPE ITEMS #
 #
 # keyevent = (e) ->

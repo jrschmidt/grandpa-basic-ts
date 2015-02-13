@@ -1850,6 +1850,9 @@ NumericExpressionEvaluator = (function() {
       case "<random>":
         value = this.random_eval();
         break;
+      case "<integer>":
+        value = this.integer_eval(num_exp);
+        break;
       default:
         value = "error";
     }
@@ -1866,6 +1869,10 @@ NumericExpressionEvaluator = (function() {
 
   NumericExpressionEvaluator.prototype.random_eval = function() {
     return Math.random();
+  };
+
+  NumericExpressionEvaluator.prototype.integer_eval = function(num_exp) {
+    return Math.floor(this.val(num_exp.op));
   };
 
   NumericExpressionEvaluator.prototype.binary_op_eval = function(num_exp) {
