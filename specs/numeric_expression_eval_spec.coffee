@@ -67,8 +67,7 @@ describe "Numeric expression evaluator", ->
   it "should evaluate a reference to an RND keyword", ->
 
     nmx = {
-      exp: "<num_keyword>"
-      keyword: "<random>" }
+      exp: "<random>" }
 
     value = @nmx_eval.val(nmx)
     expect(value).toBeGreaterThan(0)
@@ -111,7 +110,7 @@ describe "Numeric expression evaluator", ->
     nmx = {
       exp: "<times>"
       op1: {exp: "<num>", value: 8 }
-      op2: {exp: "<num_keyword>", keyword: "<random>" } }
+      op2: {exp: "<random>" } }
 
     value = @nmx_eval.val(nmx)
     expect(value).toBeGreaterThan(0)

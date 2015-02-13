@@ -62,8 +62,7 @@ describe("Numeric expression evaluator", function() {
   it("should evaluate a reference to an RND keyword", function() {
     var nmx, value;
     nmx = {
-      exp: "<num_keyword>",
-      keyword: "<random>"
+      exp: "<random>"
     };
     value = this.nmx_eval.val(nmx);
     expect(value).toBeGreaterThan(0);
@@ -117,8 +116,7 @@ describe("Numeric expression evaluator", function() {
         value: 8
       },
       op2: {
-        exp: "<num_keyword>",
-        keyword: "<random>"
+        exp: "<random>"
       }
     };
     value = this.nmx_eval.val(nmx);

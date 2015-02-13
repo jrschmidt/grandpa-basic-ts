@@ -1335,14 +1335,15 @@ class NumExpBuilder
 		return result
 
 
-	# build_numeric_keyword: (split_stack) ->
-	# 	result = {}
-	# 	if split_stack.right.length == 1
-	# 		result = {
-	# 			exp: "<num_keyword>"
-	# 			keyword: split_stack.right[0] }
-	# 	else result = { malformed: "yes" }
-	# 	return result
+	build_integer_function: (split_stack) ->
+		op = @build_nxp(split_stack.right)
+		if op.malformed == "yes"
+			result = { malformed: "yes" }
+		else
+			result = {
+				exp: "<integer>"
+				op: op }
+		return result
 
 
 	split: (stack) ->
@@ -1360,18 +1361,21 @@ class NumExpBuilder
 						right = stack.slice(1)
 						right = right[0] if Array.isArray(right[0])
 						if right.length > 1
-							right.unshift("<numeric_expression>")
-							right.push("<num_exp_end>")
+							if right[0] != "<numeric_expression>"
+								right.unshift("<numeric_expression>")
+								right.push("<num_exp_end>")
 					else
 						exp = stack[index]
 						left = stack[0..index-1]
 						right = stack.slice(index+1)
 						left = left[0] if Array.isArray(left[0])
 						right = right[0] if Array.isArray(right[0])
-						left.unshift("<numeric_expression>")
-						left.push("<num_exp_end>")
-						right.unshift("<numeric_expression>")
-						right.push("<num_exp_end>")
+						if left[0] != "<numeric_expression>"
+							left.unshift("<numeric_expression>")
+							left.push("<num_exp_end>")
+						if right[0] != "<numeric_expression>"
+							right.unshift("<numeric_expression>")
+							right.push("<num_exp_end>")
 					result = {
 						exp: exp
 						left: left
@@ -1573,8 +1577,8 @@ class NumericExpressionEvaluator
 				value = @num_var_eval(num_exp)
 			when "<plus>", "<minus>", "<times>", "<divide>", "<power>"
 				value = @binary_op_eval(num_exp)
-			when "<num_keyword>"
-				value = @num_keyword_eval(num_exp)
+			when "<random>"
+				value = @random_eval()
 			else
 				value = "error"
 		return value
@@ -1588,11 +1592,8 @@ class NumericExpressionEvaluator
 		return @vars.get(num_exp.name)
 
 
-	num_keyword_eval: (num_exp) ->
-		if num_exp.keyword == "<random>"
-			return Math.random()
-		else
-			return NaN
+	random_eval: () ->
+		return Math.random()
 
 
 	binary_op_eval: (num_exp) ->

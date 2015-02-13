@@ -914,6 +914,28 @@ describe "Numeric expression builder", ->
     expect(nmx.op2.exp).toEqual(expected.op2.exp)
 
 
+    # TEST NUMERIC EXPRESSION:  INT(A)
+    stack = [
+      "<numeric_expression>"
+      "<integer>"
+      "<left>"
+      "<numeric_expression>"
+      "<number_variable>"
+      "A"
+      "<num_exp_end>"
+      "<right>"
+      "<num_exp_end>" ]
+
+    expected = {
+      exp: "<integer>"
+      op: {exp: "<var>", name: "A" } }
+
+    nmx = @builder.build_nxp(stack)
+    expect(nmx.exp).toEqual(expected.exp)
+    expect(nmx.op.exp).toEqual(expected.op.exp)
+    expect(nmx.op.name).toEqual(expected.op.name)
+
+
     # TEST NUMERIC EXPRESSION:  X*Y*Z
     stack = [
       "<numeric_expression>"
@@ -981,6 +1003,64 @@ describe "Numeric expression builder", ->
     expect(nmx.op2.op1.name).toEqual(expected.op2.op1.name)
     expect(nmx.op2.op2.exp).toEqual(expected.op2.op2.exp)
     expect(nmx.op2.op2.value).toEqual(expected.op2.op2.value)
+
+
+    # TEST NUMERIC EXPRESSION:  66000+18*INT(42*RND)
+    stack = [
+      "<numeric_expression>"
+      "<numeric_literal>"
+      66000
+      "<plus>"
+      "<numeric_literal>"
+      18
+      "<times>"
+      "<integer>"
+      "<left>"
+      "<numeric_expression>"
+      "<numeric_literal>"
+      42
+      "<times>"
+      "<random>"
+      "<num_exp_end>"
+      "<right>"
+      "<num_exp_end>" ]
+
+
+    op2_2_op_1 = {exp: "<num>", value: 42}
+    op2_2_op_2 = {exp: "<random>"}
+
+    op2_2_op = {
+                exp: "<times>"
+                op1: op2_2_op_1
+                op2: op2_2_op_2 }
+
+    op2_2 = {
+            exp: "<integer>"
+            op: op2_2_op}
+
+    op2 = {
+          exp: "<times>"
+          op1: {exp: "<num>", value: 18}
+          op2: op2_2 }
+
+    op1 = {exp: "<num>", value: 66000}
+
+    expected = {
+                exp: "<plus>"
+                op1: op1
+                op2: op2 }
+
+    nmx = @builder.build_nxp(stack)
+    expect(nmx.exp).toEqual(expected.exp)
+    expect(nmx.op1.exp).toEqual(expected.op1.exp)
+    expect(nmx.op1.value).toEqual(expected.op1.value)
+    expect(nmx.op2.op1.exp).toEqual(expected.op2.op1.exp)
+    expect(nmx.op2.op1.value).toEqual(expected.op2.op1.value)
+    expect(nmx.op2.op2.exp).toEqual(expected.op2.op2.exp)
+    expect(nmx.op2.op2.op.exp).toEqual(expected.op2.op2.op.exp)
+    expect(nmx.op2.op2.op.op1.exp).toEqual(expected.op2.op2.op.op1.exp)
+    expect(nmx.op2.op2.op.op1.value).toEqual(expected.op2.op2.op.op1.value)
+    expect(nmx.op2.op2.op.op2.exp).toEqual(expected.op2.op2.op.op2.exp)
 
 
     # TEST NUMERIC EXPRESSION:  W5+W7-4*(J^2+K^3)

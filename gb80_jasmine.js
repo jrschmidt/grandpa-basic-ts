@@ -1558,6 +1558,22 @@ NumExpBuilder = (function() {
     return result;
   };
 
+  NumExpBuilder.prototype.build_integer_function = function(split_stack) {
+    var op, result;
+    op = this.build_nxp(split_stack.right);
+    if (op.malformed === "yes") {
+      result = {
+        malformed: "yes"
+      };
+    } else {
+      result = {
+        exp: "<integer>",
+        op: op
+      };
+    }
+    return result;
+  };
+
   NumExpBuilder.prototype.split = function(stack) {
     var exp, find, index, left, level, result, right, tt, _i, _j, _len, _len1, _ref;
     stack = this.deparenthesize(stack);
@@ -1582,8 +1598,10 @@ NumExpBuilder = (function() {
               right = right[0];
             }
             if (right.length > 1) {
-              right.unshift("<numeric_expression>");
-              right.push("<num_exp_end>");
+              if (right[0] !== "<numeric_expression>") {
+                right.unshift("<numeric_expression>");
+                right.push("<num_exp_end>");
+              }
             }
           } else {
             exp = stack[index];
@@ -1595,10 +1613,14 @@ NumExpBuilder = (function() {
             if (Array.isArray(right[0])) {
               right = right[0];
             }
-            left.unshift("<numeric_expression>");
-            left.push("<num_exp_end>");
-            right.unshift("<numeric_expression>");
-            right.push("<num_exp_end>");
+            if (left[0] !== "<numeric_expression>") {
+              left.unshift("<numeric_expression>");
+              left.push("<num_exp_end>");
+            }
+            if (right[0] !== "<numeric_expression>") {
+              right.unshift("<numeric_expression>");
+              right.push("<num_exp_end>");
+            }
           }
           result = {
             exp: exp,
@@ -1825,8 +1847,8 @@ NumericExpressionEvaluator = (function() {
       case "<power>":
         value = this.binary_op_eval(num_exp);
         break;
-      case "<num_keyword>":
-        value = this.num_keyword_eval(num_exp);
+      case "<random>":
+        value = this.random_eval();
         break;
       default:
         value = "error";
@@ -1842,12 +1864,8 @@ NumericExpressionEvaluator = (function() {
     return this.vars.get(num_exp.name);
   };
 
-  NumericExpressionEvaluator.prototype.num_keyword_eval = function(num_exp) {
-    if (num_exp.keyword === "<random>") {
-      return Math.random();
-    } else {
-      return NaN;
-    }
+  NumericExpressionEvaluator.prototype.random_eval = function() {
+    return Math.random();
   };
 
   NumericExpressionEvaluator.prototype.binary_op_eval = function(num_exp) {

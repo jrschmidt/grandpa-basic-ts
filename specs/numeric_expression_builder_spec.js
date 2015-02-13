@@ -389,7 +389,7 @@ describe("Numeric expression builder", function() {
     return _results;
   });
   return it("should build a usable key-value object from a numeric expression 'parse object' array", function() {
-    var expected, nmx, op1, op2, op2_2, op2_2_1, op2_2_2, op2_2_2_1, op2_2_2_2, stack;
+    var expected, nmx, op1, op2, op2_2, op2_2_1, op2_2_2, op2_2_2_1, op2_2_2_2, op2_2_op, op2_2_op_1, op2_2_op_2, stack;
     stack = ["<numeric_expression>", "<number_variable>", "X", "<num_exp_end>"];
     expected = {
       exp: "<var>",
@@ -484,6 +484,18 @@ describe("Numeric expression builder", function() {
     expect(nmx.op1.exp).toEqual(expected.op1.exp);
     expect(nmx.op1.value).toEqual(expected.op1.value);
     expect(nmx.op2.exp).toEqual(expected.op2.exp);
+    stack = ["<numeric_expression>", "<integer>", "<left>", "<numeric_expression>", "<number_variable>", "A", "<num_exp_end>", "<right>", "<num_exp_end>"];
+    expected = {
+      exp: "<integer>",
+      op: {
+        exp: "<var>",
+        name: "A"
+      }
+    };
+    nmx = this.builder.build_nxp(stack);
+    expect(nmx.exp).toEqual(expected.exp);
+    expect(nmx.op.exp).toEqual(expected.op.exp);
+    expect(nmx.op.name).toEqual(expected.op.name);
     stack = ["<numeric_expression>", "<number_variable>", "X", "<times>", "<number_variable>", "Y", "<times>", "<number_variable>", "Z", "<num_exp_end>"];
     op2 = {
       exp: "<times>",
@@ -542,6 +554,51 @@ describe("Numeric expression builder", function() {
     expect(nmx.op2.op1.name).toEqual(expected.op2.op1.name);
     expect(nmx.op2.op2.exp).toEqual(expected.op2.op2.exp);
     expect(nmx.op2.op2.value).toEqual(expected.op2.op2.value);
+    stack = ["<numeric_expression>", "<numeric_literal>", 66000, "<plus>", "<numeric_literal>", 18, "<times>", "<integer>", "<left>", "<numeric_expression>", "<numeric_literal>", 42, "<times>", "<random>", "<num_exp_end>", "<right>", "<num_exp_end>"];
+    op2_2_op_1 = {
+      exp: "<num>",
+      value: 42
+    };
+    op2_2_op_2 = {
+      exp: "<random>"
+    };
+    op2_2_op = {
+      exp: "<times>",
+      op1: op2_2_op_1,
+      op2: op2_2_op_2
+    };
+    op2_2 = {
+      exp: "<integer>",
+      op: op2_2_op
+    };
+    op2 = {
+      exp: "<times>",
+      op1: {
+        exp: "<num>",
+        value: 18
+      },
+      op2: op2_2
+    };
+    op1 = {
+      exp: "<num>",
+      value: 66000
+    };
+    expected = {
+      exp: "<plus>",
+      op1: op1,
+      op2: op2
+    };
+    nmx = this.builder.build_nxp(stack);
+    expect(nmx.exp).toEqual(expected.exp);
+    expect(nmx.op1.exp).toEqual(expected.op1.exp);
+    expect(nmx.op1.value).toEqual(expected.op1.value);
+    expect(nmx.op2.op1.exp).toEqual(expected.op2.op1.exp);
+    expect(nmx.op2.op1.value).toEqual(expected.op2.op1.value);
+    expect(nmx.op2.op2.exp).toEqual(expected.op2.op2.exp);
+    expect(nmx.op2.op2.op.exp).toEqual(expected.op2.op2.op.exp);
+    expect(nmx.op2.op2.op.op1.exp).toEqual(expected.op2.op2.op.op1.exp);
+    expect(nmx.op2.op2.op.op1.value).toEqual(expected.op2.op2.op.op1.value);
+    expect(nmx.op2.op2.op.op2.exp).toEqual(expected.op2.op2.op.op2.exp);
     stack = ["<numeric_expression>", "<number_variable>", "W5", "<plus>", "<number_variable>", "W7", "<minus>", "<numeric_literal>", 4, "<times>", "<left>", "<number_variable>", "J", "<power>", "<numeric_literal>", 2, "<plus>", "<number_variable>", "K", "<power>", "<numeric_literal>", 3, "<right>", "<num_exp_end>"];
     op2_2_2_1 = {
       exp: "<power>",
