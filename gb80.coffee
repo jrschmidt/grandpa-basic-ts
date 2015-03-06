@@ -48,6 +48,7 @@ class KeyTalker
 		@key_mode = "<normal_mode>"
 		@controller = new ActionController(this)
 		@program_control = @controller.program_control
+		@bconsole.display_info("menu")
 
 
 	get_mode: ->
@@ -2063,7 +2064,11 @@ class InfoAndHelp
 		@message = {}
 
 		@message["menu"] = [
-			"INFO - THIS IS THE HELP & INFO MENU FOR GRANDPA BASIC 1980"
+			"EXAMPLE PROGRAM LINES:"
+			"100 X=333"
+			"120 S=X*1000"
+			"180 IF M>20 THEN 400"
+			"210 GOTO 800"
 			" "
 			"ADD LINES TO THE PROGRAM BY TYPING A LINE NUMBER, FOLLOWED BY"
 			"THE REST OF THE LINE, THEN HIT <ENTER>."
@@ -2071,7 +2076,15 @@ class InfoAndHelp
 			'TYPE "RUN" TO RUN YOUR PROGRAM.'
 			'TYPE "LIST" TO SEE A LISTING OF ALL PROGRAM LINES.'
 			"TYPE THE LINE NUMBER, THEN <ENTER>, TO REMOVE A PROGRAM LINE."
+			'TYPE "CLEAR" TO REMOVE ALL PROGRAM LINES.'
+			'TYPE "INFO" TO PRINT THIS HELP PAGES.'
 			" "
+			"GRANDPA BASIC 1980"
+			"HTTP://GB80-TOQUIMA.RHCLOUD.COM"
+			"HAVE FUN!"
+			" " ]
+
+		@message["example"] = [
 			"HERE'S AN EXAMPLE PROGRAM:"
 			"10 REM GRANDPA BASIC 1980 - SAMPLE PROGRAM 1"
 			"100 X=17"
