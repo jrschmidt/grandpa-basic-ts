@@ -48,7 +48,6 @@ class KeyTalker
 		@key_mode = "<normal_mode>"
 		@controller = new ActionController(this)
 		@program_control = @controller.program_control
-		@bconsole.display_info("menu")
 
 
 	get_mode: ->
@@ -1743,6 +1742,9 @@ class BasicConsole
 		@keys = new KeyHelper
 		@info = new InfoAndHelp
 		@sprites = new Image()
+		@sprites.onload = =>
+			console.log "* * * * sprites onload * * * *"
+			@display_info("menu")
 		@sprites.src = 'app/characters.png'
 		@canvas = document.getElementById('gb80-console')
 		@context = @canvas.getContext('2d')

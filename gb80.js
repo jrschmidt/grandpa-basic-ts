@@ -12,7 +12,6 @@ KeyTalker = (function() {
     this.key_mode = "<normal_mode>";
     this.controller = new ActionController(this);
     this.program_control = this.controller.program_control;
-    this.bconsole.display_info("menu");
   }
 
   KeyTalker.prototype.get_mode = function() {
@@ -2052,6 +2051,12 @@ BasicConsole = (function() {
     this.keys = new KeyHelper;
     this.info = new InfoAndHelp;
     this.sprites = new Image();
+    this.sprites.onload = (function(_this) {
+      return function() {
+        console.log("* * * * sprites onload * * * *");
+        return _this.display_info("menu");
+      };
+    })(this);
     this.sprites.src = 'app/characters.png';
     this.canvas = document.getElementById('gb80-console');
     this.context = this.canvas.getContext('2d');
