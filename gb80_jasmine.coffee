@@ -730,17 +730,16 @@ class NumericExpressionParser
 	constructor: ->
 		@num_exp_chars = ["0","1","2","3","4","5","6","7","8","9",".","(",")","+","-","*","/","^"]
 		@delimiters = ["(", ")", "+", "-", "*", "/", "^"]
-		@symbols = ["<left>",
-							 "<right>",
-							 "<plus>",
-							 "<minus>",
-							 "<times>",
-							 "<divide>",
-							 "<power>"]
-		@keywords = ["RND",
-								"INT"]
-		@tokens = ["<random>",
-								"<integer>"]
+		@symbols = [
+			"<left>",
+			"<right>",
+			"<plus>",
+			"<minus>",
+			"<times>",
+			"<divide>",
+			"<power>"]
+		@keywords = ["RND", "INT"]
+		@tokens = ["<random>", "<integer>"]
 
 
 	numeric_parse: (string) ->
@@ -955,7 +954,7 @@ class BooleanExpressionParser
 					str_val = @helpers.str_exp_parser.string_value_parse(tokens[2])
 					if str_val.match != "bad"
 						po.push tk for tk in str_id.parse_object
-						po.push("<equals>")
+						po.push(tokens[1])
 						po = po.concat(str_val.parse_object)
 					else match = "no"
 				else match = "no"
@@ -1743,6 +1742,9 @@ class BasicConsole
 		@keys = new KeyHelper
 		@info = new InfoAndHelp
 		@sprites = new Image()
+		@sprites.onload = =>
+			console.log "* * * * sprites onload * * * *"
+			@display_info("menu")
 		@sprites.src = 'app/characters.png'
 		@canvas = document.getElementById('gb80-console')
 		@context = @canvas.getContext('2d')
@@ -2009,23 +2011,25 @@ class KeyHelper
 		]
 
 		# TODO Why are '[' and ']' not implemented?
-		@chars = [ "!", '"', "#", "$", "%", "&", "'",
-							 "(", ")", "*", "+", ",", "-", ".", "/", "0", "1",
-							 "2", "3", "4", "5", "6", "7", "8", "9", ":", ";",
-							 "<", "=", ">", "?", "@",
-							 "^", "_", "`", "A", "B", "C",
-							 "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
-							 "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W",
-							 "X", "Y", "Z", "{", "|", "}","~" ]
+		@chars = [
+			"!", '"', "#", "$", "%", "&", "'",
+			"(", ")", "*", "+", ",", "-", ".", "/", "0", "1",
+			"2", "3", "4", "5", "6", "7", "8", "9", ":", ";",
+			"<", "=", ">", "?", "@",
+			"^", "_", "`", "A", "B", "C",
+			"D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+			"N", "O", "P", "Q", "R", "S", "T", "U", "V", "W",
+			"X", "Y", "Z", "{", "|", "}","~" ]
 
-		@xy = [ [99,72], [33,72], [33,90], [77,72], [88,72], [44,90], [22,72],
-						[66,54], [77,54], [33,54], [11,54], [55,72], [22,54], [44,72], [44,54], [0,36], [11,36],
-						[22,36], [33,36], [44,36], [55,36], [66,36], [77,36], [88,36], [99,36], [0,72], [11,72],
-						[88,54], [0,54], [99,54], [66,72], [22,90],
-						[55,54], [55,90], [0,90], [0,0], [11,0], [22,0],
-						[33,0], [44,0], [55,0], [66,0], [77,0], [88,0], [99,0], [110,0], [121,0], [132,0],
-						[0,18], [11,18], [22,18], [33,18], [44,18], [55,18], [66,18], [77,18], [88,18], [99,18],
-						[110,18], [121,18], [132,18], [66,90], [99,90], [77,90],[11,90] ]
+		@xy = [
+			[99,72], [33,72], [33,90], [77,72], [88,72], [44,90], [22,72],
+			[66,54], [77,54], [33,54], [11,54], [55,72], [22,54], [44,72], [44,54], [0,36], [11,36],
+			[22,36], [33,36], [44,36], [55,36], [66,36], [77,36], [88,36], [99,36], [0,72], [11,72],
+			[88,54], [0,54], [99,54], [66,72], [22,90],
+			[55,54], [55,90], [0,90], [0,0], [11,0], [22,0],
+			[33,0], [44,0], [55,0], [66,0], [77,0], [88,0], [99,0], [110,0], [121,0], [132,0],
+			[0,18], [11,18], [22,18], [33,18], [44,18], [55,18], [66,18], [77,18], [88,18], [99,18],
+			[110,18], [121,18], [132,18], [66,90], [99,90], [77,90],[11,90] ]
 
 
 	char: (n, shift_status) ->
@@ -2062,7 +2066,11 @@ class InfoAndHelp
 		@message = {}
 
 		@message["menu"] = [
-			"INFO - THIS IS THE HELP & INFO MENU FOR GRANDPA BASIC 1980"
+			"EXAMPLE PROGRAM LINES:"
+			"100 X=333"
+			"120 S=X*1000"
+			"180 IF M>20 THEN 400"
+			"210 GOTO 800"
 			" "
 			"ADD LINES TO THE PROGRAM BY TYPING A LINE NUMBER, FOLLOWED BY"
 			"THE REST OF THE LINE, THEN HIT <ENTER>."
@@ -2070,7 +2078,15 @@ class InfoAndHelp
 			'TYPE "RUN" TO RUN YOUR PROGRAM.'
 			'TYPE "LIST" TO SEE A LISTING OF ALL PROGRAM LINES.'
 			"TYPE THE LINE NUMBER, THEN <ENTER>, TO REMOVE A PROGRAM LINE."
+			'TYPE "CLEAR" TO REMOVE ALL PROGRAM LINES.'
+			'TYPE "INFO" TO PRINT THIS HELP PAGES.'
 			" "
+			"GRANDPA BASIC 1980"
+			"HTTP://GB80-TOQUIMA.RHCLOUD.COM"
+			"HAVE FUN!"
+			" " ]
+
+		@message["example"] = [
 			"HERE'S AN EXAMPLE PROGRAM:"
 			"10 REM GRANDPA BASIC 1980 - SAMPLE PROGRAM 1"
 			"100 X=17"
@@ -2087,8 +2103,8 @@ class InfoAndHelp
 
 
 
-# # GLOBAL SCOPE ITEMS #
-#
+# GLOBAL SCOPE ITEMS #
+
 # keyevent = (e) ->
 # 	e.preventDefault() if @disable_key_defaults
 # 	key_code = e.keyCode

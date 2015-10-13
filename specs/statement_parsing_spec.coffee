@@ -368,6 +368,25 @@ describe "Statement parsing", ->
     expect(po[14]).toEqual("<line_number>")
     expect(po[15]).toEqual(1680)
 
+    result = @parser.look_for('IF $R4<>"RRRR" THEN 570', @syntax.line_number_rules[7])
+    po = result.parse_object
+    expect(po[0]).toEqual("<if>")
+    expect(po[1]).toEqual("<sp>")
+    expect(po[2]).toEqual("<boolean_expression>")
+    expect(po[3]).toEqual("<string_variable>")
+    expect(po[4]).toEqual("R4")
+    expect(po[5]).toEqual("<not_equal>")
+    expect(po[6]).toEqual("<string_expression>")
+    expect(po[7]).toEqual("<string_literal>")
+    expect(po[8]).toEqual("RRRR")
+    expect(po[9]).toEqual("<str_exp_end>")
+    expect(po[10]).toEqual("<bool_exp_end>")
+    expect(po[11]).toEqual("<sp>")
+    expect(po[12]).toEqual("<then>")
+    expect(po[13]).toEqual("<sp>")
+    expect(po[14]).toEqual("<line_number>")
+    expect(po[15]).toEqual(570)
+
     result = @parser.look_for("IF A>B THEN 750", @syntax.line_number_rules[7])
     po = result.parse_object
     expect(po[0]).toEqual("<if>")

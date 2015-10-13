@@ -954,7 +954,7 @@ class BooleanExpressionParser
 					str_val = @helpers.str_exp_parser.string_value_parse(tokens[2])
 					if str_val.match != "bad"
 						po.push tk for tk in str_id.parse_object
-						po.push("<equals>")
+						po.push(tokens[1])
 						po = po.concat(str_val.parse_object)
 					else match = "no"
 				else match = "no"
