@@ -1141,7 +1141,7 @@ class ProgramLineBuilder
 		# The operand property is the symbol for a string variable, stripped of the
 		# "$" character. For example, the operand property for $S or $T2 would be
 		# "S" or "T2". The expression property is a string expression object built
-		# by the NumExpBuilder class.
+		# by the StrExpBuilder class.
 		stack = parse_object[6..parse_object.length-1]
 		str_exp = @str_exp.build_str_exp(stack)
 		line = {
