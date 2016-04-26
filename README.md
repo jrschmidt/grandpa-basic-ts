@@ -1,8 +1,7 @@
-Programming 1980 style!! The way we did it in the old days. Using an HTML5
-canvas element and Coffeescript, this project emulates an old fashioned
-line-numbered BASIC language machine. On a monochrome monitor, of course,
-and only upper case letters. Green, or amber if you want to get fancy with
-third party equipment.
+Programming 1980 style!! The way we did it in the old days. This project
+emulates an old fashioned line-numbered BASIC language machine. On a monochrome
+monitor, of course, and only upper case letters. Green, or amber if you want to
+get fancy with third party equipment.
 
 Emulates the action of a computing platform in common use around the year
 1980 - a dedicated machine hard-wired for writing and executing programs
@@ -14,12 +13,15 @@ monochrome CRT (cathode ray tube) monitors that only printed uppercase letters.
 Many of the small machines produced for household or small office use prior to
 the introduction of PCs were of this type.
 
-This app uses Javascript code, from source written in Coffeescript, to act
-upon an HTML5 canvas element designed to resemble the look of the original
-platform. Event handling classes echo key press events by printing the
-characters onto the 'console' (the canvas element) and filling a line buffer.
-When the <enter> key is pressed, the ActionController tries to parse the
-string and build a line object.
+The project was originally written in Coffeescript, using an HTML5 canvas
+element to emulate the monochrome, all-caps monitor on the original equipment.
+I'm currently working on a branch to convert the project to Typescript. After
+that, I'd like to modularize the app so it can also run in a command line
+terminal under Node.
+
+Event handling classes echo key press events by printing the characters onto the
+'console' (the canvas element) and filling a line buffer. When the <enter> key
+is pressed, the ActionController tries to parse the string and build a line object.
 
 Each line object has a "command" property which identifies the type of
 command or program line statement it is, as well as other properties which
