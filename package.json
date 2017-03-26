@@ -1,0 +1,19 @@
+{
+  "name": "grandpa-basic-1980",
+  "version": "1.0.0",
+  "description": "![](screen.png)",
+  "main": "gb80.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jrschmidt/grandpa-basic-1980.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jrschmidt/grandpa-basic-1980/issues"
+  },
+  "homepage": "https://github.com/jrschmidt/grandpa-basic-1980#readme"
+}
