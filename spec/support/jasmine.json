@@ -4,7 +4,7 @@
     "*_spec.js"
   ],
   "helpers": [
-    "helpers/**/*.js"
+    ".//gb80.js"
   ],
   "stopSpecOnExpectationFailure": false,
   "random": false
