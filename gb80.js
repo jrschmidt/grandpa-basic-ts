@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var KeyHelper = (function () {
     function KeyHelper() {
-        this.monitorColor = 'green';
         this.code = [
             173, 61, 59, 189, 187, 186,
             48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
@@ -42,9 +41,41 @@ var KeyHelper = (function () {
             [0, 18], [11, 18], [22, 18], [33, 18], [44, 18], [55, 18], [66, 18], [77, 18], [88, 18], [99, 18],
             [110, 18], [121, 18], [132, 18], [66, 90], [99, 90], [77, 90], [11, 90]
         ];
+        this.blankSpriteXY = [121, 54];
     }
-    KeyHelper.prototype.char = function (n, shiftStatus) { };
-    KeyHelper.prototype.spriteXY = function (ch) { };
+    KeyHelper.prototype.char = function (n, shiftStatus) {
+        var ch;
+        if (this.code.indexOf(n) >= 0) {
+            var i = this.code.indexOf(n);
+            if (shiftStatus === '<shift>') {
+                ch = this.keys[i][1];
+            }
+            else {
+                ch = this.keys[i][0];
+            }
+        }
+        else {
+            if (n === 32) {
+                ch = ' ';
+            }
+            else {
+                ch = null;
+            }
+        }
+        this.chars.indexOf(ch);
+        return ch;
+    };
+    KeyHelper.prototype.spriteXY = function (ch) {
+        if (this.chars.indexOf(ch) >= 0) {
+            var i = this.chars.indexOf(ch);
+            var xx = this.xy[i][0];
+            var yy = this.xy[i][1];
+            return [xx, yy];
+        }
+        else {
+            return this.blankSpriteXY;
+        }
+    };
     return KeyHelper;
 }());
 exports.KeyHelper = KeyHelper;

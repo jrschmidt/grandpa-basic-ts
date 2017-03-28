@@ -7,10 +7,12 @@ export class KeyHelper {
   keys: string[][];
   chars: string[];
   xy: number[][];
+  blankSpriteXY: number[];
 
   constructor () {
 
-    this.monitorColor = 'green';
+    // Postpone monitor color code until later in the CS - TS conversion
+    // this.monitorColor = 'green';
 
     this.code = [
       173,61,59,189,187,186,
@@ -56,36 +58,58 @@ export class KeyHelper {
     [110,18], [121,18], [132,18], [66,90], [99,90], [77,90],[11,90]
   ];
 
+  this.blankSpriteXY = [121, 54];
+
   }
 
 
-  char(n: number, shiftStatus: string): string {}
+  char(n: number, shiftStatus: string): string {
+    let ch: string;
 
-// 	char: (n, shift_status) ->
-// 		if n in @code
-// 			i = @code.indexOf(n)
-// 			if shift_status == "<shift>"
-// 				ch = @keys[i][1]
-// 			else
-// 				ch = @keys[i][0]
-// 		else
-// 			if n == 32
-// 				ch = " "
-// 			else
-// 				ch = null
-// 		return ch
+    if (this.code.indexOf(n) >= 0) {
+      let i: number = this.code.indexOf(n);
+
+      if (shiftStatus === '<shift>') {
+        ch = this.keys[i][1];
+      }
+
+      else {
+        ch = this.keys[i][0];
+      }
+    }
 
 
-  spriteXY(ch: string): number[] {}
+    else {
 
-// 	sprite_xy: (ch) ->
-// 		if ch in @chars
-// 			i = @chars.indexOf(ch)
-// 			xx = @xy[i][0]
-// 			yy = @xy[i][1]
-// 			xx = xx + 145 if @monitor_color == "green"
-// 			return [xx, yy]
-// 		else
-// 			return [121,54] # (blank sprite)
+      if (n === 32) {
+        ch = ' ';
+      }
+
+      else {
+        ch = null;
+      }
+
+    }
+this.chars.indexOf(ch);
+    return ch;
+  }
+
+
+  spriteXY(ch: string): number[] {
+    if (this.chars.indexOf(ch) >= 0) {
+      let i = this.chars.indexOf(ch);
+      let xx = this.xy[i][0];
+      let yy = this.xy[i][1];
+      // Postpone monitor color code until later in the CS - TS conversion
+      // if (this.monitorColor === 'green') {xx = xx + 145;}
+      return [xx, yy];
+    }
+
+    else {
+      return this.blankSpriteXY; // (blank sprite)
+    }
+
+  }
+
 
 }
