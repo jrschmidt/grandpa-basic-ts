@@ -1,5 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var StringExpressionBuilder = (function () {
+    function StringExpressionBuilder() {
+    }
+    StringExpressionBuilder.prototype.buildStringExpression = function (stack) {
+        var parts = [];
+        var tk;
+        for (var t = 1; t <= stack.length - 3; t = t + 3) {
+            if (stack[t] === '<string_variable>') {
+                tk = '<var>';
+            }
+            else {
+                tk = '<str>';
+            }
+            parts.push([tk, stack[t + 1]]);
+        }
+        return parts;
+    };
+    return StringExpressionBuilder;
+}());
+exports.StringExpressionBuilder = StringExpressionBuilder;
 var KeyHelper = (function () {
     function KeyHelper() {
         this.code = [
@@ -62,7 +82,6 @@ var KeyHelper = (function () {
                 ch = null;
             }
         }
-        this.chars.indexOf(ch);
         return ch;
     };
     KeyHelper.prototype.spriteXY = function (ch) {
