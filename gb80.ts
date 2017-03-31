@@ -41,6 +41,7 @@ export class StringExpressionBuilder {
 
 
 export class KeyHelper {
+
   // A class to interpret the parameters of key press events and return the
   // parameters for the corresponding character sprite.
 
@@ -152,5 +153,71 @@ export class KeyHelper {
 
   }
 
+
+}
+
+
+
+class VariableRegister {
+  // Store values for variables.
+  vars: {};
+
+  constructor () {
+    this.vars = {};
+  }
+
+  addVar(name: string) {
+    this.vars[name] = null;
+  }
+
+  defined (name: string) {
+    if (this.vars.hasOwnProperty(name)) {
+      return 'yes';
+    }
+    else {
+      return 'no';
+    }
+  }
+
+  set (name: string, value: any) {
+    if (this.defined(name) === 'no') {
+      this.addVar(name);
+    }
+    this.vars[name] = value;
+  }
+
+  get (name: string): any {
+    if (this.defined(name) === 'no') {
+      this.addVar(name);
+    }
+    return this.vars[name];
+
+  }
+
+}
+
+
+
+export class NumericVariableRegister extends VariableRegister {
+
+  // 	# Most, if not all, of the early versions of BASIC initialized any unset
+  // 	# numeric variables to 0.
+
+  addVar(name: string) {
+    this.vars[name] = 0;
+  }
+
+}
+
+
+
+export class StringVariableRegister extends VariableRegister {
+
+  // Most early versions of BASIC initialized unset string variables to an
+  // empty string.
+
+  addVar(name: string) {
+    this.vars[name] = "";
+  }
 
 }

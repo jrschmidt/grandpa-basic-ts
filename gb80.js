@@ -1,4 +1,14 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 var StringExpressionBuilder = (function () {
     function StringExpressionBuilder() {
@@ -98,3 +108,54 @@ var KeyHelper = (function () {
     return KeyHelper;
 }());
 exports.KeyHelper = KeyHelper;
+var VariableRegister = (function () {
+    function VariableRegister() {
+        this.vars = {};
+    }
+    VariableRegister.prototype.addVar = function (name) {
+        this.vars[name] = null;
+    };
+    VariableRegister.prototype.defined = function (name) {
+        if (this.vars.hasOwnProperty(name)) {
+            return 'yes';
+        }
+        else {
+            return 'no';
+        }
+    };
+    VariableRegister.prototype.set = function (name, value) {
+        if (this.defined(name) === 'no') {
+            this.addVar(name);
+        }
+        this.vars[name] = value;
+    };
+    VariableRegister.prototype.get = function (name) {
+        if (this.defined(name) === 'no') {
+            this.addVar(name);
+        }
+        return this.vars[name];
+    };
+    return VariableRegister;
+}());
+var NumericVariableRegister = (function (_super) {
+    __extends(NumericVariableRegister, _super);
+    function NumericVariableRegister() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    NumericVariableRegister.prototype.addVar = function (name) {
+        this.vars[name] = 0;
+    };
+    return NumericVariableRegister;
+}(VariableRegister));
+exports.NumericVariableRegister = NumericVariableRegister;
+var StringVariableRegister = (function (_super) {
+    __extends(StringVariableRegister, _super);
+    function StringVariableRegister() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    StringVariableRegister.prototype.addVar = function (name) {
+        this.vars[name] = "";
+    };
+    return StringVariableRegister;
+}(VariableRegister));
+exports.StringVariableRegister = StringVariableRegister;
