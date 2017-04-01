@@ -1618,6 +1618,7 @@ class NumericExpressionEvaluator
 				value = a**b
 			else
 				value = "error"
+		# return value (( missing from file ....))
 
 
 

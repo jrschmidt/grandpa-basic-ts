@@ -159,3 +159,64 @@ var StringVariableRegister = (function (_super) {
     return StringVariableRegister;
 }(VariableRegister));
 exports.StringVariableRegister = StringVariableRegister;
+var NumericExpressionEvaluator = (function () {
+    function NumericExpressionEvaluator(register) {
+        this.register = register;
+    }
+    NumericExpressionEvaluator.prototype.evaluate = function (expression) {
+        var result = NaN;
+        switch (expression.exp) {
+            case '<num>':
+                result = this.evaluateNumericLiteral(expression);
+                break;
+            case '<var>':
+                result = this.evaluateNumericVariable(expression);
+                break;
+            case '<random>':
+                result = this.evaluateRNDKeyword();
+                break;
+            case '<plus>':
+            case '<minus>':
+            case '<times>':
+            case '<divide>':
+            case '<power>':
+                result = this.evaluateBinaryOperation(expression);
+                break;
+        }
+        return result;
+    };
+    NumericExpressionEvaluator.prototype.evaluateNumericLiteral = function (expression) {
+        return expression.value;
+    };
+    NumericExpressionEvaluator.prototype.evaluateNumericVariable = function (expression) {
+        return this.register.get(expression.name);
+    };
+    NumericExpressionEvaluator.prototype.evaluateRNDKeyword = function () {
+        return Math.random();
+    };
+    NumericExpressionEvaluator.prototype.evaluateBinaryOperation = function (expression) {
+        var result = NaN;
+        var a = this.evaluate(expression.op1);
+        var b = this.evaluate(expression.op2);
+        switch (expression.exp) {
+            case '<plus>':
+                result = a + b;
+                break;
+            case '<minus>':
+                result = a - b;
+                break;
+            case '<times>':
+                result = a * b;
+                break;
+            case '<divide>':
+                result = a / b;
+                break;
+            case '<power>':
+                result = Math.pow(a, b);
+                break;
+        }
+        return result;
+    };
+    return NumericExpressionEvaluator;
+}());
+exports.NumericExpressionEvaluator = NumericExpressionEvaluator;

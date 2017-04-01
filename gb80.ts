@@ -1,3 +1,24 @@
+type NumericExpressionTag =
+  '<num>' |
+  '<var>' |
+  '<random>' |
+  '<plus>' |
+  '<minus>' |
+  '<times>' |
+  '<divide>' |
+  '<power>';
+
+
+interface NumericExpressionObject {
+  exp: NumericExpressionTag;
+  value?: number;
+  name?: string;
+  op1?: NumericExpressionObject;
+  op2?: NumericExpressionObject;
+}
+
+
+
 export class StringExpressionBuilder {
 
   // Building a string expression object is much simpler than numeric
@@ -219,5 +240,110 @@ export class StringVariableRegister extends VariableRegister {
   addVar(name: string) {
     this.vars[name] = "";
   }
+
+}
+
+
+
+export class NumericExpressionEvaluator {
+
+  // Builds a numeric expression object from an array of parse tokens.
+	//
+  // The Typescript version uses the NumericExpressionObject interface.
+  // [   TODO Somewhere, probably under NumericExpressionBuilder class, we need to   ]
+  //    add an updated explanation of how the NumericExpressionObjects work.   ]
+  //
+
+
+	// The object for the simple variable name X will be:
+	//	 {exp: "<var>", name: "X"}.
+	//
+	// The object for a simple numeric literal such as 3.1416 will be:
+	//	 {exp: "<num>", value: 3.1416}.
+	//
+	// Compound numeric expressions are built into binary numeric expression
+	// objects with three properties: The "exp" property will be a symbol denoting
+	// the operator within the expression with the highest precedence. The values
+	// of the "op1" and "op2" properties will be nested numeric expression objects.
+	// So, for example, in the expression 3*A+2*B-5*C the "exp" property will be
+	// "<plus>", the value of "op1" will be an object representing 3*A, and the
+	// value of "op2" will be an object representing 2*B-5*C.
+
+
+  register: NumericVariableRegister;
+
+
+  constructor (register: NumericVariableRegister) {
+    this.register = register;
+  }
+
+
+  evaluate(expression: NumericExpressionObject) {
+    let result: number = NaN;
+
+    switch (expression.exp) {
+      case '<num>':
+        result = this.evaluateNumericLiteral(expression);
+      break;
+      case '<var>':
+        result = this.evaluateNumericVariable(expression);
+      break;
+      case '<random>':
+      result = this.evaluateRNDKeyword();
+      break;
+      case '<plus>':
+      case '<minus>':
+      case '<times>':
+      case '<divide>':
+      case '<power>':
+        result = this.evaluateBinaryOperation(expression);
+      break;
+    }
+
+    return result;
+  }
+
+
+  evaluateNumericLiteral (expression: NumericExpressionObject) {
+    return expression.value;
+  }
+
+
+  evaluateNumericVariable (expression: NumericExpressionObject) {
+    return this.register.get(expression.name);
+  }
+
+
+  evaluateRNDKeyword () {
+    return Math.random();
+  }
+
+
+  evaluateBinaryOperation (expression: NumericExpressionObject) {
+    let result: number = NaN;
+    let a: number = this.evaluate(expression.op1);
+    let b: number = this.evaluate(expression.op2);
+
+    switch (expression.exp) {
+      case '<plus>':
+        result = a + b;
+      break;
+      case '<minus>':
+        result = a - b;
+      break;
+      case '<times>':
+        result = a * b;
+      break;
+      case '<divide>':
+        result = a / b;
+      break;
+      case '<power>':
+        result = a ** b;
+      break;
+    }
+
+    return result;
+  }
+
 
 }
