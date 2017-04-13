@@ -1,3 +1,5 @@
+type ParseStack = Array<string | number | Array<any>>;
+
 type NumericExpressionTag =
   '<num>' |
   '<var>' |
@@ -8,6 +10,25 @@ type NumericExpressionTag =
   '<divide>' |
   '<power>';
 
+type StringExpressionTag =
+  '<str>' | '<var>';
+
+type BooleanExpressionTag =
+  '<num_equals>' |
+  '<num_not_equal>' |
+  '<num_lesser_than>' |
+  '<num_lesser_equal>' |
+  '<num_greater_than>' |
+  '<num_greater_equal>' |
+  '<str_equals>' |
+  '<str_not_equal>';
+
+interface SimpleStringExpression {
+  tag: StringExpressionTag;
+  value: string;
+}
+
+type StringExpressionObject = SimpleStringExpression[];
 
 interface NumericExpressionObject {
   exp: NumericExpressionTag;
@@ -15,6 +36,71 @@ interface NumericExpressionObject {
   name?: string;
   op1?: NumericExpressionObject;
   op2?: NumericExpressionObject;
+}
+
+interface BooleanExpressionObject {
+  tag: BooleanExpressionTag;
+  var: string;
+  exp: NumericExpressionObject | SimpleStringExpression[];
+}
+
+
+
+export class NumericExpressionBuilder {
+
+  // Builds a numeric expression object from an array of parse tokens.
+  //
+  // The object for the simple variable name X will be:
+  //	 {exp: "<var>", name: "X"}.
+  //
+  // The object for a simple numeric literal such as 3.1416 will be:
+  //	 {exp: "<num>", value: 3.1416}.
+  //
+  // Compound numeric expressions are built into binary numeric expression
+  // objects with three properties: The "exp" property will be a symbol denoting
+  // the operator within the expression with the highest precedence. The values
+  // of the "op1" and "op2" properties will be nested numeric expression objects.
+  // So, for example, in the expression 3*A+2*B-5*C the "exp" property will be
+  // "<plus>", the value of "op1" will be an object representing 3*A, and the
+  // value of "op2" will be an object representing 2*B-5*C.
+
+
+  deparenthesize (stack: ParseStack): ParseStack {
+    let mainStacks: ParseStack[] = [ [] ];
+    let tailStack: ParseStack = [];
+    let middleStack: ParseStack;
+
+    for (let i=0;i<stack.length;i++) {
+
+      if (stack[i] === '<left>') {
+        mainStacks.push( [] );
+      }
+
+      if (stack[i] === '<right>') {
+        middleStack = mainStacks.pop();
+        mainStacks[mainStacks.length-1].push(middleStack);
+        mainStacks[mainStacks.length-1] = mainStacks[mainStacks.length-1].concat(tailStack);
+        tailStack = [];
+      }
+
+      if ( (stack[i] != '<left>') && (stack[i] != '<right>') ) {
+        mainStacks[mainStacks.length-1].push(stack[i]);
+      }
+
+    }
+
+    if (mainStacks.length != 1) {
+      return [];
+    }
+
+    else {
+      mainStacks[0] = mainStacks[0].concat(tailStack);
+      return mainStacks[0];
+    }
+
+  }
+
+
 }
 
 
@@ -41,6 +127,7 @@ export class StringExpressionBuilder {
 	// we would use:
 	//	 [ ["<str>", "MY NAME IS "], ["<var>", "N"] ].
 
+
   buildStringExpression (stack: string[]): string[][] {
     let parts: string[][] = [];
     let tk: string;
@@ -56,6 +143,54 @@ export class StringExpressionBuilder {
     }
     return parts;
   }
+
+}
+
+
+
+export class BooleanExpressionBuilder {
+
+  // The only allowable construct in the earliest forms of BASIC which could be
+	// construed as "boolean expressions" were the comparator statements in IF
+	// statements such as 'IF A>B THEN 200'. There were no such things as boolean
+	// variables or expressions which could be given a value of 'true' or false'.
+	//
+	// A "boolean expression" of this type consists of three parts, represented by
+	// the properties of the boolean expression object. These are a variable name,
+	// followed by a comparator, followed by a numeric or string expression. The
+	// object property names used for these entities are "var" for the variable,
+	// "exp" for the comparator, and either "num_exp" or "str_exp" for the
+	// expression the variable is being compared to.
+	//
+	// The only allowable comparators for a string expression are '=' for 'equals'
+	// (not '==' as is more common in modern programming languages) and '<>' for
+	// 'not equal'. Comparators allowed in a numeric boolean expression are '='
+	// (equals), '<>' (not equal), '>' (greater than), '>=' (greater or equal to),
+	// '<' (less than), and '<=' (lesser or equal to).
+	//
+	// The object for the boolean expression
+	//	 W>100
+	// would be represented as:
+	//	 {exp: "<num_greater_than>",
+	//		var: "W",
+	//		num_exp: {exp: "<num>", value: 100} }.
+	// Further examples can be found in the test specs.
+
+
+  // constructor (
+  //   numExpBuilder: NumericExpressionBuilder,
+  //   strExpBuilder: StringExpressionBuilder) {  this.numExpBuilder = numExpBuilder; ...
+  //
+  // }
+
+
+  // buildBooleanExpression (stack: string[]): BooleanExpressionObject {
+  //
+  // }
+
+
+  // constructor (register: NumericVariableRegister) {
+  //   this.register = register;
 
 }
 

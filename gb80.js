@@ -10,6 +10,38 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+var NumericExpressionBuilder = (function () {
+    function NumericExpressionBuilder() {
+    }
+    NumericExpressionBuilder.prototype.deparenthesize = function (stack) {
+        var mainStacks = [[]];
+        var tailStack = [];
+        var middleStack;
+        for (var i = 0; i < stack.length; i++) {
+            if (stack[i] === '<left>') {
+                mainStacks.push([]);
+            }
+            if (stack[i] === '<right>') {
+                middleStack = mainStacks.pop();
+                mainStacks[mainStacks.length - 1].push(middleStack);
+                mainStacks[mainStacks.length - 1] = mainStacks[mainStacks.length - 1].concat(tailStack);
+                tailStack = [];
+            }
+            if ((stack[i] != '<left>') && (stack[i] != '<right>')) {
+                mainStacks[mainStacks.length - 1].push(stack[i]);
+            }
+        }
+        if (mainStacks.length != 1) {
+            return [];
+        }
+        else {
+            mainStacks[0] = mainStacks[0].concat(tailStack);
+            return mainStacks[0];
+        }
+    };
+    return NumericExpressionBuilder;
+}());
+exports.NumericExpressionBuilder = NumericExpressionBuilder;
 var StringExpressionBuilder = (function () {
     function StringExpressionBuilder() {
     }
@@ -30,6 +62,12 @@ var StringExpressionBuilder = (function () {
     return StringExpressionBuilder;
 }());
 exports.StringExpressionBuilder = StringExpressionBuilder;
+var BooleanExpressionBuilder = (function () {
+    function BooleanExpressionBuilder() {
+    }
+    return BooleanExpressionBuilder;
+}());
+exports.BooleanExpressionBuilder = BooleanExpressionBuilder;
 var KeyHelper = (function () {
     function KeyHelper() {
         this.code = [
