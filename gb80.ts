@@ -1,17 +1,40 @@
-type ParseStack = Array<string | number | Array<any>>;
+type ParseStack = Array< ParseTag | string | number | Array<any> >;
 
 type NumericExpressionTag =
-  '<num>' |
-  '<var>' |
-  '<random>' |
+  '<none>' |
+  '<numeric_literal>' |
+  '<numeric_variable>' |
   '<plus>' |
   '<minus>' |
   '<times>' |
   '<divide>' |
-  '<power>';
+  '<power>' |
+  '<random>' |
+  '<integer>';
+
+interface NumericParseStackSplit {
+  splitter: NumericExpressionTag;
+  left: ParseStack;
+  right: ParseStack;
+}
+
+interface NumericExpressionObject {
+  tag: NumericExpressionTag;
+  value?: number;
+  name?: string;
+  op1?: NumericExpressionObject;
+  op2?: NumericExpressionObject;
+}
 
 type StringExpressionTag =
   '<str>' | '<var>';
+
+interface SimpleStringExpression {
+  tag: StringExpressionTag;
+  value: string;
+}
+
+type StringExpressionObject = SimpleStringExpression[];
 
 type BooleanExpressionTag =
   '<num_equals>' |
@@ -23,27 +46,16 @@ type BooleanExpressionTag =
   '<str_equals>' |
   '<str_not_equal>';
 
-interface SimpleStringExpression {
-  tag: StringExpressionTag;
-  value: string;
-}
-
-type StringExpressionObject = SimpleStringExpression[];
-
-interface NumericExpressionObject {
-  exp: NumericExpressionTag;
-  value?: number;
-  name?: string;
-  op1?: NumericExpressionObject;
-  op2?: NumericExpressionObject;
-}
-
 interface BooleanExpressionObject {
   tag: BooleanExpressionTag;
   var: string;
-  exp: NumericExpressionObject | SimpleStringExpression[];
+  exp: NumericExpressionObject | StringExpressionObject;
 }
 
+type ParseTag =
+  NumericExpressionTag |
+  StringExpressionTag |
+  BooleanExpressionTag;
 
 
 export class NumericExpressionBuilder {
@@ -51,10 +63,10 @@ export class NumericExpressionBuilder {
   // Builds a numeric expression object from an array of parse tokens.
   //
   // The object for the simple variable name X will be:
-  //	 {exp: "<var>", name: "X"}.
+  //	 {exp: "<numeric_variable>", name: "X"}.
   //
   // The object for a simple numeric literal such as 3.1416 will be:
-  //	 {exp: "<num>", value: 3.1416}.
+  //	 {exp: "<numeric_literal>", value: 3.1416}.
   //
   // Compound numeric expressions are built into binary numeric expression
   // objects with three properties: The "exp" property will be a symbol denoting
@@ -65,13 +77,54 @@ export class NumericExpressionBuilder {
   // value of "op2" will be an object representing 2*B-5*C.
 
 
+  split (stack: ParseStack): NumericParseStackSplit {
+
+    let found: string = 'no';
+    let splitIndex: number;
+
+    let result: NumericParseStackSplit = {
+      splitter: '<none>',
+      left: [],
+      right: []
+    };
+
+    let rankings: NumericExpressionTag[][] = [
+      ['<plus>', '<minus>'],
+      ['<times>', '<divide>'],
+      ['<power>'],
+      ['<numeric_literal>', '<numeric_variable>'],
+      ['<random>', '<integer>']
+    ];
+
+    stack = this.deparenthesize(stack);
+
+    for (let rank=0; rank<rankings.length; rank++) {
+      if (found != 'yes') {
+        for (let n=0; n<stack.length; n++) {
+          if (found != 'yes') {
+            for (let i=0; i<rankings[rank].length; i++) {
+              if (stack[n] === rankings[rank][i]) {
+                splitIndex = n;
+                found = 'yes';
+              }
+            }
+          }
+        }
+      }
+    }
+
+    result.splitter = <NumericExpressionTag>stack[splitIndex];
+    result.left = stack.slice(0, splitIndex);
+    result.right = stack.slice(splitIndex + 1);
+    return result;
+  }
+
   deparenthesize (stack: ParseStack): ParseStack {
     let mainStacks: ParseStack[] = [ [] ];
     let tailStack: ParseStack = [];
     let middleStack: ParseStack;
 
     for (let i=0;i<stack.length;i++) {
-
       if (stack[i] === '<left>') {
         mainStacks.push( [] );
       }
@@ -86,13 +139,11 @@ export class NumericExpressionBuilder {
       if ( (stack[i] != '<left>') && (stack[i] != '<right>') ) {
         mainStacks[mainStacks.length-1].push(stack[i]);
       }
-
     }
 
     if (mainStacks.length != 1) {
       return [];
     }
-
     else {
       mainStacks[0] = mainStacks[0].concat(tailStack);
       return mainStacks[0];
@@ -173,7 +224,7 @@ export class BooleanExpressionBuilder {
 	// would be represented as:
 	//	 {exp: "<num_greater_than>",
 	//		var: "W",
-	//		num_exp: {exp: "<num>", value: 100} }.
+	//		num_exp: {exp: "<numeric_literal>", value: 100} }.
 	// Further examples can be found in the test specs.
 
 
@@ -391,10 +442,10 @@ export class NumericExpressionEvaluator {
 
 
 	// The object for the simple variable name X will be:
-	//	 {exp: "<var>", name: "X"}.
+	//	 {exp: "<numeric_variable>", name: "X"}.
 	//
 	// The object for a simple numeric literal such as 3.1416 will be:
-	//	 {exp: "<num>", value: 3.1416}.
+	//	 {exp: "<numeric_literal>", value: 3.1416}.
 	//
 	// Compound numeric expressions are built into binary numeric expression
 	// objects with three properties: The "exp" property will be a symbol denoting
@@ -416,11 +467,11 @@ export class NumericExpressionEvaluator {
   evaluate(expression: NumericExpressionObject) {
     let result: number = NaN;
 
-    switch (expression.exp) {
-      case '<num>':
+    switch (expression.tag) {
+      case '<numeric_literal>':
         result = this.evaluateNumericLiteral(expression);
       break;
-      case '<var>':
+      case '<numeric_variable>':
         result = this.evaluateNumericVariable(expression);
       break;
       case '<random>':
@@ -459,7 +510,7 @@ export class NumericExpressionEvaluator {
     let a: number = this.evaluate(expression.op1);
     let b: number = this.evaluate(expression.op2);
 
-    switch (expression.exp) {
+    switch (expression.tag) {
       case '<plus>':
         result = a + b;
       break;

@@ -13,6 +13,56 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var NumericExpressionBuilder = (function () {
     function NumericExpressionBuilder() {
     }
+    // Builds a numeric expression object from an array of parse tokens.
+    //
+    // The object for the simple variable name X will be:
+    //	 {exp: "<numeric_variable>", name: "X"}.
+    //
+    // The object for a simple numeric literal such as 3.1416 will be:
+    //	 {exp: "<numeric_literal>", value: 3.1416}.
+    //
+    // Compound numeric expressions are built into binary numeric expression
+    // objects with three properties: The "exp" property will be a symbol denoting
+    // the operator within the expression with the highest precedence. The values
+    // of the "op1" and "op2" properties will be nested numeric expression objects.
+    // So, for example, in the expression 3*A+2*B-5*C the "exp" property will be
+    // "<plus>", the value of "op1" will be an object representing 3*A, and the
+    // value of "op2" will be an object representing 2*B-5*C.
+    NumericExpressionBuilder.prototype.split = function (stack) {
+        var found = 'no';
+        var splitIndex;
+        var result = {
+            splitter: '<none>',
+            left: [],
+            right: []
+        };
+        var rankings = [
+            ['<plus>', '<minus>'],
+            ['<times>', '<divide>'],
+            ['<power>'],
+            ['<numeric_literal>', '<numeric_variable>'],
+            ['<random>', '<integer>']
+        ];
+        stack = this.deparenthesize(stack);
+        for (var rank = 0; rank < rankings.length; rank++) {
+            if (found != 'yes') {
+                for (var n = 0; n < stack.length; n++) {
+                    if (found != 'yes') {
+                        for (var i = 0; i < rankings[rank].length; i++) {
+                            if (stack[n] === rankings[rank][i]) {
+                                splitIndex = n;
+                                found = 'yes';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        result.splitter = stack[splitIndex];
+        result.left = stack.slice(0, splitIndex);
+        result.right = stack.slice(splitIndex + 1);
+        return result;
+    };
     NumericExpressionBuilder.prototype.deparenthesize = function (stack) {
         var mainStacks = [[]];
         var tailStack = [];
@@ -45,6 +95,25 @@ exports.NumericExpressionBuilder = NumericExpressionBuilder;
 var StringExpressionBuilder = (function () {
     function StringExpressionBuilder() {
     }
+    // Building a string expression object is much simpler than numeric
+    // expressions, since the only operation in a string expression is
+    // concatenation. Therefore,	a string expression object is composed of an
+    // array of one or more subarrays, where each subarray has two elements. The
+    // first element is a symbol, either "<str>" for a string literal or "<var>"
+    // for a string variable. The second element for a string literal is the
+    // string itself. For a string variable, the second element is the variable
+    // name.
+    //
+    // Please note that the name for a string variable is recorded WITHOUT the
+    // dollar sign character ($). In BASIC syntax, string variable names are always
+    // preceeded with the '$' character to differentiate them from numeric variable
+    // names. However, there was no need to include them in the data objects for
+    // this app.
+    //
+    // For example, to represent:
+    //	 "MY NAME IS "+$N
+    // we would use:
+    //	 [ ["<str>", "MY NAME IS "], ["<var>", "N"] ].
     StringExpressionBuilder.prototype.buildStringExpression = function (stack) {
         var parts = [];
         var tk;
@@ -70,6 +139,8 @@ var BooleanExpressionBuilder = (function () {
 exports.BooleanExpressionBuilder = BooleanExpressionBuilder;
 var KeyHelper = (function () {
     function KeyHelper() {
+        // Postpone monitor color code until later in the CS - TS conversion
+        // this.monitorColor = 'green';
         this.code = [
             173, 61, 59, 189, 187, 186,
             48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
@@ -89,6 +160,7 @@ var KeyHelper = (function () {
             ["S", "S"], ["T", "T"], ["U", "U"], ["V", "V"], ["W", "W"], ["X", "X"], ["Y", "Y"], ["Z", "Z"],
             [",", "<"], [".", ">"], ["/", "?"], ["`", "~"], ["[", "{"], ["]", "}"], ["'", '"']
         ];
+        // TODO Why are '[' and ']' not implemented?
         this.chars = [
             "!", '"', "#", "$", "%", "&", "'",
             "(", ")", "*", "+", ",", "-", ".", "/", "0", "1",
@@ -137,10 +209,12 @@ var KeyHelper = (function () {
             var i = this.chars.indexOf(ch);
             var xx = this.xy[i][0];
             var yy = this.xy[i][1];
+            // Postpone monitor color code until later in the CS - TS conversion
+            // if (this.monitorColor === 'green') {xx = xx + 145;}
             return [xx, yy];
         }
         else {
-            return this.blankSpriteXY;
+            return this.blankSpriteXY; // (blank sprite)
         }
     };
     return KeyHelper;
@@ -180,6 +254,8 @@ var NumericVariableRegister = (function (_super) {
     function NumericVariableRegister() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    // 	# Most, if not all, of the early versions of BASIC initialized any unset
+    // 	# numeric variables to 0.
     NumericVariableRegister.prototype.addVar = function (name) {
         this.vars[name] = 0;
     };
@@ -191,6 +267,8 @@ var StringVariableRegister = (function (_super) {
     function StringVariableRegister() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    // Most early versions of BASIC initialized unset string variables to an
+    // empty string.
     StringVariableRegister.prototype.addVar = function (name) {
         this.vars[name] = "";
     };
@@ -203,11 +281,11 @@ var NumericExpressionEvaluator = (function () {
     }
     NumericExpressionEvaluator.prototype.evaluate = function (expression) {
         var result = NaN;
-        switch (expression.exp) {
-            case '<num>':
+        switch (expression.tag) {
+            case '<numeric_literal>':
                 result = this.evaluateNumericLiteral(expression);
                 break;
-            case '<var>':
+            case '<numeric_variable>':
                 result = this.evaluateNumericVariable(expression);
                 break;
             case '<random>':
@@ -236,7 +314,7 @@ var NumericExpressionEvaluator = (function () {
         var result = NaN;
         var a = this.evaluate(expression.op1);
         var b = this.evaluate(expression.op2);
-        switch (expression.exp) {
+        switch (expression.tag) {
             case '<plus>':
                 result = a + b;
                 break;

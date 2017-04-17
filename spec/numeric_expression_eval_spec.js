@@ -14,7 +14,7 @@ describe("Numeric expression evaluator", function() {
     var expression, expected;
 
     expression = {
-      exp: "<num>",
+      tag: "<numeric_literal>",
       value: 42
     };
 
@@ -22,7 +22,7 @@ describe("Numeric expression evaluator", function() {
     expect(expected).toEqual(42);
 
     expression = {
-      exp: "<num>",
+      tag: "<numeric_literal>",
       value: 0
     };
 
@@ -30,7 +30,7 @@ describe("Numeric expression evaluator", function() {
     expect(expected).toEqual(0);
 
     expression = {
-      exp: "<num>",
+      tag: "<numeric_literal>",
       value: 6
     };
 
@@ -38,7 +38,7 @@ describe("Numeric expression evaluator", function() {
     expect(expected).toEqual(6);
 
     expression = {
-      exp: "<num>",
+      tag: "<numeric_literal>",
       value: 3.1416
     };
 
@@ -52,7 +52,8 @@ describe("Numeric expression evaluator", function() {
     var expression, expected;
 
     expression = {
-      exp: "<var>",
+      tag: "<numeric_variable>",
+
       name: "Y"
     };
 
@@ -61,7 +62,7 @@ describe("Numeric expression evaluator", function() {
     expect(expected).toEqual(7);
 
     expression = {
-      exp: "<var>",
+      tag: "<numeric_variable>",
       name: "A8"
     };
 
@@ -70,7 +71,7 @@ describe("Numeric expression evaluator", function() {
     expect(expected).toEqual(0);
 
     expression = {
-      exp: "<var>",
+      tag: "<numeric_variable>",
       name: "E"
     };
 
@@ -85,7 +86,7 @@ describe("Numeric expression evaluator", function() {
     var expression, expected;
 
     expression = {
-      exp: "<random>"
+      tag: "<random>"
     };
 
     expected = this.evaluator.evaluate(expression);
@@ -101,13 +102,13 @@ describe("Numeric expression evaluator", function() {
     // EVALUATE: 440 + 16
 
     expression = {
-      exp: "<plus>",
+      tag: "<plus>",
       op1: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 440
       },
       op2: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 16
       }
     };
@@ -119,13 +120,13 @@ describe("Numeric expression evaluator", function() {
     // EVALUATE: 888 - 555
 
     expression = {
-      exp: "<minus>",
+      tag: "<minus>",
       op1: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 888
       },
       op2: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 555
       }
     };
@@ -137,13 +138,13 @@ describe("Numeric expression evaluator", function() {
     // EVALUATE: 3 * 17
 
     expression = {
-      exp: "<times>",
+      tag: "<times>",
       op1: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 3
       },
       op2: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 17
       }
     };
@@ -155,13 +156,13 @@ describe("Numeric expression evaluator", function() {
     // EVALUATE: 8 * RND
 
     // expression = {
-    //   exp: "<times>",
+    //   tag: "<times>",
     //   op1: {
-    //     exp: "<num>",
+    //     tag: "<numeric_literal>",
     //     value: 8
     //   },
     //   op2: {
-    //     exp: "<random>"
+    //     tag: "<random>"
     //   }
     // };
     //
@@ -173,13 +174,13 @@ describe("Numeric expression evaluator", function() {
     // EVALUATE: 1024 / 256
 
     expression = {
-      exp: "<divide>",
+      tag: "<divide>",
       op1: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 1024
       },
       op2: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 256
       }
     };
@@ -191,13 +192,13 @@ describe("Numeric expression evaluator", function() {
     // EVALUATE: 2 ^ 5
 
     expression = {
-      exp: "<power>",
+      tag: "<power>",
       op1: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 2
       },
       op2: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 5
       }
     };
@@ -214,21 +215,21 @@ describe("Numeric expression evaluator", function() {
     // EVALUATE: X * Y * Z
 
     op2 = {
-      exp: "<times>",
+      tag: "<times>",
       op1: {
-        exp: "<var>",
+        tag: "<numeric_variable>",
         name: "Y"
       },
       op2: {
-        exp: "<var>",
+        tag: "<numeric_variable>",
         name: "Z"
       }
     };
 
     expression = {
-      exp: "<times>",
+      tag: "<times>",
       op1: {
-        exp: "<var>",
+        tag: "<numeric_variable>",
         name: "X"
       },
       op2: op2
@@ -250,21 +251,21 @@ describe("Numeric expression evaluator", function() {
     // EVALUATE: 800 + 12 - 4
 
     op2 = {
-      exp: "<minus>",
+      tag: "<minus>",
       op1: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 12
       },
       op2: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 4
       }
     };
 
     expression = {
-      exp: "<plus>",
+      tag: "<plus>",
       op1: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 800
       },
       op2: op2
@@ -282,22 +283,22 @@ describe("Numeric expression evaluator", function() {
     // EVALUATE: (A - B) / 3
 
     op1 = {
-      exp: "<minus>",
+      tag: "<minus>",
       op1: {
-        exp: "<var>",
+        tag: "<numeric_variable>",
         name: "A"
       },
       op2: {
-        exp: "<var>",
+        tag: "<numeric_variable>",
         name: "B"
       }
     };
 
     expression = {
-      exp: "<divide>",
+      tag: "<divide>",
       op1: op1,
       op2: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 3
       }
     };
@@ -316,21 +317,21 @@ describe("Numeric expression evaluator", function() {
     // EVALUATE: W * (40 + L)
 
     op2 = {
-      exp: "<plus>",
+      tag: "<plus>",
       op1: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 40
       },
       op2: {
-        exp: "<var>",
+        tag: "<numeric_variable>",
         name: "L"
       }
     };
 
     expression = {
-      exp: "<times>",
+      tag: "<times>",
       op1: {
-        exp: "<var>",
+        tag: "<numeric_variable>",
         name: "W"
       },
       op2: op2
@@ -350,31 +351,31 @@ describe("Numeric expression evaluator", function() {
     // EVALUATE: (14 + M1) / (11 + M2)
 
     op1 = {
-      exp: "<plus>",
+      tag: "<plus>",
       op1: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 14
       },
       op2: {
-        exp: "<var>",
+        tag: "<numeric_variable>",
         name: "M1"
       }
     };
 
     op2 = {
-      exp: "<plus>",
+      tag: "<plus>",
       op1: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 11
       },
       op2: {
-        exp: "<var>",
+        tag: "<numeric_variable>",
         name: "M2"
       }
     };
 
     expression = {
-      exp: "<divide>",
+      tag: "<divide>",
       op1: op1,
       op2: op2
     };
@@ -393,40 +394,40 @@ describe("Numeric expression evaluator", function() {
     // EVALUATE: (201 - (3 * (L - 7))) / 9
 
     op1_2_2 = {
-      exp: "<minus>",
+      tag: "<minus>",
       op1: {
-        exp: "<var>",
+        tag: "<numeric_variable>",
         name: "L"
       },
       op2: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 7
       }
     };
 
     op1_2 = {
-      exp: "<times>",
+      tag: "<times>",
       op1: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 3
       },
       op2: op1_2_2
     };
 
     op1 = {
-      exp: "<minus>",
+      tag: "<minus>",
       op1: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 201
       },
       op2: op1_2
     };
 
     expression = {
-      exp: "<divide>",
+      tag: "<divide>",
       op1: op1,
       op2: {
-        exp: "<num>",
+        tag: "<numeric_literal>",
         value: 9
       }
     };
