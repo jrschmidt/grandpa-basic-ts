@@ -28,14 +28,72 @@ var NumericExpressionBuilder = (function () {
     // So, for example, in the expression 3*A+2*B-5*C the "exp" property will be
     // "<plus>", the value of "op1" will be an object representing 3*A, and the
     // value of "op2" will be an object representing 2*B-5*C.
+    NumericExpressionBuilder.prototype.buildNumericExpression = function (stack) {
+        var expression = {
+            tag: '<none>'
+        };
+        console.log(" ");
+        console.log("buildNumericExpression()");
+        console.log("stack = " + stack);
+        var splitStack = this.split(stack);
+        console.log("splitStack =");
+        console.log("   left = " + splitStack.left);
+        console.log("   right = " + splitStack.right);
+        console.log("   splitter = " + splitStack.splitter);
+        switch (splitStack.splitter) {
+            case '<plus>':
+            case '<minus>':
+            case '<times>':
+            case '<divide>':
+            case '<power>':
+                expression = this.buildBinaryNumericExpression(splitStack);
+                break;
+            case '<numeric_literal>':
+                expression = this.buildNumericLiteralExpression(splitStack);
+                break;
+            case '<numeric_variable>':
+                expression = this.buildNumericVariableExpression(splitStack);
+                break;
+            case '<random>':
+                expression = this.buildNumericRandomFunctionExpression(splitStack);
+                break;
+            case '<integer>':
+                expression = this.buildNumericIntegerFunctionExpression(splitStack);
+                break;
+        }
+        return expression;
+    };
+    // this.buildBinaryNumericExpression(splitStack);
+    NumericExpressionBuilder.prototype.buildNumericLiteralExpression = function (stack) {
+        var expression = {
+            tag: '<numeric_literal>',
+            value: stack.right[0]
+        };
+        return expression;
+    };
+    NumericExpressionBuilder.prototype.buildNumericVariableExpression = function (stack) {
+        var expression = {
+            tag: '<numeric_variable>',
+            name: stack.right[0]
+        };
+        return expression;
+    };
+    // this.buildNumericVariableExpression(splitStack);
+    // this.buildNumericRandomFunctionExpression(splitStack);
+    // this.buildNumericIntegerFunctionExpression(splitStack);
+    NumericExpressionBuilder.prototype.stripDelimiterTokens = function (stack) {
+        var first = stack.shift();
+        var last = stack.pop();
+        if (first === '<numeric_expression>' && last === '<num_exp_end>') {
+            return stack;
+        }
+        else {
+            return [];
+        }
+    };
     NumericExpressionBuilder.prototype.split = function (stack) {
         var found = 'no';
         var splitIndex;
-        var result = {
-            splitter: '<none>',
-            left: [],
-            right: []
-        };
         var rankings = [
             ['<plus>', '<minus>'],
             ['<times>', '<divide>'],
@@ -43,6 +101,12 @@ var NumericExpressionBuilder = (function () {
             ['<numeric_literal>', '<numeric_variable>'],
             ['<random>', '<integer>']
         ];
+        var result = {
+            splitter: '<none>',
+            left: [],
+            right: []
+        };
+        stack = this.stripDelimiterTokens(stack);
         stack = this.deparenthesize(stack);
         for (var rank = 0; rank < rankings.length; rank++) {
             if (found != 'yes') {

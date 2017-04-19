@@ -77,16 +77,93 @@ export class NumericExpressionBuilder {
   // value of "op2" will be an object representing 2*B-5*C.
 
 
+  buildNumericExpression (stack: ParseStack): NumericExpressionObject {
+
+    let expression: NumericExpressionObject = {
+      tag: '<none>'
+    }
+
+    console.log(` `);
+    console.log(`buildNumericExpression()`);
+    console.log(`stack = ${stack}`);
+    let splitStack: NumericParseStackSplit = this.split(stack);
+    console.log(`splitStack =`);
+    console.log(`   left = ${splitStack.left}`);
+    console.log(`   right = ${splitStack.right}`);
+    console.log(`   splitter = ${splitStack.splitter}`);
+
+    switch (splitStack.splitter) {
+    case '<plus>':
+    case '<minus>':
+    case '<times>':
+    case '<divide>':
+    case '<power>':
+      expression = this.buildBinaryNumericExpression(splitStack);
+    break;
+    case '<numeric_literal>':
+      expression = this.buildNumericLiteralExpression(splitStack);
+    break;
+    case '<numeric_variable>':
+      expression = this.buildNumericVariableExpression(splitStack);
+    break;
+    case '<random>':
+      expression = this.buildNumericRandomFunctionExpression(splitStack);
+    break;
+    case '<integer>':
+      expression = this.buildNumericIntegerFunctionExpression(splitStack);
+    break;
+  }
+
+    return expression;
+  }
+
+
+  // this.buildBinaryNumericExpression(splitStack);
+
+
+  buildNumericLiteralExpression (stack: NumericParseStackSplit): NumericExpressionObject {
+    let expression: NumericExpressionObject = {
+      tag: '<numeric_literal>',
+      value: <number>stack.right[0]
+    }
+    return expression;
+  }
+
+
+  buildNumericVariableExpression (stack: NumericParseStackSplit): NumericExpressionObject {
+    let expression: NumericExpressionObject = {
+      tag: '<numeric_variable>',
+      name: <string>stack.right[0]
+    }
+    return expression;
+  }
+
+
+  // this.buildNumericVariableExpression(splitStack);
+
+
+  // this.buildNumericRandomFunctionExpression(splitStack);
+
+
+  // this.buildNumericIntegerFunctionExpression(splitStack);
+
+
+  stripDelimiterTokens (stack: ParseStack): ParseStack {
+    let first = stack.shift();
+    let last = stack.pop();
+    if (first === '<numeric_expression>' && last === '<num_exp_end>') {
+      return stack;
+    }
+    else {
+      return [];
+    }
+  }
+
+
   split (stack: ParseStack): NumericParseStackSplit {
 
     let found: string = 'no';
     let splitIndex: number;
-
-    let result: NumericParseStackSplit = {
-      splitter: '<none>',
-      left: [],
-      right: []
-    };
 
     let rankings: NumericExpressionTag[][] = [
       ['<plus>', '<minus>'],
@@ -96,6 +173,13 @@ export class NumericExpressionBuilder {
       ['<random>', '<integer>']
     ];
 
+    let result: NumericParseStackSplit = {
+      splitter: '<none>',
+      left: [],
+      right: []
+    };
+
+    stack = this.stripDelimiterTokens(stack);
     stack = this.deparenthesize(stack);
 
     for (let rank=0; rank<rankings.length; rank++) {

@@ -8,6 +8,61 @@ describe('Numeric expression builder', function() {
   });
 
 
+  it('should strip delimiter tokens from a stack of parse tokens', function() {
+    var result, stack, origlength;
+
+    // TEST  J+K
+    stack = [
+      '<numeric_expression>',
+      '<numeric_variable>',
+      'J',
+      '<plus>',
+      '<numeric_variable>',
+      'K',
+      '<num_exp_end>'
+    ];
+
+    origlength = stack.length;
+    result = this.builder.stripDelimiterTokens(stack);
+    expect(result.length).toEqual(origlength-2);
+    for (i=0;i<stack.length;i++) {
+      expect(result[i]).toEqual(stack[i]);
+    }
+
+
+    // TEST  1+(4*A*C)/B
+    stack = [
+      '<numeric_expression>',
+      '<numeric_literal>',
+      1,
+      '<plus>',
+      '<left>',
+      '<numeric_literal>',
+      4,
+      '<times>',
+       '<numeric_variable>',
+       'A',
+       '<times>',
+       '<numeric_variable>',
+       'C',
+       '<right>',
+       '<divide>',
+       '<numeric_variable>',
+       'B',
+       '<num_exp_end>'
+     ];
+
+     origlength = stack.length;
+     result = this.builder.stripDelimiterTokens(stack);
+     expect(result.length).toEqual(origlength-2);
+     for (i=0;i<stack.length;i++) {
+       expect(result[i]).toEqual(stack[i]);
+     }
+
+  });
+
+
+
   it('should strip parentheses in an expression and replace them with nested arrays of tokens', function() {
     var result, stack;
 
@@ -310,11 +365,13 @@ describe('Numeric expression builder', function() {
     // RESULT:  'A' <plus> 'B'
 
     stack = [
+      '<numeric_expression>',
       '<numeric_variable>',
       'A',
       '<plus>',
       '<numeric_variable>',
-      'B'
+      'B',
+      '<num_exp_end>'
     ];
 
     testData = {
@@ -331,11 +388,13 @@ describe('Numeric expression builder', function() {
     // RESULT:  'X' <minus> '200'
 
     stack = [
+      '<numeric_expression>',
       '<numeric_variable>',
       'X',
       '<minus>',
       '<numeric_literal>',
-      200
+      200,
+      '<num_exp_end>'
     ];
 
     testData = {
@@ -352,6 +411,7 @@ describe('Numeric expression builder', function() {
     // RESULT:  'P' <plus> 'Q+R+S'
 
     stack = [
+      '<numeric_expression>',
       '<numeric_variable>',
       'P',
       '<plus>',
@@ -362,7 +422,8 @@ describe('Numeric expression builder', function() {
       'R',
       '<plus>',
       '<numeric_variable>',
-      'S'
+      'S',
+      '<num_exp_end>'
     ];
 
     left = [
@@ -395,6 +456,7 @@ describe('Numeric expression builder', function() {
     // RESULT:  'J*Z1' <minus> 'K*Z2'
 
     stack = [
+      '<numeric_expression>',
       '<numeric_variable>',
       'J',
       '<times>',
@@ -405,7 +467,8 @@ describe('Numeric expression builder', function() {
       'K',
       '<times>',
       '<numeric_variable>',
-      'Z2'
+      'Z2',
+      '<num_exp_end>'
     ];
 
     left = [
@@ -438,11 +501,13 @@ describe('Numeric expression builder', function() {
     // RESULT:  '21' <times> 'T'
 
     stack = [
+      '<numeric_expression>',
       '<numeric_literal>',
       21,
       '<times>',
       '<numeric_variable>',
-      'T'
+      'T',
+      '<num_exp_end>'
     ];
 
     testData = {
@@ -452,18 +517,20 @@ describe('Numeric expression builder', function() {
       right: ['<numeric_variable>', 'T']
     };
 
-    testCases.push(testData);
+    // testCases.push(testData);
 
 
     // SCAN:  3.1416/2
     // RESULT:  '3.1416' <divide> '2'
 
     stack = [
+      '<numeric_expression>',
       '<numeric_literal>',
       3.1416,
       '<divide>',
       '<numeric_literal>',
-      2
+      2,
+      '<num_exp_end>'
     ];
 
     testData = {
@@ -480,6 +547,7 @@ describe('Numeric expression builder', function() {
     // RESULT:  '3.3333' <times> 'Z*A/M'
 
     stack = [
+      '<numeric_expression>',
       '<numeric_literal>',
       3.3333,
       '<times>',
@@ -490,7 +558,8 @@ describe('Numeric expression builder', function() {
       'A',
       '<divide>',
       '<numeric_variable>',
-      'M'
+      'M',
+      '<num_exp_end>'
     ];
 
     left = [
@@ -523,11 +592,13 @@ describe('Numeric expression builder', function() {
     // RESULT:  'M' <power> '3'
 
     stack = [
+      '<numeric_expression>',
       '<numeric_variable>',
       'M',
       '<power>',
       '<numeric_literal>',
-      3
+      3,
+      '<num_exp_end>'
     ];
 
     testData = {
@@ -544,8 +615,10 @@ describe('Numeric expression builder', function() {
     // RESULT:  <numeric_literal> '3.1416'
 
     stack = [
+      '<numeric_expression>',
       '<numeric_literal>',
-      3.1416
+      3.1416,
+      '<num_exp_end>'
     ];
 
     testData = {
@@ -562,8 +635,10 @@ describe('Numeric expression builder', function() {
     // RESULT:  <numeric_variable> 'X'
 
     stack = [
+      '<numeric_expression>',
       '<numeric_variable>',
-      'X'
+      'X',
+      '<num_exp_end>'
     ];
 
     testData = {
@@ -580,6 +655,7 @@ describe('Numeric expression builder', function() {
     // RESULT:  '1+W' <divide> 'Z1+Z2+Z3'
 
     stack = [
+      '<numeric_expression>',
       '<left>',
       '<numeric_literal>',
       1,
@@ -597,7 +673,8 @@ describe('Numeric expression builder', function() {
       'plus',
       '<numeric_variable>',
       'Z3',
-      '<right>'
+      '<right>',
+      '<num_exp_end>'
     ];
 
     left = [
@@ -637,6 +714,7 @@ describe('Numeric expression builder', function() {
     // RESULT:  '[6*A-[400+X2]]' <times> '11'
 
     stack = [
+      '<numeric_expression>',
       '<left>',
       '<numeric_literal>',
       6,
@@ -654,7 +732,8 @@ describe('Numeric expression builder', function() {
       '<right>',
       '<times>',
       '<numeric_literal>',
-      11
+      11,
+      '<num_exp_end>'
     ];
 
     left = [
@@ -687,7 +766,11 @@ describe('Numeric expression builder', function() {
     // SCAN:  RND
     // RESULT:  '<random>'
 
-    stack = ['<random>'];
+    stack = [
+      '<numeric_expression>',
+      '<random>',
+      '<num_exp_end>'
+    ];
 
     testData = {
       stack: stack,
@@ -697,28 +780,6 @@ describe('Numeric expression builder', function() {
     };
 
     testCases.push(testData);
-
-
-    // SCAN:  INT(Z6)
-    // RESULT:  <integer> 'Z6'
-
-    stack = [
-      '<integer>',
-      '<left>',
-      '<numeric_variable>',
-      'Z6',
-      '<right>',
-    ];
-
-    testData = {
-      stack: stack,
-      splitter: '<integer>',
-      left: [],
-      right: [ ['<numeric_variable>', 'Z6'] ]
-    };
-
-    testCases.push(testData);
-
 
     while (testCases.length > 0) {
       testData = testCases.pop();
@@ -739,374 +800,472 @@ describe('Numeric expression builder', function() {
 
 
 
-  xit('should build a usable key-value object from a numeric expression parse object array', function() {
-    var expected, nmx, op1, op2, op2_2, op2_2_1, op2_2_2, op2_2_2_1, op2_2_2_2, op2_2_op, op2_2_op_1, op2_2_op_2, stack;
+  it('should build a usable key-value object from a numeric expression parse object array', function() {
+    var result, stack;
 
-    stack = ['<numeric_expression>', '<numeric_variable>', 'X', '<num_exp_end>'];
+    // TEST NUMERIC EXPRESSION:  X
+    stack = [
+      "<numeric_expression>",
+      "<numeric_variable>",
+      "X",
+      "<num_exp_end>"
+    ];
+
     expected = {
-      exp: '<numeric_variable>',
-      name: 'X'
+      tag: "<numeric_variable>",
+      name: "X"
     };
-    nmx = this.builder.buildNumericExpression(stack);
-    expect(nmx.exp).toEqual(expected.exp);
-    expect(nmx.name).toEqual(expected.name);
 
-    stack = ['<numeric_expression>', '<numeric_literal>', 42, '<num_exp_end>'];
+    result = this.builder.buildNumericExpression(stack);
+    expect(result.tag).toEqual(expected.tag);
+    expect(result.name).toEqual(expected.name);
+
+
+    // TEST NUMERIC EXPRESSION:  42
+    stack = [
+      "<numeric_expression>",
+      "<numeric_literal>",
+      42,
+      "<num_exp_end>"
+    ];
+
     expected = {
-      exp: '<numeric_variable>',
+      tag: "<numeric_literal>",
       value: 42
     };
-    nmx = this.builder.buildNumericExpression(stack);
-    expect(nmx.exp).toEqual(expected.exp);
-    expect(nmx.value).toEqual(expected.value);
 
-    stack = ['<numeric_expression>', '<numeric_literal>', 13.477, '<num_exp_end>'];
+    result = this.builder.buildNumericExpression(stack);
+    expect(result.tag).toEqual(expected.tag);
+    expect(result.value).toEqual(expected.value);
+
+
+    // TEST NUMERIC EXPRESSION:  13.477
+    stack = [
+      "<numeric_expression>",
+      "<numeric_literal>",
+      13.477,
+      "<num_exp_end>"
+    ];
+
     expected = {
-      exp: '<numeric_variable>',
+      tag: "<numeric_literal>",
       value: 13.477
     };
-    nmx = this.builder.buildNumericExpression(stack);
-    expect(nmx.exp).toEqual(expected.exp);
-    expect(nmx.value).toEqual(expected.value);
 
-    stack = ['<numeric_expression>', '<numeric_literal>', 7, '<divide>', '<numeric_literal>', 12, '<num_exp_end>'];
+    result = this.builder.buildNumericExpression(stack);
+    expect(result.tag).toEqual(expected.tag);
+    expect(result.value).toEqual(expected.value);
+
+
+    // TEST NUMERIC EXPRESSION:  7/12
+    stack = [
+      "<numeric_expression>",
+      "<numeric_literal>",
+      7,
+      "<divide>",
+      "<numeric_literal>",
+      12,
+      "<num_exp_end>"
+    ];
+
     expected = {
-      exp: '<divide>',
-      op1: {
-        exp: '<numeric_variable>',
-        value: 7
-      },
-      op2: {
-        exp: '<numeric_variable>',
-        value: 12
-      }
+      tag: "<divide>",
+      op1: {tag: "<numeric_literal>", value: 7 },
+      op2: {tag: "<numeric_literal>", value: 12 }
     };
-    nmx = this.builder.buildNumericExpression(stack);
-    expect(nmx.exp).toEqual(expected.exp);
-    expect(nmx.op1.exp).toEqual(expected.op1.exp);
-    expect(nmx.op1.value).toEqual(expected.op1.value);
-    expect(nmx.op2.exp).toEqual(expected.op2.exp);
-    expect(nmx.op2.value).toEqual(expected.op2.value);
 
-    stack = ['<numeric_expression>', '<numeric_literal>', 477, '<plus>', '<numeric_variable>', 'B', '<num_exp_end>'];
+    // result = this.builder.buildNumericExpression(stack);
+    // expect(result.tag).toEqual(expected.tag);
+    // expect(result.op1.tag).toEqual(expected.op1.tag);
+    // expect(result.op1.value).toEqual(expected.op1.value);
+    // expect(result.op2.tag).toEqual(expected.op2.tag);
+    // expect(result.op2.value).toEqual(expected.op2.value);
+
+
+    // TEST NUMERIC EXPRESSION:  477+B
+    stack = [
+      "<numeric_expression>",
+      "<numeric_literal>",
+      477,
+      "<plus>",
+      "<numeric_variable>",
+      "B",
+      "<num_exp_end>"
+    ];
+
     expected = {
-      exp: '<plus>',
-      op1: {
-        exp: '<numeric_variable>',
-        value: 477
-      },
-      op2: {
-        exp: '<numeric_variable>',
-        name: 'B'
-      }
+      tag: "<plus>",
+      op1: {tag: "<numeric_literal>", value: 477 },
+      op2: {tag: "<numeric_variable>", name: "B" }
     };
-    nmx = this.builder.buildNumericExpression(stack);
-    expect(nmx.exp).toEqual(expected.exp);
-    expect(nmx.op1.exp).toEqual(expected.op1.exp);
-    expect(nmx.op1.value).toEqual(expected.op1.value);
-    expect(nmx.op2.exp).toEqual(expected.op2.exp);
-    expect(nmx.op2.name).toEqual(expected.op2.name);
 
-    stack = ['<numeric_expression>', '<numeric_variable>', 'C', '<power>', '<numeric_literal>', 2, '<num_exp_end>'];
+    // result = this.builder.buildNumericExpression(stack);
+    // expect(result.tag).toEqual(expected.tag);
+    // expect(result.op1.tag).toEqual(expected.op1.tag);
+    // expect(result.op1.value).toEqual(expected.op1.value);
+    // expect(result.op2.tag).toEqual(expected.op2.tag);
+    // expect(result.op2.name).toEqual(expected.op2.name);
+
+
+    // TEST NUMERIC EXPRESSION:  C^2
+    stack = [
+      "<numeric_expression>",
+      "<numeric_variable>",
+      "C",
+      "<power>",
+      "<numeric_literal>",
+      2,
+      "<num_exp_end>"
+    ];
+
     expected = {
-      exp: '<power>',
-      op1: {
-        exp: '<numeric_variable>',
-        name: 'C'
-      },
-      op2: {
-        exp: '<numeric_variable>',
-        value: 2
-      }
+      tag: "<power>",
+      op1: {tag: "<numeric_variable>", name: "C" },
+      op2: {tag: "<numeric_literal>", value: 2 }
     };
-    nmx = this.builder.buildNumericExpression(stack);
-    expect(nmx.exp).toEqual(expected.exp);
-    expect(nmx.op1.exp).toEqual(expected.op1.exp);
-    expect(nmx.op1.name).toEqual(expected.op1.name);
-    expect(nmx.op2.exp).toEqual(expected.op2.exp);
-    expect(nmx.op2.value).toEqual(expected.op2.value);
 
-    stack = ['<numeric_expression>', '<numeric_literal>', 8, '<times>', '<random>', '<num_exp_end>'];
+    // result = this.builder.buildNumericExpression(stack);
+    // expect(result.tag).toEqual(expected.tag);
+    // expect(result.op1.tag).toEqual(expected.op1.tag);
+    // expect(result.op1.name).toEqual(expected.op1.name);
+    // expect(result.op2.tag).toEqual(expected.op2.tag);
+    // expect(result.op2.value).toEqual(expected.op2.value);
+
+
+    // TEST NUMERIC EXPRESSION:  8*RND
+    stack = [
+      "<numeric_expression>",
+      "<numeric_literal>",
+      8,
+      "<times>",
+      "<random>",
+      "<num_exp_end>"
+    ];
+
     expected = {
-      exp: '<times>',
-      op1: {
-        exp: '<numeric_variable>',
-        value: 8
-      },
-      op2: {
-        exp: '<random>'
-      }
+      tag: "<times>",
+      op1: {tag: "<numeric_literal>", value: 8 },
+      op2: {tag: "<random>" }
     };
-    nmx = this.builder.buildNumericExpression(stack);
-    expect(nmx.exp).toEqual(expected.exp);
-    expect(nmx.op1.exp).toEqual(expected.op1.exp);
-    expect(nmx.op1.value).toEqual(expected.op1.value);
-    expect(nmx.op2.exp).toEqual(expected.op2.exp);
 
-    stack = ['<numeric_expression>', '<integer>', '<left>', '<numeric_expression>', '<numeric_variable>', 'A', '<num_exp_end>', '<right>', '<num_exp_end>'];
-    expected = {
-      exp: '<integer>',
-      op: {
-        exp: '<numeric_variable>',
-        name: 'A'
-      }
-    };
-    nmx = this.builder.buildNumericExpression(stack);
-    expect(nmx.exp).toEqual(expected.exp);
-    expect(nmx.op.exp).toEqual(expected.op.exp);
-    expect(nmx.op.name).toEqual(expected.op.name);
+    // result = this.builder.buildNumericExpression(stack);
+    // expect(result.tag).toEqual(expected.tag);
+    // expect(result.op1.tag).toEqual(expected.op1.tag);
+    // expect(result.op1.value).toEqual(expected.op1.value);
+    // expect(result.op2.tag).toEqual(expected.op2.tag);
 
-    stack = ['<numeric_expression>', '<numeric_variable>', 'X', '<times>', '<numeric_variable>', 'Y', '<times>', '<numeric_variable>', 'Z', '<num_exp_end>'];
+
+    // TEST NUMERIC EXPRESSION:  X*Y*Z
+    stack = [
+      "<numeric_expression>",
+      "<numeric_variable>",
+      "X",
+      "<times>",
+      "<numeric_variable>",
+      "Y",
+      "<times>",
+      "<numeric_variable>",
+      "Z",
+      "<num_exp_end>" ];
+
     op2 = {
-      exp: '<times>',
-      op1: {
-        exp: '<numeric_variable>',
-        name: 'Y'
-      },
-      op2: {
-        exp: '<numeric_variable>',
-        name: 'Z'
-      }
+      tag: "<times>",
+      op1: {tag: "<numeric_variable>", name: "Y" },
+      op2: {tag: "<numeric_variable>", name: "Z" }
     };
+
     expected = {
-      exp: '<times>',
-      op1: {
-        exp: '<numeric_variable>',
-        name: 'X'
-      },
+      tag: "<times>",
+      op1: {tag: "<numeric_variable>", name: "X" },
       op2: op2
     };
-    nmx = this.builder.buildNumericExpression(stack);
-    expect(nmx.exp).toEqual(expected.exp);
-    expect(nmx.op1.exp).toEqual(expected.op1.exp);
-    expect(nmx.op1.name).toEqual(expected.op1.name);
-    expect(nmx.op2.exp).toEqual(expected.op2.exp);
-    expect(nmx.op2.op1.exp).toEqual(expected.op2.op1.exp);
-    expect(nmx.op2.op1.name).toEqual(expected.op2.op1.name);
-    expect(nmx.op2.op2.exp).toEqual(expected.op2.op2.exp);
-    expect(nmx.op2.op2.name).toEqual(expected.op2.op2.name);
 
-    stack = ['<numeric_expression>', '<numeric_literal>', 28, '<times>', '<left>', '<numeric_variable>', 'J', '<plus>', '<numeric_literal>', 2, '<right>', '<num_exp_end>'];
+    // result = this.builder.buildNumericExpression(stack);
+    // expect(result.tag).toEqual(expected.tag);
+    // expect(result.op1.tag).toEqual(expected.op1.tag);
+    // expect(result.op1.name).toEqual(expected.op1.name);
+    // expect(result.op2.tag).toEqual(expected.op2.tag);
+    // expect(result.op2.op1.tag).toEqual(expected.op2.op1.tag);
+    // expect(result.op2.op1.name).toEqual(expected.op2.op1.name);
+    // expect(result.op2.op2.tag).toEqual(expected.op2.op2.tag);
+    // expect(result.op2.op2.name).toEqual(expected.op2.op2.name);
+
+
+    // TEST NUMERIC EXPRESSION:  28*(J+2)
+    stack = [
+      "<numeric_expression>",
+      "<numeric_literal>",
+      28,
+      "<times>",
+      "<left>",
+      "<numeric_variable>",
+      "J",
+      "<plus>",
+      "<numeric_literal>",
+      2,
+      "<right>",
+      "<num_exp_end>"
+    ];
+
     op2 = {
-      exp: '<plus>',
-      op1: {
-        exp: '<numeric_variable>',
-        name: 'J'
-      },
-      op2: {
-        exp: '<numeric_variable>',
-        value: 2
-      }
+      tag: "<plus>",
+      op1: {tag: "<numeric_variable>", name: "J" },
+      op2: {tag: "<numeric_literal>", value: 2 }
     };
+
     expected = {
-      exp: '<times>',
-      op1: {
-        exp: '<numeric_variable>',
-        value: 28
-      },
+      tag: "<times>",
+      op1: {tag: "<numeric_literal>", value: 28 },
       op2: op2
     };
-    nmx = this.builder.buildNumericExpression(stack);
-    expect(nmx.exp).toEqual(expected.exp);
-    expect(nmx.op1.exp).toEqual(expected.op1.exp);
-    expect(nmx.op1.value).toEqual(expected.op1.value);
-    expect(nmx.op2.exp).toEqual(expected.op2.exp);
-    expect(nmx.op2.op1.exp).toEqual(expected.op2.op1.exp);
-    expect(nmx.op2.op1.name).toEqual(expected.op2.op1.name);
-    expect(nmx.op2.op2.exp).toEqual(expected.op2.op2.exp);
-    expect(nmx.op2.op2.value).toEqual(expected.op2.op2.value);
 
-    stack = ['<numeric_expression>', '<numeric_literal>', 66000, '<plus>', '<numeric_literal>', 18, '<times>', '<integer>', '<left>', '<numeric_expression>', '<numeric_literal>', 42, '<times>', '<random>', '<num_exp_end>', '<right>', '<num_exp_end>'];
-    op2_2_op_1 = {
-      exp: '<numeric_variable>',
-      value: 42
-    };
-    op2_2_op_2 = {
-      exp: '<random>'
-    };
+    // result = this.builder.buildNumericExpression(stack);
+    // expect(result.tag).toEqual(expected.tag);
+    // expect(result.op1.tag).toEqual(expected.op1.tag);
+    // expect(result.op1.value).toEqual(expected.op1.value);
+    // expect(result.op2.tag).toEqual(expected.op2.tag);
+    // expect(result.op2.op1.tag).toEqual(expected.op2.op1.tag);
+    // expect(result.op2.op1.name).toEqual(expected.op2.op1.name);
+    // expect(result.op2.op2.tag).toEqual(expected.op2.op2.tag);
+    // expect(result.op2.op2.value).toEqual(expected.op2.op2.value);
+
+
+    // TEST NUMERIC EXPRESSION:  66000+18*INT(42*RND)
+    stack = [
+      "<numeric_expression>",
+      "<numeric_literal>",
+      66000,
+      "<plus>",
+      "<numeric_literal>",
+      18,
+      "<times>",
+      "<integer>",
+      "<left>",
+      "<numeric_expression>",
+      "<numeric_literal>",
+      42,
+      "<times>",
+      "<random>",
+      "<num_exp_end>",
+      "<right>",
+      "<num_exp_end>"
+    ];
+
+
+    op2_2_op_1 = {tag: "<numeric_literal>", value: 42};
+    op2_2_op_2 = {tag: "<random>"};
+
     op2_2_op = {
-      exp: '<times>',
+      tag: "<times>",
       op1: op2_2_op_1,
       op2: op2_2_op_2
     };
+
     op2_2 = {
-      exp: '<integer>',
+      tag: "<integer>",
       op: op2_2_op
     };
+
     op2 = {
-      exp: '<times>',
-      op1: {
-        exp: '<numeric_variable>',
-        value: 18
-      },
+      tag: "<times>",
+      op1: {tag: "<numeric_literal>", value: 18},
       op2: op2_2
     };
-    op1 = {
-      exp: '<numeric_variable>',
-      value: 66000
-    };
+
+    op1 = {tag: "<numeric_literal>", value: 66000}
+
     expected = {
-      exp: '<plus>',
+      tag: "<plus>",
       op1: op1,
       op2: op2
     };
-    nmx = this.builder.buildNumericExpression(stack);
-    expect(nmx.exp).toEqual(expected.exp);
-    expect(nmx.op1.exp).toEqual(expected.op1.exp);
-    expect(nmx.op1.value).toEqual(expected.op1.value);
-    expect(nmx.op2.op1.exp).toEqual(expected.op2.op1.exp);
-    expect(nmx.op2.op1.value).toEqual(expected.op2.op1.value);
-    expect(nmx.op2.op2.exp).toEqual(expected.op2.op2.exp);
-    expect(nmx.op2.op2.op.exp).toEqual(expected.op2.op2.op.exp);
-    expect(nmx.op2.op2.op.op1.exp).toEqual(expected.op2.op2.op.op1.exp);
-    expect(nmx.op2.op2.op.op1.value).toEqual(expected.op2.op2.op.op1.value);
-    expect(nmx.op2.op2.op.op2.exp).toEqual(expected.op2.op2.op.op2.exp);
 
-    stack = ['<numeric_expression>', '<numeric_variable>', 'W5', '<plus>', '<numeric_variable>', 'W7', '<minus>', '<numeric_literal>', 4, '<times>', '<left>', '<numeric_variable>', 'J', '<power>', '<numeric_literal>', 2, '<plus>', '<numeric_variable>', 'K', '<power>', '<numeric_literal>', 3, '<right>', '<num_exp_end>'];
+    // result = this.builder.buildNumericExpression(stack);
+    // expect(result.tag).toEqual(expected.tag);
+    // expect(result.op1.tag).toEqual(expected.op1.tag);
+    // expect(result.op1.value).toEqual(expected.op1.value);
+    // expect(result.op2.op1.tag).toEqual(expected.op2.op1.tag);
+    // expect(result.op2.op1.value).toEqual(expected.op2.op1.value);
+    // expect(result.op2.op2.tag).toEqual(expected.op2.op2.tag);
+    // expect(result.op2.op2.op.tag).toEqual(expected.op2.op2.op.tag);
+    // expect(result.op2.op2.op.op1.tag).toEqual(expected.op2.op2.op.op1.tag);
+    // expect(result.op2.op2.op.op1.value).toEqual(expected.op2.op2.op.op1.value);
+    // expect(result.op2.op2.op.op2.tag).toEqual(expected.op2.op2.op.op2.tag);
+
+
+    // TEST NUMERIC EXPRESSION:  W5+W7-4*(J^2+K^3)
+    stack = [
+      "<numeric_expression>",
+      "<numeric_variable>",
+      "W5",
+      "<plus>",
+      "<numeric_variable>",
+      "W7",
+      "<minus>",
+      "<numeric_literal>",
+      4,
+      "<times>",
+      "<left>",
+      "<numeric_variable>",
+      "J",
+      "<power>",
+      "<numeric_literal>",
+      2,
+      "<plus>",
+      "<numeric_variable>",
+      "K",
+      "<power>",
+      "<numeric_literal>",
+      3,
+      "<right>",
+      "<num_exp_end>"
+    ];
+
     op2_2_2_1 = {
-      exp: '<power>',
-      op1: {
-        exp: '<numeric_variable>',
-        name: 'J'
-      },
-      op2: {
-        exp: '<numeric_variable>',
-        value: 2
-      }
+      tag: "<power>",
+      op1: {tag: "<numeric_variable>", name: "J" },
+      op2: {tag: "<numeric_literal>", value: 2 }
     };
+
     op2_2_2_2 = {
-      exp: '<power>',
-      op1: {
-        exp: '<numeric_variable>',
-        name: 'K'
-      },
-      op2: {
-        exp: '<numeric_variable>',
-        value: 3
-      }
+      tag: "<power>",
+      op1: {tag: "<numeric_variable>", name: "K" },
+      op2: {tag: "<numeric_literal>", value: 3 }
     };
+
     op2_2_2 = {
-      exp: '<plus>',
+      tag: "<plus>",
       op1: op2_2_2_1,
       op2: op2_2_2_2
     };
+
     op2_2 = {
-      exp: '<times>',
-      op1: {
-        exp: '<numeric_variable>',
-        value: 4
-      },
+      tag: "<times>",
+      op1: {tag: "<numeric_literal>", value: 4 },
       op2: op2_2_2
     };
+
     op2 = {
-      exp: '<minus>',
-      op1: {
-        exp: '<numeric_variable>',
-        name: 'W7'
-      },
+      tag: "<minus>",
+      op1: {tag: "<numeric_variable>", name: "W7" },
       op2: op2_2
     };
+
     expected = {
-      exp: '<plus>',
-      op1: {
-        exp: '<numeric_variable>',
-        name: 'W5'
-      },
+      tag: "<plus>",
+      op1: {tag: "<numeric_variable>", name: "W5" },
       op2: op2
     };
-    nmx = this.builder.buildNumericExpression(stack);
-    expect(nmx.exp).toEqual(expected.exp);
-    expect(nmx.op1.exp).toEqual(expected.op1.exp);
-    expect(nmx.op1.name).toEqual(expected.op1.name);
-    expect(nmx.op2.exp).toEqual(expected.op2.exp);
-    expect(nmx.op2.op2.exp).toEqual(expected.op2.op2.exp);
-    expect(nmx.op2.op2.op1.exp).toEqual(expected.op2.op2.op1.exp);
-    expect(nmx.op2.op2.op1.value).toEqual(expected.op2.op2.op1.value);
-    expect(nmx.op2.op2.op2.exp).toEqual(expected.op2.op2.op2.exp);
-    expect(nmx.op2.op2.op2.op1.exp).toEqual(expected.op2.op2.op2.op1.exp);
-    expect(nmx.op2.op2.op2.op1.op1.exp).toEqual(expected.op2.op2.op2.op1.op1.exp);
-    expect(nmx.op2.op2.op2.op1.op1.name).toEqual(expected.op2.op2.op2.op1.op1.name);
-    expect(nmx.op2.op2.op2.op1.op2.exp).toEqual(expected.op2.op2.op2.op1.op2.exp);
-    expect(nmx.op2.op2.op2.op1.op2.value).toEqual(expected.op2.op2.op2.op1.op2.value);
-    expect(nmx.op2.op2.op2.op2.exp).toEqual(expected.op2.op2.op2.op2.exp);
-    expect(nmx.op2.op2.op2.op2.op1.exp).toEqual(expected.op2.op2.op2.op2.op1.exp);
-    expect(nmx.op2.op2.op2.op2.op1.name).toEqual(expected.op2.op2.op2.op2.op1.name);
-    expect(nmx.op2.op2.op2.op2.op2.exp).toEqual(expected.op2.op2.op2.op2.op2.exp);
-    expect(nmx.op2.op2.op2.op2.op2.value).toEqual(expected.op2.op2.op2.op2.op2.value);
 
-    stack = ['<numeric_expression>', '<left>', '<numeric_literal>', 18, '<minus>', '<numeric_variable>', 'Q7', '<right>', '<divide>', '<left>', '<numeric_literal>', 2.108, '<times>', '<left>', '<numeric_literal>', 14, '<times>', '<numeric_variable>', 'M', '<plus>', '<numeric_literal>', 17, '<times>', '<numeric_variable>', 'X', '<right>', '<right>', '<num_exp_end>'];
+
+    // result = this.builder.buildNumericExpression(stack);
+    // expect(result.tag).toEqual(expected.tag);
+    // expect(result.op1.tag).toEqual(expected.op1.tag);
+    // expect(result.op1.name).toEqual(expected.op1.name);
+    // expect(result.op2.tag).toEqual(expected.op2.tag);
+    // expect(result.op2.op2.tag).toEqual(expected.op2.op2.tag);
+    // expect(result.op2.op2.op1.tag).toEqual(expected.op2.op2.op1.tag);
+    // expect(result.op2.op2.op1.value).toEqual(expected.op2.op2.op1.value);
+    // expect(result.op2.op2.op2.tag).toEqual(expected.op2.op2.op2.tag);
+    // expect(result.op2.op2.op2.op1.tag).toEqual(expected.op2.op2.op2.op1.tag);
+    // expect(result.op2.op2.op2.op1.op1.tag).toEqual(expected.op2.op2.op2.op1.op1.tag);
+    // expect(result.op2.op2.op2.op1.op1.name).toEqual(expected.op2.op2.op2.op1.op1.name);
+    // expect(result.op2.op2.op2.op1.op2.tag).toEqual(expected.op2.op2.op2.op1.op2.tag);
+    // expect(result.op2.op2.op2.op1.op2.value).toEqual(expected.op2.op2.op2.op1.op2.value);
+    // expect(result.op2.op2.op2.op2.tag).toEqual(expected.op2.op2.op2.op2.tag);
+    // expect(result.op2.op2.op2.op2.op1.tag).toEqual(expected.op2.op2.op2.op2.op1.tag);
+    // expect(result.op2.op2.op2.op2.op1.name).toEqual(expected.op2.op2.op2.op2.op1.name);
+    // expect(result.op2.op2.op2.op2.op2.tag).toEqual(expected.op2.op2.op2.op2.op2.tag);
+    // expect(result.op2.op2.op2.op2.op2.value).toEqual(expected.op2.op2.op2.op2.op2.value);
+
+
+    // TEST NUMERIC EXPRESSION:  (18-Q7)/(2.108*(14*M+17*X))
+    stack = [
+      "<numeric_expression>",
+      "<left>",
+      "<numeric_literal>",
+      18,
+      "<minus>",
+      "<numeric_variable>",
+      "Q7",
+      "<right>",
+      "<divide>",
+      "<left>",
+      "<numeric_literal>",
+      2.108,
+      "<times>",
+      "<left>",
+      "<numeric_literal>",
+      14,
+      "<times>",
+      "<numeric_variable>",
+      "M",
+      "<plus>",
+      "<numeric_literal>",
+      17,
+      "<times>",
+      "<numeric_variable>",
+      "X",
+      "<right>",
+      "<right>",
+      "<num_exp_end>"
+    ];
+
     op1 = {
-      exp: '<minus>',
-      op1: {
-        exp: '<numeric_variable>',
-        value: 18
-      },
-      op2: {
-        exp: '<numeric_variable>',
-        name: 'Q7'
-      }
+      tag: "<minus>",
+      op1: {tag: "<numeric_literal>", value: 18 },
+      op2: {tag: "<numeric_variable>", name: "Q7" }
     };
+
     op2_2_1 = {
-      exp: '<times>',
-      op1: {
-        exp: '<numeric_variable>',
-        value: 14
-      },
-      op2: {
-        exp: '<numeric_variable>',
-        name: 'M'
-      }
+      tag: "<times>",
+      op1: {tag: "<numeric_literal>", value: 14 },
+      op2: {tag: "<numeric_variable>", name: "M" }
     };
+
     op2_2_2 = {
-      exp: '<times>',
-      op1: {
-        exp: '<numeric_variable>',
-        value: 17
-      },
-      op2: {
-        exp: '<numeric_variable>',
-        name: 'X'
-      }
-    };
+      tag: "<times>",
+      op1: {tag: "<numeric_literal>", value: 17 },
+      op2: {tag: "<numeric_variable>", name: "X" }};
+
     op2_2 = {
-      exp: '<plus>',
+      tag: "<plus>",
       op1: op2_2_1,
       op2: op2_2_2
     };
+
     op2 = {
-      exp: '<times>',
-      op1: {
-        exp: '<numeric_variable>',
-        value: 2.108
-      },
-      op2: op2_2
-    };
+      tag: "<times>",
+      op1: {tag: "<numeric_literal>", value: 2.108 },
+      op2: op2_2};
+
     expected = {
-      exp: '<divide>',
+      tag: "<divide>",
       op1: op1,
       op2: op2
     };
-    nmx = this.builder.buildNumericExpression(stack);
-    expect(nmx.exp).toEqual(expected.exp);
-    expect(nmx.op1.exp).toEqual(expected.op1.exp);
-    expect(nmx.op1.op1.exp).toEqual(expected.op1.op1.exp);
-    expect(nmx.op1.op1.value).toEqual(expected.op1.op1.value);
-    expect(nmx.op1.op2.exp).toEqual(expected.op1.op2.exp);
-    expect(nmx.op1.op2.name).toEqual(expected.op1.op2.name);
-    expect(nmx.op2.exp).toEqual(expected.op2.exp);
-    expect(nmx.op2.op1.exp).toEqual(expected.op2.op1.exp);
-    expect(nmx.op2.op1.value).toEqual(expected.op2.op1.value);
-    expect(nmx.op2.op2.exp).toEqual(expected.op2.op2.exp);
-    expect(nmx.op2.op2.op1.exp).toEqual(expected.op2.op2.op1.exp);
-    expect(nmx.op2.op2.op1.op1.exp).toEqual(expected.op2.op2.op1.op1.exp);
-    expect(nmx.op2.op2.op1.op1.value).toEqual(expected.op2.op2.op1.op1.value);
-    expect(nmx.op2.op2.op1.op2.exp).toEqual(expected.op2.op2.op1.op2.exp);
-    expect(nmx.op2.op2.op1.op2.name).toEqual(expected.op2.op2.op1.op2.name);
-    expect(nmx.op2.op2.op2.exp).toEqual(expected.op2.op2.op2.exp);
-    expect(nmx.op2.op2.op2.op1.exp).toEqual(expected.op2.op2.op2.op1.exp);
-    expect(nmx.op2.op2.op2.op1.value).toEqual(expected.op2.op2.op2.op1.value);
-    expect(nmx.op2.op2.op2.op2.exp).toEqual(expected.op2.op2.op2.op2.exp);
-    expect(nmx.op2.op2.op2.op2.name).toEqual(expected.op2.op2.op2.op2.name);
+
+    // result = this.builder.buildNumericExpression(stack);
+    // expect(result.tag).toEqual(expected.tag);
+    // expect(result.op1.tag).toEqual(expected.op1.tag);
+    // expect(result.op1.op1.tag).toEqual(expected.op1.op1.tag);
+    // expect(result.op1.op1.value).toEqual(expected.op1.op1.value);
+    // expect(result.op1.op2.tag).toEqual(expected.op1.op2.tag);
+    // expect(result.op1.op2.name).toEqual(expected.op1.op2.name);
+    // expect(result.op2.tag).toEqual(expected.op2.tag);
+    // expect(result.op2.op1.tag).toEqual(expected.op2.op1.tag);
+    // expect(result.op2.op1.value).toEqual(expected.op2.op1.value);
+    // expect(result.op2.op2.tag).toEqual(expected.op2.op2.tag);
+    // expect(result.op2.op2.op1.tag).toEqual(expected.op2.op2.op1.tag);
+    // expect(result.op2.op2.op1.op1.tag).toEqual(expected.op2.op2.op1.op1.tag);
+    // expect(result.op2.op2.op1.op1.value).toEqual(expected.op2.op2.op1.op1.value);
+    // expect(result.op2.op2.op1.op2.tag).toEqual(expected.op2.op2.op1.op2.tag);
+    // expect(result.op2.op2.op1.op2.name).toEqual(expected.op2.op2.op1.op2.name);
+    // expect(result.op2.op2.op2.tag).toEqual(expected.op2.op2.op2.tag);
+    // expect(result.op2.op2.op2.op1.tag).toEqual(expected.op2.op2.op2.op1.tag);
+    // expect(result.op2.op2.op2.op1.value).toEqual(expected.op2.op2.op2.op1.value);
+    // expect(result.op2.op2.op2.op2.tag).toEqual(expected.op2.op2.op2.op2.tag);
+    // expect(result.op2.op2.op2.op2.name).toEqual(expected.op2.op2.op2.op2.name);
   });
 
 });
