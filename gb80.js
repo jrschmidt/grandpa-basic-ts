@@ -32,14 +32,7 @@ var NumericExpressionBuilder = (function () {
         var expression = {
             tag: '<none>'
         };
-        console.log(" ");
-        console.log("buildNumericExpression()");
-        console.log("stack = " + stack);
         var splitStack = this.split(stack);
-        console.log("splitStack =");
-        console.log("   left = " + splitStack.left);
-        console.log("   right = " + splitStack.right);
-        console.log("   splitter = " + splitStack.splitter);
         switch (splitStack.splitter) {
             case '<plus>':
             case '<minus>':
@@ -54,16 +47,19 @@ var NumericExpressionBuilder = (function () {
             case '<numeric_variable>':
                 expression = this.buildNumericVariableExpression(splitStack);
                 break;
-            case '<random>':
-                expression = this.buildNumericRandomFunctionExpression(splitStack);
-                break;
-            case '<integer>':
-                expression = this.buildNumericIntegerFunctionExpression(splitStack);
-                break;
         }
         return expression;
     };
-    // this.buildBinaryNumericExpression(splitStack);
+    NumericExpressionBuilder.prototype.buildBinaryNumericExpression = function (stack) {
+        var left = this.buildNumericExpression(stack.left);
+        var right = this.buildNumericExpression(stack.right);
+        var expression = {
+            tag: stack.splitter,
+            op1: left,
+            op2: right
+        };
+        return expression;
+    };
     NumericExpressionBuilder.prototype.buildNumericLiteralExpression = function (stack) {
         var expression = {
             tag: '<numeric_literal>',
@@ -82,14 +78,12 @@ var NumericExpressionBuilder = (function () {
     // this.buildNumericRandomFunctionExpression(splitStack);
     // this.buildNumericIntegerFunctionExpression(splitStack);
     NumericExpressionBuilder.prototype.stripDelimiterTokens = function (stack) {
-        var first = stack.shift();
-        var last = stack.pop();
+        var first = stack[0];
+        var last = stack[stack.length - 1];
         if (first === '<numeric_expression>' && last === '<num_exp_end>') {
-            return stack;
+            stack = stack.slice(1, stack.length - 1);
         }
-        else {
-            return [];
-        }
+        return stack;
     };
     NumericExpressionBuilder.prototype.split = function (stack) {
         var found = 'no';
@@ -123,8 +117,18 @@ var NumericExpressionBuilder = (function () {
             }
         }
         result.splitter = stack[splitIndex];
-        result.left = stack.slice(0, splitIndex);
-        result.right = stack.slice(splitIndex + 1);
+        var left = stack.slice(0, splitIndex);
+        if ((left.length === 1) && left[0][0]) {
+            var left0 = left[0];
+            left = left0;
+        }
+        result.left = left;
+        var right = stack.slice(splitIndex + 1);
+        if ((right.length === 1) && right[0][0]) {
+            var right0 = right[0];
+            right = right0;
+        }
+        result.right = right;
         return result;
     };
     NumericExpressionBuilder.prototype.deparenthesize = function (stack) {

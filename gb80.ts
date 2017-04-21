@@ -83,14 +83,7 @@ export class NumericExpressionBuilder {
       tag: '<none>'
     }
 
-    console.log(` `);
-    console.log(`buildNumericExpression()`);
-    console.log(`stack = ${stack}`);
     let splitStack: NumericParseStackSplit = this.split(stack);
-    console.log(`splitStack =`);
-    console.log(`   left = ${splitStack.left}`);
-    console.log(`   right = ${splitStack.right}`);
-    console.log(`   splitter = ${splitStack.splitter}`);
 
     switch (splitStack.splitter) {
     case '<plus>':
@@ -106,19 +99,31 @@ export class NumericExpressionBuilder {
     case '<numeric_variable>':
       expression = this.buildNumericVariableExpression(splitStack);
     break;
-    case '<random>':
-      expression = this.buildNumericRandomFunctionExpression(splitStack);
-    break;
-    case '<integer>':
-      expression = this.buildNumericIntegerFunctionExpression(splitStack);
-    break;
+    // case '<random>':
+    //   expression = this.buildNumericRandomFunctionExpression(splitStack);
+    // break;
+    // case '<integer>':
+    //   expression = this.buildNumericIntegerFunctionExpression(splitStack);
+    // break;
   }
 
     return expression;
   }
 
 
-  // this.buildBinaryNumericExpression(splitStack);
+  buildBinaryNumericExpression (stack: NumericParseStackSplit): NumericExpressionObject {
+
+    let left = this.buildNumericExpression(stack.left);
+    let right = this.buildNumericExpression(stack.right);
+
+    let expression: NumericExpressionObject = {
+      tag: stack.splitter,
+      op1: left,
+      op2: right
+    }
+
+    return expression;
+  }
 
 
   buildNumericLiteralExpression (stack: NumericParseStackSplit): NumericExpressionObject {
@@ -149,14 +154,12 @@ export class NumericExpressionBuilder {
 
 
   stripDelimiterTokens (stack: ParseStack): ParseStack {
-    let first = stack.shift();
-    let last = stack.pop();
+    let first = stack[0];
+    let last = stack[stack.length - 1];
     if (first === '<numeric_expression>' && last === '<num_exp_end>') {
-      return stack;
+      stack = stack.slice(1, stack.length - 1);
     }
-    else {
-      return [];
-    }
+    return stack;
   }
 
 
@@ -198,10 +201,24 @@ export class NumericExpressionBuilder {
     }
 
     result.splitter = <NumericExpressionTag>stack[splitIndex];
-    result.left = stack.slice(0, splitIndex);
-    result.right = stack.slice(splitIndex + 1);
+
+    let left = stack.slice(0, splitIndex);
+    if ( (left.length === 1) && left[0][0] ) {
+      let left0: any[] = <any>left[0];
+      left = left0;
+    }
+    result.left = left;
+
+    let right = stack.slice(splitIndex + 1);
+    if ( (right.length === 1) && right[0][0] ) {
+      let right0: any[]= <any>right[0];
+      right = right0;
+    }
+    result.right = right;
+
     return result;
   }
+
 
   deparenthesize (stack: ParseStack): ParseStack {
     let mainStacks: ParseStack[] = [ [] ];
