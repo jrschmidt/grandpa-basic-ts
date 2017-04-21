@@ -116,20 +116,24 @@ var NumericExpressionBuilder = (function () {
                 }
             }
         }
-        result.splitter = stack[splitIndex];
+        var splitter = stack[splitIndex];
+        result.splitter = splitter;
         var left = stack.slice(0, splitIndex);
-        if ((left.length === 1) && left[0][0]) {
-            var left0 = left[0];
-            left = left0;
-        }
+        left = this.extractFromArray(left);
         result.left = left;
         var right = stack.slice(splitIndex + 1);
-        if ((right.length === 1) && right[0][0]) {
-            var right0 = right[0];
-            right = right0;
+        if (splitter != '<numeric_variable>') {
+            right = this.extractFromArray(right);
         }
         result.right = right;
         return result;
+    };
+    NumericExpressionBuilder.prototype.extractFromArray = function (stack) {
+        if ((stack.length === 1) && stack[0][0]) {
+            var stack0 = stack[0];
+            stack = stack0;
+        }
+        return stack;
     };
     NumericExpressionBuilder.prototype.deparenthesize = function (stack) {
         var mainStacks = [[]];

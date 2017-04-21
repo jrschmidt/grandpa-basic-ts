@@ -200,23 +200,31 @@ export class NumericExpressionBuilder {
       }
     }
 
-    result.splitter = <NumericExpressionTag>stack[splitIndex];
+    let splitter: NumericExpressionTag = <NumericExpressionTag>stack[splitIndex];
+    result.splitter = splitter;
+
 
     let left = stack.slice(0, splitIndex);
-    if ( (left.length === 1) && left[0][0] ) {
-      let left0: any[] = <any>left[0];
-      left = left0;
-    }
+    left = this.extractFromArray(left);
     result.left = left;
 
     let right = stack.slice(splitIndex + 1);
-    if ( (right.length === 1) && right[0][0] ) {
-      let right0: any[]= <any>right[0];
-      right = right0;
+    if (splitter != '<numeric_variable>') {
+      right = this.extractFromArray(right);
     }
     result.right = right;
 
     return result;
+  }
+
+
+  extractFromArray (stack: ParseStack): ParseStack {
+    if ( (stack.length === 1) && stack[0][0] ) {
+      let stack0: any[] = <any[]>stack[0];
+      stack = stack0;
+    }
+
+    return stack;
   }
 
 

@@ -790,6 +790,7 @@ describe('Numeric expression builder', function() {
 
     testCases.push(testData);
 
+
     while (testCases.length > 0) {
       testData = testCases.pop();
       result = this.builder.split(testData.stack);
