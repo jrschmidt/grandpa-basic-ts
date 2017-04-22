@@ -13,21 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var NumericExpressionBuilder = (function () {
     function NumericExpressionBuilder() {
     }
-    // Builds a numeric expression object from an array of parse tokens.
-    //
-    // The object for the simple variable name X will be:
-    //	 {exp: "<numeric_variable>", name: "X"}.
-    //
-    // The object for a simple numeric literal such as 3.1416 will be:
-    //	 {exp: "<numeric_literal>", value: 3.1416}.
-    //
-    // Compound numeric expressions are built into binary numeric expression
-    // objects with three properties: The "exp" property will be a symbol denoting
-    // the operator within the expression with the highest precedence. The values
-    // of the "op1" and "op2" properties will be nested numeric expression objects.
-    // So, for example, in the expression 3*A+2*B-5*C the "exp" property will be
-    // "<plus>", the value of "op1" will be an object representing 3*A, and the
-    // value of "op2" will be an object representing 2*B-5*C.
     NumericExpressionBuilder.prototype.buildNumericExpression = function (stack) {
         var expression = {
             tag: '<none>'
@@ -74,9 +59,8 @@ var NumericExpressionBuilder = (function () {
         };
         return expression;
     };
-    // this.buildNumericVariableExpression(splitStack);
-    // this.buildNumericRandomFunctionExpression(splitStack);
-    // this.buildNumericIntegerFunctionExpression(splitStack);
+    // buildNumericRandomFunctionExpression(stack: NumericParseStackSplit): NumericExpressionObject {}
+    // buildNumericIntegerFunctionExpression(stack: NumericParseStackSplit): NumericExpressionObject {}
     NumericExpressionBuilder.prototype.stripDelimiterTokens = function (stack) {
         var first = stack[0];
         var last = stack[stack.length - 1];
@@ -167,38 +151,27 @@ exports.NumericExpressionBuilder = NumericExpressionBuilder;
 var StringExpressionBuilder = (function () {
     function StringExpressionBuilder() {
     }
-    // Building a string expression object is much simpler than numeric
-    // expressions, since the only operation in a string expression is
-    // concatenation. Therefore,	a string expression object is composed of an
-    // array of one or more subarrays, where each subarray has two elements. The
-    // first element is a symbol, either "<str>" for a string literal or "<var>"
-    // for a string variable. The second element for a string literal is the
-    // string itself. For a string variable, the second element is the variable
-    // name.
-    //
-    // Please note that the name for a string variable is recorded WITHOUT the
-    // dollar sign character ($). In BASIC syntax, string variable names are always
-    // preceeded with the '$' character to differentiate them from numeric variable
-    // names. However, there was no need to include them in the data objects for
-    // this app.
-    //
-    // For example, to represent:
-    //	 "MY NAME IS "+$N
-    // we would use:
-    //	 [ ["<str>", "MY NAME IS "], ["<var>", "N"] ].
     StringExpressionBuilder.prototype.buildStringExpression = function (stack) {
-        var parts = [];
-        var tk;
+        var expressionArray = [];
+        var expression;
         for (var t = 1; t <= stack.length - 3; t = t + 3) {
             if (stack[t] === '<string_variable>') {
-                tk = '<var>';
+                var name_1 = stack[t + 1];
+                expression = {
+                    tag: '<string_variable>',
+                    name: name_1
+                };
             }
             else {
-                tk = '<str>';
+                var value = stack[t + 1];
+                expression = {
+                    tag: '<string_literal>',
+                    value: value
+                };
             }
-            parts.push([tk, stack[t + 1]]);
+            expressionArray.push(expression);
         }
-        return parts;
+        return expressionArray;
     };
     return StringExpressionBuilder;
 }());

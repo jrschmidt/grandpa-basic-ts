@@ -27,11 +27,12 @@ interface NumericExpressionObject {
 }
 
 type StringExpressionTag =
-  '<str>' | '<var>';
+  '<string_literal>' | '<string_variable>';
 
 interface SimpleStringExpression {
   tag: StringExpressionTag;
-  value: string;
+  value?: string;
+  name?: string;
 }
 
 type StringExpressionObject = SimpleStringExpression[];
@@ -58,24 +59,8 @@ type ParseTag =
   BooleanExpressionTag;
 
 
+
 export class NumericExpressionBuilder {
-
-  // Builds a numeric expression object from an array of parse tokens.
-  //
-  // The object for the simple variable name X will be:
-  //	 {exp: "<numeric_variable>", name: "X"}.
-  //
-  // The object for a simple numeric literal such as 3.1416 will be:
-  //	 {exp: "<numeric_literal>", value: 3.1416}.
-  //
-  // Compound numeric expressions are built into binary numeric expression
-  // objects with three properties: The "exp" property will be a symbol denoting
-  // the operator within the expression with the highest precedence. The values
-  // of the "op1" and "op2" properties will be nested numeric expression objects.
-  // So, for example, in the expression 3*A+2*B-5*C the "exp" property will be
-  // "<plus>", the value of "op1" will be an object representing 3*A, and the
-  // value of "op2" will be an object representing 2*B-5*C.
-
 
   buildNumericExpression (stack: ParseStack): NumericExpressionObject {
 
@@ -144,13 +129,10 @@ export class NumericExpressionBuilder {
   }
 
 
-  // this.buildNumericVariableExpression(splitStack);
+  // buildNumericRandomFunctionExpression(stack: NumericParseStackSplit): NumericExpressionObject {}
 
 
-  // this.buildNumericRandomFunctionExpression(splitStack);
-
-
-  // this.buildNumericIntegerFunctionExpression(splitStack);
+  // buildNumericIntegerFunctionExpression(stack: NumericParseStackSplit): NumericExpressionObject {}
 
 
   stripDelimiterTokens (stack: ParseStack): ParseStack {
@@ -267,92 +249,40 @@ export class NumericExpressionBuilder {
 
 export class StringExpressionBuilder {
 
-  // Building a string expression object is much simpler than numeric
-	// expressions, since the only operation in a string expression is
-	// concatenation. Therefore,	a string expression object is composed of an
-	// array of one or more subarrays, where each subarray has two elements. The
-	// first element is a symbol, either "<str>" for a string literal or "<var>"
-	// for a string variable. The second element for a string literal is the
-	// string itself. For a string variable, the second element is the variable
-	// name.
-	//
-	// Please note that the name for a string variable is recorded WITHOUT the
-	// dollar sign character ($). In BASIC syntax, string variable names are always
-	// preceeded with the '$' character to differentiate them from numeric variable
-	// names. However, there was no need to include them in the data objects for
-	// this app.
-	//
-	// For example, to represent:
-	//	 "MY NAME IS "+$N
-	// we would use:
-	//	 [ ["<str>", "MY NAME IS "], ["<var>", "N"] ].
+  buildStringExpression (stack: ParseStack): StringExpressionObject {
+    let expressionArray: StringExpressionObject = [];
+    let expression: SimpleStringExpression;
 
+    for ( let t=1; t<=stack.length-3; t=t+3 ) {
 
-  buildStringExpression (stack: string[]): string[][] {
-    let parts: string[][] = [];
-    let tk: string;
-    for (let t=1;t<=stack.length-3;t=t+3) {
       if (stack[t] === '<string_variable>') {
-        tk = '<var>';
+        let name: string = <string>stack[t+1];
+        expression = {
+          tag: '<string_variable>',
+          name: name
+        };
       }
+
       else
       {
-        tk = '<str>';
+        let value: string = <string>stack[t+1];
+        expression = {
+          tag: '<string_literal>',
+          value: value
+        };
       }
-      parts.push( [tk, stack[t+1]] );
+
+      expressionArray.push(expression);
     }
-    return parts;
+
+    return expressionArray;
   }
 
 }
 
 
 
-export class BooleanExpressionBuilder {
-
-  // The only allowable construct in the earliest forms of BASIC which could be
-	// construed as "boolean expressions" were the comparator statements in IF
-	// statements such as 'IF A>B THEN 200'. There were no such things as boolean
-	// variables or expressions which could be given a value of 'true' or false'.
-	//
-	// A "boolean expression" of this type consists of three parts, represented by
-	// the properties of the boolean expression object. These are a variable name,
-	// followed by a comparator, followed by a numeric or string expression. The
-	// object property names used for these entities are "var" for the variable,
-	// "exp" for the comparator, and either "num_exp" or "str_exp" for the
-	// expression the variable is being compared to.
-	//
-	// The only allowable comparators for a string expression are '=' for 'equals'
-	// (not '==' as is more common in modern programming languages) and '<>' for
-	// 'not equal'. Comparators allowed in a numeric boolean expression are '='
-	// (equals), '<>' (not equal), '>' (greater than), '>=' (greater or equal to),
-	// '<' (less than), and '<=' (lesser or equal to).
-	//
-	// The object for the boolean expression
-	//	 W>100
-	// would be represented as:
-	//	 {exp: "<num_greater_than>",
-	//		var: "W",
-	//		num_exp: {exp: "<numeric_literal>", value: 100} }.
-	// Further examples can be found in the test specs.
-
-
-  // constructor (
-  //   numExpBuilder: NumericExpressionBuilder,
-  //   strExpBuilder: StringExpressionBuilder) {  this.numExpBuilder = numExpBuilder; ...
-  //
-  // }
-
-
-  // buildBooleanExpression (stack: string[]): BooleanExpressionObject {
-  //
-  // }
-
-
-  // constructor (register: NumericVariableRegister) {
-  //   this.register = register;
-
-}
+export class BooleanExpressionBuilder {}
 
 
 
@@ -541,29 +471,6 @@ export class StringVariableRegister extends VariableRegister {
 
 
 export class NumericExpressionEvaluator {
-
-  // Builds a numeric expression object from an array of parse tokens.
-	//
-  // The Typescript version uses the NumericExpressionObject interface.
-  // [   TODO Somewhere, probably under NumericExpressionBuilder class, we need to   ]
-  //    add an updated explanation of how the NumericExpressionObjects work.   ]
-  //
-
-
-	// The object for the simple variable name X will be:
-	//	 {exp: "<numeric_variable>", name: "X"}.
-	//
-	// The object for a simple numeric literal such as 3.1416 will be:
-	//	 {exp: "<numeric_literal>", value: 3.1416}.
-	//
-	// Compound numeric expressions are built into binary numeric expression
-	// objects with three properties: The "exp" property will be a symbol denoting
-	// the operator within the expression with the highest precedence. The values
-	// of the "op1" and "op2" properties will be nested numeric expression objects.
-	// So, for example, in the expression 3*A+2*B-5*C the "exp" property will be
-	// "<plus>", the value of "op1" will be an object representing 3*A, and the
-	// value of "op2" will be an object representing 2*B-5*C.
-
 
   register: NumericVariableRegister;
 
