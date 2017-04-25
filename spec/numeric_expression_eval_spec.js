@@ -11,45 +11,45 @@ describe("Numeric expression evaluator", function() {
 
 
   it("should evaluate a numeric literal", function() {
-    var expression, expected;
+    var expression, result;
 
     expression = {
       tag: "<numeric_literal>",
       value: 42
     };
 
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(42);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(42);
 
     expression = {
       tag: "<numeric_literal>",
       value: 0
     };
 
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(0);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(0);
 
     expression = {
       tag: "<numeric_literal>",
       value: 6
     };
 
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(6);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(6);
 
     expression = {
       tag: "<numeric_literal>",
       value: 3.1416
     };
 
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(3.1416);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(3.1416);
 
   });
 
 
   it("should evaluate a reference to a number variable", function() {
-    var expression, expected;
+    var expression, result;
 
     expression = {
       tag: "<numeric_variable>",
@@ -58,8 +58,8 @@ describe("Numeric expression evaluator", function() {
     };
 
     this.register.set("Y", 7);
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(7);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(7);
 
     expression = {
       tag: "<numeric_variable>",
@@ -67,8 +67,8 @@ describe("Numeric expression evaluator", function() {
     };
 
     this.register.set("A8", 0);
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(0);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(0);
 
     expression = {
       tag: "<numeric_variable>",
@@ -76,28 +76,28 @@ describe("Numeric expression evaluator", function() {
     };
 
     this.register.set("E", 944.67);
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(944.67);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(944.67);
 
   });
 
 
   it("should evaluate a reference to an RND keyword", function() {
-    var expression, expected;
+    var expression, result;
 
     expression = {
       tag: "<random>"
     };
 
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toBeGreaterThan(0);
-    expect(expected).toBeLessThan(1);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toBeGreaterThan(0);
+    expect(result).toBeLessThan(1);
 
   });
 
 
   it("should evaluate a simple binary expression", function() {
-    var expression, expected;
+    var expression, result;
 
     // EVALUATE: 440 + 16
 
@@ -113,8 +113,8 @@ describe("Numeric expression evaluator", function() {
       }
     };
 
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(456);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(456);
 
 
     // EVALUATE: 888 - 555
@@ -131,8 +131,8 @@ describe("Numeric expression evaluator", function() {
       }
     };
 
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(333);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(333);
 
 
     // EVALUATE: 3 * 17
@@ -149,8 +149,8 @@ describe("Numeric expression evaluator", function() {
       }
     };
 
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(51);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(51);
 
 
     // EVALUATE: 8 * RND
@@ -166,9 +166,9 @@ describe("Numeric expression evaluator", function() {
     //   }
     // };
     //
-    // expected = this.evaluator.evaluate(expression);
-    // expect(expected).toBeGreaterThan(0);
-    // expect(expected).toBeLessThan(8);
+    // result = this.evaluator.evaluate(expression);
+    // expect(result).toBeGreaterThan(0);
+    // expect(result).toBeLessThan(8);
 
 
     // EVALUATE: 1024 / 256
@@ -185,8 +185,8 @@ describe("Numeric expression evaluator", function() {
       }
     };
 
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(4);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(4);
 
 
     // EVALUATE: 2 ^ 5
@@ -203,14 +203,14 @@ describe("Numeric expression evaluator", function() {
       }
     };
 
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(32);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(32);
 
   });
 
 
   it("should evaluate compound expressions", function() {
-    var expression, op2, expected;
+    var expression, op2, result;
 
     // EVALUATE: X * Y * Z
 
@@ -238,14 +238,14 @@ describe("Numeric expression evaluator", function() {
     this.register.set("X", 2);
     this.register.set("Y", 3);
     this.register.set("Z", 5);
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(30);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(30);
 
     this.register.set("X", 11);
     this.register.set("Y", 3);
     this.register.set("Z", 100);
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(3300);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(3300);
 
 
     // EVALUATE: 800 + 12 - 4
@@ -271,14 +271,14 @@ describe("Numeric expression evaluator", function() {
       op2: op2
     };
 
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(808);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(808);
 
   });
 
 
   it("should evaluate numeric expressions with parentheses", function() {
-    var expression, op1, op1_2, op1_2_2, op2, expected;
+    var expression, op1, op1_2, op1_2_2, op2, result;
 
     // EVALUATE: (A - B) / 3
 
@@ -305,13 +305,13 @@ describe("Numeric expression evaluator", function() {
 
     this.register.set("A", 555);
     this.register.set("B", 222);
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(111);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(111);
 
     this.register.set("A", 71);
     this.register.set("B", 20);
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(17);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(17);
 
 
     // EVALUATE: W * (40 + L)
@@ -339,13 +339,13 @@ describe("Numeric expression evaluator", function() {
 
     this.register.set("W", 100);
     this.register.set("L", 28);
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(6800);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(6800);
 
     this.register.set("W", 7);
     this.register.set("L", 30);
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(490);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(490);
 
 
     // EVALUATE: (14 + M1) / (11 + M2)
@@ -382,13 +382,13 @@ describe("Numeric expression evaluator", function() {
 
     this.register.set("M1", 28);
     this.register.set("M2", 3);
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(3);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(3);
 
     this.register.set("M1", 16);
     this.register.set("M2", 9);
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(1.5);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(1.5);
 
 
     // EVALUATE: (201 - (3 * (L - 7))) / 9
@@ -433,8 +433,8 @@ describe("Numeric expression evaluator", function() {
     };
 
     this.register.set("L", 14);
-    expected = this.evaluator.evaluate(expression);
-    expect(expected).toEqual(20);
+    result = this.evaluator.evaluate(expression);
+    expect(result).toEqual(20);
 
   });
 

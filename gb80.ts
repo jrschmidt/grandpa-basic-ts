@@ -416,24 +416,24 @@ class VariableRegister {
     this.vars[name] = null;
   }
 
-  defined (name: string) {
+  defined (name: string): boolean {
     if (this.vars.hasOwnProperty(name)) {
-      return 'yes';
+      return true;
     }
     else {
-      return 'no';
+      return false;
     }
   }
 
   set (name: string, value: any) {
-    if (this.defined(name) === 'no') {
+    if (! this.defined(name)) {
       this.addVar(name);
     }
     this.vars[name] = value;
   }
 
   get (name: string): any {
-    if (this.defined(name) === 'no') {
+    if (! this.defined(name)) {
       this.addVar(name);
     }
     return this.vars[name];
@@ -480,7 +480,7 @@ export class NumericExpressionEvaluator {
   }
 
 
-  evaluate(expression: NumericExpressionObject) {
+  evaluate(expression: NumericExpressionObject): number {
     let result: number = NaN;
 
     switch (expression.tag) {
@@ -506,22 +506,22 @@ export class NumericExpressionEvaluator {
   }
 
 
-  evaluateNumericLiteral (expression: NumericExpressionObject) {
+  evaluateNumericLiteral (expression: NumericExpressionObject): number {
     return expression.value;
   }
 
 
-  evaluateNumericVariable (expression: NumericExpressionObject) {
+  evaluateNumericVariable (expression: NumericExpressionObject): number {
     return this.register.get(expression.name);
   }
 
 
-  evaluateRNDKeyword () {
+  evaluateRNDKeyword (): number {
     return Math.random();
   }
 
 
-  evaluateBinaryOperation (expression: NumericExpressionObject) {
+  evaluateBinaryOperation (expression: NumericExpressionObject): number {
     let result: number = NaN;
     let a: number = this.evaluate(expression.op1);
     let b: number = this.evaluate(expression.op2);
@@ -547,5 +547,20 @@ export class NumericExpressionEvaluator {
     return result;
   }
 
+
+}
+
+
+
+export class StringExpressionEvaluator {
+
+  register: StringVariableRegister;
+
+  constructor (register: StringVariableRegister) {
+    this.register = register;
+  }
+
+
+  evaluate (expression: StringExpressionObject): string {}
 
 }

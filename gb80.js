@@ -274,20 +274,20 @@ var VariableRegister = (function () {
     };
     VariableRegister.prototype.defined = function (name) {
         if (this.vars.hasOwnProperty(name)) {
-            return 'yes';
+            return true;
         }
         else {
-            return 'no';
+            return false;
         }
     };
     VariableRegister.prototype.set = function (name, value) {
-        if (this.defined(name) === 'no') {
+        if (!this.defined(name)) {
             this.addVar(name);
         }
         this.vars[name] = value;
     };
     VariableRegister.prototype.get = function (name) {
-        if (this.defined(name) === 'no') {
+        if (!this.defined(name)) {
             this.addVar(name);
         }
         return this.vars[name];
@@ -381,3 +381,11 @@ var NumericExpressionEvaluator = (function () {
     return NumericExpressionEvaluator;
 }());
 exports.NumericExpressionEvaluator = NumericExpressionEvaluator;
+var StringExpressionEvaluator = (function () {
+    function StringExpressionEvaluator(register) {
+        this.register = register;
+    }
+    StringExpressionEvaluator.prototype.evaluate = function (expression) { };
+    return StringExpressionEvaluator;
+}());
+exports.StringExpressionEvaluator = StringExpressionEvaluator;
