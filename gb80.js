@@ -385,7 +385,22 @@ var StringExpressionEvaluator = (function () {
     function StringExpressionEvaluator(register) {
         this.register = register;
     }
-    StringExpressionEvaluator.prototype.evaluate = function (expression) { };
+    StringExpressionEvaluator.prototype.evaluate = function (expression) {
+        var result = '';
+        var nextString;
+        for (var i = 0; i < expression.length; i++) {
+            var next = expression[i];
+            if (next.tag === '<string_literal>') {
+                nextString = next.value;
+                result = result.concat(nextString);
+            }
+            if (next.tag === '<string_variable>') {
+                nextString = this.register.get(next.name);
+                result = result.concat(nextString);
+            }
+        }
+        return result;
+    };
     return StringExpressionEvaluator;
 }());
 exports.StringExpressionEvaluator = StringExpressionEvaluator;

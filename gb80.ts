@@ -561,6 +561,26 @@ export class StringExpressionEvaluator {
   }
 
 
-  evaluate (expression: StringExpressionObject): string {}
+  evaluate (expression: StringExpressionObject): string {
+    let result: string = '';
+    let nextString: string;
+
+    for (let i=0;i<expression.length;i++) {
+      let next: SimpleStringExpression = expression[i];
+
+      if (next.tag === '<string_literal>') {
+        nextString = next.value;
+        result = result.concat(nextString);
+      }
+
+      if (next.tag === '<string_variable>') {
+      nextString = this.register.get(next.name);
+      result = result.concat(nextString);
+      }
+
+    }
+
+    return result;
+  }
 
 }
