@@ -177,8 +177,28 @@ var StringExpressionBuilder = (function () {
 }());
 exports.StringExpressionBuilder = StringExpressionBuilder;
 var BooleanExpressionBuilder = (function () {
-    function BooleanExpressionBuilder() {
+    function BooleanExpressionBuilder(numericBuilder, stringBuilder) {
+        this.numericBuilder = numericBuilder;
+        this.stringBuilder = stringBuilder;
     }
+    BooleanExpressionBuilder.prototype.buildBooleanExpression = function (stack) {
+        var comparator = stack[3];
+        var bxVar = stack[2];
+        var subStack = stack.slice(4, stack.length - 1);
+        var expression;
+        if (stack[1] === '<numeric_variable>') {
+            expression = this.numericBuilder.buildNumericExpression(subStack);
+        }
+        if (stack[1] === '<string_variable>') {
+            expression = this.stringBuilder.buildStringExpression(subStack);
+        }
+        var result = {
+            comparator: comparator,
+            variable: bxVar,
+            expression: expression
+        };
+        return result;
+    };
     return BooleanExpressionBuilder;
 }());
 exports.BooleanExpressionBuilder = BooleanExpressionBuilder;

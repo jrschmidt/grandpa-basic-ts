@@ -38,19 +38,19 @@ interface SimpleStringExpression {
 type StringExpressionObject = SimpleStringExpression[];
 
 type BooleanExpressionTag =
-  '<num_equals>' |
-  '<num_not_equal>' |
-  '<num_lesser_than>' |
-  '<num_lesser_equal>' |
-  '<num_greater_than>' |
-  '<num_greater_equal>' |
-  '<str_equals>' |
-  '<str_not_equal>';
+  '<number_equals>' |
+  '<number_not_equal>' |
+  '<number_lesser_than>' |
+  '<number_lesser_equal>' |
+  '<number_greater_than>' |
+  '<number_greater_equal>' |
+  '<string_equals>' |
+  '<string_not_equal>';
 
 interface BooleanExpressionObject {
-  tag: BooleanExpressionTag;
-  var: string;
-  exp: NumericExpressionObject | StringExpressionObject;
+  comparator: BooleanExpressionTag;
+  variable: string;
+  expression: NumericExpressionObject | StringExpressionObject;
 }
 
 type ParseTag =
@@ -282,7 +282,42 @@ export class StringExpressionBuilder {
 
 
 
-export class BooleanExpressionBuilder {}
+
+export class BooleanExpressionBuilder {
+
+  numericBuilder: NumericExpressionBuilder;
+  stringBuilder: StringExpressionBuilder;
+
+  constructor (numericBuilder: NumericExpressionBuilder, stringBuilder: StringExpressionBuilder) {
+    this.numericBuilder = numericBuilder;
+    this.stringBuilder = stringBuilder;
+  }
+
+
+  buildBooleanExpression (stack: ParseStack): BooleanExpressionObject {
+    let comparator: BooleanExpressionTag = <BooleanExpressionTag>stack[3];
+    let bxVar: string = <string>stack[2];
+    let subStack: ParseStack = stack.slice(4, stack.length - 1);
+    let expression: NumericExpressionObject | StringExpressionObject;
+
+    if (stack[1] === '<numeric_variable>') {
+      expression = this.numericBuilder.buildNumericExpression(subStack);
+    }
+
+    if (stack[1] === '<string_variable>') {
+      expression = this.stringBuilder.buildStringExpression(subStack);
+    }
+
+    let result: BooleanExpressionObject = {
+      comparator: comparator,
+      variable: bxVar,
+      expression: expression
+    };
+
+    return result;
+  }
+
+}
 
 
 

@@ -83,15 +83,18 @@ describe('Numeric expression builder', function() {
 
     // TEST  (J+K)
     stack = [
+      '<numeric_expression>',
       '<left>',
       '<numeric_variable>',
       'J',
       '<plus>',
       '<numeric_variable>',
       'K',
-      '<right>'
+      '<right>',
+      '<num_exp_end>'
     ];
 
+    stack = this.builder.stripDelimiterTokens(stack);
     result = this.builder.deparenthesize(stack);
     expect(result.length).toEqual(1);
     expect(result[0]).toEqual(jasmine.any(Array));
@@ -105,6 +108,7 @@ describe('Numeric expression builder', function() {
 
     // TEST  1+(4*A*C)/B
     stack = [
+      '<numeric_expression>',
       '<numeric_literal>',
       1,
       '<plus>',
@@ -120,9 +124,11 @@ describe('Numeric expression builder', function() {
        '<right>',
        '<divide>',
        '<numeric_variable>',
-       'B'
+       'B',
+       '<num_exp_end>'
      ];
 
+    stack = this.builder.stripDelimiterTokens(stack);
     result = this.builder.deparenthesize(stack);
     expect(result.length).toEqual(7);
     expect(result[0]).toEqual('<numeric_literal>');
@@ -145,13 +151,16 @@ describe('Numeric expression builder', function() {
 
     // TEST  INT(W)
     stack = [
+      '<numeric_expression>',
       '<integer>',
       '<left>',
       '<numeric_variable>',
       'W',
-      '<right>'
+      '<right>',
+      '<num_exp_end>'
     ];
 
+    stack = this.builder.stripDelimiterTokens(stack);
     result = this.builder.deparenthesize(stack);
     expect(result.length).toEqual(2);
     expect(result[0]).toEqual('<integer>');
@@ -163,6 +172,7 @@ describe('Numeric expression builder', function() {
 
     // TEST  (200+INT(S7))*44
     stack = [
+      '<numeric_expression>',
       '<left>',
       '<numeric_literal>',
       200,
@@ -175,9 +185,11 @@ describe('Numeric expression builder', function() {
        '<right>',
        '<times>',
        '<numeric_literal>',
-       44
+       44,
+       '<num_exp_end>'
      ];
 
+    stack = this.builder.stripDelimiterTokens(stack);
     result = this.builder.deparenthesize(stack);
     expect(result.length).toEqual(4);
     expect(result[0]).toEqual(jasmine.any(Array));
@@ -197,6 +209,7 @@ describe('Numeric expression builder', function() {
 
     // TEST  (S2+7)/(E4^2-7)
     stack = [
+      '<numeric_expression>',
       '<left>',
       '<numeric_variable>',
       'S2',
@@ -214,9 +227,11 @@ describe('Numeric expression builder', function() {
        '<minus>',
        '<numeric_literal>',
        7,
-       '<right>'
+       '<right>',
+       '<num_exp_end>'
      ];
 
+    stack = this.builder.stripDelimiterTokens(stack);
     result = this.builder.deparenthesize(stack);
     expect(result.length).toEqual(3);
     expect(result[0]).toEqual(jasmine.any(Array));
@@ -241,6 +256,7 @@ describe('Numeric expression builder', function() {
 
     // TEST  6+(A/(400+X2))*11
     stack = [
+      '<numeric_expression>',
       '<numeric_literal>',
       6,
       '<plus>',
@@ -258,9 +274,11 @@ describe('Numeric expression builder', function() {
        '<right>',
        '<times>',
        '<numeric_literal>',
-       11
+       11,
+       '<num_exp_end>'
      ];
 
+    stack = this.builder.stripDelimiterTokens(stack);
     result = this.builder.deparenthesize(stack);
     expect(result.length).toEqual(7);
     expect(result[0]).toEqual('<numeric_literal>');
@@ -285,6 +303,7 @@ describe('Numeric expression builder', function() {
 
     // TEST  (6*A-(400+X2))*11
     stack = [
+      '<numeric_expression>',
       '<left>',
       '<numeric_literal>',
       6,
@@ -302,9 +321,11 @@ describe('Numeric expression builder', function() {
        '<right>',
        '<times>',
        '<numeric_literal>',
-       11
+       11,
+       '<num_exp_end>'
      ];
 
+    stack = this.builder.stripDelimiterTokens(stack);
     result = this.builder.deparenthesize(stack);
     expect(result.length).toEqual(4);
     expect(result[0]).toEqual(jasmine.any(Array));
@@ -326,6 +347,7 @@ describe('Numeric expression builder', function() {
 
     // TEST  2*(A-0.3333)*(B+1.7)
     stack = [
+      '<numeric_expression>',
       '<numeric_literal>',
       2,
       '<times>',
@@ -343,9 +365,11 @@ describe('Numeric expression builder', function() {
        '<plus>',
        '<numeric_literal>',
        1.7,
-       '<right>'
+       '<right>',
+       '<num_exp_end>'
      ];
 
+    stack = this.builder.stripDelimiterTokens(stack);
     result = this.builder.deparenthesize(stack);
     expect(result.length).toEqual(6);
     expect(result[0]).toEqual('<numeric_literal>');
