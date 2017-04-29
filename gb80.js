@@ -424,3 +424,75 @@ var StringExpressionEvaluator = (function () {
     return StringExpressionEvaluator;
 }());
 exports.StringExpressionEvaluator = StringExpressionEvaluator;
+var BooleanExpressionEvaluator = (function () {
+    function BooleanExpressionEvaluator(numericRegister, stringRegister, numericEvaluator, stringEvaluator) {
+        this.numericRegister = numericRegister;
+        this.stringRegister = stringRegister;
+        this.numericEvaluator = numericEvaluator;
+        this.stringEvaluator = stringEvaluator;
+    }
+    BooleanExpressionEvaluator.prototype.evaluate = function (expression) {
+        var result = false;
+        var compareResult;
+        var comparator = expression.comparator;
+        if ((comparator === '<string_equals>') || (comparator === '<string_not_equal>')) {
+            var varValue = this.stringRegister.get(expression.variable);
+            var expValue = this.stringEvaluator.evaluate(expression.expression);
+            compareResult = this.stringCompare(varValue, expValue);
+        }
+        else {
+            var varValue = this.numericRegister.get(expression.variable);
+            var expValue = this.numericEvaluator.evaluate(expression.expression);
+            compareResult = this.numericCompare(varValue, expValue);
+        }
+        switch (comparator) {
+            case '<number_equals>':
+            case '<string_equals>':
+                if (compareResult === '<equal>')
+                    result = true;
+                break;
+            case '<number_not_equal>':
+            case '<string_not_equal>':
+                if (compareResult != '<equal>')
+                    result = true;
+                break;
+            case '<number_lesser_than>':
+                if (compareResult === '<lesser>')
+                    result = true;
+                break;
+            case '<number_lesser_equal>':
+                if ((compareResult === '<lesser>') || (compareResult === '<equal>'))
+                    result = true;
+                break;
+            case '<number_greater_than>':
+                if (compareResult === '<greater>')
+                    result = true;
+                break;
+            case '<number_greater_equal>':
+                if ((compareResult === '<greater>') || (compareResult === '<equal>'))
+                    result = true;
+                break;
+        }
+        return result;
+    };
+    BooleanExpressionEvaluator.prototype.numericCompare = function (x, y) {
+        var tag;
+        if (x === y)
+            tag = '<equal>';
+        if (x < y)
+            tag = '<lesser>';
+        if (x > y)
+            tag = '<greater>';
+        return tag;
+    };
+    BooleanExpressionEvaluator.prototype.stringCompare = function (a, b) {
+        var tag;
+        if (a === b)
+            tag = '<equal>';
+        else
+            tag = '<not_equal>';
+        return tag;
+    };
+    return BooleanExpressionEvaluator;
+}());
+exports.BooleanExpressionEvaluator = BooleanExpressionEvaluator;

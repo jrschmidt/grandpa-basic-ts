@@ -53,6 +53,12 @@ interface BooleanExpressionObject {
   expression: NumericExpressionObject | StringExpressionObject;
 }
 
+type ComparatorTag =
+  '<equal>' |
+  '<lesser>' |
+  '<greater>' |
+  '<not_equal>';
+
 type ParseTag =
   NumericExpressionTag |
   StringExpressionTag |
@@ -616,6 +622,103 @@ export class StringExpressionEvaluator {
     }
 
     return result;
+  }
+
+}
+
+
+
+export class BooleanExpressionEvaluator {
+
+  numericRegister: NumericVariableRegister;
+  stringRegister: StringVariableRegister;
+  numericEvaluator: NumericExpressionEvaluator;
+  stringEvaluator: StringExpressionEvaluator;
+
+  constructor (
+    numericRegister: NumericVariableRegister,
+    stringRegister: StringVariableRegister,
+    numericEvaluator: NumericExpressionEvaluator,
+    stringEvaluator: StringExpressionEvaluator ) {
+
+    this.numericRegister = numericRegister;
+    this.stringRegister = stringRegister;
+    this.numericEvaluator = numericEvaluator;
+    this.stringEvaluator = stringEvaluator;
+    }
+
+
+  evaluate (expression: BooleanExpressionObject) {
+    let result: boolean = false;
+
+    let compareResult: ComparatorTag;
+
+    let comparator: BooleanExpressionTag = expression.comparator;
+
+    if ( (comparator === '<string_equals>') || (comparator === '<string_not_equal>') ) {
+      let varValue: string = this.stringRegister.get(expression.variable);
+      let expValue: string = this.stringEvaluator.evaluate(<StringExpressionObject>expression.expression);
+      compareResult = this.stringCompare(varValue, expValue);
+    }
+
+    else {
+      let varValue: number = this.numericRegister.get(expression.variable);
+      let expValue: number = this.numericEvaluator.evaluate(<NumericExpressionObject>expression.expression);
+      compareResult = this.numericCompare(varValue, expValue);
+    }
+
+    switch (comparator) {
+
+      case '<number_equals>':
+      case '<string_equals>':
+        if (compareResult === '<equal>') result = true;
+      break;
+
+      case '<number_not_equal>':
+      case '<string_not_equal>':
+        if (compareResult != '<equal>') result = true;
+      break;
+
+      case '<number_lesser_than>':
+        if (compareResult === '<lesser>')  result = true;
+      break;
+
+      case '<number_lesser_equal>':
+        if ((compareResult === '<lesser>') || (compareResult === '<equal>'))  result = true;
+      break;
+
+      case '<number_greater_than>':
+        if (compareResult === '<greater>')  result = true;
+      break;
+
+      case '<number_greater_equal>':
+      if ((compareResult === '<greater>') || (compareResult === '<equal>'))  result = true;
+      break;
+
+    }
+
+    return result;
+  }
+
+
+  numericCompare (x: number, y: number): ComparatorTag {
+    let tag: ComparatorTag;
+
+    if (x === y) tag = '<equal>';
+    if (x < y) tag = '<lesser>';
+    if (x > y) tag = '<greater>';
+
+    return tag;
+  }
+
+
+  stringCompare (a: string, b: string): ComparatorTag {
+    let tag: ComparatorTag;
+
+    if (a === b) tag = '<equal>';
+    else tag = '<not_equal>';
+
+    return tag;
   }
 
 }
