@@ -288,7 +288,6 @@ export class StringExpressionBuilder {
 
 
 
-
 export class BooleanExpressionBuilder {
 
   numericBuilder: NumericExpressionBuilder;

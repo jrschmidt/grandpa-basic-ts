@@ -23,7 +23,7 @@ describe("Boolean expression evaluator", function() {
   });
 
 
-  xit("should compare two numbers to determine if one is greater or lesser", function() {
+  it("should compare two numbers to determine if one is greater or lesser", function() {
 
     result = this.evaluator.numericCompare(0, 0);
     expect(result).toEqual('<equal>');
@@ -83,7 +83,7 @@ describe("Boolean expression evaluator", function() {
 
 
 
-  xit("should compare two strings to determine if they are equal", function() {
+  it("should compare two strings to determine if they are equal", function() {
 
     result = this.evaluator.stringCompare('A', 'A');
     expect(result).toEqual('<equal>');
