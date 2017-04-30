@@ -65,6 +65,16 @@ type ParseTag =
   BooleanExpressionTag;
 
 
+export class LineParser {
+
+  parse (inputLine: string): ParseStack {
+    let stack: ParseStack = [];
+    return stack;
+  }
+
+}
+
+
 
 export class NumericExpressionBuilder {
 
@@ -221,22 +231,22 @@ export class NumericExpressionBuilder {
     let tailStack: ParseStack = [];
     let middleStack: ParseStack;
 
-    for (let i=0;i<stack.length;i++) {
-      if (stack[i] === '<left>') {
+    stack.forEach(tag => {
+      if (tag === '<left>') {
         mainStacks.push( [] );
       }
 
-      if (stack[i] === '<right>') {
+      if (tag === '<right>') {
         middleStack = mainStacks.pop();
         mainStacks[mainStacks.length-1].push(middleStack);
         mainStacks[mainStacks.length-1] = mainStacks[mainStacks.length-1].concat(tailStack);
         tailStack = [];
       }
 
-      if ( (stack[i] != '<left>') && (stack[i] != '<right>') ) {
-        mainStacks[mainStacks.length-1].push(stack[i]);
+      if ( (tag != '<left>') && (tag != '<right>') ) {
+        mainStacks[mainStacks.length-1].push(tag);
       }
-    }
+    });
 
     if (mainStacks.length != 1) {
       return [];
@@ -605,20 +615,19 @@ export class StringExpressionEvaluator {
     let result: string = '';
     let nextString: string;
 
-    for (let i=0;i<expression.length;i++) {
-      let next: SimpleStringExpression = expression[i];
+    expression.forEach( next => {
 
-      if (next.tag === '<string_literal>') {
-        nextString = next.value;
+        if (next.tag === '<string_literal>') {
+          nextString = next.value;
+          result = result.concat(nextString);
+        }
+
+        if (next.tag === '<string_variable>') {
+        nextString = this.register.get(next.name);
         result = result.concat(nextString);
-      }
+        }
 
-      if (next.tag === '<string_variable>') {
-      nextString = this.register.get(next.name);
-      result = result.concat(nextString);
-      }
-
-    }
+    });
 
     return result;
   }

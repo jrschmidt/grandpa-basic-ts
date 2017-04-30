@@ -10,6 +10,16 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+var LineParser = (function () {
+    function LineParser() {
+    }
+    LineParser.prototype.parse = function (inputLine) {
+        var stack = [];
+        return stack;
+    };
+    return LineParser;
+}());
+exports.LineParser = LineParser;
 var NumericExpressionBuilder = (function () {
     function NumericExpressionBuilder() {
     }
@@ -123,20 +133,20 @@ var NumericExpressionBuilder = (function () {
         var mainStacks = [[]];
         var tailStack = [];
         var middleStack;
-        for (var i = 0; i < stack.length; i++) {
-            if (stack[i] === '<left>') {
+        stack.forEach(function (tag) {
+            if (tag === '<left>') {
                 mainStacks.push([]);
             }
-            if (stack[i] === '<right>') {
+            if (tag === '<right>') {
                 middleStack = mainStacks.pop();
                 mainStacks[mainStacks.length - 1].push(middleStack);
                 mainStacks[mainStacks.length - 1] = mainStacks[mainStacks.length - 1].concat(tailStack);
                 tailStack = [];
             }
-            if ((stack[i] != '<left>') && (stack[i] != '<right>')) {
-                mainStacks[mainStacks.length - 1].push(stack[i]);
+            if ((tag != '<left>') && (tag != '<right>')) {
+                mainStacks[mainStacks.length - 1].push(tag);
             }
-        }
+        });
         if (mainStacks.length != 1) {
             return [];
         }
@@ -406,19 +416,19 @@ var StringExpressionEvaluator = (function () {
         this.register = register;
     }
     StringExpressionEvaluator.prototype.evaluate = function (expression) {
+        var _this = this;
         var result = '';
         var nextString;
-        for (var i = 0; i < expression.length; i++) {
-            var next = expression[i];
+        expression.forEach(function (next) {
             if (next.tag === '<string_literal>') {
                 nextString = next.value;
                 result = result.concat(nextString);
             }
             if (next.tag === '<string_variable>') {
-                nextString = this.register.get(next.name);
+                nextString = _this.register.get(next.name);
                 result = result.concat(nextString);
             }
-        }
+        });
         return result;
     };
     return StringExpressionEvaluator;
