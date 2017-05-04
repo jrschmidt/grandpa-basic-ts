@@ -72,7 +72,10 @@ type SyntaxRuleTag =
   '<clear_command>' |
   '<run_command>' |
   '<info_command>' |
-  '<list_command>';
+  '<list_command>' |
+  '<line_number>' |
+  '<space>' |
+  '<line_number_statement>';
 
 
 
@@ -85,9 +88,11 @@ interface ParseResult {
 
 
 export class SyntaxRules {
+
   rules: SyntaxRuleTag[][];
   keywords: string[];
   keywordTokens: SyntaxRuleTag[];
+  actionTokens: SyntaxRuleTag[];
 
   constructor () {
 
@@ -95,7 +100,8 @@ export class SyntaxRules {
       ['CLEAR'],
       ['RUN'],
       ['LIST'],
-      ['INFO']
+      ['INFO'],
+      ['<line_number>','<space>','<line_number_statement>']
     ];
 
     this.keywords = [
@@ -110,6 +116,10 @@ export class SyntaxRules {
       '<run_command>',
       '<list_command>',
       '<info_command>'
+    ];
+
+    this.actionTokens = [
+      '<line_number>'
     ];
 
   }
@@ -179,6 +189,9 @@ export class LineParser {
         if ( this.syntax.keywords.indexOf(token) >= 0 ) {
           tokenMatch = this.lookForKeywordMatch(token, string);
         }
+        if ( this.syntax.actionTokens.indexOf(token) >= 0 ) {
+          tokenMatch = this.lookForActionTokenMatch(token, string);
+        }
         if (tokenMatch.match === 'yes') {
           match = 'yes';
           stack = stack.concat(tokenMatch.stack);
@@ -200,7 +213,7 @@ export class LineParser {
 
 
   // Check for a specific literal keyword
-  lookForKeywordMatch (token: SyntaxRuleTag, string: string) {
+  lookForKeywordMatch (token: SyntaxRuleTag, string: string): ParseResult {
 
     let result: ParseResult = {
       match: 'no',
@@ -221,6 +234,45 @@ export class LineParser {
 
     return result;
 
+  }
+
+
+  // Delegate to the 'look_for' method associated with a specific 'action' token
+  lookForActionTokenMatch (token: SyntaxRuleTag, string: string): ParseResult {
+
+    let result: ParseResult = {
+      match: 'no',
+      stack: [],
+      remainder: ''
+    };
+
+    if (token === '<line_number>') {
+      result = this.lookForLineNumber(token, string);
+    }
+
+    return result;
+
+  }
+
+
+  lookForLineNumber (token: SyntaxRuleTag, string: string): ParseResult {
+
+    let result: ParseResult = {
+      match: 'no',
+      stack: [],
+      remainder: ''
+    };
+
+    let n: number = parseInt(string);
+    if (n > 0) {
+      result = {
+        match: 'yes',
+        stack: [ '<line_number>', n],
+        remainder: string.slice(String(n).length)
+      };
+    }
+
+    return result;
   }
 
 }

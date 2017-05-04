@@ -16,7 +16,8 @@ var SyntaxRules = (function () {
             ['CLEAR'],
             ['RUN'],
             ['LIST'],
-            ['INFO']
+            ['INFO'],
+            ['<line_number>', '<space>', '<line_number_statement>']
         ];
         this.keywords = [
             'CLEAR',
@@ -29,6 +30,9 @@ var SyntaxRules = (function () {
             '<run_command>',
             '<list_command>',
             '<info_command>'
+        ];
+        this.actionTokens = [
+            '<line_number>'
         ];
     }
     return SyntaxRules;
@@ -83,6 +87,9 @@ var LineParser = (function () {
                 if (_this.syntax.keywords.indexOf(token) >= 0) {
                     tokenMatch = _this.lookForKeywordMatch(token, string);
                 }
+                if (_this.syntax.actionTokens.indexOf(token) >= 0) {
+                    tokenMatch = _this.lookForActionTokenMatch(token, string);
+                }
                 if (tokenMatch.match === 'yes') {
                     match = 'yes';
                     stack = stack.concat(tokenMatch.stack);
@@ -114,6 +121,34 @@ var LineParser = (function () {
                 match: 'yes',
                 stack: [keywordToken],
                 remainder: string.slice(token.length)
+            };
+        }
+        return result;
+    };
+    // Delegate to the 'look_for' method associated with a specific 'action' token
+    LineParser.prototype.lookForActionTokenMatch = function (token, string) {
+        var result = {
+            match: 'no',
+            stack: [],
+            remainder: ''
+        };
+        if (token === '<line_number>') {
+            result = this.lookForLineNumber(token, string);
+        }
+        return result;
+    };
+    LineParser.prototype.lookForLineNumber = function (token, string) {
+        var result = {
+            match: 'no',
+            stack: [],
+            remainder: ''
+        };
+        var n = parseInt(string);
+        if (n > 0) {
+            result = {
+                match: 'yes',
+                stack: ['<line_number>', n],
+                remainder: string.slice(String(n).length)
             };
         }
         return result;

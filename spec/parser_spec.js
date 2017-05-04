@@ -35,49 +35,42 @@ describe('BASIC program line parser', function() {
   });
 
 
-  xit('should correctly parse line numbers in program lines', function() {
+  it('should correctly parse line numbers in program lines', function() {
 
     result = this.parser.parse('10 REM WELCOME TO GRANDPA BASIC 80');
     expect(result).toEqual(jasmine.any(Array));
     expect(result[0]).toEqual('<line_number>');
     expect(result[1]).toEqual(10);
-    expect(result[2]).toEqual('<space>');
 
-    result = this.parser.parse('20 $T="JOHN R SCHMIDT"');
+    result = this.parser.parse('20 $T="FRODO BAGGINS"');
     expect(result).toEqual(jasmine.any(Array));
     expect(result[0]).toEqual('<line_number>');
     expect(result[1]).toEqual(20);
-    expect(result[2]).toEqual('<space>');
 
     result = this.parser.parse('30 INPUT "DISPLAY NAME (Y/N)?";$Y');
     expect(result).toEqual(jasmine.any(Array));
     expect(result[0]).toEqual('<line_number>');
     expect(result[1]).toEqual(30);
-    expect(result[2]).toEqual('<space>');
 
     result = this.parser.parse('40 IF $Y<>"Y" THEN 100');
     expect(result).toEqual(jasmine.any(Array));
     expect(result[0]).toEqual('<line_number>');
     expect(result[1]).toEqual(40);
-    expect(result[2]).toEqual('<space>');
 
     result = this.parser.parse('50 PRINT "WRITTEN BY "+$T');
     expect(result).toEqual(jasmine.any(Array));
     expect(result[0]).toEqual('<line_number>');
     expect(result[1]).toEqual(50);
-    expect(result[2]).toEqual('<space>');
 
     result = this.parser.parse('100 PRINT "OK BYE"');
     expect(result).toEqual(jasmine.any(Array));
     expect(result[0]).toEqual('<line_number>');
     expect(result[1]).toEqual(100);
-    expect(result[2]).toEqual('<space>');
 
     result = this.parser.parse('999 END');
     expect(result).toEqual(jasmine.any(Array));
     expect(result[0]).toEqual('<line_number>');
     expect(result[1]).toEqual(999);
-    expect(result[2]).toEqual('<space>');
 
   });
 
