@@ -64,12 +64,163 @@ type ParseTag =
   StringExpressionTag |
   BooleanExpressionTag;
 
+type SyntaxRuleTag =
+  'CLEAR' |
+  'RUN' |
+  'INFO' |
+  'LIST' |
+  '<clear_command>' |
+  '<run_command>' |
+  '<info_command>' |
+  '<list_command>';
+
+
+
+interface ParseResult {
+  match: 'no' | 'yes' | 'parse_error';
+  stack: ParseStack;
+  remainder: string;
+}
+
+
+
+export class SyntaxRules {
+  rules: SyntaxRuleTag[][];
+  keywords: string[];
+  keywordTokens: SyntaxRuleTag[];
+
+  constructor () {
+
+    this.rules = [
+      ['CLEAR'],
+      ['RUN'],
+      ['LIST'],
+      ['INFO']
+    ];
+
+    this.keywords = [
+      'CLEAR',
+      'RUN',
+      'LIST',
+      'INFO'
+    ];
+
+    this.keywordTokens = [
+      '<clear_command>',
+      '<run_command>',
+      '<list_command>',
+      '<info_command>'
+    ];
+
+  }
+
+}
+
+
 
 export class LineParser {
+  syntax: SyntaxRules;
+
+  constructor (syntax: SyntaxRules) {
+    this.syntax = syntax;
+  }
+
 
   parse (inputLine: string): ParseStack {
+
     let stack: ParseStack = [];
+
+    let result: ParseResult = {
+      match: 'no',
+      stack: [],
+      remainder: ''
+    };
+
+    this.syntax.rules.forEach(rule => {
+      if (result.match === 'no') {
+        result = this.lookForRuleMatch(inputLine, rule);
+        if (result.match != 'no') {
+          if ( (result.match === 'parse_error') || (result.remainder.length > 0) ) {
+            stack = ['<parse_error'];
+          }
+          else {
+            stack = result.stack;
+          }
+        }
+      }
+    });
+
+    stack = result.stack;
     return stack;
+  }
+
+
+  // Check the string against a specific syntax rule
+  lookForRuleMatch (string: string, rule: SyntaxRuleTag[]): ParseResult {
+
+    let result: ParseResult = {
+      match: 'no',
+      stack: [],
+      remainder: ''
+    };
+
+    let match: string = 'no';
+    let stack: ParseStack = [];
+    let remainder: string;
+
+    let tokenMatch: ParseResult = {
+      match: 'no',
+      stack: [],
+      remainder: ''
+    };
+
+    rule.forEach(token => {
+      if (match === 'no') {
+        if ( this.syntax.keywords.indexOf(token) >= 0 ) {
+          tokenMatch = this.lookForKeywordMatch(token, string);
+        }
+        if (tokenMatch.match === 'yes') {
+          match = 'yes';
+          stack = stack.concat(tokenMatch.stack);
+          remainder = tokenMatch.remainder;
+        }
+      }
+    });
+
+    if (match === 'yes') {
+      result = {
+        match: 'yes',
+        stack: stack,
+        remainder: remainder
+      };
+    }
+
+    return result;
+  }
+
+
+  // Check for a specific literal keyword
+  lookForKeywordMatch (token: SyntaxRuleTag, string: string) {
+
+    let result: ParseResult = {
+      match: 'no',
+      stack: [],
+      remainder: ''
+    };
+
+    let index: number = string.indexOf(token);
+    if (index === 0) {
+      let keywordIndex: number = this.syntax.keywords.indexOf(token);
+      let keywordToken: SyntaxRuleTag = this.syntax.keywordTokens[keywordIndex];
+      result = {
+        match: 'yes',
+        stack: [ keywordToken ],
+        remainder: string.slice(token.length)
+      };
+    }
+
+    return result;
+
   }
 
 }
@@ -364,26 +515,26 @@ export class KeyHelper {
     ];
 
     this.keys = [
-      ["-","_"], ["=","+"], [";",":"], ["-","_"], ["=","+"], [";",":"],
-      ["0",")"], ["1","!"], ["2","@"], ["3","#"], ["4","$"], ["5","%"], ["6","^"], ["7","&"], ["8","*"], ["9","("],
-      ["0","0"], ["1","1"], ["2","2"], ["3","3"], ["4","4"], ["5","5"], ["6","6"], ["7","7"], ["8","8"], ["9","9"],
-      ["+","+"], ["-","-"], ["*","*"], ["/","/"], [".","."],
-      ["A","A"], ["B","B"], ["C","C"], ["D","D"], ["E","E"], ["F","F"], ["G","G"], ["H","H"], ["I","I"],
-      ["J","J"], ["K","K"], ["L","L"], ["M","M"], ["N","N"], ["O","O"], ["P","P"], ["Q","Q"], ["R","R"],
-      ["S","S"], ["T","T"], ["U","U"], ["V","V"], ["W","W"], ["X","X"], ["Y","Y"], ["Z","Z"],
-      [",","<"], [".",">"], ["/","?"], ["`","~"], ["[","{"], ["]","}"], ["'",'"']
+      ['-','_'], ['=','+'], [';',':'], ['-','_'], ['=','+'], [';',':'],
+      ['0',')'], ['1','!'], ['2','@'], ['3','#'], ['4','$'], ['5','%'], ['6','^'], ['7','&'], ['8','*'], ['9','('],
+      ['0','0'], ['1','1'], ['2','2'], ['3','3'], ['4','4'], ['5','5'], ['6','6'], ['7','7'], ['8','8'], ['9','9'],
+      ['+','+'], ['-','-'], ['*','*'], ['/','/'], ['.','.'],
+      ['A','A'], ['B','B'], ['C','C'], ['D','D'], ['E','E'], ['F','F'], ['G','G'], ['H','H'], ['I','I'],
+      ['J','J'], ['K','K'], ['L','L'], ['M','M'], ['N','N'], ['O','O'], ['P','P'], ['Q','Q'], ['R','R'],
+      ['S','S'], ['T','T'], ['U','U'], ['V','V'], ['W','W'], ['X','X'], ['Y','Y'], ['Z','Z'],
+      [',','<'], ['.','>'], ['/','?'], ['`','~'], ['[','{'], [']','}'], ["'",'"']
     ];
 
     // TODO Why are '[' and ']' not implemented?
     this.chars = [
-      "!", '"', "#", "$", "%", "&", "'",
-      "(", ")", "*", "+", ",", "-", ".", "/", "0", "1",
-      "2", "3", "4", "5", "6", "7", "8", "9", ":", ";",
-      "<", "=", ">", "?", "@",
-      "^", "_", "`", "A", "B", "C",
-      "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
-      "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W",
-      "X", "Y", "Z", "{", "|", "}","~"
+      '!', '"', '#', '$', '%', '&', "'",
+      '(', ')', '*', '+', ',', '-', '.', '/', '0', '1',
+      '2', '3', '4', '5', '6', '7', '8', '9', ':', ';',
+      '<', '=', '>', '?', '@',
+      '^', '_', '`', 'A', 'B', 'C',
+      'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+      'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
+      'X', 'Y', 'Z', '{', '|', '}','~'
     ];
 
     this.xy = [
@@ -513,7 +664,7 @@ export class StringVariableRegister extends VariableRegister {
   // empty string.
 
   addVar(name: string) {
-    this.vars[name] = "";
+    this.vars[name] = '';
   }
 
 }

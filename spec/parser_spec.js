@@ -1,10 +1,12 @@
 GB80 = require('../gb80');
 LineParser = GB80.LineParser;
+SyntaxRules = GB80.SyntaxRules;
 
-xdescribe('BASIC program line parser', function() {
+describe('BASIC program line parser', function() {
 
   beforeEach(function() {
-     this.parser = new LineParser;
+    this.syntax = new SyntaxRules;
+    this.parser = new LineParser(this.syntax);
   });
 
 
@@ -33,7 +35,7 @@ xdescribe('BASIC program line parser', function() {
   });
 
 
-  it('should correctly parse line numbers in program lines', function() {
+  xit('should correctly parse line numbers in program lines', function() {
 
     result = this.parser.parse('10 REM WELCOME TO GRANDPA BASIC 80');
     expect(result).toEqual(jasmine.any(Array));
@@ -80,7 +82,7 @@ xdescribe('BASIC program line parser', function() {
   });
 
 
-  it('should correctly parse a valid program line number with nothing following it', function() {
+  xit('should correctly parse a valid program line number with nothing following it', function() {
 
     result = this.parser.parse('440');
     expect(result).toEqual(jasmine.any(Array));
@@ -97,7 +99,7 @@ xdescribe('BASIC program line parser', function() {
   });
 
 
-  it('should correctly parse a REM program line', function() {
+  xit('should correctly parse a REM program line', function() {
 
     result = this.parser.parse('100 REM');
     expect(result).toEqual(jasmine.any(Array));
@@ -121,7 +123,7 @@ xdescribe('BASIC program line parser', function() {
   });
 
 
-  it('should correctly parse a numeric assignment program line', function() {
+  xit('should correctly parse a numeric assignment program line', function() {
 
     result = this.parser.parse('180 X=77');
     expect(result).toEqual(jasmine.any(Array));
@@ -220,7 +222,7 @@ xdescribe('BASIC program line parser', function() {
   });
 
 
-  it('should correctly parse a string assignment program line', function() {
+  xit('should correctly parse a string assignment program line', function() {
 
     result = this.parser.parse('820 $V="HOY ES VIERNES"');
     expect(result).toEqual(jasmine.any(Array));
@@ -259,7 +261,7 @@ xdescribe('BASIC program line parser', function() {
   });
 
 
-  it('should correctly parse GOTO, GOSUB and RETURN program lines', function() {
+  xit('should correctly parse GOTO, GOSUB and RETURN program lines', function() {
 
     result = this.parser.parse('1840 GOTO 2100');
     expect(result).toEqual(jasmine.any(Array));
@@ -294,7 +296,7 @@ xdescribe('BASIC program line parser', function() {
   });
 
 
-  it('should correctly parse IF statement program lines', function() {
+  xit('should correctly parse IF statement program lines', function() {
 
     result = this.parser.parse('340 IF N>0 THEN 200');
     expect(result).toEqual(jasmine.any(Array));
@@ -345,7 +347,7 @@ xdescribe('BASIC program line parser', function() {
   });
 
 
-  it('should correctly parse INPUT program lines', function() {
+  xit('should correctly parse INPUT program lines', function() {
 
     result = this.parser.parse('820 INPUT R');
     expect(result).toEqual(jasmine.any(Array));
@@ -400,7 +402,7 @@ xdescribe('BASIC program line parser', function() {
   });
 
 
-  it('should correctly parse PRINT program lines', function() {
+  xit('should correctly parse PRINT program lines', function() {
 
     result = this.parser.parse('110 PRINT "WELCOME TO GRANDPA BASIC 1980"');
     expect(result).toEqual(jasmine.any(Array));
@@ -418,7 +420,7 @@ xdescribe('BASIC program line parser', function() {
   });
 
 
-  it('should correctly parse an END program line', function() {
+  xit('should correctly parse an END program line', function() {
 
     result = this.parser.parse('1599 END');
     expect(result).toEqual(jasmine.any(Array));
@@ -431,7 +433,7 @@ xdescribe('BASIC program line parser', function() {
   });
 
 
-  it('should reject any otherwise valid line with extra characters at the end', function() {
+  xit('should reject any otherwise valid line with extra characters at the end', function() {
 
     result = this.parser.parse('CLEAR ALL DATA');
     expect(result).toEqual('<parse_error>');

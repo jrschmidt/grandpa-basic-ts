@@ -10,12 +10,113 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+var SyntaxRules = (function () {
+    function SyntaxRules() {
+        this.rules = [
+            ['CLEAR'],
+            ['RUN'],
+            ['LIST'],
+            ['INFO']
+        ];
+        this.keywords = [
+            'CLEAR',
+            'RUN',
+            'LIST',
+            'INFO'
+        ];
+        this.keywordTokens = [
+            '<clear_command>',
+            '<run_command>',
+            '<list_command>',
+            '<info_command>'
+        ];
+    }
+    return SyntaxRules;
+}());
+exports.SyntaxRules = SyntaxRules;
 var LineParser = (function () {
-    function LineParser() {
+    function LineParser(syntax) {
+        this.syntax = syntax;
     }
     LineParser.prototype.parse = function (inputLine) {
+        var _this = this;
         var stack = [];
+        var result = {
+            match: 'no',
+            stack: [],
+            remainder: ''
+        };
+        this.syntax.rules.forEach(function (rule) {
+            if (result.match === 'no') {
+                result = _this.lookForRuleMatch(inputLine, rule);
+                if (result.match != 'no') {
+                    if ((result.match === 'parse_error') || (result.remainder.length > 0)) {
+                        stack = ['<parse_error'];
+                    }
+                    else {
+                        stack = result.stack;
+                    }
+                }
+            }
+        });
+        stack = result.stack;
         return stack;
+    };
+    // Check the string against a specific syntax rule
+    LineParser.prototype.lookForRuleMatch = function (string, rule) {
+        var _this = this;
+        var result = {
+            match: 'no',
+            stack: [],
+            remainder: ''
+        };
+        var match = 'no';
+        var stack = [];
+        var remainder;
+        var tokenMatch = {
+            match: 'no',
+            stack: [],
+            remainder: ''
+        };
+        rule.forEach(function (token) {
+            if (match === 'no') {
+                if (_this.syntax.keywords.indexOf(token) >= 0) {
+                    tokenMatch = _this.lookForKeywordMatch(token, string);
+                }
+                if (tokenMatch.match === 'yes') {
+                    match = 'yes';
+                    stack = stack.concat(tokenMatch.stack);
+                    remainder = tokenMatch.remainder;
+                }
+            }
+        });
+        if (match === 'yes') {
+            result = {
+                match: 'yes',
+                stack: stack,
+                remainder: remainder
+            };
+        }
+        return result;
+    };
+    // Check for a specific literal keyword
+    LineParser.prototype.lookForKeywordMatch = function (token, string) {
+        var result = {
+            match: 'no',
+            stack: [],
+            remainder: ''
+        };
+        var index = string.indexOf(token);
+        if (index === 0) {
+            var keywordIndex = this.syntax.keywords.indexOf(token);
+            var keywordToken = this.syntax.keywordTokens[keywordIndex];
+            result = {
+                match: 'yes',
+                stack: [keywordToken],
+                remainder: string.slice(token.length)
+            };
+        }
+        return result;
     };
     return LineParser;
 }());
@@ -226,25 +327,25 @@ var KeyHelper = (function () {
             188, 190, 191, 192, 219, 221, 222
         ];
         this.keys = [
-            ["-", "_"], ["=", "+"], [";", ":"], ["-", "_"], ["=", "+"], [";", ":"],
-            ["0", ")"], ["1", "!"], ["2", "@"], ["3", "#"], ["4", "$"], ["5", "%"], ["6", "^"], ["7", "&"], ["8", "*"], ["9", "("],
-            ["0", "0"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"], ["6", "6"], ["7", "7"], ["8", "8"], ["9", "9"],
-            ["+", "+"], ["-", "-"], ["*", "*"], ["/", "/"], [".", "."],
-            ["A", "A"], ["B", "B"], ["C", "C"], ["D", "D"], ["E", "E"], ["F", "F"], ["G", "G"], ["H", "H"], ["I", "I"],
-            ["J", "J"], ["K", "K"], ["L", "L"], ["M", "M"], ["N", "N"], ["O", "O"], ["P", "P"], ["Q", "Q"], ["R", "R"],
-            ["S", "S"], ["T", "T"], ["U", "U"], ["V", "V"], ["W", "W"], ["X", "X"], ["Y", "Y"], ["Z", "Z"],
-            [",", "<"], [".", ">"], ["/", "?"], ["`", "~"], ["[", "{"], ["]", "}"], ["'", '"']
+            ['-', '_'], ['=', '+'], [';', ':'], ['-', '_'], ['=', '+'], [';', ':'],
+            ['0', ')'], ['1', '!'], ['2', '@'], ['3', '#'], ['4', '$'], ['5', '%'], ['6', '^'], ['7', '&'], ['8', '*'], ['9', '('],
+            ['0', '0'], ['1', '1'], ['2', '2'], ['3', '3'], ['4', '4'], ['5', '5'], ['6', '6'], ['7', '7'], ['8', '8'], ['9', '9'],
+            ['+', '+'], ['-', '-'], ['*', '*'], ['/', '/'], ['.', '.'],
+            ['A', 'A'], ['B', 'B'], ['C', 'C'], ['D', 'D'], ['E', 'E'], ['F', 'F'], ['G', 'G'], ['H', 'H'], ['I', 'I'],
+            ['J', 'J'], ['K', 'K'], ['L', 'L'], ['M', 'M'], ['N', 'N'], ['O', 'O'], ['P', 'P'], ['Q', 'Q'], ['R', 'R'],
+            ['S', 'S'], ['T', 'T'], ['U', 'U'], ['V', 'V'], ['W', 'W'], ['X', 'X'], ['Y', 'Y'], ['Z', 'Z'],
+            [',', '<'], ['.', '>'], ['/', '?'], ['`', '~'], ['[', '{'], [']', '}'], ["'", '"']
         ];
         // TODO Why are '[' and ']' not implemented?
         this.chars = [
-            "!", '"', "#", "$", "%", "&", "'",
-            "(", ")", "*", "+", ",", "-", ".", "/", "0", "1",
-            "2", "3", "4", "5", "6", "7", "8", "9", ":", ";",
-            "<", "=", ">", "?", "@",
-            "^", "_", "`", "A", "B", "C",
-            "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
-            "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W",
-            "X", "Y", "Z", "{", "|", "}", "~"
+            '!', '"', '#', '$', '%', '&', "'",
+            '(', ')', '*', '+', ',', '-', '.', '/', '0', '1',
+            '2', '3', '4', '5', '6', '7', '8', '9', ':', ';',
+            '<', '=', '>', '?', '@',
+            '^', '_', '`', 'A', 'B', 'C',
+            'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+            'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
+            'X', 'Y', 'Z', '{', '|', '}', '~'
         ];
         this.xy = [
             [99, 72], [33, 72], [33, 90], [77, 72], [88, 72], [44, 90], [22, 72],
@@ -345,7 +446,7 @@ var StringVariableRegister = (function (_super) {
     // Most early versions of BASIC initialized unset string variables to an
     // empty string.
     StringVariableRegister.prototype.addVar = function (name) {
-        this.vars[name] = "";
+        this.vars[name] = '';
     };
     return StringVariableRegister;
 }(VariableRegister));
