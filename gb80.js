@@ -13,26 +13,37 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var SyntaxRules = (function () {
     function SyntaxRules() {
         this.rules = [
-            ['CLEAR'],
-            ['RUN'],
-            ['LIST'],
-            ['INFO'],
+            ['<clear_command>'],
+            ['<run_command>'],
+            ['<list_command>'],
+            ['<info_command>'],
+            ['<line_number>', '<space>', '<remark>', '<space>', '<characters>'],
+            ['<line_number>', '<space>', '<remark>'],
             ['<line_number>', '<space>', '<line_number_statement>']
         ];
         this.keywords = [
             'CLEAR',
             'RUN',
             'LIST',
-            'INFO'
+            'INFO',
+            'REM'
         ];
         this.keywordTokens = [
             '<clear_command>',
             '<run_command>',
             '<list_command>',
-            '<info_command>'
+            '<info_command>',
+            '<remark>'
+        ];
+        this.characterTokens = [
+            '<space>'
+        ];
+        this.characters = [
+            ' '
         ];
         this.actionTokens = [
-            '<line_number>'
+            '<line_number>',
+            '<characters>'
         ];
     }
     return SyntaxRules;
@@ -44,6 +55,8 @@ var LineParser = (function () {
     }
     LineParser.prototype.parse = function (inputLine) {
         var _this = this;
+        console.log(' ');
+        console.log("inputLine = " + inputLine);
         var stack = [];
         var result = {
             match: 'no',
@@ -64,69 +77,96 @@ var LineParser = (function () {
             }
         });
         stack = result.stack;
+        console.log("stack = " + stack);
         return stack;
     };
-    // Check the string against a specific syntax rule
+    // Check the string against a specific syntax rule.
     LineParser.prototype.lookForRuleMatch = function (string, rule) {
         var _this = this;
-        var result = {
+        var ruleResult = {
             match: 'no',
             stack: [],
             remainder: ''
         };
-        var match = 'no';
+        var ruleMatch = 'unknown';
         var stack = [];
-        var remainder;
-        var tokenMatch = {
+        var tokenResult = {
             match: 'no',
             stack: [],
             remainder: ''
         };
+        console.log(' ');
+        console.log(' ');
+        console.log(' ');
+        console.log('lookForRuleMatch() ');
+        console.log("rule = " + rule);
+        console.log("string = " + string);
         rule.forEach(function (token) {
-            if (match === 'no') {
-                if (_this.syntax.keywords.indexOf(token) >= 0) {
-                    tokenMatch = _this.lookForKeywordMatch(token, string);
+            console.log(' ');
+            console.log("forEach(token)  token = " + token);
+            if (ruleMatch === 'unknown') {
+                if (_this.syntax.keywordTokens.indexOf(token) >= 0) {
+                    tokenResult = _this.lookForKeywordMatch(token, string);
                 }
                 if (_this.syntax.actionTokens.indexOf(token) >= 0) {
-                    tokenMatch = _this.lookForActionTokenMatch(token, string);
+                    tokenResult = _this.lookForActiontokenResult(token, string);
                 }
-                if (tokenMatch.match === 'yes') {
-                    match = 'yes';
-                    stack = stack.concat(tokenMatch.stack);
-                    remainder = tokenMatch.remainder;
+                if (_this.syntax.characterTokens.indexOf(token) >= 0) {
+                    tokenResult = _this.lookForCharacterMatch(token, string);
+                }
+                if (tokenResult.match === 'yes') {
+                    stack = stack.concat(tokenResult.stack);
+                    console.log("token match: yes   stack = " + stack);
+                    string = tokenResult.remainder;
+                    console.log("string = " + string);
                 }
             }
         });
-        if (match === 'yes') {
-            result = {
-                match: 'yes',
-                stack: stack,
-                remainder: remainder
-            };
+        if (tokenResult.match === 'yes') {
+            if (string.length === 0) {
+                ruleResult = {
+                    match: 'yes',
+                    stack: stack,
+                    remainder: string
+                };
+            }
+            else {
+                ruleResult = {
+                    match: 'no',
+                    stack: [],
+                    remainder: ''
+                };
+            }
+            console.log("   remainder = " + string);
+            console.log("   stack = " + stack);
         }
-        return result;
+        return ruleResult;
     };
-    // Check for a specific literal keyword
+    // Check for a specific literal keyword.
     LineParser.prototype.lookForKeywordMatch = function (token, string) {
+        // console.log(' ');
+        // console.log('lookForKeywordMatch()');
+        // console.log(`   string = ${string}`);
+        // console.log(`   token = ${token}`);
         var result = {
             match: 'no',
             stack: [],
             remainder: ''
         };
-        var index = string.indexOf(token);
+        var i = this.syntax.keywordTokens.indexOf(token);
+        var keyword = this.syntax.keywords[i];
+        var index = string.indexOf(keyword);
         if (index === 0) {
-            var keywordIndex = this.syntax.keywords.indexOf(token);
-            var keywordToken = this.syntax.keywordTokens[keywordIndex];
             result = {
                 match: 'yes',
-                stack: [keywordToken],
-                remainder: string.slice(token.length)
+                stack: [token],
+                remainder: string.slice(keyword.length)
             };
         }
         return result;
     };
-    // Delegate to the 'look_for' method associated with a specific 'action' token
-    LineParser.prototype.lookForActionTokenMatch = function (token, string) {
+    // Delegate to the 'look_for' method associated with a specific 'action' token.
+    LineParser.prototype.lookForActiontokenResult = function (token, string) {
         var result = {
             match: 'no',
             stack: [],
@@ -135,8 +175,51 @@ var LineParser = (function () {
         if (token === '<line_number>') {
             result = this.lookForLineNumber(token, string);
         }
+        if (token === '<characters>') {
+            result = this.lookForCharacters(token, string);
+        }
         return result;
     };
+    // Check for the one specific character that matches the token.
+    LineParser.prototype.lookForCharacterMatch = function (token, string) {
+        // console.log(' ');
+        // console.log('   starting lookForCharacterMatch ...');
+        // console.log(`   string = ${string}`);
+        // console.log(`   token = ${token}`);
+        var result = {
+            match: 'no',
+            stack: [],
+            remainder: ''
+        };
+        var i = this.syntax.characterTokens.indexOf(token);
+        var ch = string[0];
+        if (ch === this.syntax.characters[i]) {
+            result = {
+                match: 'yes',
+                stack: [token],
+                remainder: string.slice(1)
+            };
+        }
+        return result;
+    };
+    // Check that there are one or more characters in the string.
+    // (Any nonempty string passes)
+    LineParser.prototype.lookForCharacters = function (token, string) {
+        var result = {
+            match: 'no',
+            stack: [],
+            remainder: ''
+        };
+        if (string.length > 0) {
+            result = {
+                match: 'yes',
+                stack: ['<characters>'],
+                remainder: ''
+            };
+        }
+        return result;
+    };
+    // Check that the statement begins with a proper line number.
     LineParser.prototype.lookForLineNumber = function (token, string) {
         var result = {
             match: 'no',
@@ -350,7 +433,7 @@ var BooleanExpressionBuilder = (function () {
 exports.BooleanExpressionBuilder = BooleanExpressionBuilder;
 var KeyHelper = (function () {
     function KeyHelper() {
-        // Postpone monitor color code until later in the CS - TS conversion
+        // Postpone monitor color code until later in the CS - TS conversion.
         // this.monitorColor = 'green';
         this.code = [
             173, 61, 59, 189, 187, 186,

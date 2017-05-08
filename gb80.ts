@@ -69,15 +69,16 @@ type SyntaxRuleTag =
   'RUN' |
   'INFO' |
   'LIST' |
+  'REM' |
   '<clear_command>' |
   '<run_command>' |
   '<info_command>' |
   '<list_command>' |
   '<line_number>' |
   '<space>' |
-  '<line_number_statement>';
-
-
+  '<characters>' |
+  '<line_number_statement>' |
+  '<remark>';
 
 interface ParseResult {
   match: 'no' | 'yes' | 'parse_error';
@@ -92,34 +93,49 @@ export class SyntaxRules {
   rules: SyntaxRuleTag[][];
   keywords: string[];
   keywordTokens: SyntaxRuleTag[];
+  characterTokens: SyntaxRuleTag[];
+  characters: string[];
   actionTokens: SyntaxRuleTag[];
 
   constructor () {
 
     this.rules = [
-      ['CLEAR'],
-      ['RUN'],
-      ['LIST'],
-      ['INFO'],
-      ['<line_number>','<space>','<line_number_statement>']
+      ['<clear_command>'],
+      ['<run_command>'],
+      ['<list_command>'],
+      ['<info_command>'],
+      ['<line_number>', '<space>', '<remark>', '<space>', '<characters>'],
+      ['<line_number>', '<space>', '<remark>'],
+      ['<line_number>', '<space>', '<line_number_statement>']
     ];
 
     this.keywords = [
       'CLEAR',
       'RUN',
       'LIST',
-      'INFO'
+      'INFO',
+      'REM'
     ];
 
     this.keywordTokens = [
       '<clear_command>',
       '<run_command>',
       '<list_command>',
-      '<info_command>'
+      '<info_command>',
+      '<remark>'
+    ];
+
+    this.characterTokens = [
+      '<space>'
+    ];
+
+    this.characters = [
+      ' '
     ];
 
     this.actionTokens = [
-      '<line_number>'
+      '<line_number>',
+      '<characters>'
     ];
 
   }
@@ -137,6 +153,8 @@ export class LineParser {
 
 
   parse (inputLine: string): ParseStack {
+    console.log(' ');
+    console.log(`inputLine = ${inputLine}`);
 
     let stack: ParseStack = [];
 
@@ -153,7 +171,7 @@ export class LineParser {
           if ( (result.match === 'parse_error') || (result.remainder.length > 0) ) {
             stack = ['<parse_error'];
           }
-          else {
+          else { // We can remove this else statement.
             stack = result.stack;
           }
         }
@@ -161,74 +179,101 @@ export class LineParser {
     });
 
     stack = result.stack;
+    console.log(`stack = ${stack}`);
     return stack;
   }
 
 
-  // Check the string against a specific syntax rule
+  // Check the string against a specific syntax rule.
   lookForRuleMatch (string: string, rule: SyntaxRuleTag[]): ParseResult {
 
-    let result: ParseResult = {
+    let ruleResult: ParseResult = {
       match: 'no',
       stack: [],
       remainder: ''
     };
 
-    let match: string = 'no';
+    let ruleMatch: string = 'unknown';
     let stack: ParseStack = [];
-    let remainder: string;
 
-    let tokenMatch: ParseResult = {
+    let tokenResult: ParseResult = {
       match: 'no',
       stack: [],
       remainder: ''
     };
 
+    console.log(' ');
+    console.log(' ');
+    console.log(' ');
+    console.log('lookForRuleMatch() ');
+    console.log(`rule = ${rule}`);
+    console.log(`string = ${string}`);
     rule.forEach(token => {
-      if (match === 'no') {
-        if ( this.syntax.keywords.indexOf(token) >= 0 ) {
-          tokenMatch = this.lookForKeywordMatch(token, string);
+      console.log(' ');
+      console.log(`forEach(token)  token = ${token}`);
+      if (ruleMatch === 'unknown') {
+        if ( this.syntax.keywordTokens.indexOf(token) >= 0 ) {
+          tokenResult = this.lookForKeywordMatch(token, string);
         }
         if ( this.syntax.actionTokens.indexOf(token) >= 0 ) {
-          tokenMatch = this.lookForActionTokenMatch(token, string);
+          tokenResult = this.lookForActiontokenResult(token, string);
         }
-        if (tokenMatch.match === 'yes') {
-          match = 'yes';
-          stack = stack.concat(tokenMatch.stack);
-          remainder = tokenMatch.remainder;
+        if ( this.syntax.characterTokens.indexOf(token) >= 0 ) {
+          tokenResult = this.lookForCharacterMatch(token, string);
+        }
+        if ( tokenResult.match === 'yes' ) {
+          stack = stack.concat(tokenResult.stack);
+          console.log(`token match: yes   stack = ${stack}`);
+          string = tokenResult.remainder;
+          console.log(`string = ${string}`);
         }
       }
+
     });
 
-    if (match === 'yes') {
-      result = {
-        match: 'yes',
-        stack: stack,
-        remainder: remainder
-      };
+    if ( tokenResult.match === 'yes' ) {
+      if (string.length === 0) {
+        ruleResult = {
+          match: 'yes',
+          stack: stack,
+          remainder: string
+        };
+      }
+      else {
+        ruleResult = {
+          match: 'no',
+          stack: [],
+          remainder: ''
+        };
+      }
+      console.log(`   remainder = ${string}`);
+      console.log(`   stack = ${stack}`);
     }
 
-    return result;
+    return ruleResult;
   }
 
 
-  // Check for a specific literal keyword
+  // Check for a specific literal keyword.
   lookForKeywordMatch (token: SyntaxRuleTag, string: string): ParseResult {
-
+    // console.log(' ');
+    // console.log('lookForKeywordMatch()');
+    // console.log(`   string = ${string}`);
+    // console.log(`   token = ${token}`);
     let result: ParseResult = {
       match: 'no',
       stack: [],
       remainder: ''
     };
 
-    let index: number = string.indexOf(token);
+    let i: number = this.syntax.keywordTokens.indexOf(token);
+    let keyword: string = this.syntax.keywords[i];
+    let index: number = string.indexOf(keyword);
     if (index === 0) {
-      let keywordIndex: number = this.syntax.keywords.indexOf(token);
-      let keywordToken: SyntaxRuleTag = this.syntax.keywordTokens[keywordIndex];
       result = {
         match: 'yes',
-        stack: [ keywordToken ],
-        remainder: string.slice(token.length)
+        stack: [ token ],
+        remainder: string.slice(keyword.length)
       };
     }
 
@@ -237,8 +282,8 @@ export class LineParser {
   }
 
 
-  // Delegate to the 'look_for' method associated with a specific 'action' token
-  lookForActionTokenMatch (token: SyntaxRuleTag, string: string): ParseResult {
+  // Delegate to the 'look_for' method associated with a specific 'action' token.
+  lookForActiontokenResult (token: SyntaxRuleTag, string: string): ParseResult {
 
     let result: ParseResult = {
       match: 'no',
@@ -250,11 +295,68 @@ export class LineParser {
       result = this.lookForLineNumber(token, string);
     }
 
+    if (token === '<characters>') {
+      result = this.lookForCharacters(token, string);
+    }
+
     return result;
 
   }
 
 
+  // Check for the one specific character that matches the token.
+  lookForCharacterMatch (token: SyntaxRuleTag, string: string): ParseResult {
+    // console.log(' ');
+    // console.log('   starting lookForCharacterMatch ...');
+    // console.log(`   string = ${string}`);
+    // console.log(`   token = ${token}`);
+
+    let result: ParseResult = {
+      match: 'no',
+      stack: [],
+      remainder: ''
+    };
+
+    let i: number = this.syntax.characterTokens.indexOf(token);
+    let ch: string = string[0];
+
+    if (ch === this.syntax.characters[i]) {
+      result = {
+        match: 'yes',
+        stack: [token],
+        remainder: string.slice(1)
+      };
+    }
+
+    return result;
+
+}
+
+
+  // Check that there are one or more characters in the string.
+  // (Any nonempty string passes)
+  lookForCharacters (token: SyntaxRuleTag, string: string): ParseResult {
+
+    let result: ParseResult = {
+      match: 'no',
+      stack: [],
+      remainder: ''
+    };
+
+    if (string.length > 0) {
+      result = {
+        match: 'yes',
+        stack: [ '<characters>' ],
+        remainder: ''
+      };
+    }
+
+    return result;
+
+  }
+
+
+  // Check that the statement begins with a proper line number.
   lookForLineNumber (token: SyntaxRuleTag, string: string): ParseResult {
 
     let result: ParseResult = {
@@ -553,7 +655,7 @@ export class KeyHelper {
 
   constructor () {
 
-    // Postpone monitor color code until later in the CS - TS conversion
+    // Postpone monitor color code until later in the CS - TS conversion.
     // this.monitorColor = 'green';
 
     this.code = [
