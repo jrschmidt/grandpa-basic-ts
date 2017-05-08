@@ -10,7 +10,7 @@ describe('BASIC program line parser', function() {
   });
 
 
-  xit('should correctly parse a terminal command', function() {
+  it('should correctly parse a terminal command', function() {
 
     result = this.parser.parse('CLEAR');
     expect(result).toEqual(jasmine.any(Array));
@@ -35,7 +35,7 @@ describe('BASIC program line parser', function() {
   });
 
 
-  xit('should correctly parse line numbers in program lines', function() {
+  it('should correctly parse line numbers in program lines', function() {
 
     result = this.parser.parse('10 REM WELCOME TO GRANDPA BASIC 80');
     expect(result).toEqual(jasmine.any(Array));
@@ -75,7 +75,7 @@ describe('BASIC program line parser', function() {
   });
 
 
-  xit('should correctly parse a valid program line number with nothing following it', function() {
+  it('should correctly parse a valid program line number with nothing following it', function() {
 
     result = this.parser.parse('440');
     expect(result).toEqual(jasmine.any(Array));

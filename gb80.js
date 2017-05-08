@@ -19,7 +19,8 @@ var SyntaxRules = (function () {
             ['<info_command>'],
             ['<line_number>', '<space>', '<remark>', '<space>', '<characters>'],
             ['<line_number>', '<space>', '<remark>'],
-            ['<line_number>', '<space>', '<line_number_statement>']
+            ['<line_number>', '<space>', '<line_number_statement>'],
+            ['<line_number>']
         ];
         this.keywords = [
             'CLEAR',
