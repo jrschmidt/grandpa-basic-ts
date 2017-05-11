@@ -75,10 +75,13 @@ type SyntaxRuleTag =
   '<info_command>' |
   '<list_command>' |
   '<line_number>' |
+  '<numeric_variable>' |
+  '<numeric_expression>' |
+  '<remark>' |
+  '<equals>' |
   '<space>' |
   '<characters>' |
-  '<line_number_statement>' |
-  '<remark>';
+  '<line_number_statement>';
 
 interface ParseResult {
   match: 'no' | 'yes' | 'parse_error';
@@ -100,14 +103,16 @@ export class SyntaxRules {
   constructor () {
 
     this.rules = [
-      ['<clear_command>'],
-      ['<run_command>'],
-      ['<list_command>'],
-      ['<info_command>'],
-      ['<line_number>', '<space>', '<remark>', '<space>', '<characters>'],
-      ['<line_number>', '<space>', '<remark>'],
-      ['<line_number>', '<space>', '<line_number_statement>'],
-      ['<line_number>']
+      // ['<clear_command>'],
+      // ['<run_command>'],
+      // ['<list_command>'],
+      // ['<info_command>'],
+      // ['<line_number>', '<space>', '<remark>', '<space>', '<characters>'],
+      // ['<line_number>', '<space>', '<remark>'],
+      // ['<line_number>', '<space>', '<line_number_statement>'],
+      // ['<line_number>', '<space>', '<numeric_variable>', '<equals>', '<numeric_expression>'],
+      ['<line_number>', '<space>', '<numeric_variable>'],
+      // ['<line_number>']
     ];
 
     this.keywords = [
@@ -136,7 +141,8 @@ export class SyntaxRules {
 
     this.actionTokens = [
       '<line_number>',
-      '<characters>'
+      '<characters>',
+      '<numeric_variable>'
     ];
 
   }
@@ -154,8 +160,6 @@ export class LineParser {
 
 
   parse (inputLine: string): ParseStack {
-    console.log(' ');
-    console.log(`inputLine = ${inputLine}`);
 
     let stack: ParseStack = [];
 
@@ -180,7 +184,6 @@ export class LineParser {
     });
 
     stack = result.stack;
-    console.log(`stack = ${stack}`);
     return stack;
   }
 
@@ -203,15 +206,7 @@ export class LineParser {
       remainder: ''
     };
 
-    console.log(' ');
-    console.log(' ');
-    console.log(' ');
-    console.log('lookForRuleMatch() ');
-    console.log(`rule = ${rule}`);
-    console.log(`string = ${string}`);
     rule.forEach(token => {
-      console.log(' ');
-      console.log(`forEach(token)  token = ${token}`);
       if (ruleMatch === 'unknown') {
         if ( this.syntax.keywordTokens.indexOf(token) >= 0 ) {
           tokenResult = this.lookForKeywordMatch(token, string);
@@ -222,11 +217,13 @@ export class LineParser {
         if ( this.syntax.characterTokens.indexOf(token) >= 0 ) {
           tokenResult = this.lookForCharacterMatch(token, string);
         }
+
+        if ( tokenResult.match === 'no' ) {
+          ruleMatch = 'no';
+        }
         if ( tokenResult.match === 'yes' ) {
           stack = stack.concat(tokenResult.stack);
-          console.log(`token match: yes   stack = ${stack}`);
           string = tokenResult.remainder;
-          console.log(`string = ${string}`);
         }
       }
 
@@ -247,8 +244,6 @@ export class LineParser {
           remainder: ''
         };
       }
-      console.log(`   remainder = ${string}`);
-      console.log(`   stack = ${stack}`);
     }
 
     return ruleResult;
@@ -257,10 +252,6 @@ export class LineParser {
 
   // Check for a specific literal keyword.
   lookForKeywordMatch (token: SyntaxRuleTag, string: string): ParseResult {
-    // console.log(' ');
-    // console.log('lookForKeywordMatch()');
-    // console.log(`   string = ${string}`);
-    // console.log(`   token = ${token}`);
     let result: ParseResult = {
       match: 'no',
       stack: [],
@@ -300,6 +291,10 @@ export class LineParser {
       result = this.lookForCharacters(token, string);
     }
 
+    if (token === '<numeric_variable>') {
+      result = this.lookForNumericIdentifier(token, string);
+    }
+
     return result;
 
   }
@@ -307,10 +302,6 @@ export class LineParser {
 
   // Check for the one specific character that matches the token.
   lookForCharacterMatch (token: SyntaxRuleTag, string: string): ParseResult {
-    // console.log(' ');
-    // console.log('   starting lookForCharacterMatch ...');
-    // console.log(`   string = ${string}`);
-    // console.log(`   token = ${token}`);
 
     let result: ParseResult = {
       match: 'no',
@@ -373,6 +364,42 @@ export class LineParser {
         stack: [ '<line_number>', n],
         remainder: string.slice(String(n).length)
       };
+    }
+
+    return result;
+  }
+
+
+  lookForNumericIdentifier (token: SyntaxRuleTag, string: string): ParseResult {
+
+    let result: ParseResult = {
+      match: 'no',
+      stack: [],
+      remainder: ''
+    };
+
+    let len: number;
+    let id: string;
+
+    if ( 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(string[0]) >= 0 ) {
+
+      if ( '0123456789'.indexOf(string[1]) >= 0 ) {
+        len = 2;
+      }
+
+      else {
+        len = 1;
+      }
+
+      if ( ( len === string.length ) || ( '=+-*/^)'.indexOf(string[len]) >= 0 ) ) {
+        id = string.slice(0, len);
+        result = {
+          match: 'yes',
+          stack: ['<numeric_variable>', id],
+          remainder: string.slice(len)
+        };
+      }
+
     }
 
     return result;
