@@ -251,6 +251,44 @@ var LineParser = (function () {
     return LineParser;
 }());
 exports.LineParser = LineParser;
+var NumericExpressionParser = (function () {
+    function NumericExpressionParser() {
+        this.delimiters = ['(', ')', '+', '-', '*', '/', '^'];
+        this.symbols = [
+            '<left>',
+            '<right>',
+            '<plus>',
+            '<minus>',
+            '<times>',
+            '<divide>',
+            '<power>'
+        ];
+    }
+    NumericExpressionParser.prototype.tokenize = function (string) {
+        var result = [];
+        var buffer = '';
+        for (var i = 0; i < string.length; i++) {
+            var ch = string[i];
+            var index = this.delimiters.indexOf(ch);
+            if (index >= 0) {
+                if (buffer != '') {
+                    result.push(buffer);
+                    buffer = '';
+                }
+                result.push(this.symbols[index]);
+            }
+            else {
+                buffer = buffer + ch;
+            }
+        }
+        if (buffer != '') {
+            result.push(buffer);
+        }
+        return result;
+    };
+    return NumericExpressionParser;
+}());
+exports.NumericExpressionParser = NumericExpressionParser;
 var NumericExpressionBuilder = (function () {
     function NumericExpressionBuilder() {
     }

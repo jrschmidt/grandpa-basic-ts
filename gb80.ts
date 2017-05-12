@@ -9,6 +9,8 @@ type NumericExpressionTag =
   '<times>' |
   '<divide>' |
   '<power>' |
+  '<left>' |
+  '<right>' |
   '<random>' |
   '<integer>';
 
@@ -403,6 +405,59 @@ export class LineParser {
     }
 
     return result;
+  }
+
+}
+
+
+
+export class NumericExpressionParser {
+  delimiters: string[];
+  symbols: ParseTag[];
+
+  constructor () {
+
+    this.delimiters = ['(', ')', '+', '-', '*', '/', '^']
+    this.symbols = [
+      '<left>',
+      '<right>',
+      '<plus>',
+      '<minus>',
+      '<times>',
+      '<divide>',
+      '<power>']
+
+  }
+
+
+  tokenize (string: string): ParseStack {
+
+        let result: string[] = [];
+        let buffer: string = '';
+
+        for (let i = 0;i<string.length;i++) {
+          let ch: string = string[i];
+          let index: number = this.delimiters.indexOf(ch);
+
+          if ( index >= 0 ) {
+            if ( buffer != '' ) {
+              result.push(buffer);
+              buffer = '';
+            }
+            result.push(this.symbols[index]);
+          }
+
+          else {
+            buffer = buffer + ch;
+          }
+
+        }
+
+        if ( buffer != '' ) {
+          result.push(buffer);
+        }
+
+        return result;
   }
 
 }
