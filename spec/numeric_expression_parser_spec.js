@@ -122,74 +122,64 @@ describe('Numeric expression parser', function() {
   });
 
 
-  xit('should parse properly formed strings into numeric variables or literals', function() {
+  it('should parse properly formed strings into numeric variables or literals', function() {
     var result;
 
-    result = this.parser.numeric_value('0');
+    result = this.parser.parseNumericValue('0');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(2);
     expect(result[0]).toEqual('<numeric_literal>');
     expect(result[1]).toEqual(0);
 
-    result = this.parser.numeric_value('6');
+    result = this.parser.parseNumericValue('6');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(2);
     expect(result[0]).toEqual('<numeric_literal>');
     expect(result[1]).toEqual(6);
 
-    result = this.parser.numeric_value('967');
+    result = this.parser.parseNumericValue('967');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(2);
     expect(result[0]).toEqual('<numeric_literal>');
     expect(result[1]).toEqual(967);
 
-    result = this.parser.numeric_value('428.17');
+    result = this.parser.parseNumericValue('428.17');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(2);
     expect(result[0]).toEqual('<numeric_literal>');
     expect(result[1]).toEqual(428.17);
 
-    result = this.parser.numeric_value('X');
+    result = this.parser.parseNumericValue('X');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(2);
-    expect(result[0]).toEqual('<number_variable>');
+    expect(result[0]).toEqual('<numeric_variable>');
     expect(result[1]).toEqual('X');
 
-    result = this.parser.numeric_value('K7');
+    result = this.parser.parseNumericValue('K7');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(2);
-    expect(result[0]).toEqual('<number_variable>');
+    expect(result[0]).toEqual('<numeric_variable>');
     expect(result[1]).toEqual('K7');
 
-    result = this.parser.numeric_value('1,420,366');
+    result = this.parser.parseNumericValue('1,420,366');
     expect(result).toEqual(jasmine.any(Array));
-    expect(result.length).toEqual(2);
-    expect(result[0]).toEqual('bad');
-    expect(result[1]).toEqual('bad');
+    expect(result.length).toEqual(0);
 
-    result = this.parser.numeric_value('$10');
+    result = this.parser.parseNumericValue('$10');
     expect(result).toEqual(jasmine.any(Array));
-    expect(result.length).toEqual(2);
-    expect(result[0]).toEqual('bad');
-    expect(result[1]).toEqual('bad');
+    expect(result.length).toEqual(0);
 
-    result = this.parser.numeric_value('18 737');
+    result = this.parser.parseNumericValue('18 737');
     expect(result).toEqual(jasmine.any(Array));
-    expect(result.length).toEqual(2);
-    expect(result[0]).toEqual('bad');
-    expect(result[1]).toEqual('bad');
+    expect(result.length).toEqual(0);
 
-    result = this.parser.numeric_value('PI');
+    result = this.parser.parseNumericValue('PI');
     expect(result).toEqual(jasmine.any(Array));
-    expect(result.length).toEqual(2);
-    expect(result[0]).toEqual('bad');
-    expect(result[1]).toEqual('bad');
+    expect(result.length).toEqual(0);
 
-    result = this.parser.numeric_value('67.40.11');
+    result = this.parser.parseNumericValue('67.40.11');
     expect(result).toEqual(jasmine.any(Array));
-    expect(result.length).toEqual(2);
-    expect(result[0]).toEqual('bad');
-    expect(result[1]).toEqual('bad');
+    expect(result.length).toEqual(0);
 
   });
 
@@ -237,7 +227,7 @@ describe('Numeric expression parser', function() {
     expect(result.match).toEqual('yes');
     po = result.parse_object;
     expect(po[0]).toEqual('<numeric_expression>');
-    expect(po[1]).toEqual('<number_variable>');
+    expect(po[1]).toEqual('<numeric_variable>');
     expect(po[2]).toEqual('X');
     expect(po[3]).toEqual('<num_exp_end>');
 
@@ -275,7 +265,7 @@ describe('Numeric expression parser', function() {
     expect(po[1]).toEqual('<numeric_literal>');
     expect(po[2]).toEqual(477);
     expect(po[3]).toEqual('<plus>');
-    expect(po[4]).toEqual('<number_variable>');
+    expect(po[4]).toEqual('<numeric_variable>');
     expect(po[5]).toEqual('B');
     expect(po[6]).toEqual('<num_exp_end>');
 
@@ -283,7 +273,7 @@ describe('Numeric expression parser', function() {
     expect(result.match).toEqual('yes');
     po = result.parse_object;
     expect(po[0]).toEqual('<numeric_expression>');
-    expect(po[1]).toEqual('<number_variable>');
+    expect(po[1]).toEqual('<numeric_variable>');
     expect(po[2]).toEqual('C');
     expect(po[3]).toEqual('<power>');
     expect(po[4]).toEqual('<numeric_literal>');
@@ -304,13 +294,13 @@ describe('Numeric expression parser', function() {
     expect(result.match).toEqual('yes');
     po = result.parse_object;
     expect(po[0]).toEqual('<numeric_expression>');
-    expect(po[1]).toEqual('<number_variable>');
+    expect(po[1]).toEqual('<numeric_variable>');
     expect(po[2]).toEqual('X');
     expect(po[3]).toEqual('<times>');
-    expect(po[4]).toEqual('<number_variable>');
+    expect(po[4]).toEqual('<numeric_variable>');
     expect(po[5]).toEqual('Y');
     expect(po[6]).toEqual('<times>');
-    expect(po[7]).toEqual('<number_variable>');
+    expect(po[7]).toEqual('<numeric_variable>');
     expect(po[8]).toEqual('Z');
     expect(po[9]).toEqual('<num_exp_end>');
 
@@ -322,7 +312,7 @@ describe('Numeric expression parser', function() {
     expect(po[2]).toEqual(28);
     expect(po[3]).toEqual('<times>');
     expect(po[4]).toEqual('<left>');
-    expect(po[5]).toEqual('<number_variable>');
+    expect(po[5]).toEqual('<numeric_variable>');
     expect(po[6]).toEqual('J');
     expect(po[7]).toEqual('<plus>');
     expect(po[8]).toEqual('<numeric_literal>');
@@ -336,7 +326,7 @@ describe('Numeric expression parser', function() {
     expect(po[0]).toEqual('<numeric_expression>');
     expect(po[1]).toEqual('<integer>');
     expect(po[2]).toEqual('<left>');
-    expect(po[3]).toEqual('<number_variable>');
+    expect(po[3]).toEqual('<numeric_variable>');
     expect(po[4]).toEqual('W');
     expect(po[5]).toEqual('<right>');
     expect(po[6]).toEqual('<num_exp_end>');
@@ -345,23 +335,23 @@ describe('Numeric expression parser', function() {
     expect(result.match).toEqual('yes');
     po = result.parse_object;
     expect(po[0]).toEqual('<numeric_expression>');
-    expect(po[1]).toEqual('<number_variable>');
+    expect(po[1]).toEqual('<numeric_variable>');
     expect(po[2]).toEqual('W5');
     expect(po[3]).toEqual('<plus>');
-    expect(po[4]).toEqual('<number_variable>');
+    expect(po[4]).toEqual('<numeric_variable>');
     expect(po[5]).toEqual('W7');
     expect(po[6]).toEqual('<minus>');
     expect(po[7]).toEqual('<numeric_literal>');
     expect(po[8]).toEqual(4);
     expect(po[9]).toEqual('<times>');
     expect(po[10]).toEqual('<left>');
-    expect(po[11]).toEqual('<number_variable>');
+    expect(po[11]).toEqual('<numeric_variable>');
     expect(po[12]).toEqual('J');
     expect(po[13]).toEqual('<power>');
     expect(po[14]).toEqual('<numeric_literal>');
     expect(po[15]).toEqual(2);
     expect(po[16]).toEqual('<plus>');
-    expect(po[17]).toEqual('<number_variable>');
+    expect(po[17]).toEqual('<numeric_variable>');
     expect(po[18]).toEqual('K');
     expect(po[19]).toEqual('<power>');
     expect(po[20]).toEqual('<numeric_literal>');
@@ -377,7 +367,7 @@ describe('Numeric expression parser', function() {
     expect(po[2]).toEqual('<numeric_literal>');
     expect(po[3]).toEqual(18);
     expect(po[4]).toEqual('<minus>');
-    expect(po[5]).toEqual('<number_variable>');
+    expect(po[5]).toEqual('<numeric_variable>');
     expect(po[6]).toEqual('Q7');
     expect(po[7]).toEqual('<right>');
     expect(po[8]).toEqual('<divide>');
@@ -389,13 +379,13 @@ describe('Numeric expression parser', function() {
     expect(po[14]).toEqual('<numeric_literal>');
     expect(po[15]).toEqual(14);
     expect(po[16]).toEqual('<times>');
-    expect(po[17]).toEqual('<number_variable>');
+    expect(po[17]).toEqual('<numeric_variable>');
     expect(po[18]).toEqual('M');
     expect(po[19]).toEqual('<plus>');
     expect(po[20]).toEqual('<numeric_literal>');
     expect(po[21]).toEqual(17);
     expect(po[22]).toEqual('<times>');
-    expect(po[23]).toEqual('<number_variable>');
+    expect(po[23]).toEqual('<numeric_variable>');
     expect(po[24]).toEqual('X');
     expect(po[25]).toEqual('<right>');
     expect(po[26]).toEqual('<right>');

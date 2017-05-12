@@ -286,6 +286,38 @@ var NumericExpressionParser = (function () {
         }
         return result;
     };
+    NumericExpressionParser.prototype.parseNumericValue = function (string) {
+        var result = [];
+        if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(string[0]) >= 0) {
+            if ((string.length === 1) || ((string.length === 2) && ('0123456789'.indexOf(string[1]) >= 0))) {
+                result = [
+                    '<numeric_variable>',
+                    string
+                ];
+            }
+        }
+        else {
+            var nonNumerics = 'none';
+            for (var i = 0; i < string.length; i++) {
+                var ch = string[i];
+                if ('0123456789'.indexOf(ch) < 0) {
+                    if ((ch === '.') && (nonNumerics === 'none')) {
+                        nonNumerics = 'decimal_point';
+                    }
+                    else {
+                        nonNumerics = 'bad';
+                    }
+                }
+            }
+            if (nonNumerics != 'bad') {
+                result = [
+                    '<numeric_literal>',
+                    Number(string)
+                ];
+            }
+        }
+        return result;
+    };
     return NumericExpressionParser;
 }());
 exports.NumericExpressionParser = NumericExpressionParser;

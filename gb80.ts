@@ -460,6 +460,53 @@ export class NumericExpressionParser {
         return result;
   }
 
+
+  parseNumericValue (string: string): ParseStack {
+    let result: ParseStack = [];
+
+    if ( 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(string[0]) >= 0 ) {
+      if ( ( string.length === 1 ) || ( ( string.length === 2 ) && ( '0123456789'.indexOf(string[1]) >= 0 ) ) ) {
+        result = [
+          '<numeric_variable>',
+          string
+        ];
+      }
+    }
+
+    else {
+      let nonNumerics: string = 'none';
+
+      for (let i = 0;i<string.length;i++) {
+        let ch: string = string[i];
+
+        if ( '0123456789'.indexOf(ch) < 0 ) {
+
+          if ( (ch === '.') && (nonNumerics === 'none') ) {
+            nonNumerics = 'decimal_point';
+          }
+
+          else {
+          nonNumerics = 'bad';
+          }
+
+        }
+
+      }
+
+      if (nonNumerics != 'bad') {
+        result = [
+          '<numeric_literal>',
+          Number(string)
+        ];
+      }
+
+    }
+
+
+    return result;
+
+  }
+
 }
 
 
