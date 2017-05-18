@@ -438,8 +438,9 @@ export class NumericExpressionParser {
       result = [ '<numeric_expression>' ];
       let tokens: ParseStack = this.tokenize(string);
 
-      for (let i=0; i<tokens.length; i++) {
-        let tk: any = tokens[i];
+      tokens.forEach( tkn => {
+        let tk: any = tkn;
+
         this.parseNumericValue(tk);
 
         if ( this.symbols.indexOf(tk) >= 0 ) {
@@ -458,34 +459,12 @@ export class NumericExpressionParser {
           }
 
         }
-
-      }
+      });
 
       if ( result.length > 0 ) {
         result.push('<num_exp_end>');
       }
     }
-
-
-
-
-    // bad_chars = string.search(/[^A-Z0-9\.+\-*/\^()]/)
-		// if bad_chars == -1
-		// 	po = ["<numeric_expression>"]
-		// 	ok = "yes"
-		// 	tokens = @tokenize(string)
-		// 	for tk in tokens
-		// 		if tk in @symbols
-		// 			po.push(tk)
-		// 		else
-		// 			val = @numeric_value(tk)
-		// 			if val[0] == "bad"
-		// 				ok = "no"
-		// 			else
-		// 				po.push(val[0])
-		// 				po.push(val[1])
-		// 	po.push("<num_exp_end>")
-
 
     return result;
   }

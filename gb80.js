@@ -265,18 +265,19 @@ var NumericExpressionParser = (function () {
         ];
     }
     NumericExpressionParser.prototype.parseNumericExpression = function (string) {
+        var _this = this;
         var result = [];
         if (string.search(/[^A-Z0-9\.+\-*/\^()]/) < 0) {
             result = ['<numeric_expression>'];
             var tokens = this.tokenize(string);
-            for (var i = 0; i < tokens.length; i++) {
-                var tk = tokens[i];
-                this.parseNumericValue(tk);
-                if (this.symbols.indexOf(tk) >= 0) {
+            tokens.forEach(function (tkn) {
+                var tk = tkn;
+                _this.parseNumericValue(tk);
+                if (_this.symbols.indexOf(tk) >= 0) {
                     result.push(tk);
                 }
                 else {
-                    var numericValueParseStack = this.parseNumericValue(tk);
+                    var numericValueParseStack = _this.parseNumericValue(tk);
                     if (numericValueParseStack.length > 0) {
                         result = result.concat(numericValueParseStack);
                     }
@@ -284,27 +285,11 @@ var NumericExpressionParser = (function () {
                         result = [];
                     }
                 }
-            }
+            });
             if (result.length > 0) {
                 result.push('<num_exp_end>');
             }
         }
-        // bad_chars = string.search(/[^A-Z0-9\.+\-*/\^()]/)
-        // if bad_chars == -1
-        // 	po = ["<numeric_expression>"]
-        // 	ok = "yes"
-        // 	tokens = @tokenize(string)
-        // 	for tk in tokens
-        // 		if tk in @symbols
-        // 			po.push(tk)
-        // 		else
-        // 			val = @numeric_value(tk)
-        // 			if val[0] == "bad"
-        // 				ok = "no"
-        // 			else
-        // 				po.push(val[0])
-        // 				po.push(val[1])
-        // 	po.push("<num_exp_end>")
         return result;
     };
     NumericExpressionParser.prototype.tokenize = function (string) {
