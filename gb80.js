@@ -266,25 +266,45 @@ var NumericExpressionParser = (function () {
     }
     NumericExpressionParser.prototype.parseNumericExpression = function (string) {
         var result = [];
-        // split_string = @sub_split(string)
-        // if (split_string.is_split == "no")
-        // 	result = @parse_substring(string)
-        // else
-        // 	first = @numeric_parse(split_string.first)
-        // 	last = @numeric_parse(split_string.last)
-        // 	if (first.match == "no" or last.match == "no")
-        // 		result = {match: "no"}
-        // 	else
-        // 		po1 = first.parse_object
-        // 		po1.pop()
-        // 		po = po1
-        // 		po.push(split_string.split_token)
-        // 		po2 = last.parse_object
-        // 		po2.shift()
-        // 		po.push(tk) for tk in po2
-        // 		result = {
-        // 			match: "yes"
-        // 			parse_object: po }
+        if (string.search(/[^A-Z0-9\.+\-*/\^()]/) < 0) {
+            result = ['<numeric_expression>'];
+            var tokens = this.tokenize(string);
+            for (var i = 0; i < tokens.length; i++) {
+                var tk = tokens[i];
+                this.parseNumericValue(tk);
+                if (this.symbols.indexOf(tk) >= 0) {
+                    result.push(tk);
+                }
+                else {
+                    var numericValueParseStack = this.parseNumericValue(tk);
+                    if (numericValueParseStack.length > 0) {
+                        result = result.concat(numericValueParseStack);
+                    }
+                    else {
+                        result = [];
+                    }
+                }
+            }
+            if (result.length > 0) {
+                result.push('<num_exp_end>');
+            }
+        }
+        // bad_chars = string.search(/[^A-Z0-9\.+\-*/\^()]/)
+        // if bad_chars == -1
+        // 	po = ["<numeric_expression>"]
+        // 	ok = "yes"
+        // 	tokens = @tokenize(string)
+        // 	for tk in tokens
+        // 		if tk in @symbols
+        // 			po.push(tk)
+        // 		else
+        // 			val = @numeric_value(tk)
+        // 			if val[0] == "bad"
+        // 				ok = "no"
+        // 			else
+        // 				po.push(val[0])
+        // 				po.push(val[1])
+        // 	po.push("<num_exp_end>")
         return result;
     };
     NumericExpressionParser.prototype.tokenize = function (string) {
@@ -820,7 +840,7 @@ var KeyHelper = (function () {
             var xx = this.xy[i][0];
             var yy = this.xy[i][1];
             // Postpone monitor color code until later in the CS - TS conversion
-            // if (this.monitorColor === 'green') {xx = xx + 145;}
+            // if ( this.monitorColor === 'green' ) {xx = xx + 145;}
             return [xx, yy];
         }
         else {

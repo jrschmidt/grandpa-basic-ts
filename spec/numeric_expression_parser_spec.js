@@ -184,11 +184,8 @@ describe('Numeric expression parser', function() {
   });
 
 
-  xit("should return 'no match' for any string that won't parse into a numeric expression", function() {
+  it("should return a failed result for any string that won't parse into a numeric expression", function() {
     var result;
-
-    result = this.parser.parseNumericExpression('33-7');
-    expect(result).toEqual( [] );
 
     result = this.parser.parseNumericExpression('617.42.9');
     expect(result).toEqual( [] );
@@ -205,16 +202,10 @@ describe('Numeric expression parser', function() {
     result = this.parser.parseNumericExpression('22,348,507');
     expect(result).toEqual( [] );
 
-    result = this.parser.parseNumericExpression('45507');
+    result = this.parser.parseNumericExpression('????');
     expect(result).toEqual( [] );
 
-    result = this.parser.parseNumericExpression('102.54');
-    expect(result).toEqual( [] );
-
-    result = this.parser.parseNumericExpression('800/37');
-    expect(result).toEqual( [] );
-
-    result = this.parser.parseNumericExpression('(66*A)-Z^4');
+    result = this.parser.parseNumericExpression('A+114-@<%');
     expect(result).toEqual( [] );
 
   });

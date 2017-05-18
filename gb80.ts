@@ -172,9 +172,9 @@ export class LineParser {
     };
 
     this.syntax.rules.forEach(rule => {
-      if (result.match === 'no') {
+      if ( result.match === 'no' ) {
         result = this.lookForRuleMatch(inputLine, rule);
-        if (result.match != 'no') {
+        if ( result.match != 'no' ) {
           if ( (result.match === 'parse_error') || (result.remainder.length > 0) ) {
             stack = ['<parse_error'];
           }
@@ -209,7 +209,7 @@ export class LineParser {
     };
 
     rule.forEach(token => {
-      if (ruleMatch === 'unknown') {
+      if ( ruleMatch === 'unknown' ) {
         if ( this.syntax.keywordTokens.indexOf(token) >= 0 ) {
           tokenResult = this.lookForKeywordMatch(token, string);
         }
@@ -232,7 +232,7 @@ export class LineParser {
     });
 
     if ( tokenResult.match === 'yes' ) {
-      if (string.length === 0) {
+      if ( string.length === 0 ) {
         ruleResult = {
           match: 'yes',
           stack: stack,
@@ -263,7 +263,7 @@ export class LineParser {
     let i: number = this.syntax.keywordTokens.indexOf(token);
     let keyword: string = this.syntax.keywords[i];
     let index: number = string.indexOf(keyword);
-    if (index === 0) {
+    if ( index === 0 ) {
       result = {
         match: 'yes',
         stack: [ token ],
@@ -285,15 +285,15 @@ export class LineParser {
       remainder: ''
     };
 
-    if (token === '<line_number>') {
+    if ( token === '<line_number>' ) {
       result = this.lookForLineNumber(token, string);
     }
 
-    if (token === '<characters>') {
+    if ( token === '<characters>' ) {
       result = this.lookForCharacters(token, string);
     }
 
-    if (token === '<numeric_variable>') {
+    if ( token === '<numeric_variable>' ) {
       result = this.lookForNumericIdentifier(token, string);
     }
 
@@ -314,7 +314,7 @@ export class LineParser {
     let i: number = this.syntax.characterTokens.indexOf(token);
     let ch: string = string[0];
 
-    if (ch === this.syntax.characters[i]) {
+    if ( ch === this.syntax.characters[i] ) {
       result = {
         match: 'yes',
         stack: [token],
@@ -337,7 +337,7 @@ export class LineParser {
       remainder: ''
     };
 
-    if (string.length > 0) {
+    if ( string.length > 0 ) {
       result = {
         match: 'yes',
         stack: [ '<characters>' ],
@@ -360,7 +360,7 @@ export class LineParser {
     };
 
     let n: number = parseInt(string);
-    if (n > 0) {
+    if ( n > 0 ) {
       result = {
         match: 'yes',
         stack: [ '<line_number>', n],
@@ -434,27 +434,58 @@ export class NumericExpressionParser {
 
     let result: ParseStack = [];
 
+    if ( string.search(/[^A-Z0-9\.+\-*/\^()]/) < 0 ) {
+      result = [ '<numeric_expression>' ];
+      let tokens: ParseStack = this.tokenize(string);
+
+      for (let i=0; i<tokens.length; i++) {
+        let tk: any = tokens[i];
+        this.parseNumericValue(tk);
+
+        if ( this.symbols.indexOf(tk) >= 0 ) {
+          result.push(tk);
+        }
+
+        else {
+          let numericValueParseStack: ParseStack = this.parseNumericValue(tk);
+
+          if ( numericValueParseStack.length > 0 ) {
+            result = result.concat( numericValueParseStack );
+          }
+
+          else {
+            result = [];
+          }
+
+        }
+
+      }
+
+      if ( result.length > 0 ) {
+        result.push('<num_exp_end>');
+      }
+    }
 
 
-    // split_string = @sub_split(string)
-		// if (split_string.is_split == "no")
-		// 	result = @parse_substring(string)
-		// else
-		// 	first = @numeric_parse(split_string.first)
-		// 	last = @numeric_parse(split_string.last)
-		// 	if (first.match == "no" or last.match == "no")
-		// 		result = {match: "no"}
-		// 	else
-		// 		po1 = first.parse_object
-		// 		po1.pop()
-		// 		po = po1
-		// 		po.push(split_string.split_token)
-		// 		po2 = last.parse_object
-		// 		po2.shift()
-		// 		po.push(tk) for tk in po2
-		// 		result = {
-		// 			match: "yes"
-		// 			parse_object: po }
+
+
+    // bad_chars = string.search(/[^A-Z0-9\.+\-*/\^()]/)
+		// if bad_chars == -1
+		// 	po = ["<numeric_expression>"]
+		// 	ok = "yes"
+		// 	tokens = @tokenize(string)
+		// 	for tk in tokens
+		// 		if tk in @symbols
+		// 			po.push(tk)
+		// 		else
+		// 			val = @numeric_value(tk)
+		// 			if val[0] == "bad"
+		// 				ok = "no"
+		// 			else
+		// 				po.push(val[0])
+		// 				po.push(val[1])
+		// 	po.push("<num_exp_end>")
+
 
     return result;
   }
@@ -523,7 +554,7 @@ export class NumericExpressionParser {
 
       }
 
-      if (nonNumerics != 'bad') {
+      if ( nonNumerics != 'bad' ) {
         result = [
           '<numeric_literal>',
           Number(string)
@@ -619,7 +650,7 @@ export class NumericExpressionBuilder {
   stripDelimiterTokens (stack: ParseStack): ParseStack {
     let first = stack[0];
     let last = stack[stack.length - 1];
-    if (first === '<numeric_expression>' && last === '<num_exp_end>') {
+    if ( first === '<numeric_expression>' && last === '<num_exp_end>' ) {
       stack = stack.slice(1, stack.length - 1);
     }
     return stack;
@@ -649,11 +680,11 @@ export class NumericExpressionBuilder {
     stack = this.deparenthesize(stack);
 
     for (let rank=0; rank<rankings.length; rank++) {
-      if (found != 'yes') {
+      if ( found != 'yes' ) {
         for (let n=0; n<stack.length; n++) {
-          if (found != 'yes') {
+          if ( found != 'yes' ) {
             for (let i=0; i<rankings[rank].length; i++) {
-              if (stack[n] === rankings[rank][i]) {
+              if ( stack[n] === rankings[rank][i] ) {
                 splitIndex = n;
                 found = 'yes';
               }
@@ -672,7 +703,7 @@ export class NumericExpressionBuilder {
     result.left = left;
 
     let right = stack.slice(splitIndex + 1);
-    if (splitter != '<numeric_variable>') {
+    if ( splitter != '<numeric_variable>' ) {
       right = this.extractFromArray(right);
     }
     result.right = right;
@@ -697,11 +728,11 @@ export class NumericExpressionBuilder {
     let middleStack: ParseStack;
 
     stack.forEach(tag => {
-      if (tag === '<left>') {
+      if ( tag === '<left>' ) {
         mainStacks.push( [] );
       }
 
-      if (tag === '<right>') {
+      if ( tag === '<right>' ) {
         middleStack = mainStacks.pop();
         mainStacks[mainStacks.length-1].push(middleStack);
         mainStacks[mainStacks.length-1] = mainStacks[mainStacks.length-1].concat(tailStack);
@@ -713,7 +744,7 @@ export class NumericExpressionBuilder {
       }
     });
 
-    if (mainStacks.length != 1) {
+    if ( mainStacks.length != 1 ) {
       return [];
     }
     else {
@@ -736,7 +767,7 @@ export class StringExpressionBuilder {
 
     for ( let t=1; t<=stack.length-3; t=t+3 ) {
 
-      if (stack[t] === '<string_variable>') {
+      if ( stack[t] === '<string_variable>' ) {
         let name: string = <string>stack[t+1];
         expression = {
           tag: '<string_variable>',
@@ -780,11 +811,11 @@ export class BooleanExpressionBuilder {
     let subStack: ParseStack = stack.slice(4, stack.length - 1);
     let expression: NumericExpressionObject | StringExpressionObject;
 
-    if (stack[1] === '<numeric_variable>') {
+    if ( stack[1] === '<numeric_variable>' ) {
       expression = this.numericBuilder.buildNumericExpression(subStack);
     }
 
-    if (stack[1] === '<string_variable>') {
+    if ( stack[1] === '<string_variable>' ) {
       expression = this.stringBuilder.buildStringExpression(subStack);
     }
 
@@ -814,7 +845,7 @@ class VariableRegister {
   }
 
   defined (name: string): boolean {
-    if (this.vars.hasOwnProperty(name)) {
+    if ( this.vars.hasOwnProperty(name) ) {
       return true;
     }
     else {
@@ -823,14 +854,14 @@ class VariableRegister {
   }
 
   set (name: string, value: any) {
-    if (! this.defined(name)) {
+    if ( ! this.defined(name) ) {
       this.addVar(name);
     }
     this.vars[name] = value;
   }
 
   get (name: string): any {
-    if (! this.defined(name)) {
+    if ( ! this.defined(name) ) {
       this.addVar(name);
     }
     return this.vars[name];
@@ -964,12 +995,12 @@ export class StringExpressionEvaluator {
 
     expression.forEach( next => {
 
-        if (next.tag === '<string_literal>') {
+        if ( next.tag === '<string_literal>' ) {
           nextString = next.value;
           result = result.concat(nextString);
         }
 
-        if (next.tag === '<string_variable>') {
+        if ( next.tag === '<string_variable>' ) {
         nextString = this.register.get(next.name);
         result = result.concat(nextString);
         }
@@ -1026,28 +1057,28 @@ export class BooleanExpressionEvaluator {
 
       case '<number_equals>':
       case '<string_equals>':
-        if (compareResult === '<equal>') result = true;
+        if ( compareResult === '<equal>' ) result = true;
       break;
 
       case '<number_not_equal>':
       case '<string_not_equal>':
-        if (compareResult != '<equal>') result = true;
+        if ( compareResult != '<equal>' ) result = true;
       break;
 
       case '<number_lesser_than>':
-        if (compareResult === '<lesser>')  result = true;
+        if ( compareResult === '<lesser>' )  result = true;
       break;
 
       case '<number_lesser_equal>':
-        if ((compareResult === '<lesser>') || (compareResult === '<equal>'))  result = true;
+        if ( (compareResult === '<lesser>') || (compareResult === '<equal>') )  result = true;
       break;
 
       case '<number_greater_than>':
-        if (compareResult === '<greater>')  result = true;
+        if ( compareResult === '<greater>' )  result = true;
       break;
 
       case '<number_greater_equal>':
-      if ((compareResult === '<greater>') || (compareResult === '<equal>'))  result = true;
+      if ( (compareResult === '<greater>') || (compareResult === '<equal>') )  result = true;
       break;
 
     }
@@ -1059,9 +1090,9 @@ export class BooleanExpressionEvaluator {
   numericCompare (x: number, y: number): ComparatorTag {
     let tag: ComparatorTag;
 
-    if (x === y) tag = '<equal>';
-    if (x < y) tag = '<lesser>';
-    if (x > y) tag = '<greater>';
+    if ( x === y ) tag = '<equal>';
+    if ( x < y ) tag = '<lesser>';
+    if ( x > y ) tag = '<greater>';
 
     return tag;
   }
@@ -1070,7 +1101,7 @@ export class BooleanExpressionEvaluator {
   stringCompare (a: string, b: string): ComparatorTag {
     let tag: ComparatorTag;
 
-    if (a === b) tag = '<equal>';
+    if ( a === b ) tag = '<equal>';
     else tag = '<not_equal>';
 
     return tag;
@@ -1149,10 +1180,10 @@ export class KeyHelper {
   char(n: number, shiftStatus: string): string {
     let ch: string;
 
-    if (this.code.indexOf(n) >= 0) {
+    if ( this.code.indexOf(n) >= 0 ) {
       let i: number = this.code.indexOf(n);
 
-      if (shiftStatus === '<shift>') {
+      if ( shiftStatus === '<shift>' ) {
         ch = this.keys[i][1];
       }
 
@@ -1164,7 +1195,7 @@ export class KeyHelper {
 
     else {
 
-      if (n === 32) {
+      if ( n === 32 ) {
         ch = ' ';
       }
 
@@ -1178,12 +1209,12 @@ export class KeyHelper {
 
 
   spriteXY(ch: string): number[] {
-    if (this.chars.indexOf(ch) >= 0) {
+    if ( this.chars.indexOf(ch) >= 0 ) {
       let i = this.chars.indexOf(ch);
       let xx = this.xy[i][0];
       let yy = this.xy[i][1];
       // Postpone monitor color code until later in the CS - TS conversion
-      // if (this.monitorColor === 'green') {xx = xx + 145;}
+      // if ( this.monitorColor === 'green' ) {xx = xx + 145;}
       return [xx, yy];
     }
 
