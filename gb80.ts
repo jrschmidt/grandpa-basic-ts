@@ -112,10 +112,10 @@ export class SyntaxRules {
       // ['<line_number>', '<space>', '<remark>', '<space>', '<characters>'],
       // ['<line_number>', '<space>', '<remark>'],
       // ['<line_number>', '<space>', '<line_number_statement>'],
-      // ['<line_number>', '<space>', '<numeric_variable>', '<equals>', '<numeric_expression>'],
-      ['<line_number>', '<space>', '<numeric_variable>'],
+      ['<line_number>', '<space>', '<numeric_variable>', '<equals>', '<numeric_expression>'],
       // ['<line_number>']
     ];
+    // ['<line_number>', '<space>', '<numeric_variable>'],  ** T E M P **
 
     this.keywords = [
       'CLEAR',
@@ -134,17 +134,20 @@ export class SyntaxRules {
     ];
 
     this.characterTokens = [
-      '<space>'
+      '<space>',
+      '<equals>'
     ];
 
     this.characters = [
-      ' '
+      ' ',
+      '='
     ];
 
     this.actionTokens = [
       '<line_number>',
       '<characters>',
-      '<numeric_variable>'
+      '<numeric_variable>',
+      '<numeric_expression>'
     ];
 
   }
@@ -155,15 +158,18 @@ export class SyntaxRules {
 
 export class LineParser {
   syntax: SyntaxRules;
+  numericExpressionParser: NumericExpressionParser;
 
-  constructor (syntax: SyntaxRules) {
+  constructor (
+    syntax: SyntaxRules,
+    numericExpressionParser: NumericExpressionParser)
+  {
     this.syntax = syntax;
+    this.numericExpressionParser = numericExpressionParser;
   }
 
 
   parse (inputLine: string): ParseStack {
-
-    let stack: ParseStack = [];
 
     let result: ParseResult = {
       match: 'no',
@@ -174,19 +180,10 @@ export class LineParser {
     this.syntax.rules.forEach(rule => {
       if ( result.match === 'no' ) {
         result = this.lookForRuleMatch(inputLine, rule);
-        if ( result.match != 'no' ) {
-          if ( (result.match === 'parse_error') || (result.remainder.length > 0) ) {
-            stack = ['<parse_error'];
-          }
-          else { // We can remove this else statement.
-            stack = result.stack;
-          }
-        }
       }
     });
 
-    stack = result.stack;
-    return stack;
+    return result.stack;
   }
 
 
@@ -214,7 +211,7 @@ export class LineParser {
           tokenResult = this.lookForKeywordMatch(token, string);
         }
         if ( this.syntax.actionTokens.indexOf(token) >= 0 ) {
-          tokenResult = this.lookForActiontokenResult(token, string);
+          tokenResult = this.lookForActionTokenResult(token, string);
         }
         if ( this.syntax.characterTokens.indexOf(token) >= 0 ) {
           tokenResult = this.lookForCharacterMatch(token, string);
@@ -232,13 +229,15 @@ export class LineParser {
     });
 
     if ( tokenResult.match === 'yes' ) {
+
       if ( string.length === 0 ) {
         ruleResult = {
           match: 'yes',
           stack: stack,
-          remainder: string
+          remainder: ''
         };
       }
+
       else {
         ruleResult = {
           match: 'no',
@@ -246,6 +245,7 @@ export class LineParser {
           remainder: ''
         };
       }
+
     }
 
     return ruleResult;
@@ -277,7 +277,7 @@ export class LineParser {
 
 
   // Delegate to the 'look_for' method associated with a specific 'action' token.
-  lookForActiontokenResult (token: SyntaxRuleTag, string: string): ParseResult {
+  lookForActionTokenResult (token: SyntaxRuleTag, string: string): ParseResult {
 
     let result: ParseResult = {
       match: 'no',
@@ -286,15 +286,22 @@ export class LineParser {
     };
 
     if ( token === '<line_number>' ) {
-      result = this.lookForLineNumber(token, string);
+      result = this.lookForLineNumber(string);
     }
 
     if ( token === '<characters>' ) {
-      result = this.lookForCharacters(token, string);
+      result = this.lookForCharacters(string);
     }
 
     if ( token === '<numeric_variable>' ) {
-      result = this.lookForNumericIdentifier(token, string);
+      result = this.lookForNumericIdentifier(string);
+    }
+
+    if ( token === '<numeric_expression>' ) {
+      result.stack = this.numericExpressionParser.parseNumericExpression(string);
+      if ( result.stack.length > 0 ) {
+        result.match = 'yes'
+      }
     }
 
     return result;
@@ -329,7 +336,7 @@ export class LineParser {
 
   // Check that there are one or more characters in the string.
   // (Any nonempty string passes)
-  lookForCharacters (token: SyntaxRuleTag, string: string): ParseResult {
+  lookForCharacters (string: string): ParseResult {
 
     let result: ParseResult = {
       match: 'no',
@@ -351,7 +358,7 @@ export class LineParser {
 
 
   // Check that the statement begins with a proper line number.
-  lookForLineNumber (token: SyntaxRuleTag, string: string): ParseResult {
+  lookForLineNumber (string: string): ParseResult {
 
     let result: ParseResult = {
       match: 'no',
@@ -372,7 +379,7 @@ export class LineParser {
   }
 
 
-  lookForNumericIdentifier (token: SyntaxRuleTag, string: string): ParseResult {
+  lookForNumericIdentifier (string: string): ParseResult {
 
     let result: ParseResult = {
       match: 'no',
@@ -418,6 +425,7 @@ export class NumericExpressionParser {
   constructor () {
 
     this.delimiters = ['(', ')', '+', '-', '*', '/', '^']
+
     this.symbols = [
       '<left>',
       '<right>',
@@ -440,8 +448,6 @@ export class NumericExpressionParser {
 
       tokens.forEach( tkn => {
         let tk: any = tkn;
-
-        this.parseNumericValue(tk);
 
         if ( this.symbols.indexOf(tk) >= 0 ) {
           result.push(tk);
