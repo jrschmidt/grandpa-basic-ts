@@ -557,6 +557,39 @@ export class NumericExpressionParser {
 
 
 
+export class StringExpressionParser {
+
+  tokenize (string: string): ParseStack {
+    let result: ParseStack = [];
+    let buffer: string = '';
+
+    for (let i = 0;i<string.length;i++) {
+
+      if ( string[i] === '+' ) {
+        if ( buffer.length > 0 ) {
+          result.push(buffer);
+          buffer = '';
+        }
+        result.push('<plus>');
+      }
+
+      else {
+        buffer = buffer + string[i];
+      }
+
+    }
+
+    if ( buffer.length > 0 ) {
+      result.push(buffer);
+    }
+
+    return result;
+  }
+
+}
+
+
+
 export class NumericExpressionBuilder {
 
   buildNumericExpression (stack: ParseStack): NumericExpressionObject {

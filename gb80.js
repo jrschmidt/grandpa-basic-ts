@@ -348,6 +348,32 @@ var NumericExpressionParser = (function () {
     return NumericExpressionParser;
 }());
 exports.NumericExpressionParser = NumericExpressionParser;
+var StringExpressionParser = (function () {
+    function StringExpressionParser() {
+    }
+    StringExpressionParser.prototype.tokenize = function (string) {
+        var result = [];
+        var buffer = '';
+        for (var i = 0; i < string.length; i++) {
+            if (string[i] === '+') {
+                if (buffer.length > 0) {
+                    result.push(buffer);
+                    buffer = '';
+                }
+                result.push('<plus>');
+            }
+            else {
+                buffer = buffer + string[i];
+            }
+        }
+        if (buffer.length > 0) {
+            result.push(buffer);
+        }
+        return result;
+    };
+    return StringExpressionParser;
+}());
+exports.StringExpressionParser = StringExpressionParser;
 var NumericExpressionBuilder = (function () {
     function NumericExpressionBuilder() {
     }
