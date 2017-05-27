@@ -177,7 +177,7 @@ export class LineParser {
       remainder: ''
     };
 
-    this.syntax.rules.forEach(rule => {
+    this.syntax.rules.forEach( rule => {
       if ( result.match === 'no' ) {
         result = this.lookForRuleMatch(inputLine, rule);
       }
@@ -205,7 +205,7 @@ export class LineParser {
       remainder: ''
     };
 
-    rule.forEach(token => {
+    rule.forEach( token => {
       if ( ruleMatch === 'unknown' ) {
         if ( this.syntax.keywordTokens.indexOf(token) >= 0 ) {
           tokenResult = this.lookForKeywordMatch(token, string);
@@ -559,6 +559,40 @@ export class NumericExpressionParser {
 
 export class StringExpressionParser {
 
+  parseStringExpression (string: string): ParseStack {
+    let resultTokens: ParseStack;
+
+    let result: ParseStack = [];
+
+    let tokens: ParseStack = this.tokenize(string);
+    tokens.forEach( tk => {
+      if ( tk === '<plus>' ) {
+        result.push('<plus>');
+      }
+
+      else {
+        resultTokens = this.parseStringVariableName(<string>tk);
+
+        if ( resultTokens.length === 0 ) {
+          resultTokens = this.parseStringLiteral(<string>tk);
+        }
+
+        if ( resultTokens.length > 0 ) {
+          result = result.concat(resultTokens);
+        }
+      }
+
+    });
+
+    if ( result.length > 0 ) {
+      result.unshift('<string_expression>');
+      result.push('<str_exp_end>');
+    }
+
+    return result;
+  }
+
+
   tokenize (string: string): ParseStack {
     let result: ParseStack = [];
     let buffer: string = '';
@@ -581,6 +615,41 @@ export class StringExpressionParser {
 
     if ( buffer.length > 0 ) {
       result.push(buffer);
+    }
+
+    return result;
+  }
+
+
+  parseStringVariableName (string: string): ParseStack {
+    let result: ParseStack = [];
+
+    if ( string[0] === '$' ) {
+      if ( 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(string[1]) >= 0 ) {
+        if ( ( string.length === 2 ) || ( ( string.length === 3 ) && ( '0123456789'.indexOf(string[2]) >= 0 ) ) ) {
+          result = [
+            '<string_variable>',
+            string.substr(1,2)
+          ];
+        }
+      }
+    }
+
+    return result;
+  }
+
+
+  parseStringLiteral (string: string): ParseStack {
+    let result: ParseStack = [];
+
+    if ( ( string.indexOf('"') === 0 ) || ( string.lastIndexOf('"') === string.length -1 ) ) {
+      let newString: string = string.slice(1, string.length-1);
+      if ( newString.indexOf('"') < 0 ) {
+        result = [
+          '<string_literal>',
+          newString
+        ];
+      }
     }
 
     return result;
@@ -745,7 +814,7 @@ export class NumericExpressionBuilder {
     let tailStack: ParseStack = [];
     let middleStack: ParseStack;
 
-    stack.forEach(tag => {
+    stack.forEach( tag => {
       if ( tag === '<left>' ) {
         mainStacks.push( [] );
       }

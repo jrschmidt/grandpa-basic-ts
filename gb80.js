@@ -351,6 +351,31 @@ exports.NumericExpressionParser = NumericExpressionParser;
 var StringExpressionParser = (function () {
     function StringExpressionParser() {
     }
+    StringExpressionParser.prototype.parseStringExpression = function (string) {
+        var _this = this;
+        var resultTokens;
+        var result = [];
+        var tokens = this.tokenize(string);
+        tokens.forEach(function (tk) {
+            if (tk === '<plus>') {
+                result.push('<plus>');
+            }
+            else {
+                resultTokens = _this.parseStringVariableName(tk);
+                if (resultTokens.length === 0) {
+                    resultTokens = _this.parseStringLiteral(tk);
+                }
+                if (resultTokens.length > 0) {
+                    result = result.concat(resultTokens);
+                }
+            }
+        });
+        if (result.length > 0) {
+            result.unshift('<string_expression>');
+            result.push('<str_exp_end>');
+        }
+        return result;
+    };
     StringExpressionParser.prototype.tokenize = function (string) {
         var result = [];
         var buffer = '';
@@ -368,6 +393,33 @@ var StringExpressionParser = (function () {
         }
         if (buffer.length > 0) {
             result.push(buffer);
+        }
+        return result;
+    };
+    StringExpressionParser.prototype.parseStringVariableName = function (string) {
+        var result = [];
+        if (string[0] === '$') {
+            if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(string[1]) >= 0) {
+                if ((string.length === 2) || ((string.length === 3) && ('0123456789'.indexOf(string[2]) >= 0))) {
+                    result = [
+                        '<string_variable>',
+                        string.substr(1, 2)
+                    ];
+                }
+            }
+        }
+        return result;
+    };
+    StringExpressionParser.prototype.parseStringLiteral = function (string) {
+        var result = [];
+        if ((string.indexOf('"') === 0) || (string.lastIndexOf('"') === string.length - 1)) {
+            var newString = string.slice(1, string.length - 1);
+            if (newString.indexOf('"') < 0) {
+                result = [
+                    '<string_literal>',
+                    newString
+                ];
+            }
         }
         return result;
     };
