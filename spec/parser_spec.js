@@ -12,7 +12,7 @@ describe('BASIC program line parser', function() {
   });
 
 
-  xit('should correctly parse a terminal command', function() {
+  it('should correctly parse a terminal command', function() {
 
     result = this.parser.parse('CLEAR');
     expect(result).toEqual(jasmine.any(Array));

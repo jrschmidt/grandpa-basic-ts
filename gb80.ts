@@ -93,79 +93,78 @@ interface ParseResult {
 
 
 
-export class SyntaxRules {
+// export class SyntaxRules {
+//
+//   rules: SyntaxRuleTag[][];
+//   keywords: string[];
+//   keywordTokens: SyntaxRuleTag[];
+//   characterTokens: SyntaxRuleTag[];
+//   characters: string[];
+//   actionTokens: SyntaxRuleTag[];
+//
+//   constructor () {
+//
+//     this.rules = [
+//       // ['<clear_command>'],
+//       // ['<run_command>'],
+//       // ['<list_command>'],
+//       // ['<info_command>'],
+//       // ['<line_number>', '<space>', '<remark>', '<space>', '<characters>'],
+//       // ['<line_number>', '<space>', '<remark>'],
+//       // ['<line_number>', '<space>', '<line_number_statement>'],
+//       ['<line_number>', '<space>', '<numeric_variable>', '<equals>', '<numeric_expression>'],
+//       // ['<line_number>']
+//     ];
+//     // ['<line_number>', '<space>', '<numeric_variable>'],  ** T E M P **
+//
+//     this.keywords = [
+//       'CLEAR',
+//       'RUN',
+//       'LIST',
+//       'INFO',
+//       'REM'
+//     ];
+//
+//     this.keywordTokens = [
+//       '<clear_command>',
+//       '<run_command>',
+//       '<list_command>',
+//       '<info_command>',
+//       '<remark>'
+//     ];
+//
+//     this.characterTokens = [
+//       '<space>',
+//       '<equals>'
+//     ];
+//
+//     this.characters = [
+//       ' ',
+//       '='
+//     ];
+//
+//     this.actionTokens = [
+//       '<line_number>',
+//       '<characters>',
+//       '<numeric_variable>',
+//       '<numeric_expression>'
+//     ];
+//
+//   }
+//
+// }
 
-  rules: SyntaxRuleTag[][];
-  keywords: string[];
-  keywordTokens: SyntaxRuleTag[];
-  characterTokens: SyntaxRuleTag[];
-  characters: string[];
-  actionTokens: SyntaxRuleTag[];
 
-  constructor () {
 
-    this.rules = [
-      // ['<clear_command>'],
-      // ['<run_command>'],
-      // ['<list_command>'],
-      // ['<info_command>'],
-      // ['<line_number>', '<space>', '<remark>', '<space>', '<characters>'],
-      // ['<line_number>', '<space>', '<remark>'],
-      // ['<line_number>', '<space>', '<line_number_statement>'],
-      ['<line_number>', '<space>', '<numeric_variable>', '<equals>', '<numeric_expression>'],
-      // ['<line_number>']
-    ];
-    // ['<line_number>', '<space>', '<numeric_variable>'],  ** T E M P **
-
-    this.keywords = [
-      'CLEAR',
-      'RUN',
-      'LIST',
-      'INFO',
-      'REM'
-    ];
-
-    this.keywordTokens = [
-      '<clear_command>',
-      '<run_command>',
-      '<list_command>',
-      '<info_command>',
-      '<remark>'
-    ];
-
-    this.characterTokens = [
-      '<space>',
-      '<equals>'
-    ];
-
-    this.characters = [
-      ' ',
-      '='
-    ];
-
-    this.actionTokens = [
-      '<line_number>',
-      '<characters>',
-      '<numeric_variable>',
-      '<numeric_expression>'
-    ];
-
-  }
-
-}
+export class LineParserFunctions {}
 
 
 
 export class LineParser {
-  syntax: SyntaxRules;
-  numericExpressionParser: NumericExpressionParser;
+  lineParserFunctions: LineParserFunctions;
 
-  constructor (
-    syntax: SyntaxRules,
-    numericExpressionParser: NumericExpressionParser)
-  {
-    this.syntax = syntax;
-    this.numericExpressionParser = numericExpressionParser;
+  constructor (lineParserFunctions: LineParserFunctions) {
+    this.lineParserFunctions = lineParserFunctions;
   }
 
 
@@ -177,7 +176,7 @@ export class LineParser {
       remainder: ''
     };
 
-    this.syntax.rules.forEach( rule => {
+    this.lineParserFunctions.forEach( rule => {
       if ( result.match === 'no' ) {
         result = this.lookForRuleMatch(inputLine, rule);
       }
@@ -252,167 +251,167 @@ export class LineParser {
   }
 
 
-  // Check for a specific literal keyword.
-  lookForKeywordMatch (token: SyntaxRuleTag, string: string): ParseResult {
-    let result: ParseResult = {
-      match: 'no',
-      stack: [],
-      remainder: ''
-    };
-
-    let i: number = this.syntax.keywordTokens.indexOf(token);
-    let keyword: string = this.syntax.keywords[i];
-    let index: number = string.indexOf(keyword);
-    if ( index === 0 ) {
-      result = {
-        match: 'yes',
-        stack: [ token ],
-        remainder: string.slice(keyword.length)
-      };
-    }
-
-    return result;
-
-  }
-
-
-  // Delegate to the 'look_for' method associated with a specific 'action' token.
-  lookForActionTokenResult (token: SyntaxRuleTag, string: string): ParseResult {
-
-    let result: ParseResult = {
-      match: 'no',
-      stack: [],
-      remainder: ''
-    };
-
-    if ( token === '<line_number>' ) {
-      result = this.lookForLineNumber(string);
-    }
-
-    if ( token === '<characters>' ) {
-      result = this.lookForCharacters(string);
-    }
-
-    if ( token === '<numeric_variable>' ) {
-      result = this.lookForNumericIdentifier(string);
-    }
-
-    if ( token === '<numeric_expression>' ) {
-      result.stack = this.numericExpressionParser.parseNumericExpression(string);
-      if ( result.stack.length > 0 ) {
-        result.match = 'yes'
-      }
-    }
-
-    return result;
-
-  }
+  // // Check for a specific literal keyword.
+  // lookForKeywordMatch (token: SyntaxRuleTag, string: string): ParseResult {
+  //   let result: ParseResult = {
+  //     match: 'no',
+  //     stack: [],
+  //     remainder: ''
+  //   };
+  //
+  //   let i: number = this.syntax.keywordTokens.indexOf(token);
+  //   let keyword: string = this.syntax.keywords[i];
+  //   let index: number = string.indexOf(keyword);
+  //   if ( index === 0 ) {
+  //     result = {
+  //       match: 'yes',
+  //       stack: [ token ],
+  //       remainder: string.slice(keyword.length)
+  //     };
+  //   }
+  //
+  //   return result;
+  //
+  // }
 
 
-  // Check for the one specific character that matches the token.
-  lookForCharacterMatch (token: SyntaxRuleTag, string: string): ParseResult {
-
-    let result: ParseResult = {
-      match: 'no',
-      stack: [],
-      remainder: ''
-    };
-
-    let i: number = this.syntax.characterTokens.indexOf(token);
-    let ch: string = string[0];
-
-    if ( ch === this.syntax.characters[i] ) {
-      result = {
-        match: 'yes',
-        stack: [token],
-        remainder: string.slice(1)
-      };
-    }
-
-    return result;
-
-}
-
-
-  // Check that there are one or more characters in the string.
-  // (Any nonempty string passes)
-  lookForCharacters (string: string): ParseResult {
-
-    let result: ParseResult = {
-      match: 'no',
-      stack: [],
-      remainder: ''
-    };
-
-    if ( string.length > 0 ) {
-      result = {
-        match: 'yes',
-        stack: [ '<characters>' ],
-        remainder: ''
-      };
-    }
-
-    return result;
-
-  }
+  // // Delegate to the 'look_for' method associated with a specific 'action' token.
+  // lookForActionTokenResult (token: SyntaxRuleTag, string: string): ParseResult {
+  //
+  //   let result: ParseResult = {
+  //     match: 'no',
+  //     stack: [],
+  //     remainder: ''
+  //   };
+  //
+  //   if ( token === '<line_number>' ) {
+  //     result = this.lookForLineNumber(string);
+  //   }
+  //
+  //   if ( token === '<characters>' ) {
+  //     result = this.lookForCharacters(string);
+  //   }
+  //
+  //   if ( token === '<numeric_variable>' ) {
+  //     result = this.lookForNumericIdentifier(string);
+  //   }
+  //
+  //   if ( token === '<numeric_expression>' ) {
+  //     result.stack = this.numericExpressionParser.parseNumericExpression(string);
+  //     if ( result.stack.length > 0 ) {
+  //       result.match = 'yes'
+  //     }
+  //   }
+  //
+  //   return result;
+  //
+  // }
 
 
-  // Check that the statement begins with a proper line number.
-  lookForLineNumber (string: string): ParseResult {
+//   // Check for the one specific character that matches the token.
+//   lookForCharacterMatch (token: SyntaxRuleTag, string: string): ParseResult {
+//
+//     let result: ParseResult = {
+//       match: 'no',
+//       stack: [],
+//       remainder: ''
+//     };
+//
+//     let i: number = this.syntax.characterTokens.indexOf(token);
+//     let ch: string = string[0];
+//
+//     if ( ch === this.syntax.characters[i] ) {
+//       result = {
+//         match: 'yes',
+//         stack: [token],
+//         remainder: string.slice(1)
+//       };
+//     }
+//
+//     return result;
+//
+// }
 
-    let result: ParseResult = {
-      match: 'no',
-      stack: [],
-      remainder: ''
-    };
 
-    let n: number = parseInt(string);
-    if ( n > 0 ) {
-      result = {
-        match: 'yes',
-        stack: [ '<line_number>', n],
-        remainder: string.slice(String(n).length)
-      };
-    }
+  // // Check that there are one or more characters in the string.
+  // // (Any nonempty string passes)
+  // lookForCharacters (string: string): ParseResult {
+  //
+  //   let result: ParseResult = {
+  //     match: 'no',
+  //     stack: [],
+  //     remainder: ''
+  //   };
+  //
+  //   if ( string.length > 0 ) {
+  //     result = {
+  //       match: 'yes',
+  //       stack: [ '<characters>' ],
+  //       remainder: ''
+  //     };
+  //   }
+  //
+  //   return result;
+  //
+  // }
 
-    return result;
-  }
+
+  // // Check that the statement begins with a proper line number.
+  // lookForLineNumber (string: string): ParseResult {
+  //
+  //   let result: ParseResult = {
+  //     match: 'no',
+  //     stack: [],
+  //     remainder: ''
+  //   };
+  //
+  //   let n: number = parseInt(string);
+  //   if ( n > 0 ) {
+  //     result = {
+  //       match: 'yes',
+  //       stack: [ '<line_number>', n],
+  //       remainder: string.slice(String(n).length)
+  //     };
+  //   }
+  //
+  //   return result;
+  // }
 
 
-  lookForNumericIdentifier (string: string): ParseResult {
-
-    let result: ParseResult = {
-      match: 'no',
-      stack: [],
-      remainder: ''
-    };
-
-    let len: number;
-    let id: string;
-
-    if ( 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(string[0]) >= 0 ) {
-
-      if ( '0123456789'.indexOf(string[1]) >= 0 ) {
-        len = 2;
-      }
-
-      else {
-        len = 1;
-      }
-
-      if ( ( len === string.length ) || ( '=+-*/^)'.indexOf(string[len]) >= 0 ) ) {
-        id = string.slice(0, len);
-        result = {
-          match: 'yes',
-          stack: ['<numeric_variable>', id],
-          remainder: string.slice(len)
-        };
-      }
-
-    }
-
-    return result;
-  }
+  // lookForNumericIdentifier (string: string): ParseResult {
+  //
+  //   let result: ParseResult = {
+  //     match: 'no',
+  //     stack: [],
+  //     remainder: ''
+  //   };
+  //
+  //   let len: number;
+  //   let id: string;
+  //
+  //   if ( 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(string[0]) >= 0 ) {
+  //
+  //     if ( '0123456789'.indexOf(string[1]) >= 0 ) {
+  //       len = 2;
+  //     }
+  //
+  //     else {
+  //       len = 1;
+  //     }
+  //
+  //     if ( ( len === string.length ) || ( '=+-*/^)'.indexOf(string[len]) >= 0 ) ) {
+  //       id = string.slice(0, len);
+  //       result = {
+  //         match: 'yes',
+  //         stack: ['<numeric_variable>', id],
+  //         remainder: string.slice(len)
+  //       };
+  //     }
+  //
+  //   }
+  //
+  //   return result;
+  // }
 
 }
 

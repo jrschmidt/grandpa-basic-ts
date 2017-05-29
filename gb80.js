@@ -10,55 +10,75 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var SyntaxRules = (function () {
-    function SyntaxRules() {
-        this.rules = [
-            // ['<clear_command>'],
-            // ['<run_command>'],
-            // ['<list_command>'],
-            // ['<info_command>'],
-            // ['<line_number>', '<space>', '<remark>', '<space>', '<characters>'],
-            // ['<line_number>', '<space>', '<remark>'],
-            // ['<line_number>', '<space>', '<line_number_statement>'],
-            ['<line_number>', '<space>', '<numeric_variable>', '<equals>', '<numeric_expression>'],
-        ];
-        // ['<line_number>', '<space>', '<numeric_variable>'],  ** T E M P **
-        this.keywords = [
-            'CLEAR',
-            'RUN',
-            'LIST',
-            'INFO',
-            'REM'
-        ];
-        this.keywordTokens = [
-            '<clear_command>',
-            '<run_command>',
-            '<list_command>',
-            '<info_command>',
-            '<remark>'
-        ];
-        this.characterTokens = [
-            '<space>',
-            '<equals>'
-        ];
-        this.characters = [
-            ' ',
-            '='
-        ];
-        this.actionTokens = [
-            '<line_number>',
-            '<characters>',
-            '<numeric_variable>',
-            '<numeric_expression>'
-        ];
+// export class SyntaxRules {
+//
+//   rules: SyntaxRuleTag[][];
+//   keywords: string[];
+//   keywordTokens: SyntaxRuleTag[];
+//   characterTokens: SyntaxRuleTag[];
+//   characters: string[];
+//   actionTokens: SyntaxRuleTag[];
+//
+//   constructor () {
+//
+//     this.rules = [
+//       // ['<clear_command>'],
+//       // ['<run_command>'],
+//       // ['<list_command>'],
+//       // ['<info_command>'],
+//       // ['<line_number>', '<space>', '<remark>', '<space>', '<characters>'],
+//       // ['<line_number>', '<space>', '<remark>'],
+//       // ['<line_number>', '<space>', '<line_number_statement>'],
+//       ['<line_number>', '<space>', '<numeric_variable>', '<equals>', '<numeric_expression>'],
+//       // ['<line_number>']
+//     ];
+//     // ['<line_number>', '<space>', '<numeric_variable>'],  ** T E M P **
+//
+//     this.keywords = [
+//       'CLEAR',
+//       'RUN',
+//       'LIST',
+//       'INFO',
+//       'REM'
+//     ];
+//
+//     this.keywordTokens = [
+//       '<clear_command>',
+//       '<run_command>',
+//       '<list_command>',
+//       '<info_command>',
+//       '<remark>'
+//     ];
+//
+//     this.characterTokens = [
+//       '<space>',
+//       '<equals>'
+//     ];
+//
+//     this.characters = [
+//       ' ',
+//       '='
+//     ];
+//
+//     this.actionTokens = [
+//       '<line_number>',
+//       '<characters>',
+//       '<numeric_variable>',
+//       '<numeric_expression>'
+//     ];
+//
+//   }
+//
+// }
+var LineParserFunctions = (function () {
+    function LineParserFunctions() {
     }
-    return SyntaxRules;
+    return LineParserFunctions;
 }());
-exports.SyntaxRules = SyntaxRules;
+exports.LineParserFunctions = LineParserFunctions;
 var LineParser = (function () {
-    function LineParser(syntax, numericExpressionParser) {
-        this.syntax = syntax;
-        this.numericExpressionParser = numericExpressionParser;
+    function LineParser(lineParserFunctions) {
+        this.lineParserFunctions = lineParserFunctions;
     }
     LineParser.prototype.parse = function (inputLine) {
         var _this = this;
@@ -67,7 +87,7 @@ var LineParser = (function () {
             stack: [],
             remainder: ''
         };
-        this.syntax.rules.forEach(function (rule) {
+        this.lineParserFunctions.forEach(function (rule) {
             if (result.match === 'no') {
                 result = _this.lookForRuleMatch(inputLine, rule);
             }
@@ -126,127 +146,6 @@ var LineParser = (function () {
             }
         }
         return ruleResult;
-    };
-    // Check for a specific literal keyword.
-    LineParser.prototype.lookForKeywordMatch = function (token, string) {
-        var result = {
-            match: 'no',
-            stack: [],
-            remainder: ''
-        };
-        var i = this.syntax.keywordTokens.indexOf(token);
-        var keyword = this.syntax.keywords[i];
-        var index = string.indexOf(keyword);
-        if (index === 0) {
-            result = {
-                match: 'yes',
-                stack: [token],
-                remainder: string.slice(keyword.length)
-            };
-        }
-        return result;
-    };
-    // Delegate to the 'look_for' method associated with a specific 'action' token.
-    LineParser.prototype.lookForActionTokenResult = function (token, string) {
-        var result = {
-            match: 'no',
-            stack: [],
-            remainder: ''
-        };
-        if (token === '<line_number>') {
-            result = this.lookForLineNumber(string);
-        }
-        if (token === '<characters>') {
-            result = this.lookForCharacters(string);
-        }
-        if (token === '<numeric_variable>') {
-            result = this.lookForNumericIdentifier(string);
-        }
-        if (token === '<numeric_expression>') {
-            result.stack = this.numericExpressionParser.parseNumericExpression(string);
-            if (result.stack.length > 0) {
-                result.match = 'yes';
-            }
-        }
-        return result;
-    };
-    // Check for the one specific character that matches the token.
-    LineParser.prototype.lookForCharacterMatch = function (token, string) {
-        var result = {
-            match: 'no',
-            stack: [],
-            remainder: ''
-        };
-        var i = this.syntax.characterTokens.indexOf(token);
-        var ch = string[0];
-        if (ch === this.syntax.characters[i]) {
-            result = {
-                match: 'yes',
-                stack: [token],
-                remainder: string.slice(1)
-            };
-        }
-        return result;
-    };
-    // Check that there are one or more characters in the string.
-    // (Any nonempty string passes)
-    LineParser.prototype.lookForCharacters = function (string) {
-        var result = {
-            match: 'no',
-            stack: [],
-            remainder: ''
-        };
-        if (string.length > 0) {
-            result = {
-                match: 'yes',
-                stack: ['<characters>'],
-                remainder: ''
-            };
-        }
-        return result;
-    };
-    // Check that the statement begins with a proper line number.
-    LineParser.prototype.lookForLineNumber = function (string) {
-        var result = {
-            match: 'no',
-            stack: [],
-            remainder: ''
-        };
-        var n = parseInt(string);
-        if (n > 0) {
-            result = {
-                match: 'yes',
-                stack: ['<line_number>', n],
-                remainder: string.slice(String(n).length)
-            };
-        }
-        return result;
-    };
-    LineParser.prototype.lookForNumericIdentifier = function (string) {
-        var result = {
-            match: 'no',
-            stack: [],
-            remainder: ''
-        };
-        var len;
-        var id;
-        if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(string[0]) >= 0) {
-            if ('0123456789'.indexOf(string[1]) >= 0) {
-                len = 2;
-            }
-            else {
-                len = 1;
-            }
-            if ((len === string.length) || ('=+-*/^)'.indexOf(string[len]) >= 0)) {
-                id = string.slice(0, len);
-                result = {
-                    match: 'yes',
-                    stack: ['<numeric_variable>', id],
-                    remainder: string.slice(len)
-                };
-            }
-        }
-        return result;
     };
     return LineParser;
 }());
