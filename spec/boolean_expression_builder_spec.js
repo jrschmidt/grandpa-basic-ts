@@ -8,9 +8,9 @@ describe('Boolean expression builder', function() {
   it('should build a usable boolean expression object from the parse stack array', function() {
     var result, stack;
 
-    this.numericBuilder = new NumericExpressionBuilder;
-    this.stringBuilder = new StringExpressionBuilder;
-    this.builder = new BooleanExpressionBuilder(this.numericBuilder, this.stringBuilder);
+    numericBuilder = new NumericExpressionBuilder;
+    stringBuilder = new StringExpressionBuilder;
+    this.builder = new BooleanExpressionBuilder(numericBuilder, stringBuilder);
 
 
     // EXPRESSION: Z < 0

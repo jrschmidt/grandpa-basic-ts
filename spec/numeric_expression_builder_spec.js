@@ -9,7 +9,7 @@ describe('Numeric expression builder', function() {
 
 
   it('should strip delimiter tokens from a stack of parse tokens', function() {
-    var result, stack, origlength;
+    var result, stack;
 
     // TEST  J+K
     stack = [
@@ -22,7 +22,6 @@ describe('Numeric expression builder', function() {
       '<num_exp_end>'
     ];
 
-    origlength = stack.length;
     result = this.builder.stripDelimiterTokens(stack);
     expect(result.length).toEqual(5);
     expect(result[0]).toEqual('<numeric_variable>');
@@ -54,7 +53,6 @@ describe('Numeric expression builder', function() {
        '<num_exp_end>'
      ];
 
-     origlength = stack.length;
      result = this.builder.stripDelimiterTokens(stack);
      expect(result.length).toEqual(16);
      expect(result[0]).toEqual('<numeric_literal>');

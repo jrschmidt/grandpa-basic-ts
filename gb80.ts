@@ -186,69 +186,69 @@ export class LineParser {
   }
 
 
-  // Check the string against a specific syntax rule.
-  lookForRuleMatch (string: string, rule: SyntaxRuleTag[]): ParseResult {
-
-    let ruleResult: ParseResult = {
-      match: 'no',
-      stack: [],
-      remainder: ''
-    };
-
-    let ruleMatch: string = 'unknown';
-    let stack: ParseStack = [];
-
-    let tokenResult: ParseResult = {
-      match: 'no',
-      stack: [],
-      remainder: ''
-    };
-
-    rule.forEach( token => {
-      if ( ruleMatch === 'unknown' ) {
-        if ( this.syntax.keywordTokens.indexOf(token) >= 0 ) {
-          tokenResult = this.lookForKeywordMatch(token, string);
-        }
-        if ( this.syntax.actionTokens.indexOf(token) >= 0 ) {
-          tokenResult = this.lookForActionTokenResult(token, string);
-        }
-        if ( this.syntax.characterTokens.indexOf(token) >= 0 ) {
-          tokenResult = this.lookForCharacterMatch(token, string);
-        }
-
-        if ( tokenResult.match === 'no' ) {
-          ruleMatch = 'no';
-        }
-        if ( tokenResult.match === 'yes' ) {
-          stack = stack.concat(tokenResult.stack);
-          string = tokenResult.remainder;
-        }
-      }
-
-    });
-
-    if ( tokenResult.match === 'yes' ) {
-
-      if ( string.length === 0 ) {
-        ruleResult = {
-          match: 'yes',
-          stack: stack,
-          remainder: ''
-        };
-      }
-
-      else {
-        ruleResult = {
-          match: 'no',
-          stack: [],
-          remainder: ''
-        };
-      }
-
-    }
-
-    return ruleResult;
-  }
+  // // Check the string against a specific syntax rule.
+  // lookForRuleMatch (string: string, rule: SyntaxRuleTag[]): ParseResult {
+  //
+  //   let ruleResult: ParseResult = {
+  //     match: 'no',
+  //     stack: [],
+  //     remainder: ''
+  //   };
+  //
+  //   let ruleMatch: string = 'unknown';
+  //   let stack: ParseStack = [];
+  //
+  //   let tokenResult: ParseResult = {
+  //     match: 'no',
+  //     stack: [],
+  //     remainder: ''
+  //   };
+  //
+  //   rule.forEach( token => {
+  //     if ( ruleMatch === 'unknown' ) {
+  //       if ( this.syntax.keywordTokens.indexOf(token) >= 0 ) {
+  //         tokenResult = this.lookForKeywordMatch(token, string);
+  //       }
+  //       if ( this.syntax.actionTokens.indexOf(token) >= 0 ) {
+  //         tokenResult = this.lookForActionTokenResult(token, string);
+  //       }
+  //       if ( this.syntax.characterTokens.indexOf(token) >= 0 ) {
+  //         tokenResult = this.lookForCharacterMatch(token, string);
+  //       }
+  //
+  //       if ( tokenResult.match === 'no' ) {
+  //         ruleMatch = 'no';
+  //       }
+  //       if ( tokenResult.match === 'yes' ) {
+  //         stack = stack.concat(tokenResult.stack);
+  //         string = tokenResult.remainder;
+  //       }
+  //     }
+  //
+  //   });
+  //
+  //   if ( tokenResult.match === 'yes' ) {
+  //
+  //     if ( string.length === 0 ) {
+  //       ruleResult = {
+  //         match: 'yes',
+  //         stack: stack,
+  //         remainder: ''
+  //       };
+  //     }
+  //
+  //     else {
+  //       ruleResult = {
+  //         match: 'no',
+  //         stack: [],
+  //         remainder: ''
+  //       };
+  //     }
+  //
+  //   }
+  //
+  //   return ruleResult;
+  // }
 
 
   // // Check for a specific literal keyword.

@@ -1,14 +1,12 @@
 GB80 = require('../gb80');
 LineParser = GB80.LineParser;
-SyntaxRules = GB80.SyntaxRules;
-NumericExpressionParser = GB80.NumericExpressionParser;
+LineParserFunctions = GB80.LineParserFunctions;
 
 describe('BASIC program line parser', function() {
 
   beforeEach(function() {
-    this.syntax = new SyntaxRules;
-    this.numExpParser = new NumericExpressionParser;
-    this.parser = new LineParser(this.syntax, this.numExpParser);
+    this.parserFunctions = new LineParserFunctions;
+    this.parser = new LineParser(this.parserFunctions);
   });
 
 

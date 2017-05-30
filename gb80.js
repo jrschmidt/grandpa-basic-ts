@@ -94,59 +94,6 @@ var LineParser = (function () {
         });
         return result.stack;
     };
-    // Check the string against a specific syntax rule.
-    LineParser.prototype.lookForRuleMatch = function (string, rule) {
-        var _this = this;
-        var ruleResult = {
-            match: 'no',
-            stack: [],
-            remainder: ''
-        };
-        var ruleMatch = 'unknown';
-        var stack = [];
-        var tokenResult = {
-            match: 'no',
-            stack: [],
-            remainder: ''
-        };
-        rule.forEach(function (token) {
-            if (ruleMatch === 'unknown') {
-                if (_this.syntax.keywordTokens.indexOf(token) >= 0) {
-                    tokenResult = _this.lookForKeywordMatch(token, string);
-                }
-                if (_this.syntax.actionTokens.indexOf(token) >= 0) {
-                    tokenResult = _this.lookForActionTokenResult(token, string);
-                }
-                if (_this.syntax.characterTokens.indexOf(token) >= 0) {
-                    tokenResult = _this.lookForCharacterMatch(token, string);
-                }
-                if (tokenResult.match === 'no') {
-                    ruleMatch = 'no';
-                }
-                if (tokenResult.match === 'yes') {
-                    stack = stack.concat(tokenResult.stack);
-                    string = tokenResult.remainder;
-                }
-            }
-        });
-        if (tokenResult.match === 'yes') {
-            if (string.length === 0) {
-                ruleResult = {
-                    match: 'yes',
-                    stack: stack,
-                    remainder: ''
-                };
-            }
-            else {
-                ruleResult = {
-                    match: 'no',
-                    stack: [],
-                    remainder: ''
-                };
-            }
-        }
-        return ruleResult;
-    };
     return LineParser;
 }());
 exports.LineParser = LineParser;

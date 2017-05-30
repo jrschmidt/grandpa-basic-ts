@@ -10,14 +10,14 @@ describe("Boolean expression evaluator", function() {
   beforeEach(function() {
     this.numericRegister = new NumericVariableRegister;
     this.stringRegister = new StringVariableRegister;
-    this.numericEvaluator = new NumericExpressionEvaluator(this.numericRegister);
-    this.stringEvaluator = new StringExpressionEvaluator(this.stringRegister);
+    numericEvaluator = new NumericExpressionEvaluator(this.numericRegister);
+    stringEvaluator = new StringExpressionEvaluator(this.stringRegister);
 
     this.evaluator = new BooleanExpressionEvaluator(
       this.numericRegister,
       this.stringRegister,
-      this.numericEvaluator,
-      this.stringEvaluator
+      numericEvaluator,
+      stringEvaluator
     );
 
   });
