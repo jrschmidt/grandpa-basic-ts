@@ -1,3 +1,5 @@
+type ParserFunctionArray = { (string: string): ParseStack } [];
+
 type ParseStack = Array< ParseTag | string | number | Array<any> >;
 
 type NumericExpressionTag =
@@ -156,33 +158,34 @@ interface ParseResult {
 
 
 
-export class LineParserFunctions {}
+export class LineParserFunctions {
+  lineParsers: ParserFunctionArray;
+
+  constructor () {
+    this.lineParsers = [];
+  }
+}
 
 
 
 export class LineParser {
-  lineParserFunctions: LineParserFunctions;
+  lineParsers: ParserFunctionArray;
 
   constructor (lineParserFunctions: LineParserFunctions) {
-    this.lineParserFunctions = lineParserFunctions;
+    this.lineParsers = lineParserFunctions.lineParsers;
   }
 
 
-  parse (inputLine: string): ParseStack {
+  parse (string: string): ParseStack {
 
-    let result: ParseResult = {
-      match: 'no',
-      stack: [],
-      remainder: ''
-    };
+    let result: ParseStack = [];
 
-    this.lineParserFunctions.forEach( rule => {
-      if ( result.match === 'no' ) {
-        result = this.lookForRuleMatch(inputLine, rule);
-      }
+    this.lineParsers.forEach( parser => {
+      Function.call( parser(string) );
+      result = [];
     });
 
-    return result.stack;
+    return result;
   }
 
 

@@ -72,27 +72,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // }
 var LineParserFunctions = (function () {
     function LineParserFunctions() {
+        this.lineParsers = [];
     }
     return LineParserFunctions;
 }());
 exports.LineParserFunctions = LineParserFunctions;
 var LineParser = (function () {
     function LineParser(lineParserFunctions) {
-        this.lineParserFunctions = lineParserFunctions;
+        this.lineParsers = lineParserFunctions.lineParsers;
     }
-    LineParser.prototype.parse = function (inputLine) {
-        var _this = this;
-        var result = {
-            match: 'no',
-            stack: [],
-            remainder: ''
-        };
-        this.lineParserFunctions.forEach(function (rule) {
-            if (result.match === 'no') {
-                result = _this.lookForRuleMatch(inputLine, rule);
-            }
+    LineParser.prototype.parse = function (string) {
+        var result = [];
+        this.lineParsers.forEach(function (parser) {
+            Function.call(parser(string));
+            result = [];
         });
-        return result.stack;
+        return result;
     };
     return LineParser;
 }());
