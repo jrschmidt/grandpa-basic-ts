@@ -12,23 +12,23 @@ type ParseTag =
   ProgramKeywordTag;
 
 type ConsoleKeywordTag =
-'<clear>' |
-'<run>' |
-'<list>' |
-'<info>';
+  '<clear>' |
+  '<run>' |
+  '<list>' |
+  '<info>';
 
 type ProgramKeywordTag =
-'<remark>' |
-'<goto>' |
-'<gosub>' |
-'<return>' |
-'<if>' |
-'<then>' |
-'<input>' |
-'<print>' |
-'<end>' |
-'<int>' |
-'<random>';
+  '<remark>' |
+  '<goto>' |
+  '<gosub>' |
+  '<return>' |
+  '<if>' |
+  '<then>' |
+  '<input>' |
+  '<print>' |
+  '<end>' |
+  '<int>' |
+  '<random>';
 
 interface ParseResult {
   match: 'no' | 'yes' | 'parse_error';
@@ -108,61 +108,6 @@ type ComparatorTag =
 
 
 
-
-export class LineParserFunctions {
-
-  // This class contains the functions to parse different types of console
-  // commands (RUN, LIST, etc) and numbered program line statements. The
-  // individual functions are defined in the constructor for this class, then
-  // put into an array which is exported to the LineParser class. This way, these
-  // functions can be removed or changed when we want to change the syntax of
-  // permissible statements without touching any other class.
-
-  lineParsers: ParserFunction[];
-
-
-  constructor () {
-
-    // Define the functions that get added to the lineParsers[] array:
-
-
-    const parseConsoleKeyword = (string: string): ParseStack => {
-      // This function parses single keyword commands (RUN, LIST, etc).
-
-      let result: ParseStack = [];
-
-      let consoleKeywords: {keyword: string, token: ConsoleKeywordTag}[] = [
-        {keyword: 'CLEAR', token: '<clear>'},
-        {keyword: 'RUN', token: '<run>'},
-        {keyword: 'LIST', token: '<list>'},
-        {keyword: 'INFO', token: '<info>'}
-      ];
-
-      consoleKeywords.forEach( pair => {
-
-        if ( ( result.length === 0 ) && ( string === pair.keyword ) ) {
-          result = [
-            '<console_command>',
-            pair.token
-          ];
-        }
-
-      });
-
-      return result;
-    };
-
-
-    this.lineParsers = [
-      parseConsoleKeyword
-    ];
-
-  }
-
-}
-
-
-
 export class LineParser {
   lineParsers: ParserFunction[];
 
@@ -184,212 +129,102 @@ export class LineParser {
     return result;
   }
 
-
-  // // Check the string against a specific syntax rule.
-  // lookForRuleMatch (string: string, rule: SyntaxRuleTag[]): ParseResult {
-  //
-  //   let ruleResult: ParseResult = {
-  //     match: 'no',
-  //     stack: [],
-  //     remainder: ''
-  //   };
-  //
-  //   let ruleMatch: string = 'unknown';
-  //   let stack: ParseStack = [];
-  //
-  //   let tokenResult: ParseResult = {
-  //     match: 'no',
-  //     stack: [],
-  //     remainder: ''
-  //   };
-  //
-  //   rule.forEach( token => {
-  //     if ( ruleMatch === 'unknown' ) {
-  //       if ( this.syntax.keywordTokens.indexOf(token) >= 0 ) {
-  //         tokenResult = this.lookForKeywordMatch(token, string);
-  //       }
-  //       if ( this.syntax.actionTokens.indexOf(token) >= 0 ) {
-  //         tokenResult = this.lookForActionTokenResult(token, string);
-  //       }
-  //       if ( this.syntax.characterTokens.indexOf(token) >= 0 ) {
-  //         tokenResult = this.lookForCharacterMatch(token, string);
-  //       }
-  //
-  //       if ( tokenResult.match === 'no' ) {
-  //         ruleMatch = 'no';
-  //       }
-  //       if ( tokenResult.match === 'yes' ) {
-  //         stack = stack.concat(tokenResult.stack);
-  //         string = tokenResult.remainder;
-  //       }
-  //     }
-  //
-  //   });
-  //
-  //   if ( tokenResult.match === 'yes' ) {
-  //
-  //     if ( string.length === 0 ) {
-  //       ruleResult = {
-  //         match: 'yes',
-  //         stack: stack,
-  //         remainder: ''
-  //       };
-  //     }
-  //
-  //     else {
-  //       ruleResult = {
-  //         match: 'no',
-  //         stack: [],
-  //         remainder: ''
-  //       };
-  //     }
-  //
-  //   }
-  //
-  //   return ruleResult;
-  // }
+}
 
 
-  // // Delegate to the 'look_for' method associated with a specific 'action' token.
-  // lookForActionTokenResult (token: SyntaxRuleTag, string: string): ParseResult {
-  //
-  //   let result: ParseResult = {
-  //     match: 'no',
-  //     stack: [],
-  //     remainder: ''
-  //   };
-  //
-  //   if ( token === '<line_number>' ) {
-  //     result = this.lookForLineNumber(string);
-  //   }
-  //
-  //   if ( token === '<characters>' ) {
-  //     result = this.lookForCharacters(string);
-  //   }
-  //
-  //   if ( token === '<numeric_variable>' ) {
-  //     result = this.lookForNumericIdentifier(string);
-  //   }
-  //
-  //   if ( token === '<numeric_expression>' ) {
-  //     result.stack = this.numericExpressionParser.parseNumericExpression(string);
-  //     if ( result.stack.length > 0 ) {
-  //       result.match = 'yes'
-  //     }
-  //   }
-  //
-  //   return result;
-  //
-  // }
+
+export class LineParserFunctions {
+
+  // This class contains the functions to parse different types of console
+  // commands (RUN, LIST, etc) and numbered program line statements. The
+  // functions are put into an array which is exported to the LineParser class.
+  // This way, these functions can be removed or changed when we want to change
+  // the syntax of permissible statements without touching any other class.
+
+  parserHelpers: ParserHelpers;
+
+  lineParsers: ParserFunction[];
+
+  constructor (parserHelpers: ParserHelpers) {
+    this.parserHelpers = parserHelpers;
+
+    this.lineParsers = [
+      this.parseConsoleKeyword,
+      this.parseBareLineNumber
+    ];
+
+  }
 
 
-//   // Check for the one specific character that matches the token.
-//   lookForCharacterMatch (token: SyntaxRuleTag, string: string): ParseResult {
-//
-//     let result: ParseResult = {
-//       match: 'no',
-//       stack: [],
-//       remainder: ''
-//     };
-//
-//     let i: number = this.syntax.characterTokens.indexOf(token);
-//     let ch: string = string[0];
-//
-//     if ( ch === this.syntax.characters[i] ) {
-//       result = {
-//         match: 'yes',
-//         stack: [token],
-//         remainder: string.slice(1)
-//       };
-//     }
-//
-//     return result;
-//
-// }
+  parseConsoleKeyword = (string: string): ParseStack => {
+    // This function parses single keyword commands (RUN, LIST, etc).
+
+    let result: ParseStack = [];
+
+    let consoleKeywords: {keyword: string, token: ConsoleKeywordTag}[] = [
+      {keyword: 'CLEAR', token: '<clear>'},
+      {keyword: 'RUN', token: '<run>'},
+      {keyword: 'LIST', token: '<list>'},
+      {keyword: 'INFO', token: '<info>'}
+    ];
+
+    consoleKeywords.forEach( pair => {
+
+      if ( ( result.length === 0 ) && ( string === pair.keyword ) ) {
+        result = [
+          '<console_command>',
+          pair.token
+        ];
+      }
+
+    });
+
+    return result;
+  };
 
 
-  // // Check that there are one or more characters in the string.
-  // // (Any nonempty string passes)
-  // lookForCharacters (string: string): ParseResult {
-  //
-  //   let result: ParseResult = {
-  //     match: 'no',
-  //     stack: [],
-  //     remainder: ''
-  //   };
-  //
-  //   if ( string.length > 0 ) {
-  //     result = {
-  //       match: 'yes',
-  //       stack: [ '<characters>' ],
-  //       remainder: ''
-  //     };
-  //   }
-  //
-  //   return result;
-  //
-  // }
+  parseBareLineNumber = (string: string): ParseStack => {
+    // This function parses a valid line number with nothing following it. In
+    // BASIC, entering a line number with nothing following it deletes that
+    // line from the program.
 
+    let result: ParseStack = [];
 
-  // // Check that the statement begins with a proper line number.
-  // lookForLineNumber (string: string): ParseResult {
-  //
-  //   let result: ParseResult = {
-  //     match: 'no',
-  //     stack: [],
-  //     remainder: ''
-  //   };
-  //
-  //   let n: number = parseInt(string);
-  //   if ( n > 0 ) {
-  //     result = {
-  //       match: 'yes',
-  //       stack: [ '<line_number>', n],
-  //       remainder: string.slice(String(n).length)
-  //     };
-  //   }
-  //
-  //   return result;
-  // }
+    let helperResult: ParseResult = this.parserHelpers.parseLineNumber(string);
+    if ( ( helperResult.match === 'yes' ) && ( helperResult.remainder.length === 0 ) ) {
+      result = helperResult.stack;
+    }
 
-
-  // lookForNumericIdentifier (string: string): ParseResult {
-  //
-  //   let result: ParseResult = {
-  //     match: 'no',
-  //     stack: [],
-  //     remainder: ''
-  //   };
-  //
-  //   let len: number;
-  //   let id: string;
-  //
-  //   if ( 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(string[0]) >= 0 ) {
-  //
-  //     if ( '0123456789'.indexOf(string[1]) >= 0 ) {
-  //       len = 2;
-  //     }
-  //
-  //     else {
-  //       len = 1;
-  //     }
-  //
-  //     if ( ( len === string.length ) || ( '=+-*/^)'.indexOf(string[len]) >= 0 ) ) {
-  //       id = string.slice(0, len);
-  //       result = {
-  //         match: 'yes',
-  //         stack: ['<numeric_variable>', id],
-  //         remainder: string.slice(len)
-  //       };
-  //     }
-  //
-  //   }
-  //
-  //   return result;
-  // }
+    return result;
+  };
 
 }
 
+
+
+export class ParserHelpers {
+
+  parseLineNumber (string: string): ParseResult {
+
+    let result: ParseResult = {
+      match: 'no',
+      stack: [],
+      remainder: ''
+    };
+
+    let n: number = parseInt(string)
+    if (n) {
+      result = {
+        match: 'yes',
+        stack: ['<line_number>', n],
+        remainder: string.slice(String(n).length)
+      };
+    }
+
+    return result;
+  }
+
+}
 
 
 export class NumericExpressionParser {

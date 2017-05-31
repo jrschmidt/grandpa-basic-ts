@@ -1,0 +1,207 @@
+//                                                  //
+// LEGACY CODE FROM THE OLD 'SYNTAX RULES' APPROACH //
+//                                                  //
+
+
+// Check the string against a specific syntax rule.
+lookForRuleMatch (string: string, rule: SyntaxRuleTag[]): ParseResult {
+
+  let ruleResult: ParseResult = {
+    match: 'no',
+    stack: [],
+    remainder: ''
+  };
+
+  let ruleMatch: string = 'unknown';
+  let stack: ParseStack = [];
+
+  let tokenResult: ParseResult = {
+    match: 'no',
+    stack: [],
+    remainder: ''
+  };
+
+  rule.forEach( token => {
+    if ( ruleMatch === 'unknown' ) {
+      if ( this.syntax.keywordTokens.indexOf(token) >= 0 ) {
+        tokenResult = this.lookForKeywordMatch(token, string);
+      }
+      if ( this.syntax.actionTokens.indexOf(token) >= 0 ) {
+        tokenResult = this.lookForActionTokenResult(token, string);
+      }
+      if ( this.syntax.characterTokens.indexOf(token) >= 0 ) {
+        tokenResult = this.lookForCharacterMatch(token, string);
+      }
+
+      if ( tokenResult.match === 'no' ) {
+        ruleMatch = 'no';
+      }
+      if ( tokenResult.match === 'yes' ) {
+        stack = stack.concat(tokenResult.stack);
+        string = tokenResult.remainder;
+      }
+    }
+
+  });
+
+  if ( tokenResult.match === 'yes' ) {
+
+    if ( string.length === 0 ) {
+      ruleResult = {
+        match: 'yes',
+        stack: stack,
+        remainder: ''
+      };
+    }
+
+    else {
+      ruleResult = {
+        match: 'no',
+        stack: [],
+        remainder: ''
+      };
+    }
+
+  }
+
+  return ruleResult;
+}
+
+
+// Delegate to the 'look_for' method associated with a specific 'action' token.
+lookForActionTokenResult (token: SyntaxRuleTag, string: string): ParseResult {
+
+  let result: ParseResult = {
+    match: 'no',
+    stack: [],
+    remainder: ''
+  };
+
+  if ( token === '<line_number>' ) {
+    result = this.lookForLineNumber(string);
+  }
+
+  if ( token === '<characters>' ) {
+    result = this.lookForCharacters(string);
+  }
+
+  if ( token === '<numeric_variable>' ) {
+    result = this.lookForNumericIdentifier(string);
+  }
+
+  if ( token === '<numeric_expression>' ) {
+    result.stack = this.numericExpressionParser.parseNumericExpression(string);
+    if ( result.stack.length > 0 ) {
+      result.match = 'yes'
+    }
+  }
+
+  return result;
+
+}
+
+
+  // Check for the one specific character that matches the token.
+  lookForCharacterMatch (token: SyntaxRuleTag, string: string): ParseResult {
+
+    let result: ParseResult = {
+      match: 'no',
+      stack: [],
+      remainder: ''
+    };
+
+    let i: number = this.syntax.characterTokens.indexOf(token);
+    let ch: string = string[0];
+
+    if ( ch === this.syntax.characters[i] ) {
+      result = {
+        match: 'yes',
+        stack: [token],
+        remainder: string.slice(1)
+      };
+    }
+
+    return result;
+
+}
+
+
+// Check that there are one or more characters in the string.
+// (Any nonempty string passes)
+lookForCharacters (string: string): ParseResult {
+
+  let result: ParseResult = {
+    match: 'no',
+    stack: [],
+    remainder: ''
+  };
+
+  if ( string.length > 0 ) {
+    result = {
+      match: 'yes',
+      stack: [ '<characters>' ],
+      remainder: ''
+    };
+  }
+
+  return result;
+
+}
+
+
+// Check that the statement begins with a proper line number.
+lookForLineNumber (string: string): ParseResult {
+
+  let result: ParseResult = {
+    match: 'no',
+    stack: [],
+    remainder: ''
+  };
+
+  let n: number = parseInt(string);
+  if ( n > 0 ) {
+    result = {
+      match: 'yes',
+      stack: [ '<line_number>', n],
+      remainder: string.slice(String(n).length)
+    };
+  }
+
+  return result;
+}
+
+
+lookForNumericIdentifier (string: string): ParseResult {
+
+  let result: ParseResult = {
+    match: 'no',
+    stack: [],
+    remainder: ''
+  };
+
+  let len: number;
+  let id: string;
+
+  if ( 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(string[0]) >= 0 ) {
+
+    if ( '0123456789'.indexOf(string[1]) >= 0 ) {
+      len = 2;
+    }
+
+    else {
+      len = 1;
+    }
+
+    if ( ( len === string.length ) || ( '=+-*/^)'.indexOf(string[len]) >= 0 ) ) {
+      id = string.slice(0, len);
+      result = {
+        match: 'yes',
+        stack: ['<numeric_variable>', id],
+        remainder: string.slice(len)
+      };
+    }
+
+  }
+
+  return result;
+}

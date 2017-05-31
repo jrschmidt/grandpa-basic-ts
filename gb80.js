@@ -11,10 +11,26 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+var LineParser = (function () {
+    function LineParser(lineParserFunctions) {
+        this.lineParsers = lineParserFunctions.lineParsers;
+    }
+    LineParser.prototype.parse = function (string) {
+        var result = [];
+        this.lineParsers.forEach(function (parser) {
+            if (result.length === 0) {
+                result = parser(string);
+            }
+        });
+        return result;
+    };
+    return LineParser;
+}());
+exports.LineParser = LineParser;
 var LineParserFunctions = (function () {
-    function LineParserFunctions() {
-        // Define the functions that get added to the lineParsers[] array:
-        var parseConsoleKeyword = function (string) {
+    function LineParserFunctions(parserHelpers) {
+        var _this = this;
+        this.parseConsoleKeyword = function (string) {
             // This function parses single keyword commands (RUN, LIST, etc).
             var result = [];
             var consoleKeywords = [
@@ -33,29 +49,48 @@ var LineParserFunctions = (function () {
             });
             return result;
         };
+        this.parseBareLineNumber = function (string) {
+            // This function parses a valid line number with nothing following it. In
+            // BASIC, entering a line number with nothing following it deletes that
+            // line from the program.
+            var result = [];
+            var helperResult = _this.parserHelpers.parseLineNumber(string);
+            if ((helperResult.match === 'yes') && (helperResult.remainder.length === 0)) {
+                result = helperResult.stack;
+            }
+            return result;
+        };
+        this.parserHelpers = parserHelpers;
         this.lineParsers = [
-            parseConsoleKeyword
+            this.parseConsoleKeyword,
+            this.parseBareLineNumber
         ];
     }
     return LineParserFunctions;
 }());
 exports.LineParserFunctions = LineParserFunctions;
-var LineParser = (function () {
-    function LineParser(lineParserFunctions) {
-        this.lineParsers = lineParserFunctions.lineParsers;
+var ParserHelpers = (function () {
+    function ParserHelpers() {
     }
-    LineParser.prototype.parse = function (string) {
-        var result = [];
-        this.lineParsers.forEach(function (parser) {
-            if (result.length === 0) {
-                result = parser(string);
-            }
-        });
+    ParserHelpers.prototype.parseLineNumber = function (string) {
+        var result = {
+            match: 'no',
+            stack: [],
+            remainder: ''
+        };
+        var n = parseInt(string);
+        if (n) {
+            result = {
+                match: 'yes',
+                stack: ['<line_number>', n],
+                remainder: string.slice(String(n).length)
+            };
+        }
         return result;
     };
-    return LineParser;
+    return ParserHelpers;
 }());
-exports.LineParser = LineParser;
+exports.ParserHelpers = ParserHelpers;
 var NumericExpressionParser = (function () {
     function NumericExpressionParser() {
         this.delimiters = ['(', ')', '+', '-', '*', '/', '^'];

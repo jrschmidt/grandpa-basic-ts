@@ -2,12 +2,14 @@
 GB80 = require('../gb80');
 LineParser = GB80.LineParser;
 LineParserFunctions = GB80.LineParserFunctions;
+ParserHelpers = GB80.ParserHelpers;
 
 describe('BASIC program line parser', function() {
 
   beforeEach(function() {
-    this.parserFunctions = new LineParserFunctions;
-    this.parser = new LineParser(this.parserFunctions);
+    parserHelpers = new ParserHelpers;
+    parserFunctions = new LineParserFunctions(parserHelpers);
+    this.parser = new LineParser(parserFunctions);
   });
 
   it('should correctly parse a terminal command', function() {
@@ -39,47 +41,7 @@ describe('BASIC program line parser', function() {
   });
 
 
-  xit('should correctly parse line numbers in program lines', function() {
-
-    result = this.parser.parse('10 REM WELCOME TO GRANDPA BASIC 80');
-    expect(result).toEqual(jasmine.any(Array));
-    expect(result[0]).toEqual('<line_number>');
-    expect(result[1]).toEqual(10);
-
-    result = this.parser.parse('20 $T="FRODO BAGGINS"');
-    expect(result).toEqual(jasmine.any(Array));
-    expect(result[0]).toEqual('<line_number>');
-    expect(result[1]).toEqual(20);
-
-    result = this.parser.parse('30 INPUT "DISPLAY NAME (Y/N)?";$Y');
-    expect(result).toEqual(jasmine.any(Array));
-    expect(result[0]).toEqual('<line_number>');
-    expect(result[1]).toEqual(30);
-
-    result = this.parser.parse('40 IF $Y<>"Y" THEN 100');
-    expect(result).toEqual(jasmine.any(Array));
-    expect(result[0]).toEqual('<line_number>');
-    expect(result[1]).toEqual(40);
-
-    result = this.parser.parse('50 PRINT "WRITTEN BY "+$T');
-    expect(result).toEqual(jasmine.any(Array));
-    expect(result[0]).toEqual('<line_number>');
-    expect(result[1]).toEqual(50);
-
-    result = this.parser.parse('100 PRINT "OK BYE"');
-    expect(result).toEqual(jasmine.any(Array));
-    expect(result[0]).toEqual('<line_number>');
-    expect(result[1]).toEqual(100);
-
-    result = this.parser.parse('999 END');
-    expect(result).toEqual(jasmine.any(Array));
-    expect(result[0]).toEqual('<line_number>');
-    expect(result[1]).toEqual(999);
-
-  });
-
-
-  xit('should correctly parse a valid program line number with nothing following it', function() {
+  it('should correctly parse a bare program line number with nothing following it', function() {
 
     result = this.parser.parse('440');
     expect(result).toEqual(jasmine.any(Array));
