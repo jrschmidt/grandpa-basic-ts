@@ -1,3 +1,4 @@
+
 GB80 = require('../gb80');
 LineParser = GB80.LineParser;
 LineParserFunctions = GB80.LineParserFunctions;
@@ -9,28 +10,31 @@ describe('BASIC program line parser', function() {
     this.parser = new LineParser(this.parserFunctions);
   });
 
-
   it('should correctly parse a terminal command', function() {
 
     result = this.parser.parse('CLEAR');
     expect(result).toEqual(jasmine.any(Array));
-    expect(result.length).toEqual(1);
-    expect(result[0]).toEqual('<clear_command>');
+    expect(result.length).toEqual(2);
+    expect(result[0]).toEqual('<console_command>');
+    expect(result[1]).toEqual('<clear>');
 
     result = this.parser.parse('RUN');
     expect(result).toEqual(jasmine.any(Array));
-    expect(result.length).toEqual(1);
-    expect(result[0]).toEqual('<run_command>');
+    expect(result.length).toEqual(2);
+    expect(result[0]).toEqual('<console_command>');
+    expect(result[1]).toEqual('<run>');
 
     result = this.parser.parse('LIST');
     expect(result).toEqual(jasmine.any(Array));
-    expect(result.length).toEqual(1);
-    expect(result[0]).toEqual('<list_command>');
+    expect(result.length).toEqual(2);
+    expect(result[0]).toEqual('<console_command>');
+    expect(result[1]).toEqual('<list>');
 
     result = this.parser.parse('INFO');
     expect(result).toEqual(jasmine.any(Array));
-    expect(result.length).toEqual(1);
-    expect(result[0]).toEqual('<info_command>');
+    expect(result.length).toEqual(2);
+    expect(result[0]).toEqual('<console_command>');
+    expect(result[1]).toEqual('<info>');
 
   });
 
@@ -115,7 +119,7 @@ describe('BASIC program line parser', function() {
   });
 
 
-  it('should correctly parse a numeric assignment program line', function() {
+  xit('should correctly parse a numeric assignment program line', function() {
 
     result = this.parser.parse('180 X=77');
     expect(result).toEqual(jasmine.any(Array));

@@ -1,6 +1,43 @@
-type ParserFunctionArray = { (string: string): ParseStack } [];
+////  Parser type definitions  ////
+
+type ParserFunction = { (string: string): ParseStack };
 
 type ParseStack = Array< ParseTag | string | number | Array<any> >;
+
+type ParseTag =
+  NumericExpressionTag |
+  StringExpressionTag |
+  BooleanExpressionTag |
+  ConsoleKeywordTag |
+  ProgramKeywordTag;
+
+type ConsoleKeywordTag =
+'<clear>' |
+'<run>' |
+'<list>' |
+'<info>';
+
+type ProgramKeywordTag =
+'<remark>' |
+'<goto>' |
+'<gosub>' |
+'<return>' |
+'<if>' |
+'<then>' |
+'<input>' |
+'<print>' |
+'<end>' |
+'<int>' |
+'<random>';
+
+interface ParseResult {
+  match: 'no' | 'yes' | 'parse_error';
+  stack: ParseStack;
+  remainder: string;
+}
+
+
+////  Numeric Expression type definitions  ////
 
 type NumericExpressionTag =
   '<none>' |
@@ -30,6 +67,9 @@ interface NumericExpressionObject {
   op2?: NumericExpressionObject;
 }
 
+
+////  String Expression type definitions  ////
+
 type StringExpressionTag =
   '<string_literal>' | '<string_variable>';
 
@@ -40,6 +80,9 @@ interface SimpleStringExpression {
 }
 
 type StringExpressionObject = SimpleStringExpression[];
+
+
+////  Boolean Expression type definitions  ////
 
 type BooleanExpressionTag =
   '<number_equals>' |
@@ -63,113 +106,65 @@ type ComparatorTag =
   '<greater>' |
   '<not_equal>';
 
-type ParseTag =
-  NumericExpressionTag |
-  StringExpressionTag |
-  BooleanExpressionTag;
-
-type SyntaxRuleTag =
-  'CLEAR' |
-  'RUN' |
-  'INFO' |
-  'LIST' |
-  'REM' |
-  '<clear_command>' |
-  '<run_command>' |
-  '<info_command>' |
-  '<list_command>' |
-  '<line_number>' |
-  '<numeric_variable>' |
-  '<numeric_expression>' |
-  '<remark>' |
-  '<equals>' |
-  '<space>' |
-  '<characters>' |
-  '<line_number_statement>';
-
-interface ParseResult {
-  match: 'no' | 'yes' | 'parse_error';
-  stack: ParseStack;
-  remainder: string;
-}
-
-
-
-// export class SyntaxRules {
-//
-//   rules: SyntaxRuleTag[][];
-//   keywords: string[];
-//   keywordTokens: SyntaxRuleTag[];
-//   characterTokens: SyntaxRuleTag[];
-//   characters: string[];
-//   actionTokens: SyntaxRuleTag[];
-//
-//   constructor () {
-//
-//     this.rules = [
-//       // ['<clear_command>'],
-//       // ['<run_command>'],
-//       // ['<list_command>'],
-//       // ['<info_command>'],
-//       // ['<line_number>', '<space>', '<remark>', '<space>', '<characters>'],
-//       // ['<line_number>', '<space>', '<remark>'],
-//       // ['<line_number>', '<space>', '<line_number_statement>'],
-//       ['<line_number>', '<space>', '<numeric_variable>', '<equals>', '<numeric_expression>'],
-//       // ['<line_number>']
-//     ];
-//     // ['<line_number>', '<space>', '<numeric_variable>'],  ** T E M P **
-//
-//     this.keywords = [
-//       'CLEAR',
-//       'RUN',
-//       'LIST',
-//       'INFO',
-//       'REM'
-//     ];
-//
-//     this.keywordTokens = [
-//       '<clear_command>',
-//       '<run_command>',
-//       '<list_command>',
-//       '<info_command>',
-//       '<remark>'
-//     ];
-//
-//     this.characterTokens = [
-//       '<space>',
-//       '<equals>'
-//     ];
-//
-//     this.characters = [
-//       ' ',
-//       '='
-//     ];
-//
-//     this.actionTokens = [
-//       '<line_number>',
-//       '<characters>',
-//       '<numeric_variable>',
-//       '<numeric_expression>'
-//     ];
-//
-//   }
-//
-// }
 
 
 
 export class LineParserFunctions {
-  lineParsers: ParserFunctionArray;
+
+  // This class contains the functions to parse different types of console
+  // commands (RUN, LIST, etc) and numbered program line statements. The
+  // individual functions are defined in the constructor for this class, then
+  // put into an array which is exported to the LineParser class. This way, these
+  // functions can be removed or changed when we want to change the syntax of
+  // permissible statements without touching any other class.
+
+  lineParsers: ParserFunction[];
+
 
   constructor () {
-    this.lineParsers = [];
+
+    // Define the functions that get added to the lineParsers[] array:
+
+
+    const parseConsoleKeyword = (string: string): ParseStack => {
+      // This function parses single keyword commands (RUN, LIST, etc).
+
+      let result: ParseStack = [];
+
+      let consoleKeywords: {keyword: string, token: ConsoleKeywordTag}[] = [
+        {keyword: 'CLEAR', token: '<clear>'},
+        {keyword: 'RUN', token: '<run>'},
+        {keyword: 'LIST', token: '<list>'},
+        {keyword: 'INFO', token: '<info>'}
+      ];
+
+      consoleKeywords.forEach( pair => {
+
+        if ( ( result.length === 0 ) && ( string === pair.keyword ) ) {
+          result = [
+            '<console_command>',
+            pair.token
+          ];
+        }
+
+      });
+
+      return result;
+    };
+
+
+    this.lineParsers = [
+      parseConsoleKeyword
+    ];
+
   }
+
 }
 
 
 
 export class LineParser {
-  lineParsers: ParserFunctionArray;
+  lineParsers: ParserFunction[];
 
   constructor (lineParserFunctions: LineParserFunctions) {
     this.lineParsers = lineParserFunctions.lineParsers;
@@ -181,8 +176,9 @@ export class LineParser {
     let result: ParseStack = [];
 
     this.lineParsers.forEach( parser => {
-      Function.call( parser(string) );
-      result = [];
+      if ( result.length ===  0 ) {
+        result = parser(string);
+      }
     });
 
     return result;
@@ -251,30 +247,6 @@ export class LineParser {
   //   }
   //
   //   return ruleResult;
-  // }
-
-
-  // // Check for a specific literal keyword.
-  // lookForKeywordMatch (token: SyntaxRuleTag, string: string): ParseResult {
-  //   let result: ParseResult = {
-  //     match: 'no',
-  //     stack: [],
-  //     remainder: ''
-  //   };
-  //
-  //   let i: number = this.syntax.keywordTokens.indexOf(token);
-  //   let keyword: string = this.syntax.keywords[i];
-  //   let index: number = string.indexOf(keyword);
-  //   if ( index === 0 ) {
-  //     result = {
-  //       match: 'yes',
-  //       stack: [ token ],
-  //       remainder: string.slice(keyword.length)
-  //     };
-  //   }
-  //
-  //   return result;
-  //
   // }
 
 

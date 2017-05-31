@@ -1,3 +1,4 @@
+////  Parser type definitions  ////
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -10,69 +11,31 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-// export class SyntaxRules {
-//
-//   rules: SyntaxRuleTag[][];
-//   keywords: string[];
-//   keywordTokens: SyntaxRuleTag[];
-//   characterTokens: SyntaxRuleTag[];
-//   characters: string[];
-//   actionTokens: SyntaxRuleTag[];
-//
-//   constructor () {
-//
-//     this.rules = [
-//       // ['<clear_command>'],
-//       // ['<run_command>'],
-//       // ['<list_command>'],
-//       // ['<info_command>'],
-//       // ['<line_number>', '<space>', '<remark>', '<space>', '<characters>'],
-//       // ['<line_number>', '<space>', '<remark>'],
-//       // ['<line_number>', '<space>', '<line_number_statement>'],
-//       ['<line_number>', '<space>', '<numeric_variable>', '<equals>', '<numeric_expression>'],
-//       // ['<line_number>']
-//     ];
-//     // ['<line_number>', '<space>', '<numeric_variable>'],  ** T E M P **
-//
-//     this.keywords = [
-//       'CLEAR',
-//       'RUN',
-//       'LIST',
-//       'INFO',
-//       'REM'
-//     ];
-//
-//     this.keywordTokens = [
-//       '<clear_command>',
-//       '<run_command>',
-//       '<list_command>',
-//       '<info_command>',
-//       '<remark>'
-//     ];
-//
-//     this.characterTokens = [
-//       '<space>',
-//       '<equals>'
-//     ];
-//
-//     this.characters = [
-//       ' ',
-//       '='
-//     ];
-//
-//     this.actionTokens = [
-//       '<line_number>',
-//       '<characters>',
-//       '<numeric_variable>',
-//       '<numeric_expression>'
-//     ];
-//
-//   }
-//
-// }
 var LineParserFunctions = (function () {
     function LineParserFunctions() {
-        this.lineParsers = [];
+        // Define the functions that get added to the lineParsers[] array:
+        var parseConsoleKeyword = function (string) {
+            // This function parses single keyword commands (RUN, LIST, etc).
+            var result = [];
+            var consoleKeywords = [
+                { keyword: 'CLEAR', token: '<clear>' },
+                { keyword: 'RUN', token: '<run>' },
+                { keyword: 'LIST', token: '<list>' },
+                { keyword: 'INFO', token: '<info>' }
+            ];
+            consoleKeywords.forEach(function (pair) {
+                if ((result.length === 0) && (string === pair.keyword)) {
+                    result = [
+                        '<console_command>',
+                        pair.token
+                    ];
+                }
+            });
+            return result;
+        };
+        this.lineParsers = [
+            parseConsoleKeyword
+        ];
     }
     return LineParserFunctions;
 }());
@@ -84,8 +47,9 @@ var LineParser = (function () {
     LineParser.prototype.parse = function (string) {
         var result = [];
         this.lineParsers.forEach(function (parser) {
-            Function.call(parser(string));
-            result = [];
+            if (result.length === 0) {
+                result = parser(string);
+            }
         });
         return result;
     };
