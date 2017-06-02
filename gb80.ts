@@ -198,6 +198,32 @@ export class LineParserFunctions {
     return result;
   };
 
+
+  parseRemStatement = (string: string): ParseStack => {
+    let stack: ParseStack = [];
+    let helperResult: ParseResult;
+
+    helperResult = this.parserHelpers.parseLineNumberStatement(string, 'remark');
+    if ( ( helperResult.match === 'yes' ) && ( helperResult.remainder.length > 0 ) ) {
+
+      helperResult = this.parserHelpers.parseKeyword(string, 'remark');
+      if ( helperResult.match === 'yes' ) {
+
+        if ( helperResult.remainder.length === 0 ) {
+          stack = stack.concat();
+        }
+
+        else {
+          stack = stack.concat();
+        }
+
+      }
+    }
+
+    return stack;
+  };
+
+
 }
 
 

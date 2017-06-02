@@ -60,6 +60,23 @@ var LineParserFunctions = (function () {
             }
             return result;
         };
+        this.parseRemStatement = function (string) {
+            var stack = [];
+            var helperResult;
+            helperResult = _this.parserHelpers.parseLineNumberStatement(string, 'remark');
+            if ((helperResult.match === 'yes') && (helperResult.remainder.length > 0)) {
+                helperResult = _this.parserHelpers.parseKeyword(string, 'remark');
+                if (helperResult.match === 'yes') {
+                    if (helperResult.remainder.length === 0) {
+                        stack = stack.concat();
+                    }
+                    else {
+                        stack = stack.concat();
+                    }
+                }
+            }
+            return stack;
+        };
         this.parserHelpers = parserHelpers;
         this.lineParsers = [
             this.parseConsoleKeyword,

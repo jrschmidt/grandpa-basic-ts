@@ -58,7 +58,7 @@ describe('BASIC program line parser', function() {
   });
 
 
-  xit('should correctly parse a REM program line', function() {
+  it('should correctly parse a REM program line', function() {
 
     result = this.parser.parse('100 REM');
     expect(result).toEqual(jasmine.any(Array));
