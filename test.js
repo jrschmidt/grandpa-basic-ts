@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var Main = (function () {
     function Main(parsers) {
         this.parsers = parsers;
@@ -14,22 +16,36 @@ var Main = (function () {
     };
     return Main;
 }());
-var Parser = (function () {
-    function Parser() {
+exports.Main = Main;
+var Parsers = (function () {
+    function Parsers(parserHelpers) {
         var _this = this;
         this.fn1 = function (str) {
-            _this.parsers.set(str);
-            return _this.parsers.st;
+            _this.helpers
+                .set(str);
+            return _this.helpers.st;
         };
         this.fn2 = function (str) {
-            _this.parsers.set('<eq>').ha('<birds>');
-            return _this.parsers.st;
+            _this.helpers
+                .set('<eq>')
+                .ha('<birds>');
+            return _this.helpers.st;
         };
         this.fn3 = function (str) {
-            _this.parsers.set('<sum>').hb('SEVENTEEN').ha('<ice_cream>');
-            return _this.parsers.st;
+            _this.helpers
+                .set('<sum>')
+                .hb('caves')
+                .ha('<ice_cream>');
+            return _this.helpers.st;
         };
-        this.parsers = {
+        this.helpers = parserHelpers.helpers;
+    }
+    return Parsers;
+}());
+exports.Parsers = Parsers;
+var ParserHelpers = (function () {
+    function ParserHelpers() {
+        this.helpers = {
             st: [],
             set: function (s) {
                 this.st = [s];
@@ -56,8 +72,10 @@ var Parser = (function () {
             }
         };
     }
-    return Parser;
+    return ParserHelpers;
 }());
-var parser = new Parser;
-var main = new Main(parser);
+exports.ParserHelpers = ParserHelpers;
+var helpers = new ParserHelpers;
+var parsers = new Parsers(helpers);
+var main = new Main(parsers);
 main.run();

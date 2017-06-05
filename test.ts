@@ -1,4 +1,4 @@
-class Main {
+export class Main {
   parsers;
   constructor (parsers) {
     this.parsers = parsers;
@@ -18,12 +18,50 @@ class Main {
 }
 
 
-class Parser {
-  parsers;
+export class Parsers {
+  helpers;
+
+  constructor (parserHelpers) {
+    this.helpers = parserHelpers.helpers;
+  }
+
+
+  fn1 = (str) => {
+    this.helpers
+    .set(str);
+
+    return this.helpers.st;
+  };
+
+
+  fn2 = (str) => {
+    this.helpers
+    .set('<eq>')
+    .ha('<birds>');
+
+    return this.helpers.st;
+  };
+
+
+  fn3 = (str) => {
+    this.helpers
+    .set('<sum>')
+    .hb('caves')
+    .ha('<ice_cream>');
+    return this.helpers.st;
+  };
+
+
+}
+
+
+
+export class ParserHelpers {
+  helpers;
 
   constructor () {
 
-    this.parsers = {
+    this.helpers = {
       st: [],
 
 
@@ -60,29 +98,14 @@ class Parser {
 
     };
 
-}
-
-
-  fn1 = (str) => {
-    this.parsers.set(str);
-    return this.parsers.st;
-  };
-
-  fn2 = (str) => {
-    this.parsers.set('<eq>').ha('<birds>');
-    return this.parsers.st;
-  };
-
-  fn3 = (str) => {
-    this.parsers.set('<sum>').hb('SEVENTEEN').ha('<ice_cream>');
-    return this.parsers.st;
-  };
+  }
 
 }
 
 
 
-const parser = new Parser;
-const main = new Main(parser);
+const helpers = new ParserHelpers;
+const parsers = new Parsers(helpers);
+const main = new Main(parsers);
 
 main.run();

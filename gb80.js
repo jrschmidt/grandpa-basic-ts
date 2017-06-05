@@ -1,4 +1,3 @@
-////  Parser type definitions  ////
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -10,7 +9,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 var LineParser = (function () {
     function LineParser(lineParserFunctions) {
         this.lineParsers = lineParserFunctions.lineParsers;
@@ -31,7 +30,6 @@ var LineParserFunctions = (function () {
     function LineParserFunctions(parserHelpers) {
         var _this = this;
         this.parseConsoleKeyword = function (string) {
-            // This function parses single keyword commands (RUN, LIST, etc).
             var result = [];
             var consoleKeywords = [
                 { keyword: 'CLEAR', token: '<clear>' },
@@ -50,9 +48,6 @@ var LineParserFunctions = (function () {
             return result;
         };
         this.parseBareLineNumber = function (string) {
-            // This function parses a valid line number with nothing following it. In
-            // BASIC, entering a line number with nothing following it deletes that
-            // line from the program.
             var result = [];
             var helperResult = _this.parserHelpers.parseLineNumber(string);
             if ((helperResult.match === 'yes') && (helperResult.remainder.length === 0)) {
@@ -332,8 +327,6 @@ var NumericExpressionBuilder = (function () {
         };
         return expression;
     };
-    // buildNumericRandomFunctionExpression(stack: NumericParseStackSplit): NumericExpressionObject {}
-    // buildNumericIntegerFunctionExpression(stack: NumericParseStackSplit): NumericExpressionObject {}
     NumericExpressionBuilder.prototype.stripDelimiterTokens = function (stack) {
         var first = stack[0];
         var last = stack[stack.length - 1];
@@ -509,8 +502,6 @@ var NumericVariableRegister = (function (_super) {
     function NumericVariableRegister() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    // 	# Most, if not all, of the early versions of BASIC initialized any unset
-    // 	# numeric variables to 0.
     NumericVariableRegister.prototype.addVar = function (name) {
         this.vars[name] = 0;
     };
@@ -522,8 +513,6 @@ var StringVariableRegister = (function (_super) {
     function StringVariableRegister() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    // Most early versions of BASIC initialized unset string variables to an
-    // empty string.
     StringVariableRegister.prototype.addVar = function (name) {
         this.vars[name] = '';
     };
@@ -688,8 +677,6 @@ var BooleanExpressionEvaluator = (function () {
 exports.BooleanExpressionEvaluator = BooleanExpressionEvaluator;
 var KeyHelper = (function () {
     function KeyHelper() {
-        // Postpone monitor color code until later in the CS - TS conversion.
-        // this.monitorColor = 'green';
         this.code = [
             173, 61, 59, 189, 187, 186,
             48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
@@ -709,7 +696,6 @@ var KeyHelper = (function () {
             ['S', 'S'], ['T', 'T'], ['U', 'U'], ['V', 'V'], ['W', 'W'], ['X', 'X'], ['Y', 'Y'], ['Z', 'Z'],
             [',', '<'], ['.', '>'], ['/', '?'], ['`', '~'], ['[', '{'], [']', '}'], ["'", '"']
         ];
-        // TODO Why are '[' and ']' not implemented?
         this.chars = [
             '!', '"', '#', '$', '%', '&', "'",
             '(', ')', '*', '+', ',', '-', '.', '/', '0', '1',
@@ -758,12 +744,10 @@ var KeyHelper = (function () {
             var i = this.chars.indexOf(ch);
             var xx = this.xy[i][0];
             var yy = this.xy[i][1];
-            // Postpone monitor color code until later in the CS - TS conversion
-            // if ( this.monitorColor === 'green' ) {xx = xx + 145;}
             return [xx, yy];
         }
         else {
-            return this.blankSpriteXY; // (blank sprite)
+            return this.blankSpriteXY;
         }
     };
     return KeyHelper;
