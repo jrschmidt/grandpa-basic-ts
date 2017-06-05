@@ -141,12 +141,11 @@ export class LineParserFunctions {
   // This way, these functions can be removed or changed when we want to change
   // the syntax of permissible statements without touching any other class.
 
-  parserHelpers: ParserHelpers;
-
   lineParsers: ParserFunction[];
+  helpers;
 
-  constructor (parserHelpers: ParserHelpers) {
-    this.parserHelpers = parserHelpers;
+  constructor (parserHelpers: LineParserHelpers) {
+    this.helpers = parserHelpers.helpers;
 
     this.lineParsers = [
       this.parseConsoleKeyword,
@@ -156,6 +155,51 @@ export class LineParserFunctions {
   }
 
 
+  parseBareLineNumber = (string: string): ParseStack => {
+    // This function parses a valid line number with nothing following it. In
+    // BASIC, entering a line number with nothing following it deletes that
+    // line from the program.
+
+    this.helpers.set(string).parseLineNumber();
+
+    if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
+      return this.helpers.stack;
+    }
+
+    else {
+      return [];
+    }
+
+  };
+
+
+  parseRemStatement = (string: string): ParseStack => {
+    let stack: ParseStack = [];
+    let helperResult: ParseResult;
+
+    helperResult = this.LineParserHelpers.parseLineNumberStatement(string, 'remark');
+    if ( ( helperResult.match === 'yes' ) && ( helperResult.remainder.length > 0 ) ) {
+
+      helperResult = this.LineParserHelpers.parseKeyword(string, 'remark');
+      if ( helperResult.match === 'yes' ) {
+
+        if ( helperResult.remainder.length === 0 ) {
+          stack = stack.concat();
+        }
+
+        else {
+          stack = stack.concat();
+        }
+
+      }
+    }
+
+    return stack;
+  };
+
+
+  // FOR NOW, THIS ONE IS DIFFERENT THAN THE OTHER PARSERS, AND IS
+  // TEMPORARILY OUTSIDE THE ARRAY COLLECTION OF FUNCTIONS.
   parseConsoleKeyword = (string: string): ParseStack => {
     // This function parses single keyword commands (RUN, LIST, etc).
 
@@ -183,71 +227,48 @@ export class LineParserFunctions {
   };
 
 
-  parseBareLineNumber = (string: string): ParseStack => {
-    // This function parses a valid line number with nothing following it. In
-    // BASIC, entering a line number with nothing following it deletes that
-    // line from the program.
-
-    let result: ParseStack = [];
-
-    let helperResult: ParseResult = this.parserHelpers.parseLineNumber(string);
-    if ( ( helperResult.match === 'yes' ) && ( helperResult.remainder.length === 0 ) ) {
-      result = helperResult.stack;
-    }
-
-    return result;
-  };
-
-
-  parseRemStatement = (string: string): ParseStack => {
-    let stack: ParseStack = [];
-    let helperResult: ParseResult;
-
-    helperResult = this.parserHelpers.parseLineNumberStatement(string, 'remark');
-    if ( ( helperResult.match === 'yes' ) && ( helperResult.remainder.length > 0 ) ) {
-
-      helperResult = this.parserHelpers.parseKeyword(string, 'remark');
-      if ( helperResult.match === 'yes' ) {
-
-        if ( helperResult.remainder.length === 0 ) {
-          stack = stack.concat();
-        }
-
-        else {
-          stack = stack.concat();
-        }
-
-      }
-    }
-
-    return stack;
-  };
-
-
 }
 
 
 
-export class ParserHelpers {
+export class LineParserHelpers {
+  // The parser helper functions are written as properties of the helpers{}
+  // object to enable them to be used in a function chaining pattern.
 
-  parseLineNumber (string: string): ParseResult {
+  helpers: {};
 
-    let result: ParseResult = {
-      match: 'no',
-      stack: [],
-      remainder: ''
+  constructor () {
+
+    this.helpers = {
+      match: <string> 'no',
+      stack: <ParseStack> [],
+      remainder: <string> '',
+
+
+      set: function (string: string) {
+        this.match = 'no';
+        this.stack = [];
+        this.remainder = string;
+
+        return this;
+      },
+
+
+      parseLineNumber : function () {
+        let n: number = parseInt(this.remainder)
+
+        if (n) {
+          this.match = 'yes';
+          this.stack = this.stack.concat( ['<line_number>', n] );
+          this.remainder = this.remainder.slice(String(n).length);
+        }
+
+        return this;
+      },
+
+
     };
 
-    let n: number = parseInt(string)
-    if (n) {
-      result = {
-        match: 'yes',
-        stack: ['<line_number>', n],
-        remainder: string.slice(String(n).length)
-      };
-    }
-
-    return result;
   }
 
 }
@@ -407,10 +428,10 @@ export class StringExpressionParser {
       }
 
       else {
-        resultTokens = this.parseStringVariableName(<string>tk);
+        resultTokens = this.parseStringVariableName(<string> tk);
 
         if ( resultTokens.length === 0 ) {
-          resultTokens = this.parseStringLiteral(<string>tk);
+          resultTokens = this.parseStringLiteral(<string> tk);
         }
 
         if ( resultTokens.length > 0 ) {
@@ -558,7 +579,7 @@ export class NumericExpressionBuilder {
   buildNumericVariableExpression (stack: NumericParseStackSplit): NumericExpressionObject {
     let expression: NumericExpressionObject = {
       tag: '<numeric_variable>',
-      name: <string>stack.right[0]
+      name: <string> stack.right[0]
     }
     return expression;
   }
@@ -691,7 +712,7 @@ export class StringExpressionBuilder {
     for ( let t=1; t<=stack.length-3; t=t+3 ) {
 
       if ( stack[t] === '<string_variable>' ) {
-        let name: string = <string>stack[t+1];
+        let name: string = <string> stack[t+1];
         expression = {
           tag: '<string_variable>',
           name: name
@@ -700,7 +721,7 @@ export class StringExpressionBuilder {
 
       else
       {
-        let value: string = <string>stack[t+1];
+        let value: string = <string> stack[t+1];
         expression = {
           tag: '<string_literal>',
           value: value
@@ -730,7 +751,7 @@ export class BooleanExpressionBuilder {
 
   buildBooleanExpression (stack: ParseStack): BooleanExpressionObject {
     let comparator: BooleanExpressionTag = <BooleanExpressionTag>stack[3];
-    let bxVar: string = <string>stack[2];
+    let bxVar: string = <string> stack[2];
     let subStack: ParseStack = stack.slice(4, stack.length - 1);
     let expression: NumericExpressionObject | StringExpressionObject;
 

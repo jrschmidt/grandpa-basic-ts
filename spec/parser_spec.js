@@ -2,12 +2,12 @@
 GB80 = require('../gb80');
 LineParser = GB80.LineParser;
 LineParserFunctions = GB80.LineParserFunctions;
-ParserHelpers = GB80.ParserHelpers;
+LineParserHelpers = GB80.LineParserHelpers;
 
 describe('BASIC program line parser', function() {
 
   beforeEach(function() {
-    parserHelpers = new ParserHelpers;
+    parserHelpers = new LineParserHelpers;
     parserFunctions = new LineParserFunctions(parserHelpers);
     this.parser = new LineParser(parserFunctions);
   });
@@ -58,7 +58,7 @@ describe('BASIC program line parser', function() {
   });
 
 
-  it('should correctly parse a REM program line', function() {
+  xit('should correctly parse a REM program line', function() {
 
     result = this.parser.parse('100 REM');
     expect(result).toEqual(jasmine.any(Array));
