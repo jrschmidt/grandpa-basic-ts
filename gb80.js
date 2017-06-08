@@ -42,25 +42,22 @@ var LineParserFunctions = (function () {
                 return [];
             }
         };
-        this.parseRemStatement = function (string) {
-            var stack = [];
-            var helperResult;
-            helperResult = _this.LineParserHelpers.parseLineNumberStatement(string, 'remark');
-            if ((helperResult.match === 'yes') && (helperResult.remainder.length > 0)) {
-                helperResult = _this.LineParserHelpers.parseKeyword(string, 'remark');
-                if (helperResult.match === 'yes') {
-                    if (helperResult.remainder.length === 0) {
-                        stack = stack.concat();
-                    }
-                    else {
-                        stack = stack.concat();
-                    }
-                }
+        this.parseBareRemStatement = function (string) {
+            console.log(' ');
+            console.log("parseBareRemStatement() string = " + string);
+            _this.helpers.set(string).parseLineNumber().parseKeyword('REM');
+            console.log("   match = " + _this.helpers.match);
+            console.log("   stack = " + _this.helpers.stack);
+            console.log("   remainder = " + _this.helpers.remainder);
+            if ((_this.helpers.match === 'yes') && (_this.helpers.remainder.length === 0)) {
+                return _this.helpers.stack;
             }
-            return stack;
+            else {
+                return [];
+            }
         };
-        // FOR NOW, THIS ONE IS DIFFERENT THAN THE OTHER PARSERS, AND IS
-        // TEMPORARILY OUTSIDE THE ARRAY COLLECTION OF FUNCTIONS.
+        // FOR NOW, THIS ONE IS DIFFERENT THAN THE OTHER PARSERS, AND DOES NOT USE
+        // THE CHAINABLE HELPER FUNCTIONS.
         this.parseConsoleKeyword = function (string) {
             // This function parses single keyword commands (RUN, LIST, etc).
             var result = [];
@@ -83,7 +80,8 @@ var LineParserFunctions = (function () {
         this.helpers = parserHelpers.helpers;
         this.lineParsers = [
             this.parseConsoleKeyword,
-            this.parseBareLineNumber
+            this.parseBareLineNumber,
+            this.parseBareRemStatement
         ];
     }
     return LineParserFunctions;
@@ -102,11 +100,29 @@ var LineParserHelpers = (function () {
                 return this;
             },
             parseLineNumber: function () {
-                var n = parseInt(this.remainder);
-                if (n) {
-                    this.match = 'yes';
-                    this.stack = this.stack.concat(['<line_number>', n]);
-                    this.remainder = this.remainder.slice(String(n).length);
+                if (this.match != 'error') {
+                    var n = parseInt(this.remainder);
+                    if (n) {
+                        this.match = 'yes';
+                        this.stack = this.stack.concat(['<line_number>', n]);
+                        this.remainder = this.remainder.slice(String(n).length);
+                    }
+                    else {
+                        this.match = 'error';
+                    }
+                }
+                return this;
+            },
+            parseKeyword: function (keyword) {
+                if (this.match != 'error') {
+                    if (this.remainder.indexOf(keyword) === 0) {
+                        this.match = 'yes';
+                        this.stack = this.stack.push('<' + keyword.toLowerCase() + '>');
+                        this.remainder = this.remainder.slice(keyword.length);
+                    }
+                    else {
+                        this.match = 'error';
+                    }
                 }
                 return this;
             },

@@ -149,7 +149,8 @@ export class LineParserFunctions {
 
     this.lineParsers = [
       this.parseConsoleKeyword,
-      this.parseBareLineNumber
+      this.parseBareLineNumber,
+      this.parseBareRemStatement
     ];
 
   }
@@ -173,33 +174,28 @@ export class LineParserFunctions {
   };
 
 
-  parseRemStatement = (string: string): ParseStack => {
-    let stack: ParseStack = [];
-    let helperResult: ParseResult;
+  parseBareRemStatement = (string: string): ParseStack => {
+    console.log(' ');
+    console.log(`parseBareRemStatement() string = ${string}`);
 
-    helperResult = this.LineParserHelpers.parseLineNumberStatement(string, 'remark');
-    if ( ( helperResult.match === 'yes' ) && ( helperResult.remainder.length > 0 ) ) {
+    this.helpers.set(string).parseLineNumber().parseKeyword('REM');
+    console.log(`   match = ${this.helpers.match}`);
+    console.log(`   stack = ${this.helpers.stack}`);
+    console.log(`   remainder = ${this.helpers.remainder}`);
 
-      helperResult = this.LineParserHelpers.parseKeyword(string, 'remark');
-      if ( helperResult.match === 'yes' ) {
-
-        if ( helperResult.remainder.length === 0 ) {
-          stack = stack.concat();
-        }
-
-        else {
-          stack = stack.concat();
-        }
-
-      }
+    if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
+      return this.helpers.stack;
     }
 
-    return stack;
+    else {
+      return [];
+    }
+
   };
 
 
-  // FOR NOW, THIS ONE IS DIFFERENT THAN THE OTHER PARSERS, AND IS
-  // TEMPORARILY OUTSIDE THE ARRAY COLLECTION OF FUNCTIONS.
+  // FOR NOW, THIS ONE IS DIFFERENT THAN THE OTHER PARSERS, AND DOES NOT USE
+  // THE CHAINABLE HELPER FUNCTIONS.
   parseConsoleKeyword = (string: string): ParseStack => {
     // This function parses single keyword commands (RUN, LIST, etc).
 
@@ -211,6 +207,7 @@ export class LineParserFunctions {
       {keyword: 'LIST', token: '<list>'},
       {keyword: 'INFO', token: '<info>'}
     ];
+
 
     consoleKeywords.forEach( pair => {
 
@@ -234,7 +231,6 @@ export class LineParserFunctions {
 export class LineParserHelpers {
   // The parser helper functions are written as properties of the helpers{}
   // object to enable them to be used in a function chaining pattern.
-
   helpers: {};
 
   constructor () {
@@ -255,12 +251,40 @@ export class LineParserHelpers {
 
 
       parseLineNumber : function () {
-        let n: number = parseInt(this.remainder)
 
-        if (n) {
-          this.match = 'yes';
-          this.stack = this.stack.concat( ['<line_number>', n] );
-          this.remainder = this.remainder.slice(String(n).length);
+        if ( this.match != 'error' ) {
+
+          let n: number = parseInt(this.remainder)
+
+          if (n) {
+            this.match = 'yes';
+            this.stack = this.stack.concat( ['<line_number>', n] );
+            this.remainder = this.remainder.slice(String(n).length);
+          }
+
+          else {
+            this.match = 'error';
+          }
+
+        }
+
+        return this;
+      },
+
+
+      parseKeyword : function (keyword: string) {
+
+        if ( this.match != 'error' ) {
+
+          if ( this.remainder.indexOf(keyword) === 0) {
+            this.match = 'yes';
+            this.stack = this.stack.push( '<' + keyword.toLowerCase() + '>' );
+            this.remainder = this.remainder.slice(keyword.length);
+          }
+
+          else {
+            this.match = 'error';
+          }
         }
 
         return this;
