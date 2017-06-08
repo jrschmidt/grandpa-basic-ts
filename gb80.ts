@@ -17,6 +17,11 @@ type ConsoleKeywordTag =
   '<list>' |
   '<info>';
 
+type CharacterKeywordTag =
+  '<sp>' |
+  '<equals>' |
+  '<semicolon>';
+
 type ProgramKeywordTag =
   '<remark>' |
   '<goto>' |
@@ -178,7 +183,7 @@ export class LineParserFunctions {
     console.log(' ');
     console.log(`parseBareRemStatement() string = ${string}`);
 
-    this.helpers.set(string).parseLineNumber().parseKeyword('REM');
+    this.helpers.set(string).parseLineNumber().parseChar('sp').parseKeyword('REM');
     console.log(`   match = ${this.helpers.match}`);
     console.log(`   stack = ${this.helpers.stack}`);
     console.log(`   remainder = ${this.helpers.remainder}`);
@@ -192,6 +197,9 @@ export class LineParserFunctions {
     }
 
   };
+
+
+// this.helpers.set(string).parseLineNumber().parseChar('sp').parseKeyword('REM');
 
 
   // FOR NOW, THIS ONE IS DIFFERENT THAN THE OTHER PARSERS, AND DOES NOT USE
@@ -254,7 +262,7 @@ export class LineParserHelpers {
 
         if ( this.match != 'error' ) {
 
-          let n: number = parseInt(this.remainder)
+          let n: number = parseInt(this.remainder);
 
           if (n) {
             this.match = 'yes';
@@ -268,6 +276,8 @@ export class LineParserHelpers {
 
         }
 
+        console.log('parseLineNumber()');
+        console.log(`   stack = ${this.stack}`);
         return this;
       },
 
@@ -287,6 +297,36 @@ export class LineParserHelpers {
           }
         }
 
+        console.log('parseKeyword()');
+        console.log(`   stack = ${this.stack}`);
+        return this;
+      },
+
+
+      parseChar : function (chCode) {
+
+        if ( this.match != 'error' ) {
+
+          let characters = {
+            sp: ' ',
+            equals: '=',
+            semicolon: ';'
+          };
+
+          if ( this.remainder[0] === characters[chCode] ) {
+            this.match = 'yes';
+            this.stack.push( '<' + chCode + '>' );
+            this.remainder = this.remainder.slice(1);
+          }
+
+          else {
+            this.match = 'error';
+          }
+
+        }
+
+        console.log('parseChar()');
+        console.log(`   stack = ${this.stack}`);
         return this;
       },
 

@@ -1,7 +1,7 @@
 GB80 = require('../gb80');
 NumericExpressionParser = GB80.NumericExpressionParser;
 
-xdescribe('Numeric expression parser', function() {
+describe('Numeric expression parser', function() {
 
   beforeEach(function() {
     this.parser = new NumericExpressionParser;

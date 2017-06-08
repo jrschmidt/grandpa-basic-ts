@@ -45,7 +45,7 @@ var LineParserFunctions = (function () {
         this.parseBareRemStatement = function (string) {
             console.log(' ');
             console.log("parseBareRemStatement() string = " + string);
-            _this.helpers.set(string).parseLineNumber().parseKeyword('REM');
+            _this.helpers.set(string).parseLineNumber().parseChar('sp').parseKeyword('REM');
             console.log("   match = " + _this.helpers.match);
             console.log("   stack = " + _this.helpers.stack);
             console.log("   remainder = " + _this.helpers.remainder);
@@ -56,6 +56,7 @@ var LineParserFunctions = (function () {
                 return [];
             }
         };
+        // this.helpers.set(string).parseLineNumber().parseChar('sp').parseKeyword('REM');
         // FOR NOW, THIS ONE IS DIFFERENT THAN THE OTHER PARSERS, AND DOES NOT USE
         // THE CHAINABLE HELPER FUNCTIONS.
         this.parseConsoleKeyword = function (string) {
@@ -111,6 +112,8 @@ var LineParserHelpers = (function () {
                         this.match = 'error';
                     }
                 }
+                console.log('parseLineNumber()');
+                console.log("   stack = " + this.stack);
                 return this;
             },
             parseKeyword: function (keyword) {
@@ -124,6 +127,28 @@ var LineParserHelpers = (function () {
                         this.match = 'error';
                     }
                 }
+                console.log('parseKeyword()');
+                console.log("   stack = " + this.stack);
+                return this;
+            },
+            parseChar: function (chCode) {
+                if (this.match != 'error') {
+                    var characters = {
+                        sp: ' ',
+                        equals: '=',
+                        semicolon: ';'
+                    };
+                    if (this.remainder[0] === characters[chCode]) {
+                        this.match = 'yes';
+                        this.stack.push('<' + chCode + '>');
+                        this.remainder = this.remainder.slice(1);
+                    }
+                    else {
+                        this.match = 'error';
+                    }
+                }
+                console.log('parseChar()');
+                console.log("   stack = " + this.stack);
                 return this;
             },
         };
