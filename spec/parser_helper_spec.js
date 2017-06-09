@@ -69,28 +69,135 @@ describe('Line parser helpers', function() {
   it('should correctly parse a single specific character', function() {
 
     string = ' ';
-    this.helpers.set(string).parseChar('sp');
+    this.helpers.set(string).parseChar('space');
     expect(this.helpers.match).toEqual('yes');
-    expect(this.helpers.stack).toEqual( ['<sp>'] );
+    expect(this.helpers.stack).toEqual( ['<space>'] );
     expect(this.helpers.remainder).toEqual('');
 
     string = ' REM HELLO';
-    this.helpers.set(string).parseChar('sp');
+    this.helpers.set(string).parseChar('space');
     expect(this.helpers.match).toEqual('yes');
-    expect(this.helpers.stack).toEqual( ['<sp>'] );
+    expect(this.helpers.stack).toEqual( ['<space>'] );
     expect(this.helpers.remainder).toEqual('REM HELLO');
 
     string = ' X=7';
-    this.helpers.set(string).parseChar('sp');
+    this.helpers.set(string).parseChar('space');
     expect(this.helpers.match).toEqual('yes');
-    expect(this.helpers.stack).toEqual( ['<sp>'] );
+    expect(this.helpers.stack).toEqual( ['<space>'] );
     expect(this.helpers.remainder).toEqual('X=7');
 
     string = ' GOTO 1660';
-    this.helpers.set(string).parseChar('sp');
+    this.helpers.set(string).parseChar('space');
     expect(this.helpers.match).toEqual('yes');
-    expect(this.helpers.stack).toEqual( ['<sp>'] );
+    expect(this.helpers.stack).toEqual( ['<space>'] );
     expect(this.helpers.remainder).toEqual('GOTO 1660');
+
+    string = '=13*W-M8';
+    this.helpers.set(string).parseChar('equals');
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( ['<equals>'] );
+    expect(this.helpers.remainder).toEqual('13*W-M8');
+
+    string = '="ARIZONA"';
+    this.helpers.set(string).parseChar('equals');
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( ['<equals>'] );
+    expect(this.helpers.remainder).toEqual('"ARIZONA"');
+
+    string = ';H4';
+    this.helpers.set(string).parseChar('semicolon');
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( ['<semicolon>'] );
+    expect(this.helpers.remainder).toEqual('H4');
+
+    string = ';$K';
+    this.helpers.set(string).parseChar('semicolon');
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( ['<semicolon>'] );
+    expect(this.helpers.remainder).toEqual('$K');
+
+    string = '(4*A*C)/D';
+    this.helpers.set(string).parseChar('left');
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( ['<left>'] );
+    expect(this.helpers.remainder).toEqual('4*A*C)/D');
+
+    string = ')/(L2+L3+L4)';
+    this.helpers.set(string).parseChar('right');
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( ['<right>'] );
+    expect(this.helpers.remainder).toEqual('/(L2+L3+L4)');
+
+  });
+
+
+  it('should correctly parse a keyword', function() {
+
+    string = 'REM SQUARE ROOT PROGRAM';
+    this.helpers.set(string).parseKeyword('REM');
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( ['<remark>'] );
+    expect(this.helpers.remainder).toEqual(' SQUARE ROOT PROGRAM');
+
+    string = 'GOTO 780';
+    this.helpers.set(string).parseKeyword('GOTO');
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( ['<goto>'] );
+    expect(this.helpers.remainder).toEqual(' 780');
+
+    string = 'GOSUB 12000';
+    this.helpers.set(string).parseKeyword('GOSUB');
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( ['<gosub>'] );
+    expect(this.helpers.remainder).toEqual(' 12000');
+
+    string = 'RETURN';
+    this.helpers.set(string).parseKeyword('RETURN');
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( ['<return>'] );
+    expect(this.helpers.remainder).toEqual('');
+
+    string = 'IF B>0 THEN 600';
+    this.helpers.set(string).parseKeyword('IF');
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( ['<if>'] );
+    expect(this.helpers.remainder).toEqual(' B>0 THEN 600');
+
+    string = 'THEN 800';
+    this.helpers.set(string).parseKeyword('THEN');
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( ['<then>'] );
+    expect(this.helpers.remainder).toEqual(' 800');
+
+    string = 'INPUT "NAME"; $N';
+    this.helpers.set(string).parseKeyword('INPUT');
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( ['<input>'] );
+    expect(this.helpers.remainder).toEqual(' "NAME"; $N');
+
+    string = 'PRINT $T5';
+    this.helpers.set(string).parseKeyword('PRINT');
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( ['<print>'] );
+    expect(this.helpers.remainder).toEqual(' $T5');
+
+    string = 'END';
+    this.helpers.set(string).parseKeyword('END');
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( ['<end>'] );
+    expect(this.helpers.remainder).toEqual('');
+
+    string = 'INT(Z/Y)';
+    this.helpers.set(string).parseKeyword('INT');
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( ['<integer>'] );
+    expect(this.helpers.remainder).toEqual('(Z/Y)');
+
+    string = 'RND*99)/N';
+    this.helpers.set(string).parseKeyword('RND');
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( ['<random>'] );
+    expect(this.helpers.remainder).toEqual('*99)/N');
 
   });
 

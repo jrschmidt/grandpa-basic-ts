@@ -43,12 +43,7 @@ var LineParserFunctions = (function () {
             }
         };
         this.parseBareRemStatement = function (string) {
-            console.log(' ');
-            console.log("parseBareRemStatement() string = " + string);
-            _this.helpers.set(string).parseLineNumber().parseChar('sp').parseKeyword('REM');
-            console.log("   match = " + _this.helpers.match);
-            console.log("   stack = " + _this.helpers.stack);
-            console.log("   remainder = " + _this.helpers.remainder);
+            _this.helpers.set(string).parseLineNumber().parseChar('space').parseKeyword('REM');
             if ((_this.helpers.match === 'yes') && (_this.helpers.remainder.length === 0)) {
                 return _this.helpers.stack;
             }
@@ -56,7 +51,6 @@ var LineParserFunctions = (function () {
                 return [];
             }
         };
-        // this.helpers.set(string).parseLineNumber().parseChar('sp').parseKeyword('REM');
         // FOR NOW, THIS ONE IS DIFFERENT THAN THE OTHER PARSERS, AND DOES NOT USE
         // THE CHAINABLE HELPER FUNCTIONS.
         this.parseConsoleKeyword = function (string) {
@@ -112,31 +106,38 @@ var LineParserHelpers = (function () {
                         this.match = 'error';
                     }
                 }
-                console.log('parseLineNumber()');
-                console.log("   stack = " + this.stack);
                 return this;
             },
             parseKeyword: function (keyword) {
+                var irregulars = {
+                    rem: 'remark',
+                    int: 'integer',
+                    rnd: 'random'
+                };
                 if (this.match != 'error') {
                     if (this.remainder.indexOf(keyword) === 0) {
                         this.match = 'yes';
-                        this.stack = this.stack.push('<' + keyword.toLowerCase() + '>');
+                        var tk = keyword.toLowerCase();
+                        if (irregulars[tk]) {
+                            tk = irregulars[tk];
+                        }
+                        this.stack.push('<' + tk + '>');
                         this.remainder = this.remainder.slice(keyword.length);
                     }
                     else {
                         this.match = 'error';
                     }
                 }
-                console.log('parseKeyword()');
-                console.log("   stack = " + this.stack);
                 return this;
             },
             parseChar: function (chCode) {
                 if (this.match != 'error') {
                     var characters = {
-                        sp: ' ',
+                        space: ' ',
                         equals: '=',
-                        semicolon: ';'
+                        semicolon: ';',
+                        left: '(',
+                        right: ')'
                     };
                     if (this.remainder[0] === characters[chCode]) {
                         this.match = 'yes';
@@ -147,8 +148,6 @@ var LineParserHelpers = (function () {
                         this.match = 'error';
                     }
                 }
-                console.log('parseChar()');
-                console.log("   stack = " + this.stack);
                 return this;
             },
         };

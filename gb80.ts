@@ -18,7 +18,7 @@ type ConsoleKeywordTag =
   '<info>';
 
 type CharacterKeywordTag =
-  '<sp>' |
+  '<space>' |
   '<equals>' |
   '<semicolon>';
 
@@ -180,13 +180,8 @@ export class LineParserFunctions {
 
 
   parseBareRemStatement = (string: string): ParseStack => {
-    console.log(' ');
-    console.log(`parseBareRemStatement() string = ${string}`);
 
-    this.helpers.set(string).parseLineNumber().parseChar('sp').parseKeyword('REM');
-    console.log(`   match = ${this.helpers.match}`);
-    console.log(`   stack = ${this.helpers.stack}`);
-    console.log(`   remainder = ${this.helpers.remainder}`);
+    this.helpers.set(string).parseLineNumber().parseChar('space').parseKeyword('REM');
 
     if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
       return this.helpers.stack;
@@ -197,9 +192,6 @@ export class LineParserFunctions {
     }
 
   };
-
-
-// this.helpers.set(string).parseLineNumber().parseChar('sp').parseKeyword('REM');
 
 
   // FOR NOW, THIS ONE IS DIFFERENT THAN THE OTHER PARSERS, AND DOES NOT USE
@@ -276,19 +268,26 @@ export class LineParserHelpers {
 
         }
 
-        console.log('parseLineNumber()');
-        console.log(`   stack = ${this.stack}`);
         return this;
       },
 
 
       parseKeyword : function (keyword: string) {
+        let irregulars = {
+          rem: 'remark',
+          int: 'integer',
+          rnd: 'random'
+        };
 
         if ( this.match != 'error' ) {
 
           if ( this.remainder.indexOf(keyword) === 0) {
             this.match = 'yes';
-            this.stack = this.stack.push( '<' + keyword.toLowerCase() + '>' );
+            let tk: string = keyword.toLowerCase();
+            if ( irregulars[tk] ) {
+              tk = irregulars[tk]
+            }
+            this.stack.push('<' + tk + '>');
             this.remainder = this.remainder.slice(keyword.length);
           }
 
@@ -297,8 +296,6 @@ export class LineParserHelpers {
           }
         }
 
-        console.log('parseKeyword()');
-        console.log(`   stack = ${this.stack}`);
         return this;
       },
 
@@ -308,9 +305,11 @@ export class LineParserHelpers {
         if ( this.match != 'error' ) {
 
           let characters = {
-            sp: ' ',
+            space: ' ',
             equals: '=',
-            semicolon: ';'
+            semicolon: ';',
+            left: '(',
+            right: ')'
           };
 
           if ( this.remainder[0] === characters[chCode] ) {
@@ -325,8 +324,6 @@ export class LineParserHelpers {
 
         }
 
-        console.log('parseChar()');
-        console.log(`   stack = ${this.stack}`);
         return this;
       },
 
