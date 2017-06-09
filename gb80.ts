@@ -155,7 +155,8 @@ export class LineParserFunctions {
     this.lineParsers = [
       this.parseConsoleKeyword,
       this.parseBareLineNumber,
-      this.parseBareRemStatement
+      this.parseBareRemStatement,
+      this.parseEndStatement
     ];
 
   }
@@ -182,6 +183,23 @@ export class LineParserFunctions {
   parseBareRemStatement = (string: string): ParseStack => {
 
     this.helpers.set(string).parseLineNumber().parseChar('space').parseKeyword('REM');
+
+    if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
+      return this.helpers.stack;
+    }
+
+    else {
+      return [];
+    }
+
+  };
+
+
+
+
+  parseEndStatement = (string: string): ParseStack => {
+
+    this.helpers.set(string).parseLineNumber().parseChar('space').parseKeyword('END');
 
     if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
       return this.helpers.stack;

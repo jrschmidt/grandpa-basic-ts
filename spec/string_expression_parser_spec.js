@@ -1,7 +1,7 @@
 GB80 = require('../gb80');
 StringExpressionParser = GB80.StringExpressionParser;
 
-xdescribe('String expression parser', function() {
+describe('String expression parser', function() {
 
   beforeEach(function() {
     this.parser = new StringExpressionParser;

@@ -379,7 +379,7 @@ describe('BASIC program line parser', function() {
   });
 
 
-  xit('should correctly parse an END program line', function() {
+  it('should correctly parse an END program line', function() {
 
     result = this.parser.parse('1599 END');
     expect(result).toEqual(jasmine.any(Array));

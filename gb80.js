@@ -51,6 +51,15 @@ var LineParserFunctions = (function () {
                 return [];
             }
         };
+        this.parseEndStatement = function (string) {
+            _this.helpers.set(string).parseLineNumber().parseChar('space').parseKeyword('END');
+            if ((_this.helpers.match === 'yes') && (_this.helpers.remainder.length === 0)) {
+                return _this.helpers.stack;
+            }
+            else {
+                return [];
+            }
+        };
         // FOR NOW, THIS ONE IS DIFFERENT THAN THE OTHER PARSERS, AND DOES NOT USE
         // THE CHAINABLE HELPER FUNCTIONS.
         this.parseConsoleKeyword = function (string) {
@@ -76,7 +85,8 @@ var LineParserFunctions = (function () {
         this.lineParsers = [
             this.parseConsoleKeyword,
             this.parseBareLineNumber,
-            this.parseBareRemStatement
+            this.parseBareRemStatement,
+            this.parseEndStatement
         ];
     }
     return LineParserFunctions;
