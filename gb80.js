@@ -209,6 +209,31 @@ var LineParserHelpers = (function () {
                 }
                 return this;
             },
+            parseNumericVariable: function () {
+                if (this.match != 'error') {
+                    var len = void 0;
+                    var id = void 0;
+                    var string = this.remainder;
+                    if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(string[0]) >= 0) {
+                        if ('0123456789'.indexOf(string[1]) >= 0) {
+                            len = 2;
+                        }
+                        else {
+                            len = 1;
+                        }
+                    }
+                    if ((len === string.length) || ('=+-*/^)'.indexOf(string[len]) >= 0)) {
+                        id = string.slice(0, len);
+                        this.match = 'yes';
+                        this.stack = ['<numeric_variable>', id];
+                        this.remainder = string.slice(len);
+                    }
+                    else {
+                        this.match = 'error';
+                    }
+                }
+                return this;
+            },
         };
     }
     return LineParserHelpers;
@@ -276,6 +301,7 @@ var NumericExpressionParser = (function () {
         }
         return result;
     };
+    // Should be parseNumericLiteral
     NumericExpressionParser.prototype.parseNumericValue = function (string) {
         var result = [];
         if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(string[0]) >= 0) {

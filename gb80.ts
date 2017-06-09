@@ -257,6 +257,9 @@ export class LineParserFunctions {
   };
 
 
+
+
+
   parseEndStatement = (string: string): ParseStack => {
     this.helpers.set(string)
     .parseLineNumber()
@@ -408,6 +411,43 @@ export class LineParserHelpers {
       },
 
 
+      parseNumericVariable : function () {
+
+        if ( this.match != 'error' ) {
+          let len: number;
+          let id: string;
+
+          let string: string = this.remainder;
+
+          if ( 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(string[0]) >= 0 ) {
+
+            if ( '0123456789'.indexOf(string[1]) >= 0 ) {
+              len = 2;
+            }
+
+            else {
+              len = 1;
+            }
+
+          }
+
+          if ( ( len === string.length ) || ( '=+-*/^)'.indexOf(string[len]) >= 0 ) ) {
+            id = string.slice(0, len);
+            this.match = 'yes';
+            this.stack = ['<numeric_variable>', id];
+            this.remainder = string.slice(len);
+          }
+
+          else {
+            this.match = 'error';
+          }
+
+        }
+
+        return this;
+      },
+
+
     };
 
   }
@@ -505,6 +545,7 @@ export class NumericExpressionParser {
   }
 
 
+  // Should be parseNumericLiteral
   parseNumericValue (string: string): ParseStack {
     let result: ParseStack = [];
 

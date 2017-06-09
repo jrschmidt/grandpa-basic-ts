@@ -1,4 +1,3 @@
-
 GB80 = require('../gb80');
 LineParser = GB80.LineParser;
 LineParserFunctions = GB80.LineParserFunctions;
@@ -11,6 +10,7 @@ describe('BASIC program line parser', function() {
     parserFunctions = new LineParserFunctions(parserHelpers);
     this.parser = new LineParser(parserFunctions);
   });
+
 
   it('should correctly parse a terminal command', function() {
 

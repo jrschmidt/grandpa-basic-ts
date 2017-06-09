@@ -1,4 +1,3 @@
-
 GB80 = require('../gb80');
 LineParserHelpers = GB80.LineParserHelpers;
 
@@ -172,7 +171,7 @@ describe('Line parser helpers', function() {
     string = 'INPUT "NAME"; $N';
     this.helpers.set(string).parseKeyword('INPUT');
     expect(this.helpers.match).toEqual('yes');
-    expect(this.helpers.stack).toEqual( ['<input>'] );
+  expect(this.helpers.stack).toEqual( ['<input>'] );
     expect(this.helpers.remainder).toEqual(' "NAME"; $N');
 
     string = 'PRINT $T5';
@@ -198,6 +197,56 @@ describe('Line parser helpers', function() {
     expect(this.helpers.match).toEqual('yes');
     expect(this.helpers.stack).toEqual( ['<random>'] );
     expect(this.helpers.remainder).toEqual('*99)/N');
+
+  });
+
+
+  it('should correctly parse a numeric variable name', function() {
+
+    string = 'X';
+    this.helpers.set(string).parseNumericVariable();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<numeric_variable>',
+      'X'
+    ] );
+    expect(this.helpers.remainder).toEqual('');
+
+    string = 'D5';
+    this.helpers.set(string).parseNumericVariable();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<numeric_variable>',
+      'D5'
+    ] );
+    expect(this.helpers.remainder).toEqual('');
+
+    string = 'B+C';
+    this.helpers.set(string).parseNumericVariable();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<numeric_variable>',
+      'B'
+    ] );
+    expect(this.helpers.remainder).toEqual('+C');
+
+    string = 'Z6-(Z8/Z5)';
+    this.helpers.set(string).parseNumericVariable();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<numeric_variable>',
+      'Z6'
+    ] );
+    expect(this.helpers.remainder).toEqual('-(Z8/Z5)');
+
+    string = 'K)';
+    this.helpers.set(string).parseNumericVariable();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<numeric_variable>',
+      'K'
+    ] );
+    expect(this.helpers.remainder).toEqual( ')' );
 
   });
 
