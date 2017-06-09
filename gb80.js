@@ -43,7 +43,50 @@ var LineParserFunctions = (function () {
             }
         };
         this.parseBareRemStatement = function (string) {
-            _this.helpers.set(string).parseLineNumber().parseChar('space').parseKeyword('REM');
+            _this.helpers.set(string)
+                .parseLineNumber()
+                .parseChar('space')
+                .parseKeyword('REM');
+            if ((_this.helpers.match === 'yes') && (_this.helpers.remainder.length === 0)) {
+                return _this.helpers.stack;
+            }
+            else {
+                return [];
+            }
+        };
+        this.parseGotoStatement = function (string) {
+            _this.helpers.set(string)
+                .parseLineNumber()
+                .parseChar('space')
+                .parseKeyword('GOTO')
+                .parseChar('space')
+                .parseLineNumber();
+            if ((_this.helpers.match === 'yes') && (_this.helpers.remainder.length === 0)) {
+                return _this.helpers.stack;
+            }
+            else {
+                return [];
+            }
+        };
+        this.parseGosubStatement = function (string) {
+            _this.helpers.set(string)
+                .parseLineNumber()
+                .parseChar('space')
+                .parseKeyword('GOSUB')
+                .parseChar('space')
+                .parseLineNumber();
+            if ((_this.helpers.match === 'yes') && (_this.helpers.remainder.length === 0)) {
+                return _this.helpers.stack;
+            }
+            else {
+                return [];
+            }
+        };
+        this.parseReturnStatement = function (string) {
+            _this.helpers.set(string)
+                .parseLineNumber()
+                .parseChar('space')
+                .parseKeyword('RETURN');
             if ((_this.helpers.match === 'yes') && (_this.helpers.remainder.length === 0)) {
                 return _this.helpers.stack;
             }
@@ -52,7 +95,10 @@ var LineParserFunctions = (function () {
             }
         };
         this.parseEndStatement = function (string) {
-            _this.helpers.set(string).parseLineNumber().parseChar('space').parseKeyword('END');
+            _this.helpers.set(string)
+                .parseLineNumber()
+                .parseChar('space')
+                .parseKeyword('END');
             if ((_this.helpers.match === 'yes') && (_this.helpers.remainder.length === 0)) {
                 return _this.helpers.stack;
             }
@@ -86,6 +132,9 @@ var LineParserFunctions = (function () {
             this.parseConsoleKeyword,
             this.parseBareLineNumber,
             this.parseBareRemStatement,
+            this.parseGotoStatement,
+            this.parseGosubStatement,
+            this.parseReturnStatement,
             this.parseEndStatement
         ];
     }

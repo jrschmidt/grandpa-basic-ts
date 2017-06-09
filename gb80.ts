@@ -156,6 +156,9 @@ export class LineParserFunctions {
       this.parseConsoleKeyword,
       this.parseBareLineNumber,
       this.parseBareRemStatement,
+      this.parseGotoStatement,
+      this.parseGosubStatement,
+      this.parseReturnStatement,
       this.parseEndStatement
     ];
 
@@ -181,8 +184,10 @@ export class LineParserFunctions {
 
 
   parseBareRemStatement = (string: string): ParseStack => {
-
-    this.helpers.set(string).parseLineNumber().parseChar('space').parseKeyword('REM');
+    this.helpers.set(string)
+    .parseLineNumber()
+    .parseChar('space')
+    .parseKeyword('REM');
 
     if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
       return this.helpers.stack;
@@ -195,11 +200,68 @@ export class LineParserFunctions {
   };
 
 
+  parseGotoStatement = (string: string): ParseStack => {
+    this.helpers.set(string)
+    .parseLineNumber()
+    .parseChar('space')
+    .parseKeyword('GOTO')
+    .parseChar('space')
+    .parseLineNumber()
+    ;
+
+    if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
+      return this.helpers.stack;
+    }
+
+    else {
+      return [];
+    }
+
+  };
+
+
+  parseGosubStatement = (string: string): ParseStack => {
+    this.helpers.set(string)
+    .parseLineNumber()
+    .parseChar('space')
+    .parseKeyword('GOSUB')
+    .parseChar('space')
+    .parseLineNumber()
+    ;
+
+    if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
+      return this.helpers.stack;
+    }
+
+    else {
+      return [];
+    }
+
+  };
+
+
+  parseReturnStatement = (string: string): ParseStack => {
+    this.helpers.set(string)
+    .parseLineNumber()
+    .parseChar('space')
+    .parseKeyword('RETURN');
+
+    if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
+      return this.helpers.stack;
+    }
+
+    else {
+      return [];
+    }
+
+  };
 
 
   parseEndStatement = (string: string): ParseStack => {
-
-    this.helpers.set(string).parseLineNumber().parseChar('space').parseKeyword('END');
+    this.helpers.set(string)
+    .parseLineNumber()
+    .parseChar('space')
+    .parseKeyword('END');
 
     if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
       return this.helpers.stack;

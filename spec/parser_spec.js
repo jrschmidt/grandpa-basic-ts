@@ -220,7 +220,7 @@ describe('BASIC program line parser', function() {
   });
 
 
-  xit('should correctly parse GOTO, GOSUB and RETURN program lines', function() {
+  it('should correctly parse GOTO, GOSUB and RETURN program lines', function() {
 
     result = this.parser.parse('1840 GOTO 2100');
     expect(result).toEqual(jasmine.any(Array));
