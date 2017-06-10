@@ -94,6 +94,20 @@ var LineParserFunctions = (function () {
                 return [];
             }
         };
+        this.parseNumericPrintStatement = function (string) {
+            _this.helpers.set(string)
+                .parseLineNumber()
+                .parseChar('space')
+                .parseKeyword('PRINT')
+                .parseChar('space')
+                .parseNumericVariable();
+            if ((_this.helpers.match === 'yes') && (_this.helpers.remainder.length === 0)) {
+                return _this.helpers.stack;
+            }
+            else {
+                return [];
+            }
+        };
         this.parseEndStatement = function (string) {
             _this.helpers.set(string)
                 .parseLineNumber()
@@ -135,6 +149,7 @@ var LineParserFunctions = (function () {
             this.parseGotoStatement,
             this.parseGosubStatement,
             this.parseReturnStatement,
+            // this.parseNumericPrintStatement,
             this.parseEndStatement
         ];
     }

@@ -159,6 +159,7 @@ export class LineParserFunctions {
       this.parseGotoStatement,
       this.parseGosubStatement,
       this.parseReturnStatement,
+      // this.parseNumericPrintStatement,
       this.parseEndStatement
     ];
 
@@ -257,6 +258,24 @@ export class LineParserFunctions {
   };
 
 
+  parseNumericPrintStatement = (string: string): ParseStack => {
+
+    this.helpers.set(string)
+    .parseLineNumber()
+    .parseChar('space')
+    .parseKeyword('PRINT')
+    .parseChar('space')
+    .parseNumericVariable();
+
+    if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
+      return this.helpers.stack;
+    }
+
+    else {
+      return [];
+    }
+
+  };
 
 
 
