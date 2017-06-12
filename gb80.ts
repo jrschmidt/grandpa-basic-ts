@@ -159,7 +159,7 @@ export class LineParserFunctions {
       this.parseGotoStatement,
       this.parseGosubStatement,
       this.parseReturnStatement,
-      // this.parseNumericPrintStatement,
+      this.parseNumericPrintStatement,
       this.parseEndStatement
     ];
 
@@ -466,6 +466,42 @@ export class LineParserHelpers {
         return this;
       },
 
+
+      parseStringVariable : function () {
+
+        if ( this.match != 'error' ) {
+          let len: number;
+          let id: string;
+
+          let string: string = this.remainder;
+
+          if ( ( string[0] === '$' ) && ( 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(string[1]) >= 0 ) ) {
+
+            if ( '0123456789'.indexOf(string[2]) >= 0 ) {
+              len = 2;
+            }
+
+            else {
+              len = 1;
+            }
+
+          }
+
+          if ( ( len === string.length - 1 ) || ( '=+'.indexOf(string[len + 1]) >= 0 ) ) {
+            id = string.slice(1, len + 1);
+            this.match = 'yes';
+            this.stack = ['<string_variable>', id];
+            this.remainder = string.slice(len + 1);
+          }
+
+          else {
+            this.match = 'error';
+          }
+
+        }
+
+        return this;
+      },
 
     };
 

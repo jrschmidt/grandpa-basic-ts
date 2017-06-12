@@ -149,7 +149,7 @@ var LineParserFunctions = (function () {
             this.parseGotoStatement,
             this.parseGosubStatement,
             this.parseReturnStatement,
-            // this.parseNumericPrintStatement,
+            this.parseNumericPrintStatement,
             this.parseEndStatement
         ];
     }
@@ -242,6 +242,31 @@ var LineParserHelpers = (function () {
                         this.match = 'yes';
                         this.stack = ['<numeric_variable>', id];
                         this.remainder = string.slice(len);
+                    }
+                    else {
+                        this.match = 'error';
+                    }
+                }
+                return this;
+            },
+            parseStringVariable: function () {
+                if (this.match != 'error') {
+                    var len = void 0;
+                    var id = void 0;
+                    var string = this.remainder;
+                    if ((string[0] === '$') && ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(string[1]) >= 0)) {
+                        if ('0123456789'.indexOf(string[2]) >= 0) {
+                            len = 2;
+                        }
+                        else {
+                            len = 1;
+                        }
+                    }
+                    if ((len === string.length - 1) || ('=+'.indexOf(string[len + 1]) >= 0)) {
+                        id = string.slice(1, len + 1);
+                        this.match = 'yes';
+                        this.stack = ['<string_variable>', id];
+                        this.remainder = string.slice(len + 1);
                     }
                     else {
                         this.match = 'error';

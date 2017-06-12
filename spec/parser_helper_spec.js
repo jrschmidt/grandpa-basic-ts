@@ -251,4 +251,45 @@ describe('Line parser helpers', function() {
   });
 
 
+  it('should correctly parse a string variable name', function() {
+
+    string = '$Z';
+    this.helpers.set(string).parseStringVariable();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<string_variable>',
+      'Z'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+    string = '$V8';
+    this.helpers.set(string).parseStringVariable();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<string_variable>',
+      'V8'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+    string = '$E2=$E7+$E8';
+    this.helpers.set(string).parseStringVariable();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<string_variable>',
+      'E2'
+    ] );
+    expect(this.helpers.remainder).toEqual( '=$E7+$E8' );
+
+    string = '$J6="THE ANSWER IS "';
+    this.helpers.set(string).parseStringVariable();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<string_variable>',
+      'J6'
+    ] );
+    expect(this.helpers.remainder).toEqual( '="THE ANSWER IS "' );
+
+  });
+
+
 });
