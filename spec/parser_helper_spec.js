@@ -20,10 +20,10 @@ describe('Line parser helpers', function() {
     expect(this.helpers.stack).toEqual( ['<line_number>', 440] );
     expect(this.helpers.remainder).toEqual('');
 
-    string = '2280';
+    string = '2260';
     this.helpers.set(string).parseLineNumber();
     expect(this.helpers.match).toEqual('yes');
-    expect(this.helpers.stack).toEqual( ['<line_number>', 2280] );
+    expect(this.helpers.stack).toEqual( ['<line_number>', 2260] );
     expect(this.helpers.remainder).toEqual('');
 
     string = '100 REM';
