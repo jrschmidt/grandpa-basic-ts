@@ -1,6 +1,15 @@
 GB80 = require('../gb80');
 LineParserHelpers = GB80.LineParserHelpers;
 
+// setStackFiller = function (helpers) {
+//   const testStack = [
+//     '<filler1>',
+//     '<filler2>'
+//   ];
+//   helpers.stack = testStack;
+// }
+
+
 describe('Line parser helpers', function() {
 
   beforeEach(function() {
@@ -65,7 +74,7 @@ describe('Line parser helpers', function() {
   });
 
 
-  it('should correctly parse a single specific character', function() {
+  xit('should correctly parse a single specific character', function() {
 
     string = ' ';
     this.helpers.set(string).parseChar('space');
@@ -130,7 +139,7 @@ describe('Line parser helpers', function() {
   });
 
 
-  it('should correctly parse a keyword', function() {
+  xit('should correctly parse a keyword', function() {
 
     string = 'REM SQUARE ROOT PROGRAM';
     this.helpers.set(string).parseKeyword('REM');
@@ -201,7 +210,7 @@ describe('Line parser helpers', function() {
   });
 
 
-  it('should correctly parse a numeric variable name', function() {
+  xit('should correctly parse a numeric variable name', function() {
 
     string = 'X';
     this.helpers.set(string).parseNumericVariable();
@@ -251,7 +260,7 @@ describe('Line parser helpers', function() {
   });
 
 
-  it('should correctly parse a string variable name', function() {
+  xit('should correctly parse a string variable name', function() {
 
     string = '$Z';
     this.helpers.set(string).parseStringVariable();

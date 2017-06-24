@@ -240,7 +240,7 @@ var LineParserHelpers = (function () {
                     if ((len === string.length) || ('=+-*/^)'.indexOf(string[len]) >= 0)) {
                         id = string.slice(0, len);
                         this.match = 'yes';
-                        this.stack = ['<numeric_variable>', id];
+                        this.stack = this.stack.concat(['<numeric_variable>', id]);
                         this.remainder = string.slice(len);
                     }
                     else {
