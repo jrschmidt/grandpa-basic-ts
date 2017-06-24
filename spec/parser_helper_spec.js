@@ -74,7 +74,7 @@ describe('Line parser helpers', function() {
   });
 
 
-  xit('should correctly parse a single specific character', function() {
+  it('should correctly parse a single specific character', function() {
 
     string = ' ';
     this.helpers.set(string).parseChar('space');
@@ -139,7 +139,7 @@ describe('Line parser helpers', function() {
   });
 
 
-  xit('should correctly parse a keyword', function() {
+  it('should correctly parse a keyword', function() {
 
     string = 'REM SQUARE ROOT PROGRAM';
     this.helpers.set(string).parseKeyword('REM');
@@ -210,7 +210,7 @@ describe('Line parser helpers', function() {
   });
 
 
-  xit('should correctly parse a numeric variable name', function() {
+  it('should correctly parse a numeric variable name', function() {
 
     string = 'X';
     this.helpers.set(string).parseNumericVariable();
@@ -260,7 +260,7 @@ describe('Line parser helpers', function() {
   });
 
 
-  xit('should correctly parse a string variable name', function() {
+  it('should correctly parse a string variable name', function() {
 
     string = '$Z';
     this.helpers.set(string).parseStringVariable();

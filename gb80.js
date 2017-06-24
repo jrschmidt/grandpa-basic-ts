@@ -94,13 +94,27 @@ var LineParserFunctions = (function () {
                 return [];
             }
         };
-        this.parseNumericPrintStatement = function (string) {
+        this.parseNumericVariablePrintStatement = function (string) {
             _this.helpers.set(string)
                 .parseLineNumber()
                 .parseChar('space')
                 .parseKeyword('PRINT')
                 .parseChar('space')
                 .parseNumericVariable();
+            if ((_this.helpers.match === 'yes') && (_this.helpers.remainder.length === 0)) {
+                return _this.helpers.stack;
+            }
+            else {
+                return [];
+            }
+        };
+        this.parseStringVariablePrintStatement = function (string) {
+            _this.helpers.set(string)
+                .parseLineNumber()
+                .parseChar('space')
+                .parseKeyword('PRINT')
+                .parseChar('space')
+                .parseStringVariable();
             if ((_this.helpers.match === 'yes') && (_this.helpers.remainder.length === 0)) {
                 return _this.helpers.stack;
             }
@@ -149,7 +163,8 @@ var LineParserFunctions = (function () {
             this.parseGotoStatement,
             this.parseGosubStatement,
             this.parseReturnStatement,
-            this.parseNumericPrintStatement,
+            this.parseNumericVariablePrintStatement,
+            this.parseStringVariablePrintStatement,
             this.parseEndStatement
         ];
     }
@@ -265,7 +280,7 @@ var LineParserHelpers = (function () {
                     if ((len === string.length - 1) || ('=+'.indexOf(string[len + 1]) >= 0)) {
                         id = string.slice(1, len + 1);
                         this.match = 'yes';
-                        this.stack = ['<string_variable>', id];
+                        this.stack = this.stack.concat(['<string_variable>', id]);
                         this.remainder = string.slice(len + 1);
                     }
                     else {

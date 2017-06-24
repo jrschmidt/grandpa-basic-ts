@@ -159,7 +159,8 @@ export class LineParserFunctions {
       this.parseGotoStatement,
       this.parseGosubStatement,
       this.parseReturnStatement,
-      this.parseNumericPrintStatement,
+      this.parseNumericVariablePrintStatement,
+      this.parseStringVariablePrintStatement,
       this.parseEndStatement
     ];
 
@@ -258,7 +259,7 @@ export class LineParserFunctions {
   };
 
 
-  parseNumericPrintStatement = (string: string): ParseStack => {
+  parseNumericVariablePrintStatement = (string: string): ParseStack => {
 
     this.helpers.set(string)
     .parseLineNumber()
@@ -266,6 +267,26 @@ export class LineParserFunctions {
     .parseKeyword('PRINT')
     .parseChar('space')
     .parseNumericVariable();
+
+    if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
+      return this.helpers.stack;
+    }
+
+    else {
+      return [];
+    }
+
+  };
+
+
+  parseStringVariablePrintStatement = (string: string): ParseStack => {
+
+    this.helpers.set(string)
+    .parseLineNumber()
+    .parseChar('space')
+    .parseKeyword('PRINT')
+    .parseChar('space')
+    .parseStringVariable();
 
     if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
       return this.helpers.stack;
@@ -490,7 +511,7 @@ export class LineParserHelpers {
           if ( ( len === string.length - 1 ) || ( '=+'.indexOf(string[len + 1]) >= 0 ) ) {
             id = string.slice(1, len + 1);
             this.match = 'yes';
-            this.stack = ['<string_variable>', id];
+            this.stack = this.stack.concat( ['<string_variable>', id] );
             this.remainder = string.slice(len + 1);
           }
 

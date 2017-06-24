@@ -398,31 +398,27 @@ describe('BASIC program line parser', function() {
     expect(result[5]).toEqual('<numeric_variable>');
     expect(result[6]).toEqual('A5');
 
-    // result = this.parser.parse('140 PRINT $V');
-    // expect(result).toEqual(jasmine.any(Array));
-    // expect(result.length).toEqual(9);
-    // expect(result[0]).toEqual('<line_number>');
-    // expect(result[1]).toEqual(140);
-    // expect(result[2]).toEqual('<space>');
-    // expect(result[3]).toEqual('<print>');
-    // expect(result[4]).toEqual('<space>');
-    // expect(result[5]).toEqual('<string_expression>');
-    // expect(result[6]).toEqual('string_variable');
-    // expect(result[7]).toEqual('V');
-    // expect(result[8]).toEqual('str_exp_end');
+    result = this.parser.parse('140 PRINT $V');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(7);
+    expect(result[0]).toEqual('<line_number>');
+    expect(result[1]).toEqual(140);
+    expect(result[2]).toEqual('<space>');
+    expect(result[3]).toEqual('<print>');
+    expect(result[4]).toEqual('<space>');
+    expect(result[5]).toEqual('<string_variable>');
+    expect(result[6]).toEqual('V');
 
-    // result = this.parser.parse('150 PRINT R1');
-    // expect(result).toEqual(jasmine.any(Array));
-    // expect(result.length).toEqual(9);
-    // expect(result[0]).toEqual('<line_number>');
-    // expect(result[1]).toEqual(150);
-    // expect(result[2]).toEqual('<space>');
-    // expect(result[3]).toEqual('<print>');
-    // expect(result[4]).toEqual('<space>');
-    // expect(result[5]).toEqual('<string_expression>');
-    // expect(result[6]).toEqual('string_variable');
-    // expect(result[7]).toEqual('R1');
-    // expect(result[8]).toEqual('str_exp_end');
+    result = this.parser.parse('150 PRINT $R1');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(7);
+    expect(result[0]).toEqual('<line_number>');
+    expect(result[1]).toEqual(150);
+    expect(result[2]).toEqual('<space>');
+    expect(result[3]).toEqual('<print>');
+    expect(result[4]).toEqual('<space>');
+    expect(result[5]).toEqual('<string_variable>');
+    expect(result[6]).toEqual('R1');
 
   });
 
