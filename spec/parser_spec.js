@@ -361,20 +361,29 @@ describe('BASIC program line parser', function() {
   });
 
 
-  it('should correctly parse PRINT program lines', function() {
+  xit('should correctly parse PRINT program lines', function() {
 
-    // result = this.parser.parse('110 PRINT "WELCOME TO GRANDPA BASIC 1980"');
-    // expect(result).toEqual(jasmine.any(Array));
-    // expect(result.length).toEqual(9);
-    // expect(result[0]).toEqual('<line_number>');
-    // expect(result[1]).toEqual(110);
-    // expect(result[2]).toEqual('<space>');
-    // expect(result[3]).toEqual('<print>');
-    // expect(result[4]).toEqual('<space>');
-    // expect(result[5]).toEqual('<string_expression>');
-    // expect(result[6]).toEqual('<string_literal>');
-    // expect(result[7]).toEqual('WELCOME TO GRANDPA BASIC 1980');
-    // expect(result[8]).toEqual('<str_exp_end>');
+    result = this.parser.parse('100 PRINT "WELCOME TO GRANDPA BASIC 1980"');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(7);
+    expect(result[0]).toEqual('<line_number>');
+    expect(result[1]).toEqual(100);
+    expect(result[2]).toEqual('<space>');
+    expect(result[3]).toEqual('<print>');
+    expect(result[4]).toEqual('<space>');
+    expect(result[5]).toEqual('<string_literal>');
+    expect(result[6]).toEqual('WELCOME TO GRANDPA BASIC 1980');
+
+    result = this.parser.parse('110 PRINT "INCORRECT ANSWER"');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(7);
+    expect(result[0]).toEqual('<line_number>');
+    expect(result[1]).toEqual(110);
+    expect(result[2]).toEqual('<space>');
+    expect(result[3]).toEqual('<print>');
+    expect(result[4]).toEqual('<space>');
+    expect(result[5]).toEqual('<string_literal>');
+    expect(result[6]).toEqual('INCORRECT ANSWER');
 
     result = this.parser.parse('120 PRINT Y');
     expect(result).toEqual(jasmine.any(Array));

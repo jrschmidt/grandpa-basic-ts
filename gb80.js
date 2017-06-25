@@ -456,7 +456,7 @@ var StringExpressionParser = (function () {
     };
     StringExpressionParser.prototype.parseStringLiteral = function (string) {
         var result = [];
-        if ((string.indexOf('"') === 0) || (string.lastIndexOf('"') === string.length - 1)) {
+        if ((string.indexOf('"') === 0) && (string.lastIndexOf('"') === string.length - 1)) {
             var newString = string.slice(1, string.length - 1);
             if (newString.indexOf('"') < 0) {
                 result = [

@@ -757,7 +757,7 @@ export class StringExpressionParser {
   parseStringLiteral (string: string): ParseStack {
     let result: ParseStack = [];
 
-    if ( ( string.indexOf('"') === 0 ) || ( string.lastIndexOf('"') === string.length -1 ) ) {
+    if ( ( string.indexOf('"') === 0 ) && ( string.lastIndexOf('"') === string.length -1 ) ) {
       let newString: string = string.slice(1, string.length-1);
       if ( newString.indexOf('"') < 0 ) {
         result = [
