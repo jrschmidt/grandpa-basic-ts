@@ -122,6 +122,20 @@ var LineParserFunctions = (function () {
                 return [];
             }
         };
+        this.parseStringLiteralPrintStatement = function (string) {
+            _this.helpers.set(string)
+                .parseLineNumber()
+                .parseChar('space')
+                .parseKeyword('PRINT')
+                .parseChar('space')
+                .parseQuotedStringLiteral();
+            if ((_this.helpers.match === 'yes') && (_this.helpers.remainder.length === 0)) {
+                return _this.helpers.stack;
+            }
+            else {
+                return [];
+            }
+        };
         this.parseEndStatement = function (string) {
             _this.helpers.set(string)
                 .parseLineNumber()
@@ -165,6 +179,7 @@ var LineParserFunctions = (function () {
             this.parseReturnStatement,
             this.parseNumericVariablePrintStatement,
             this.parseStringVariablePrintStatement,
+            this.parseStringLiteralPrintStatement,
             this.parseEndStatement
         ];
     }
@@ -253,8 +268,8 @@ var LineParserHelpers = (function () {
                         }
                     }
                     if ((len === string.length) || ('=+-*/^)'.indexOf(string[len]) >= 0)) {
-                        id = string.slice(0, len);
                         this.match = 'yes';
+                        id = string.slice(0, len);
                         this.stack = this.stack.concat(['<numeric_variable>', id]);
                         this.remainder = string.slice(len);
                     }
@@ -278,10 +293,29 @@ var LineParserHelpers = (function () {
                         }
                     }
                     if ((len === string.length - 1) || ('=+'.indexOf(string[len + 1]) >= 0)) {
-                        id = string.slice(1, len + 1);
                         this.match = 'yes';
+                        id = string.slice(1, len + 1);
                         this.stack = this.stack.concat(['<string_variable>', id]);
                         this.remainder = string.slice(len + 1);
+                    }
+                    else {
+                        this.match = 'error';
+                    }
+                }
+                return this;
+            },
+            parseQuotedStringLiteral: function () {
+                if (this.match != 'error') {
+                    if ((this.remainder.indexOf('"') === 0) && (this.remainder.lastIndexOf('"') === this.remainder.length - 1)) {
+                        var newString = this.remainder.slice(1, this.remainder.length - 1);
+                        if (newString.indexOf('"') < 0) {
+                            this.match = 'yes';
+                            this.stack = this.stack.concat([
+                                '<string_literal>',
+                                newString
+                            ]);
+                            this.remainder = '';
+                        }
                     }
                     else {
                         this.match = 'error';

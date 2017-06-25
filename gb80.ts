@@ -161,6 +161,7 @@ export class LineParserFunctions {
       this.parseReturnStatement,
       this.parseNumericVariablePrintStatement,
       this.parseStringVariablePrintStatement,
+      this.parseStringLiteralPrintStatement,
       this.parseEndStatement
     ];
 
@@ -287,6 +288,26 @@ export class LineParserFunctions {
     .parseKeyword('PRINT')
     .parseChar('space')
     .parseStringVariable();
+
+    if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
+      return this.helpers.stack;
+    }
+
+    else {
+      return [];
+    }
+
+  };
+
+
+  parseStringLiteralPrintStatement = (string: string): ParseStack => {
+
+    this.helpers.set(string)
+    .parseLineNumber()
+    .parseChar('space')
+    .parseKeyword('PRINT')
+    .parseChar('space')
+    .parseQuotedStringLiteral();
 
     if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
       return this.helpers.stack;
@@ -472,8 +493,8 @@ export class LineParserHelpers {
           }
 
           if ( ( len === string.length ) || ( '=+-*/^)'.indexOf(string[len]) >= 0 ) ) {
-            id = string.slice(0, len);
             this.match = 'yes';
+            id = string.slice(0, len);
             this.stack = this.stack.concat( ['<numeric_variable>', id] );
             this.remainder = string.slice(len);
           }
@@ -509,8 +530,8 @@ export class LineParserHelpers {
           }
 
           if ( ( len === string.length - 1 ) || ( '=+'.indexOf(string[len + 1]) >= 0 ) ) {
-            id = string.slice(1, len + 1);
             this.match = 'yes';
+            id = string.slice(1, len + 1);
             this.stack = this.stack.concat( ['<string_variable>', id] );
             this.remainder = string.slice(len + 1);
           }
@@ -523,6 +544,34 @@ export class LineParserHelpers {
 
         return this;
       },
+
+
+      parseQuotedStringLiteral : function () {
+
+        if ( this.match != 'error' ) {
+
+          if ( ( this.remainder.indexOf('"') === 0 ) && ( this.remainder.lastIndexOf('"') === this.remainder.length -1 ) ) {
+            let newString: string = this.remainder.slice(1, this.remainder.length-1);
+            if ( newString.indexOf('"') < 0 ) {
+              this.match = 'yes';
+              this.stack = this.stack.concat( [
+                '<string_literal>',
+                newString
+              ] );
+              this.remainder = '';
+            }
+
+          }
+
+          else {
+            this.match = 'error';
+          }
+
+        }
+
+        return this;
+      },
+
 
     };
 

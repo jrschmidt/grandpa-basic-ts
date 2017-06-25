@@ -361,7 +361,7 @@ describe('BASIC program line parser', function() {
   });
 
 
-  xit('should correctly parse PRINT program lines', function() {
+  it('should correctly parse PRINT program lines', function() {
 
     result = this.parser.parse('100 PRINT "WELCOME TO GRANDPA BASIC 1980"');
     expect(result).toEqual(jasmine.any(Array));
