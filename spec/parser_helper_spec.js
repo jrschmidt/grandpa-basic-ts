@@ -180,7 +180,7 @@ describe('Line parser helpers', function() {
     string = 'INPUT "NAME"; $N';
     this.helpers.set(string).parseKeyword('INPUT');
     expect(this.helpers.match).toEqual('yes');
-  expect(this.helpers.stack).toEqual( ['<input>'] );
+    expect(this.helpers.stack).toEqual( ['<input>'] );
     expect(this.helpers.remainder).toEqual(' "NAME"; $N');
 
     string = 'PRINT $T5';
@@ -300,5 +300,27 @@ describe('Line parser helpers', function() {
 
   });
 
+
+  it('should correctly parse a quoted string literal', function() {
+
+    string = '"WELCOME TO GRANDPA BASIC 1980"';
+    this.helpers.set(string).parseQuotedStringLiteral();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<string_literal>',
+      'WELCOME TO GRANDPA BASIC 1980'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+    string = '"INCORRECT ANSWER"';
+    this.helpers.set(string).parseQuotedStringLiteral();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<string_literal>',
+      'INCORRECT ANSWER'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+  });
 
 });
