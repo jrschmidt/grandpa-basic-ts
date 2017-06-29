@@ -306,7 +306,7 @@ describe('BASIC program line parser', function() {
   });
 
 
-  xit('should correctly parse INPUT program lines', function() {
+  it('should correctly parse INPUT program lines', function() {
 
     result = this.parser.parse('820 INPUT R');
     expect(result).toEqual(jasmine.any(Array));
@@ -330,7 +330,7 @@ describe('BASIC program line parser', function() {
     expect(result[5]).toEqual('<string_variable>');
     expect(result[6]).toEqual('V');
 
-    result = this.parser.parse('750 INPUT "HOW MANY?";M');
+    result = this.parser.parse('750 INPUT "HOW MANY";M');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(10);
     expect(result[0]).toEqual('<line_number>');
@@ -338,13 +338,13 @@ describe('BASIC program line parser', function() {
     expect(result[2]).toEqual('<space>');
     expect(result[3]).toEqual('<input>');
     expect(result[4]).toEqual('<space>');
-    expect(result[5]).toEqual('<characters>');
-    expect(result[6]).toEqual('HOW MANY?');
+    expect(result[5]).toEqual('<string_literal>');
+    expect(result[6]).toEqual('HOW MANY');
     expect(result[7]).toEqual('<semicolon>');
     expect(result[8]).toEqual('<numeric_variable>');
     expect(result[9]).toEqual('M');
 
-    result = this.parser.parse('1740 INPUT "LAST NAME?";$N2');
+    result = this.parser.parse('1740 INPUT "LAST NAME";$N2');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(10);
     expect(result[0]).toEqual('<line_number>');
@@ -352,8 +352,8 @@ describe('BASIC program line parser', function() {
     expect(result[2]).toEqual('<space>');
     expect(result[3]).toEqual('<input>');
     expect(result[4]).toEqual('<space>');
-    expect(result[5]).toEqual('<characters>');
-    expect(result[6]).toEqual('LAST NAME?');
+    expect(result[5]).toEqual('<string_literal>');
+    expect(result[6]).toEqual('LAST NAME');
     expect(result[7]).toEqual('<semicolon>');
     expect(result[8]).toEqual('<string_variable>');
     expect(result[9]).toEqual('N2');

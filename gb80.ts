@@ -159,6 +159,10 @@ export class LineParserFunctions {
       this.parseGotoStatement,
       this.parseGosubStatement,
       this.parseReturnStatement,
+      this.parseNumericInputStatement,
+      this.parsePromptedNumericInputStatement,
+      this.parseStringInputStatement,
+      this.parsePromptedStringInputStatement,
       this.parseNumericVariablePrintStatement,
       this.parseStringVariablePrintStatement,
       this.parseStringLiteralPrintStatement,
@@ -248,6 +252,90 @@ export class LineParserFunctions {
     .parseLineNumber()
     .parseChar('space')
     .parseKeyword('RETURN');
+
+    if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
+      return this.helpers.stack;
+    }
+
+    else {
+      return [];
+    }
+
+  };
+
+
+  parseNumericInputStatement = (string: string): ParseStack => {
+
+    this.helpers.set(string)
+    .parseLineNumber()
+    .parseChar('space')
+    .parseKeyword('INPUT')
+    .parseChar('space')
+    .parseNumericVariable();
+
+    if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
+      return this.helpers.stack;
+    }
+
+    else {
+      return [];
+    }
+
+  };
+
+
+  parsePromptedNumericInputStatement = (string: string): ParseStack => {
+
+    this.helpers.set(string)
+    .parseLineNumber()
+    .parseChar('space')
+    .parseKeyword('INPUT')
+    .parseChar('space')
+    .parseQuotedStringLiteral()
+    .parseChar('semicolon')
+    .parseNumericVariable();
+
+    if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
+      return this.helpers.stack;
+    }
+
+    else {
+      return [];
+    }
+
+  };
+
+
+  parseStringInputStatement = (string: string): ParseStack => {
+
+    this.helpers.set(string)
+    .parseLineNumber()
+    .parseChar('space')
+    .parseKeyword('INPUT')
+    .parseChar('space')
+    .parseStringVariable();
+
+    if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
+      return this.helpers.stack;
+    }
+
+    else {
+      return [];
+    }
+
+  };
+
+
+  parsePromptedStringInputStatement = (string: string): ParseStack => {
+
+    this.helpers.set(string)
+    .parseLineNumber()
+    .parseChar('space')
+    .parseKeyword('INPUT')
+    .parseChar('space')
+    .parseQuotedStringLiteral()
+    .parseChar('semicolon')
+    .parseStringVariable();
 
     if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
       return this.helpers.stack;
@@ -550,16 +638,15 @@ export class LineParserHelpers {
 
         if ( this.match != 'error' ) {
 
-          if ( ( this.remainder.indexOf('"') === 0 ) && ( this.remainder.lastIndexOf('"') === this.remainder.length -1 ) ) {
-            let newString: string = this.remainder.slice(1, this.remainder.length-1);
-            if ( newString.indexOf('"') < 0 ) {
-              this.match = 'yes';
-              this.stack = this.stack.concat( [
-                '<string_literal>',
-                newString
-              ] );
-              this.remainder = '';
-            }
+          if ( ( this.remainder.indexOf('"') === 0 ) && ( this.remainder.lastIndexOf('"') > 0 ) ) {
+            this.match = 'yes';
+            let newString: string = this.remainder.slice(1);
+            this.remainder = newString.slice( newString.indexOf('"') + 1 );
+            newString = newString.slice(0, newString.indexOf('"'));
+            this.stack = this.stack.concat( [
+              '<string_literal>',
+              newString
+            ] );
 
           }
 

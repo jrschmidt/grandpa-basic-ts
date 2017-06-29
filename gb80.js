@@ -94,6 +94,66 @@ var LineParserFunctions = (function () {
                 return [];
             }
         };
+        this.parseNumericInputStatement = function (string) {
+            _this.helpers.set(string)
+                .parseLineNumber()
+                .parseChar('space')
+                .parseKeyword('INPUT')
+                .parseChar('space')
+                .parseNumericVariable();
+            if ((_this.helpers.match === 'yes') && (_this.helpers.remainder.length === 0)) {
+                return _this.helpers.stack;
+            }
+            else {
+                return [];
+            }
+        };
+        this.parsePromptedNumericInputStatement = function (string) {
+            _this.helpers.set(string)
+                .parseLineNumber()
+                .parseChar('space')
+                .parseKeyword('INPUT')
+                .parseChar('space')
+                .parseQuotedStringLiteral()
+                .parseChar('semicolon')
+                .parseNumericVariable();
+            if ((_this.helpers.match === 'yes') && (_this.helpers.remainder.length === 0)) {
+                return _this.helpers.stack;
+            }
+            else {
+                return [];
+            }
+        };
+        this.parseStringInputStatement = function (string) {
+            _this.helpers.set(string)
+                .parseLineNumber()
+                .parseChar('space')
+                .parseKeyword('INPUT')
+                .parseChar('space')
+                .parseStringVariable();
+            if ((_this.helpers.match === 'yes') && (_this.helpers.remainder.length === 0)) {
+                return _this.helpers.stack;
+            }
+            else {
+                return [];
+            }
+        };
+        this.parsePromptedStringInputStatement = function (string) {
+            _this.helpers.set(string)
+                .parseLineNumber()
+                .parseChar('space')
+                .parseKeyword('INPUT')
+                .parseChar('space')
+                .parseQuotedStringLiteral()
+                .parseChar('semicolon')
+                .parseStringVariable();
+            if ((_this.helpers.match === 'yes') && (_this.helpers.remainder.length === 0)) {
+                return _this.helpers.stack;
+            }
+            else {
+                return [];
+            }
+        };
         this.parseNumericVariablePrintStatement = function (string) {
             _this.helpers.set(string)
                 .parseLineNumber()
@@ -177,6 +237,10 @@ var LineParserFunctions = (function () {
             this.parseGotoStatement,
             this.parseGosubStatement,
             this.parseReturnStatement,
+            this.parseNumericInputStatement,
+            this.parsePromptedNumericInputStatement,
+            this.parseStringInputStatement,
+            this.parsePromptedStringInputStatement,
             this.parseNumericVariablePrintStatement,
             this.parseStringVariablePrintStatement,
             this.parseStringLiteralPrintStatement,
@@ -306,16 +370,15 @@ var LineParserHelpers = (function () {
             },
             parseQuotedStringLiteral: function () {
                 if (this.match != 'error') {
-                    if ((this.remainder.indexOf('"') === 0) && (this.remainder.lastIndexOf('"') === this.remainder.length - 1)) {
-                        var newString = this.remainder.slice(1, this.remainder.length - 1);
-                        if (newString.indexOf('"') < 0) {
-                            this.match = 'yes';
-                            this.stack = this.stack.concat([
-                                '<string_literal>',
-                                newString
-                            ]);
-                            this.remainder = '';
-                        }
+                    if ((this.remainder.indexOf('"') === 0) && (this.remainder.lastIndexOf('"') > 0)) {
+                        this.match = 'yes';
+                        var newString = this.remainder.slice(1);
+                        this.remainder = newString.slice(newString.indexOf('"') + 1);
+                        newString = newString.slice(0, newString.indexOf('"'));
+                        this.stack = this.stack.concat([
+                            '<string_literal>',
+                            newString
+                        ]);
                     }
                     else {
                         this.match = 'error';

@@ -321,6 +321,15 @@ describe('Line parser helpers', function() {
     ] );
     expect(this.helpers.remainder).toEqual( '' );
 
+    string = '"TYPE YOUR ANSWER";T8';
+    this.helpers.set(string).parseQuotedStringLiteral();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<string_literal>',
+      'TYPE YOUR ANSWER'
+    ] );
+    expect(this.helpers.remainder).toEqual( ';T8' );
+
   });
 
 });
