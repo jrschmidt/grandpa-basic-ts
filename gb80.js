@@ -94,6 +94,19 @@ var LineParserFunctions = (function () {
                 return [];
             }
         };
+        // parseNumericAssignmetStatement = (string: string): ParseStack => {
+        //
+        //   this.helpers.set(string).parseLineNumber().parseChar('space').;
+        //
+        //   if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
+        //     return this.helpers.stack;
+        //   }
+        //
+        //   else {
+        //     return [];
+        //   }
+        //
+        // };
         this.parseNumericInputStatement = function (string) {
             _this.helpers.set(string)
                 .parseLineNumber()
@@ -251,8 +264,10 @@ var LineParserFunctions = (function () {
 }());
 exports.LineParserFunctions = LineParserFunctions;
 var LineParserHelpers = (function () {
-    function LineParserHelpers() {
+    function LineParserHelpers(numericExpressionParser) {
+        this.numericExpressionParser = numericExpressionParser;
         this.helpers = {
+            numericExpressionParser: this.numericExpressionParser,
             match: 'no',
             stack: [],
             remainder: '',
@@ -386,6 +401,20 @@ var LineParserHelpers = (function () {
                 }
                 return this;
             },
+            parseNumericExpression: function () {
+                if (this.match != 'error') {
+                    var stack = this.numericExpressionParser.parse(this.remainder);
+                    if (stack.length > 0) {
+                        this.match = 'yes';
+                        this.stack = stack;
+                        this.remainder = '';
+                    }
+                    else {
+                        this.match = 'error';
+                    }
+                }
+                return this;
+            },
         };
     }
     return LineParserHelpers;
@@ -404,7 +433,7 @@ var NumericExpressionParser = (function () {
             '<power>'
         ];
     }
-    NumericExpressionParser.prototype.parseNumericExpression = function (string) {
+    NumericExpressionParser.prototype.parse = function (string) {
         var _this = this;
         var result = [];
         if (string.search(/[^A-Z0-9\.+\-*/\^()]/) < 0) {

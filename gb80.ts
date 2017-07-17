@@ -264,6 +264,21 @@ export class LineParserFunctions {
   };
 
 
+  // parseNumericAssignmetStatement = (string: string): ParseStack => {
+  //
+  //   this.helpers.set(string).parseLineNumber().parseChar('space').;
+  //
+  //   if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
+  //     return this.helpers.stack;
+  //   }
+  //
+  //   else {
+  //     return [];
+  //   }
+  //
+  // };
+
+
   parseNumericInputStatement = (string: string): ParseStack => {
 
     this.helpers.set(string)
@@ -463,11 +478,15 @@ export class LineParserFunctions {
 export class LineParserHelpers {
   // The parser helper functions are written as properties of the helpers{}
   // object to enable them to be used in a function chaining pattern.
+  numericExpressionParser: NumericExpressionParser;
   helpers: {};
 
-  constructor () {
+  constructor (numericExpressionParser: NumericExpressionParser) {
+    this.numericExpressionParser = numericExpressionParser;
 
     this.helpers = {
+      numericExpressionParser: this.numericExpressionParser,
+
       match: <string> 'no',
       stack: <ParseStack> [],
       remainder: <string> '',
@@ -660,6 +679,28 @@ export class LineParserHelpers {
       },
 
 
+      parseNumericExpression : function () {
+
+
+        if ( this.match != 'error' ) {
+          let stack: ParseStack = this.numericExpressionParser.parse(this.remainder);
+
+          if ( stack.length > 0 ) {
+            this.match = 'yes';
+            this.stack = stack;
+            this.remainder = '';
+          }
+
+          else {
+            this.match = 'error';
+          }
+
+        }
+
+        return this;
+      },
+
+
     };
 
   }
@@ -688,7 +729,7 @@ export class NumericExpressionParser {
   }
 
 
-  parseNumericExpression (string: string): ParseStack {
+  parse (string: string): ParseStack {
 
     let result: ParseStack = [];
 

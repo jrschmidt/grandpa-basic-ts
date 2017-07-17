@@ -187,25 +187,25 @@ describe('Numeric expression parser', function() {
   it("should return a failed result for any string that won't parse into a numeric expression", function() {
     var result;
 
-    result = this.parser.parseNumericExpression('617.42.9');
+    result = this.parser.parse('617.42.9');
     expect(result).toEqual( [] );
 
-    result = this.parser.parseNumericExpression('180-45DEGREES');
+    result = this.parser.parse('180-45DEGREES');
     expect(result).toEqual( [] );
 
-    result = this.parser.parseNumericExpression('NOTHING PARSEABLE AS A NUMERIC EXPRESSION');
+    result = this.parser.parse('NOTHING PARSEABLE AS A NUMERIC EXPRESSION');
     expect(result).toEqual( [] );
 
-    result = this.parser.parseNumericExpression('2*PI');
+    result = this.parser.parse('2*PI');
     expect(result).toEqual( [] );
 
-    result = this.parser.parseNumericExpression('22,348,507');
+    result = this.parser.parse('22,348,507');
     expect(result).toEqual( [] );
 
-    result = this.parser.parseNumericExpression('????');
+    result = this.parser.parse('????');
     expect(result).toEqual( [] );
 
-    result = this.parser.parseNumericExpression('A+114-@<%');
+    result = this.parser.parse('A+114-@<%');
     expect(result).toEqual( [] );
 
   });
@@ -214,25 +214,25 @@ describe('Numeric expression parser', function() {
   it('should parse any properly formed numeric expression', function() {
     var result;
 
-    result = this.parser.parseNumericExpression('X');
+    result = this.parser.parse('X');
     expect(result[0]).toEqual('<numeric_expression>');
     expect(result[1]).toEqual('<numeric_variable>');
     expect(result[2]).toEqual('X');
     expect(result[3]).toEqual('<num_exp_end>');
 
-    result = this.parser.parseNumericExpression('42');
+    result = this.parser.parse('42');
     expect(result[0]).toEqual('<numeric_expression>');
     expect(result[1]).toEqual('<numeric_literal>');
     expect(result[2]).toEqual(42);
     expect(result[3]).toEqual('<num_exp_end>');
 
-    result = this.parser.parseNumericExpression('13.477');
+    result = this.parser.parse('13.477');
     expect(result[0]).toEqual('<numeric_expression>');
     expect(result[1]).toEqual('<numeric_literal>');
     expect(result[2]).toEqual(13.477);
     expect(result[3]).toEqual('<num_exp_end>');
 
-    result = this.parser.parseNumericExpression('12/3');
+    result = this.parser.parse('12/3');
     expect(result[0]).toEqual('<numeric_expression>');
     expect(result[1]).toEqual('<numeric_literal>');
     expect(result[2]).toEqual(12);
@@ -241,7 +241,7 @@ describe('Numeric expression parser', function() {
     expect(result[5]).toEqual(3);
     expect(result[6]).toEqual('<num_exp_end>');
 
-    result = this.parser.parseNumericExpression('477+B');
+    result = this.parser.parse('477+B');
     expect(result[0]).toEqual('<numeric_expression>');
     expect(result[1]).toEqual('<numeric_literal>');
     expect(result[2]).toEqual(477);
@@ -250,7 +250,7 @@ describe('Numeric expression parser', function() {
     expect(result[5]).toEqual('B');
     expect(result[6]).toEqual('<num_exp_end>');
 
-    result = this.parser.parseNumericExpression('C^2');
+    result = this.parser.parse('C^2');
     expect(result[0]).toEqual('<numeric_expression>');
     expect(result[1]).toEqual('<numeric_variable>');
     expect(result[2]).toEqual('C');
@@ -259,7 +259,7 @@ describe('Numeric expression parser', function() {
     expect(result[5]).toEqual(2);
     expect(result[6]).toEqual('<num_exp_end>');
 
-    // result = this.parser.parseNumericExpression('20*RND');
+    // result = this.parser.parse('20*RND');
     // expect(result[0]).toEqual('<numeric_expression>');
     // expect(result[1]).toEqual('<numeric_literal>');
     // expect(result[2]).toEqual(20);
@@ -267,7 +267,7 @@ describe('Numeric expression parser', function() {
     // expect(result[4]).toEqual('<random>');
     // expect(result[5]).toEqual('<num_exp_end>');
 
-    result = this.parser.parseNumericExpression('X*Y*Z');
+    result = this.parser.parse('X*Y*Z');
     expect(result[0]).toEqual('<numeric_expression>');
     expect(result[1]).toEqual('<numeric_variable>');
     expect(result[2]).toEqual('X');
@@ -279,7 +279,7 @@ describe('Numeric expression parser', function() {
     expect(result[8]).toEqual('Z');
     expect(result[9]).toEqual('<num_exp_end>');
 
-    result = this.parser.parseNumericExpression('28*(J+2)');
+    result = this.parser.parse('28*(J+2)');
     expect(result[0]).toEqual('<numeric_expression>');
     expect(result[1]).toEqual('<numeric_literal>');
     expect(result[2]).toEqual(28);
@@ -293,7 +293,7 @@ describe('Numeric expression parser', function() {
     expect(result[10]).toEqual('<right>');
     expect(result[11]).toEqual('<num_exp_end>');
 
-    // result = this.parser.parseNumericExpression('INT(W)');
+    // result = this.parser.parse('INT(W)');
     // expect(result[0]).toEqual('<numeric_expression>');
     // expect(result[1]).toEqual('<integer>');
     // expect(result[2]).toEqual('<left>');
@@ -302,7 +302,7 @@ describe('Numeric expression parser', function() {
     // expect(result[5]).toEqual('<right>');
     // expect(result[6]).toEqual('<num_exp_end>');
 
-    result = this.parser.parseNumericExpression('W5+W7-4*(J^2+K^3)');
+    result = this.parser.parse('W5+W7-4*(J^2+K^3)');
     expect(result[0]).toEqual('<numeric_expression>');
     expect(result[1]).toEqual('<numeric_variable>');
     expect(result[2]).toEqual('W5');
@@ -328,7 +328,7 @@ describe('Numeric expression parser', function() {
     expect(result[22]).toEqual('<right>');
     expect(result[23]).toEqual('<num_exp_end>');
 
-    result = this.parser.parseNumericExpression('(18-Q7)/(2.108*(14*M+17*X))');
+    result = this.parser.parse('(18-Q7)/(2.108*(14*M+17*X))');
     expect(result[0]).toEqual('<numeric_expression>');
     expect(result[1]).toEqual('<left>');
     expect(result[2]).toEqual('<numeric_literal>');

@@ -1,20 +1,13 @@
 GB80 = require('../gb80');
 LineParserHelpers = GB80.LineParserHelpers;
-
-// setStackFiller = function (helpers) {
-//   const testStack = [
-//     '<filler1>',
-//     '<filler2>'
-//   ];
-//   helpers.stack = testStack;
-// }
-
+NumericExpressionParser = GB80.NumericExpressionParser;
 
 describe('Line parser helpers', function() {
 
   beforeEach(function() {
-    lph = new LineParserHelpers;
-    this.helpers = lph.helpers;
+    this.nxp = new NumericExpressionParser
+    this.lph = new LineParserHelpers(this.nxp);
+    this.helpers = this.lph.helpers;
     this.helpers.match = 'no';
     this.helpers.stack = [];
     this.helpers.remainder = '';
@@ -329,6 +322,188 @@ describe('Line parser helpers', function() {
       'TYPE YOUR ANSWER'
     ] );
     expect(this.helpers.remainder).toEqual( ';T8' );
+
+  });
+
+
+  it('should correctly parse a numeric expression', function() {
+
+    string = 'X';
+    this.helpers.set(string).parseNumericExpression();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<numeric_expression>',
+      '<numeric_variable>',
+      'X',
+      '<num_exp_end>'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+    string = '42';
+    this.helpers.set(string).parseNumericExpression();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<numeric_expression>',
+      '<numeric_literal>',
+      42,
+      '<num_exp_end>'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+    string = '13.477';
+    this.helpers.set(string).parseNumericExpression();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<numeric_expression>',
+      '<numeric_literal>',
+      13.477,
+      '<num_exp_end>'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+    string = '12/7';
+    this.helpers.set(string).parseNumericExpression();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<numeric_expression>',
+      '<numeric_literal>',
+      12,
+      '<divide>',
+      '<numeric_literal>',
+      7,
+      '<num_exp_end>'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+    string = '477+B';
+    this.helpers.set(string).parseNumericExpression();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<numeric_expression>',
+      '<numeric_literal>',
+      477,
+      '<plus>',
+      '<numeric_variable>',
+      'B',
+      '<num_exp_end>'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+    string = 'C^2';
+    this.helpers.set(string).parseNumericExpression();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<numeric_expression>',
+      '<numeric_variable>',
+      'C',
+      '<power>',
+      '<numeric_literal>',
+      2,
+      '<num_exp_end>'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+    string = 'X*Y*Z';
+    this.helpers.set(string).parseNumericExpression();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<numeric_expression>',
+      '<numeric_variable>',
+      'X',
+      '<times>',
+      '<numeric_variable>',
+      'Y',
+      '<times>',
+      '<numeric_variable>',
+      'Z',
+      '<num_exp_end>'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+    string = '28*(J+2)';
+    this.helpers.set(string).parseNumericExpression();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<numeric_expression>',
+      '<numeric_literal>',
+      28,
+      '<times>',
+      '<left>',
+      '<numeric_variable>',
+      'J',
+      '<plus>',
+      '<numeric_literal>',
+      2,
+      '<right>',
+      '<num_exp_end>'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+    string = 'W5+W7-4*(J^2+K^3)';
+    this.helpers.set(string).parseNumericExpression();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<numeric_expression>',
+      '<numeric_variable>',
+      'W5',
+      '<plus>',
+      '<numeric_variable>',
+      'W7',
+      '<minus>',
+      '<numeric_literal>',
+      4,
+      '<times>',
+      '<left>',
+      '<numeric_variable>',
+      'J',
+      '<power>',
+      '<numeric_literal>',
+      2,
+      '<plus>',
+      '<numeric_variable>',
+      'K',
+      '<power>',
+      '<numeric_literal>',
+      3,
+      '<right>',
+      '<num_exp_end>'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+    string = '(18-Q7)/(2.108*(14*M+17*X))';
+    this.helpers.set(string).parseNumericExpression();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<numeric_expression>',
+      '<left>',
+      '<numeric_literal>',
+      18,
+      '<minus>',
+      '<numeric_variable>',
+      'Q7',
+      '<right>',
+      '<divide>',
+      '<left>',
+      '<numeric_literal>',
+      2.108,
+      '<times>',
+      '<left>',
+      '<numeric_literal>',
+      14,
+      '<times>',
+      '<numeric_variable>',
+      'M',
+      '<plus>',
+      '<numeric_literal>',
+      17,
+      '<times>',
+      '<numeric_variable>',
+      'X',
+      '<right>',
+      '<right>',
+      '<num_exp_end>'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
 
   });
 
