@@ -54,6 +54,20 @@ var LineParserFunctions = (function () {
                 return [];
             }
         };
+        this.parseNumericAssignmentStatement = function (string) {
+            _this.helpers.set(string)
+                .parseLineNumber()
+                .parseChar('space')
+                .parseNumericVariable()
+                .parseChar('equals')
+                .parseNumericExpression();
+            if ((_this.helpers.match === 'yes') && (_this.helpers.remainder.length === 0)) {
+                return _this.helpers.stack;
+            }
+            else {
+                return [];
+            }
+        };
         this.parseGotoStatement = function (string) {
             _this.helpers.set(string)
                 .parseLineNumber()
@@ -94,19 +108,6 @@ var LineParserFunctions = (function () {
                 return [];
             }
         };
-        // parseNumericAssignmetStatement = (string: string): ParseStack => {
-        //
-        //   this.helpers.set(string).parseLineNumber().parseChar('space').;
-        //
-        //   if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
-        //     return this.helpers.stack;
-        //   }
-        //
-        //   else {
-        //     return [];
-        //   }
-        //
-        // };
         this.parseNumericInputStatement = function (string) {
             _this.helpers.set(string)
                 .parseLineNumber()
@@ -243,10 +244,12 @@ var LineParserFunctions = (function () {
             return result;
         };
         this.helpers = parserHelpers.helpers;
+        // TODO change parseBareRemStatement to parseRemStatement ??
         this.lineParsers = [
             this.parseConsoleKeyword,
             this.parseBareLineNumber,
             this.parseBareRemStatement,
+            this.parseNumericAssignmentStatement,
             this.parseGotoStatement,
             this.parseGosubStatement,
             this.parseReturnStatement,
@@ -406,7 +409,7 @@ var LineParserHelpers = (function () {
                     var stack = this.numericExpressionParser.parse(this.remainder);
                     if (stack.length > 0) {
                         this.match = 'yes';
-                        this.stack = stack;
+                        this.stack = this.stack.concat(stack);
                         this.remainder = '';
                     }
                     else {

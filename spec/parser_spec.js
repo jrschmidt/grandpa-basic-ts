@@ -2,11 +2,13 @@ GB80 = require('../gb80');
 LineParser = GB80.LineParser;
 LineParserFunctions = GB80.LineParserFunctions;
 LineParserHelpers = GB80.LineParserHelpers;
+NumericExpressionParser = GB80.NumericExpressionParser;
 
 describe('BASIC program line parser', function() {
 
   beforeEach(function() {
-    parserHelpers = new LineParserHelpers;
+    this.nxp = new NumericExpressionParser
+    parserHelpers = new LineParserHelpers(this.nxp);
     parserFunctions = new LineParserFunctions(parserHelpers);
     this.parser = new LineParser(parserFunctions);
   });
@@ -81,7 +83,7 @@ describe('BASIC program line parser', function() {
   });
 
 
-  xit('should correctly parse a numeric assignment program line', function() {
+  it('should correctly parse a numeric assignment program line', function() {
 
     result = this.parser.parse('180 X=77');
     expect(result).toEqual(jasmine.any(Array));

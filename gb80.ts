@@ -152,10 +152,12 @@ export class LineParserFunctions {
   constructor (parserHelpers: LineParserHelpers) {
     this.helpers = parserHelpers.helpers;
 
+// TODO change parseBareRemStatement to parseRemStatement ??
     this.lineParsers = [
       this.parseConsoleKeyword,
       this.parseBareLineNumber,
       this.parseBareRemStatement,
+      this.parseNumericAssignmentStatement,
       this.parseGotoStatement,
       this.parseGosubStatement,
       this.parseReturnStatement,
@@ -195,6 +197,26 @@ export class LineParserFunctions {
     .parseLineNumber()
     .parseChar('space')
     .parseKeyword('REM');
+
+    if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
+      return this.helpers.stack;
+    }
+
+    else {
+      return [];
+    }
+
+  };
+
+
+  parseNumericAssignmentStatement = (string: string): ParseStack => {
+
+    this.helpers.set(string)
+    .parseLineNumber()
+    .parseChar('space')
+    .parseNumericVariable()
+    .parseChar('equals')
+    .parseNumericExpression();
 
     if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
       return this.helpers.stack;
@@ -262,21 +284,6 @@ export class LineParserFunctions {
     }
 
   };
-
-
-  // parseNumericAssignmetStatement = (string: string): ParseStack => {
-  //
-  //   this.helpers.set(string).parseLineNumber().parseChar('space').;
-  //
-  //   if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
-  //     return this.helpers.stack;
-  //   }
-  //
-  //   else {
-  //     return [];
-  //   }
-  //
-  // };
 
 
   parseNumericInputStatement = (string: string): ParseStack => {
@@ -687,7 +694,7 @@ export class LineParserHelpers {
 
           if ( stack.length > 0 ) {
             this.match = 'yes';
-            this.stack = stack;
+            this.stack = this.stack.concat(stack);
             this.remainder = '';
           }
 
