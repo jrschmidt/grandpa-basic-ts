@@ -70,15 +70,15 @@ describe('BASIC program line parser', function() {
     expect(result[2]).toEqual('<space>');
     expect(result[3]).toEqual('<remark>');
 
-    // result = this.parser.parse('110 REM WELCOME TO GRANDPA BASIC 1980');
-    // expect(result).toEqual(jasmine.any(Array));
-    // expect(result.length).toEqual(6);
-    // expect(result[0]).toEqual('<line_number>');
-    // expect(result[1]).toEqual(110);
-    // expect(result[2]).toEqual('<space>');
-    // expect(result[3]).toEqual('<remark>');
-    // expect(result[4]).toEqual('<space>');
-    // expect(result[5]).toEqual('<characters>');
+    result = this.parser.parse('110 REM WELCOME TO GRANDPA BASIC 1980');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(6);
+    expect(result[0]).toEqual('<line_number>');
+    expect(result[1]).toEqual(110);
+    expect(result[2]).toEqual('<space>');
+    expect(result[3]).toEqual('<remark>');
+    expect(result[4]).toEqual('<space>');
+    expect(result[5]).toEqual('<characters>');
 
   });
 

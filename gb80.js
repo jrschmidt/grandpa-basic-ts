@@ -54,6 +54,20 @@ var LineParserFunctions = (function () {
                 return [];
             }
         };
+        this.parseNonemptyRemStatement = function (string) {
+            _this.helpers.set(string)
+                .parseLineNumber()
+                .parseChar('space')
+                .parseKeyword('REM')
+                .parseChar('space')
+                .parseCharacters();
+            if (_this.helpers.match === 'yes') {
+                return _this.helpers.stack;
+            }
+            else {
+                return [];
+            }
+        };
         this.parseNumericAssignmentStatement = function (string) {
             _this.helpers.set(string)
                 .parseLineNumber()
@@ -244,11 +258,11 @@ var LineParserFunctions = (function () {
             return result;
         };
         this.helpers = parserHelpers.helpers;
-        // TODO change parseBareRemStatement to parseRemStatement ??
         this.lineParsers = [
             this.parseConsoleKeyword,
             this.parseBareLineNumber,
             this.parseBareRemStatement,
+            this.parseNonemptyRemStatement,
             this.parseNumericAssignmentStatement,
             this.parseGotoStatement,
             this.parseGosubStatement,
@@ -397,6 +411,19 @@ var LineParserHelpers = (function () {
                             '<string_literal>',
                             newString
                         ]);
+                    }
+                    else {
+                        this.match = 'error';
+                    }
+                }
+                return this;
+            },
+            parseCharacters: function () {
+                if (this.match != 'error') {
+                    if (this.remainder.length > 0) {
+                        this.match = 'yes';
+                        this.stack.push('<characters>');
+                        this.remainder = '';
                     }
                     else {
                         this.match = 'error';
