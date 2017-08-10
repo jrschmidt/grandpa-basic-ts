@@ -129,42 +129,42 @@ describe('String expression parser', function() {
     // FIXME What about plus signs ('+') inside a string literal?
     var result;
 
-    result = this.parser.parseStringExpression('$R');
+    result = this.parser.parse('$R');
     expect(result.length).toEqual(4);
     expect(result[0]).toEqual('<string_expression>');
     expect(result[1]).toEqual('<string_variable>');
     expect(result[2]).toEqual('R');
     expect(result[3]).toEqual('<str_exp_end>');
 
-    result = this.parser.parseStringExpression('$T8');
+    result = this.parser.parse('$T8');
     expect(result.length).toEqual(4);
     expect(result[0]).toEqual('<string_expression>');
     expect(result[1]).toEqual('<string_variable>');
     expect(result[2]).toEqual('T8');
     expect(result[3]).toEqual('<str_exp_end>');
 
-    result = this.parser.parseStringExpression('$X0');
+    result = this.parser.parse('$X0');
     expect(result.length).toEqual(4);
     expect(result[0]).toEqual('<string_expression>');
     expect(result[1]).toEqual('<string_variable>');
     expect(result[2]).toEqual('X0');
     expect(result[3]).toEqual('<str_exp_end>');
 
-    result = this.parser.parseStringExpression('"HUMMINGBIRD"');
+    result = this.parser.parse('"HUMMINGBIRD"');
     expect(result.length).toEqual(4);
     expect(result[0]).toEqual('<string_expression>');
     expect(result[1]).toEqual('<string_literal>');
     expect(result[2]).toEqual('HUMMINGBIRD');
     expect(result[3]).toEqual('<str_exp_end>');
 
-    result = this.parser.parseStringExpression('"ABCDEFGHIJKLMNOPQRSTUVWXYZ"');
+    result = this.parser.parse('"ABCDEFGHIJKLMNOPQRSTUVWXYZ"');
     expect(result.length).toEqual(4);
     expect(result[0]).toEqual('<string_expression>');
     expect(result[1]).toEqual('<string_literal>');
     expect(result[2]).toEqual('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
     expect(result[3]).toEqual('<str_exp_end>');
 
-    result = this.parser.parseStringExpression('"LAST NAME: "+$N2');
+    result = this.parser.parse('"LAST NAME: "+$N2');
     expect(result.length).toEqual(7);
     expect(result[0]).toEqual('<string_expression>');
     expect(result[1]).toEqual('<string_literal>');
@@ -174,7 +174,7 @@ describe('String expression parser', function() {
     expect(result[5]).toEqual('N2');
     expect(result[6]).toEqual('<str_exp_end>');
 
-    result = this.parser.parseStringExpression('"FIRST NAME: "+$N0+";  LAST NAME: "+$N2');
+    result = this.parser.parse('"FIRST NAME: "+$N0+";  LAST NAME: "+$N2');
     expect(result.length).toEqual(13);
     expect(result[0]).toEqual('<string_expression>');
     expect(result[1]).toEqual('<string_literal>');
@@ -190,7 +190,7 @@ describe('String expression parser', function() {
     expect(result[11]).toEqual('N2');
     expect(result[12]).toEqual('<str_exp_end>');
 
-    result = this.parser.parseStringExpression('$C2+" IS IN "+$D2');
+    result = this.parser.parse('$C2+" IS IN "+$D2');
     expect(result.length).toEqual(10);
     expect(result[0]).toEqual('<string_expression>');
     expect(result[1]).toEqual('<string_variable>');

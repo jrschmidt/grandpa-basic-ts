@@ -3,12 +3,14 @@ LineParser = GB80.LineParser;
 LineParserFunctions = GB80.LineParserFunctions;
 LineParserHelpers = GB80.LineParserHelpers;
 NumericExpressionParser = GB80.NumericExpressionParser;
+StringExpressionParser = GB80.SringExpressionParser;
 
 describe('BASIC program line parser', function() {
 
   beforeEach(function() {
-    this.nxp = new NumericExpressionParser
-    parserHelpers = new LineParserHelpers(this.nxp);
+    numExpParser = new NumericExpressionParser;
+    strExpParser = new StringExpressionParser;
+    parserHelpers = new LineParserHelpers(numExpParser, strExpParser);
     parserFunctions = new LineParserFunctions(parserHelpers);
     this.parser = new LineParser(parserFunctions);
   });
@@ -88,7 +90,6 @@ describe('BASIC program line parser', function() {
     result = this.parser.parse('180 X=77');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(10);
-    expect(result.length).toBeGreaterThan(0);
     expect(result[0]).toEqual('<line_number>');
     expect(result[1]).toEqual(180);
     expect(result[2]).toEqual('<space>');
@@ -183,7 +184,7 @@ describe('BASIC program line parser', function() {
   });
 
 
-  xit('should correctly parse a string assignment program line', function() {
+  it('should correctly parse a string assignment program line', function() {
 
     result = this.parser.parse('820 $V="HOY ES VIERNES"');
     expect(result).toEqual(jasmine.any(Array));

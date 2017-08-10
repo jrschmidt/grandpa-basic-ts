@@ -158,6 +158,7 @@ export class LineParserFunctions {
       this.parseBareRemStatement,
       this.parseNonemptyRemStatement,
       this.parseNumericAssignmentStatement,
+      this.parseStringAssignmentStatement,
       this.parseGotoStatement,
       this.parseGosubStatement,
       this.parseReturnStatement,
@@ -236,6 +237,26 @@ export class LineParserFunctions {
     .parseNumericVariable()
     .parseChar('equals')
     .parseNumericExpression();
+
+    if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
+      return this.helpers.stack;
+    }
+
+    else {
+      return [];
+    }
+
+  };
+
+
+  parseStringAssignmentStatement = (string: string): ParseStack => {
+
+    this.helpers.set(string)
+    .parseLineNumber()
+    .parseChar('space')
+    .parseStringVariable()
+    .parseChar('equals')
+    .parseStringExpression();
 
     if ( ( this.helpers.match === 'yes' ) && ( this.helpers.remainder.length === 0 ) ) {
       return this.helpers.stack;
@@ -505,13 +526,20 @@ export class LineParserHelpers {
   // The parser helper functions are written as properties of the helpers{}
   // object to enable them to be used in a function chaining pattern.
   numericExpressionParser: NumericExpressionParser;
+  stringExpressionParser: StringExpressionParser;
   helpers: {};
 
-  constructor (numericExpressionParser: NumericExpressionParser) {
+  constructor (
+    numericExpressionParser: NumericExpressionParser,
+    stringExpressionParser: StringExpressionParser
+  ) {
+
     this.numericExpressionParser = numericExpressionParser;
+    this.stringExpressionParser = stringExpressionParser;
 
     this.helpers = {
       numericExpressionParser: this.numericExpressionParser,
+      stringExpressionParser: this.stringExpressionParser,
 
       match: <string> 'no',
       stack: <ParseStack> [],
@@ -727,9 +755,29 @@ export class LineParserHelpers {
 
       parseNumericExpression : function () {
 
-
         if ( this.match != 'error' ) {
           let stack: ParseStack = this.numericExpressionParser.parse(this.remainder);
+
+          if ( stack.length > 0 ) {
+            this.match = 'yes';
+            this.stack = this.stack.concat(stack);
+            this.remainder = '';
+          }
+
+          else {
+            this.match = 'error';
+          }
+
+        }
+
+        return this;
+      },
+
+
+      parseStringExpression : function () {
+
+        if ( this.match != 'error' ) {
+          let stack: ParseStack = this.stringExpressionParser.parse(this.remainder);
 
           if ( stack.length > 0 ) {
             this.match = 'yes';
@@ -897,7 +945,7 @@ export class NumericExpressionParser {
 
 export class StringExpressionParser {
 
-  parseStringExpression (string: string): ParseStack {
+  parse (string: string): ParseStack {
     let resultTokens: ParseStack;
 
     let result: ParseStack = [];

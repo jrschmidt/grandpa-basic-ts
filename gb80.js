@@ -1,5 +1,5 @@
-////  Parser type definitions  ////
 "use strict";
+////  Parser type definitions  ////
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -75,6 +75,20 @@ var LineParserFunctions = (function () {
                 .parseNumericVariable()
                 .parseChar('equals')
                 .parseNumericExpression();
+            if ((_this.helpers.match === 'yes') && (_this.helpers.remainder.length === 0)) {
+                return _this.helpers.stack;
+            }
+            else {
+                return [];
+            }
+        };
+        this.parseStringAssignmentStatement = function (string) {
+            _this.helpers.set(string)
+                .parseLineNumber()
+                .parseChar('space')
+                .parseStringVariable()
+                .parseChar('equals')
+                .parseStringExpression();
             if ((_this.helpers.match === 'yes') && (_this.helpers.remainder.length === 0)) {
                 return _this.helpers.stack;
             }
@@ -264,6 +278,7 @@ var LineParserFunctions = (function () {
             this.parseBareRemStatement,
             this.parseNonemptyRemStatement,
             this.parseNumericAssignmentStatement,
+            this.parseStringAssignmentStatement,
             this.parseGotoStatement,
             this.parseGosubStatement,
             this.parseReturnStatement,
@@ -281,10 +296,12 @@ var LineParserFunctions = (function () {
 }());
 exports.LineParserFunctions = LineParserFunctions;
 var LineParserHelpers = (function () {
-    function LineParserHelpers(numericExpressionParser) {
+    function LineParserHelpers(numericExpressionParser, stringExpressionParser) {
         this.numericExpressionParser = numericExpressionParser;
+        this.stringExpressionParser = stringExpressionParser;
         this.helpers = {
             numericExpressionParser: this.numericExpressionParser,
+            stringExpressionParser: this.stringExpressionParser,
             match: 'no',
             stack: [],
             remainder: '',
@@ -445,6 +462,20 @@ var LineParserHelpers = (function () {
                 }
                 return this;
             },
+            parseStringExpression: function () {
+                if (this.match != 'error') {
+                    var stack = this.stringExpressionParser.parse(this.remainder);
+                    if (stack.length > 0) {
+                        this.match = 'yes';
+                        this.stack = this.stack.concat(stack);
+                        this.remainder = '';
+                    }
+                    else {
+                        this.match = 'error';
+                    }
+                }
+                return this;
+            },
         };
     }
     return LineParserHelpers;
@@ -551,7 +582,7 @@ exports.NumericExpressionParser = NumericExpressionParser;
 var StringExpressionParser = (function () {
     function StringExpressionParser() {
     }
-    StringExpressionParser.prototype.parseStringExpression = function (string) {
+    StringExpressionParser.prototype.parse = function (string) {
         var _this = this;
         var resultTokens;
         var result = [];
