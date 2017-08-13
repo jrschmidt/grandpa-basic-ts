@@ -448,64 +448,83 @@ describe('BASIC program line parser', function() {
   });
 
 
-  xit('should reject any otherwise valid line with extra characters at the end', function() {
+  it('should reject any otherwise valid line with extra characters at the end', function() {
 
     result = this.parser.parse('CLEAR ALL DATA');
-    expect(result).toEqual('<parse_error>');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
     result = this.parser.parse('RUN PROGRAM GB80.BAS');
-    expect(result).toEqual('<parse_error>');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
     result = this.parser.parse('INFO FOR GB80');
-    expect(result).toEqual('<parse_error>');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
     result = this.parser.parse('LIST PROGRAM');
-    expect(result).toEqual('<parse_error>');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
     result = this.parser.parse('1180 X=77 OR Z=77');
-    expect(result).toEqual('<parse_error>');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
     result = this.parser.parse('330 $W="TOTAL WEIGHT" =40-3');
-    expect(result).toEqual('<parse_error>');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
     result = this.parser.parse('650 GOTO 990 && CONTINUE');
-    expect(result).toEqual('<parse_error>');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
     result = this.parser.parse('410 GOSUB 960 RETURN');
-    expect(result).toEqual('<parse_error>');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
     result = this.parser.parse('1199 RETURN 870');
-    expect(result).toEqual('<parse_error>');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
     result = this.parser.parse('690 IF T>100 THEN 1600 ELSE 1800');
-    expect(result).toEqual('<parse_error>');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
     result = this.parser.parse('1290 INPUT X,Y,Z');
-    expect(result).toEqual('<parse_error>');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
     result = this.parser.parse('2860 INPUT $V,$V2,$V7');
-    expect(result).toEqual('<parse_error>');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
     result = this.parser.parse('1350 INPUT "ENTER VALUE";H;"ENTER QUANTITY";Q');
-    expect(result).toEqual('<parse_error>');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
     result = this.parser.parse('840 PRINT "THIS IS IT" X=Y');
-    expect(result).toEqual('<parse_error>');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
     result = this.parser.parse('720 PRINTLN; PRINTLN "SUMMARY"');
-    expect(result).toEqual('<parse_error>');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
     result = this.parser.parse('890 PRINTLN $R+$U6+" IS "+$I4 AND RETURN');
-    expect(result).toEqual('<parse_error>');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
     result = this.parser.parse('140 TAB 16,18,42');
-    expect(result).toEqual('<parse_error>');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
     result = this.parser.parse('460 CLEARSCRN & TAB 10,14');
-    expect(result).toEqual('<parse_error>');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
     result = this.parser.parse('1990 END PROGRAM');
-    expect(result).toEqual('<parse_error>');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
   });
 
