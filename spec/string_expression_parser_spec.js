@@ -109,20 +109,20 @@ describe('String expression parser', function() {
     expect(result.length).toEqual(2);
     expect(result[0]).toEqual('<string_literal>');
     expect(result[1]).toEqual('ALMOST ANY CHARACTERS ...');
+    
+    result = this.parser.parseStringLiteral('MISSING QUOTE MARKS');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
+
+    result = this.parser.parseStringLiteral('440-(3*X+5*Y)');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
+
+    result = this.parser.parseStringLiteral('260 $E="TOKEN"');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
   });
-
-    // result = this.parser.parseStringValue('MISSING QUOTE MARKS');
-    // expect(result).toEqual(jasmine.any(Array));
-    // expect(result.length).toEqual(0);
-    //
-    // result = this.parser.parseStringValue('440-(3*X+5*Y)');
-    // expect(result).toEqual(jasmine.any(Array));
-    // expect(result.length).toEqual(0);
-    //
-    // result = this.parser.parseStringValue('260 $E="TOKEN"');
-    // expect(result).toEqual(jasmine.any(Array));
-    // expect(result.length).toEqual(0);
 
 
   it('should parse any properly formed string expression', function() {

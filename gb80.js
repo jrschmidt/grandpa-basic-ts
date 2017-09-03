@@ -657,6 +657,34 @@ var StringExpressionParser = (function () {
     return StringExpressionParser;
 }());
 exports.StringExpressionParser = StringExpressionParser;
+var BooleanExpressionParser = (function () {
+    function BooleanExpressionParser() {
+    }
+    BooleanExpressionParser.prototype.extractBooleanExpression = function (string) {
+        var result = [];
+        var cutoff = 0;
+        var quotationMark1 = string.indexOf('"');
+        var quotationMark2 = string.lastIndexOf('"');
+        if (quotationMark1 > 0 && quotationMark1 != quotationMark2) {
+            cutoff = quotationMark2 + 1;
+        }
+        else {
+            var spaceIndex = string.indexOf(" ");
+            if (spaceIndex > 0) {
+                cutoff = spaceIndex;
+            }
+        }
+        if (cutoff > 0) {
+            result = [
+                string.slice(0, cutoff),
+                string.slice(cutoff)
+            ];
+        }
+        return result;
+    };
+    return BooleanExpressionParser;
+}());
+exports.BooleanExpressionParser = BooleanExpressionParser;
 var NumericExpressionBuilder = (function () {
     function NumericExpressionBuilder() {
     }

@@ -1045,6 +1045,37 @@ export class StringExpressionParser {
 
 
 
+export class BooleanExpressionParser {
+
+  extractBooleanExpression (string: string): string[] {
+    let result: string[] = [];
+    let cutoff: number = 0;
+    let quotationMark1: number = string.indexOf('"');
+    let quotationMark2 = string.lastIndexOf('"');
+
+    if ( quotationMark1 > 0 && quotationMark1 != quotationMark2 ) {
+      cutoff = quotationMark2 + 1;
+    }
+
+    else {
+      let spaceIndex: number = string.indexOf(" ");
+      if ( spaceIndex > 0 ) { cutoff = spaceIndex; }
+    }
+
+    if ( cutoff > 0 ) {
+      result = [
+        string.slice(0,cutoff),
+        string.slice(cutoff)
+      ];
+    }
+
+    return result;
+  }
+
+}
+
+
+
 export class NumericExpressionBuilder {
 
   buildNumericExpression (stack: ParseStack): NumericExpressionObject {
