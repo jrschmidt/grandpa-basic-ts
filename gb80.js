@@ -682,6 +682,39 @@ var BooleanExpressionParser = (function () {
         }
         return result;
     };
+    BooleanExpressionParser.prototype.separateExpression = function (string) {
+        var result = [];
+        var operatorLength;
+        var eqIndex = string.indexOf('=');
+        if (eqIndex < 0) {
+            eqIndex = 999;
+        }
+        var ltIndex = string.indexOf('<');
+        if (ltIndex < 0) {
+            ltIndex = 999;
+        }
+        var gtIndex = string.indexOf('>');
+        if (gtIndex < 0) {
+            gtIndex = 999;
+        }
+        var operatorIndex = Math.min(eqIndex, ltIndex, gtIndex);
+        if ((operatorIndex === ltIndex && ((eqIndex === operatorIndex + 1) || (gtIndex === operatorIndex + 1)))
+            ||
+                (operatorIndex === gtIndex) && (eqIndex === operatorIndex + 1)) {
+            operatorLength = 2;
+        }
+        else {
+            operatorLength = 1;
+        }
+        if (operatorIndex > 0) {
+            result = [
+                string.slice(0, operatorIndex),
+                string.slice(operatorIndex, operatorIndex + operatorLength),
+                string.slice(operatorIndex + operatorLength)
+            ];
+        }
+        return result;
+    };
     return BooleanExpressionParser;
 }());
 exports.BooleanExpressionParser = BooleanExpressionParser;

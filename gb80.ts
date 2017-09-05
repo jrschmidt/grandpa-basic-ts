@@ -1072,6 +1072,42 @@ export class BooleanExpressionParser {
     return result;
   }
 
+
+  separateExpression (string: string): string[] {
+    let result: string[] = [];
+
+    let operatorLength: number;
+    let eqIndex: number = string.indexOf('=');
+    if ( eqIndex < 0 ) { eqIndex = 999; }
+    let ltIndex: number = string.indexOf('<');
+    if ( ltIndex < 0 ) { ltIndex = 999; }
+    let gtIndex: number = string.indexOf('>');
+    if ( gtIndex < 0 ) { gtIndex = 999; }
+
+    let operatorIndex: number = Math.min(eqIndex, ltIndex, gtIndex);
+    if (
+      ( operatorIndex === ltIndex && ( ( eqIndex === operatorIndex + 1 ) || ( gtIndex === operatorIndex + 1 ) ) )
+      ||
+      ( operatorIndex === gtIndex ) && ( eqIndex === operatorIndex + 1 )
+    )
+    {
+      operatorLength = 2;
+    }
+    else {
+      operatorLength = 1;
+    }
+
+    if ( operatorIndex > 0 ) {
+      result = [
+        string.slice(0, operatorIndex),
+        string.slice(operatorIndex, operatorIndex + operatorLength),
+        string.slice(operatorIndex + operatorLength)
+      ];
+    }
+
+    return result;
+  }
+
 }
 
 

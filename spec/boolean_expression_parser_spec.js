@@ -38,56 +38,56 @@ describe('Boolean expression parser', function() {
   });
 
 
-  xit('should tokenize a boolean expression string', function() {
+  it('should separate a boolean expression string at the boolean operator', function() {
     var result;
 
-    result = this.parser.tokenize('$Y="Y"');
+    result = this.parser.separateExpression('$Y="Y"');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(3);
     expect(result[0]).toEqual('$Y');
-    expect(result[1]).toEqual('<equals>');
+    expect(result[1]).toEqual('=');
     expect(result[2]).toEqual('"Y"');
 
-    result = this.parser.tokenize('N>0');
+    result = this.parser.separateExpression('N>0');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(3);
     expect(result[0]).toEqual('N');
-    expect(result[1]).toEqual('<greater_than>');
+    expect(result[1]).toEqual('>');
     expect(result[2]).toEqual('0');
 
-    result = this.parser.tokenize('I3<20');
+    result = this.parser.separateExpression('I3<20');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(3);
     expect(result[0]).toEqual('I3');
-    expect(result[1]).toEqual('<lesser_than>');
+    expect(result[1]).toEqual('<');
     expect(result[2]).toEqual('20');
 
-    result = this.parser.tokenize('Z=A');
+    result = this.parser.separateExpression('Z=A');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(3);
     expect(result[0]).toEqual('Z');
-    expect(result[1]).toEqual('<equals>');
+    expect(result[1]).toEqual('=');
     expect(result[2]).toEqual('A');
 
-    result = this.parser.tokenize('Q1<>Q2');
+    result = this.parser.separateExpression('Q1<>Q2');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(3);
     expect(result[0]).toEqual('Q1');
-    expect(result[1]).toEqual('<not_equal>');
+    expect(result[1]).toEqual('<>');
     expect(result[2]).toEqual('Q2');
 
-    result = this.parser.tokenize('T<=30');
+    result = this.parser.separateExpression('T<=30');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(3);
     expect(result[0]).toEqual('T');
-    expect(result[1]).toEqual('<lesser_equal>');
+    expect(result[1]).toEqual('<=');
     expect(result[2]).toEqual('30');
 
-    result = this.parser.tokenize('H>=H0');
+    result = this.parser.separateExpression('H>=H0');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(3);
     expect(result[0]).toEqual('H');
-    expect(result[1]).toEqual('<greater_equal>');
+    expect(result[1]).toEqual('>=');
     expect(result[2]).toEqual('H0');
 
   });
