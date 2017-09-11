@@ -41,72 +41,54 @@ describe('Boolean expression parser', function() {
   it('should separate a boolean expression string at the boolean operator', function() {
     var result;
 
-    result = this.parser.separateExpression('$Y="Y"');
+    result = this.parser.splitExpression('$Y="Y"');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(3);
     expect(result[0]).toEqual('$Y');
     expect(result[1]).toEqual('=');
     expect(result[2]).toEqual('"Y"');
 
-    result = this.parser.separateExpression('N>0');
+    result = this.parser.splitExpression('N>0');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(3);
     expect(result[0]).toEqual('N');
     expect(result[1]).toEqual('>');
     expect(result[2]).toEqual('0');
 
-    result = this.parser.separateExpression('I3<20');
+    result = this.parser.splitExpression('I3<20');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(3);
     expect(result[0]).toEqual('I3');
     expect(result[1]).toEqual('<');
     expect(result[2]).toEqual('20');
 
-    result = this.parser.separateExpression('Z=A');
+    result = this.parser.splitExpression('Z=A');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(3);
     expect(result[0]).toEqual('Z');
     expect(result[1]).toEqual('=');
     expect(result[2]).toEqual('A');
 
-    result = this.parser.separateExpression('Q1<>Q2');
+    result = this.parser.splitExpression('Q1<>Q2');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(3);
     expect(result[0]).toEqual('Q1');
     expect(result[1]).toEqual('<>');
     expect(result[2]).toEqual('Q2');
 
-    result = this.parser.separateExpression('T<=30');
+    result = this.parser.splitExpression('T<=30');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(3);
     expect(result[0]).toEqual('T');
     expect(result[1]).toEqual('<=');
     expect(result[2]).toEqual('30');
 
-    result = this.parser.separateExpression('H>=H0');
+    result = this.parser.splitExpression('H>=H0');
     expect(result).toEqual(jasmine.any(Array));
     expect(result.length).toEqual(3);
     expect(result[0]).toEqual('H');
     expect(result[1]).toEqual('>=');
     expect(result[2]).toEqual('H0');
-
-  });
-
-
-  xit('should return an error (empty array) for any string that wont parse into a boolean expression', function() {
-    var result;
-
-    result = this.parser.parse('"FOURTEEN THOUSAND"');
-    expect(result).toEqual(jasmine.any(Array));
-    expect(result.length).toEqual(0);
-
-    result = this.parser.parse('$Z9');
-    expect(result).toEqual(jasmine.any(Array));
-    expect(result.length).toEqual(0);
-
-    result = this.parser.parse('(67-X)/(31*Y)');
-    expect(result).toEqual(jasmine.any(Array));
-    expect(result.length).toEqual(0);
 
   });
 
@@ -204,6 +186,18 @@ describe('Boolean expression parser', function() {
     expect(po[6]).toEqual('H0');
     expect(po[7]).toEqual('<num_exp_end>');
     expect(po[8]).toEqual('<bool_exp_end>');
+
+    result = this.parser.parse('"FOURTEEN THOUSAND"');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
+
+    result = this.parser.parse('$Z9');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
+
+    result = this.parser.parse('(67-X)/(31*Y)');
+    expect(result).toEqual(jasmine.any(Array));
+    expect(result.length).toEqual(0);
 
   });
 

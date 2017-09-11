@@ -1073,7 +1073,7 @@ export class BooleanExpressionParser {
   }
 
 
-  separateExpression (string: string): string[] {
+  splitExpression (string: string): string[] {
     let result: string[] = [];
 
     let operatorLength: number;

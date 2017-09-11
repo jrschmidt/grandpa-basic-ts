@@ -682,7 +682,7 @@ var BooleanExpressionParser = (function () {
         }
         return result;
     };
-    BooleanExpressionParser.prototype.separateExpression = function (string) {
+    BooleanExpressionParser.prototype.splitExpression = function (string) {
         var result = [];
         var operatorLength;
         var eqIndex = string.indexOf('=');
