@@ -545,14 +545,23 @@ describe('Line parser helpers', function() {
   });
 
 
-  xit('should tag the end of a boolean expression', function() {
+  it('should tag the end of a boolean expression', function() {
 
-    string = '';
-    this.helpers.set(string).endBooleanExpression();
+    string = ' THEN 1800';
+    this.helpers.set(string).parseEndBooleanExpression();
     expect(this.helpers.match).toEqual('yes');
     expect(this.helpers.stack).toEqual( [
+      '<bool_exp_end>'
     ] );
-    expect(this.helpers.remainder).toEqual( '' );
+    expect(this.helpers.remainder).toEqual( ' THEN 1800' );
+
+    string = ' THEN 370';
+    this.helpers.set(string).parseEndBooleanExpression();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<bool_exp_end>'
+    ] );
+    expect(this.helpers.remainder).toEqual( ' THEN 370' );
 
   });
 

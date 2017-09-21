@@ -460,6 +460,18 @@ var LineParserHelpers = (function () {
                 }
                 return this;
             },
+            parseEndBooleanExpression: function () {
+                if (this.match != 'error') {
+                    if (this.remainder.length > 0) {
+                        this.match = 'yes';
+                        this.stack.push('<bool_exp_end>');
+                    }
+                    else {
+                        this.match = 'error';
+                    }
+                }
+                return this;
+            },
             parseNumericExpression: function () {
                 if (this.match != 'error') {
                     var stack = this.numericExpressionParser.parse(this.remainder);
