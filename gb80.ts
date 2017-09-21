@@ -753,6 +753,25 @@ export class LineParserHelpers {
       },
 
 
+      parseBeginBooleanExpression : function () {
+
+        if ( this.match != 'error' ) {
+
+          if ( this.remainder.length > 0 ) {
+            this.match = 'yes';
+            this.stack.push('<boolean_expression>');
+          }
+
+          else {
+            this.match = 'error';
+          }
+
+        }
+
+        return this;
+      },
+
+
       parseNumericExpression : function () {
 
         if ( this.match != 'error' ) {

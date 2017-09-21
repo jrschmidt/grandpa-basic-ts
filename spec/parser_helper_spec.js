@@ -507,4 +507,77 @@ describe('Line parser helpers', function() {
 
   });
 
+
+  it('should tag the start of a boolean expression', function() {
+
+    string = 'X=Y';
+    this.helpers.set(string).parseBeginBooleanExpression();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<boolean_expression>'
+    ] );
+    expect(this.helpers.remainder).toEqual( 'X=Y' );
+
+    string = 'K>100';
+    this.helpers.set(string).parseBeginBooleanExpression();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<boolean_expression>'
+    ] );
+    expect(this.helpers.remainder).toEqual( 'K>100' );
+
+    string = '$Q5="WHAT IS YOUR ANSWER"';
+    this.helpers.set(string).parseBeginBooleanExpression();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<boolean_expression>'
+    ] );
+    expect(this.helpers.remainder).toEqual( '$Q5="WHAT IS YOUR ANSWER"' );
+
+    string = '$V8<>$V9';
+    this.helpers.set(string).parseBeginBooleanExpression();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<boolean_expression>'
+    ] );
+    expect(this.helpers.remainder).toEqual( '$V8<>$V9' );
+
+  });
+
+
+  xit('should tag the end of a boolean expression', function() {
+
+    string = '';
+    this.helpers.set(string).endBooleanExpression();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+  });
+
+
+  xit('should correctly parse a numeric boolean comparator', function() {
+
+    string = '';
+    this.helpers.set(string).parseNumeriBooleanComparator();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+  });
+
+
+  xit('should correctly parse a string boolean comparator', function() {
+
+    string = '';
+    this.helpers.set(string).parseStringBooleanComparator();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+  });
+
 });
