@@ -472,6 +472,49 @@ var LineParserHelpers = (function () {
                 }
                 return this;
             },
+            // Look for =, <>, >, >=, < or <=
+            parseNumericBooleanComparator: function () {
+                if (this.match != 'error') {
+                    var tag = void 0;
+                    // Test for 2 character comparators first
+                    var str = this.remainder.slice(0, 2);
+                    if (str === '<>') {
+                        tag = '<number_not_equal>';
+                    }
+                    else if (str === '>=') {
+                        tag = '<number_greater_equal>';
+                    }
+                    else if (str === '<=') {
+                        tag = '<number_lesser_equal>';
+                    }
+                    else {
+                        str = this.remainder.slice(0, 1);
+                        if (str === '=') {
+                            tag = '<number_equals>';
+                        }
+                        else if (str === '>') {
+                            tag = '<number_greater_than>';
+                        }
+                        else if (str === '<') {
+                            tag = '<number_lesser_than>';
+                        }
+                    }
+                    if (tag === '<number_not_equal>' || tag === '<number_greater_equal>' || tag === '<number_lesser_equal>') {
+                        this.remainder = this.remainder.slice(2);
+                    }
+                    if (tag === '<number_equals>' || tag === '<number_greater_than>' || tag === '<number_lesser_than>') {
+                        this.remainder = this.remainder.slice(1);
+                    }
+                    if (tag) {
+                        this.match = 'yes';
+                        this.stack.push(tag);
+                    }
+                    else {
+                        this.match = 'error';
+                    }
+                }
+                return this;
+            },
             parseNumericExpression: function () {
                 if (this.match != 'error') {
                     var stack = this.numericExpressionParser.parse(this.remainder);

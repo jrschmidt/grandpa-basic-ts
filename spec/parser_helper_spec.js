@@ -566,12 +566,53 @@ describe('Line parser helpers', function() {
   });
 
 
-  xit('should correctly parse a numeric boolean comparator', function() {
+  it('should correctly parse a numeric boolean comparator', function() {
 
-    string = '';
-    this.helpers.set(string).parseNumeriBooleanComparator();
+    string = '=';
+    this.helpers.set(string).parseNumericBooleanComparator();
     expect(this.helpers.match).toEqual('yes');
     expect(this.helpers.stack).toEqual( [
+      '<number_equals>'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+    string = '<>';
+    this.helpers.set(string).parseNumericBooleanComparator();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<number_not_equal>'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+    string = '>';
+    this.helpers.set(string).parseNumericBooleanComparator();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<number_greater_than>'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+    string = '>=';
+    this.helpers.set(string).parseNumericBooleanComparator();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<number_greater_equal>'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+    string = '<';
+    this.helpers.set(string).parseNumericBooleanComparator();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<number_lesser_than>'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+    string = '<=';
+    this.helpers.set(string).parseNumericBooleanComparator();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<number_lesser_equal>'
     ] );
     expect(this.helpers.remainder).toEqual( '' );
 

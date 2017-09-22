@@ -791,6 +791,48 @@ export class LineParserHelpers {
       },
 
 
+      // Look for =, <>, >, >=, < or <=
+      parseNumericBooleanComparator : function () {
+
+        if ( this.match != 'error' ) {
+          let tag: BooleanExpressionTag;
+
+          // Test for 2 character comparators first
+          let str: string = this.remainder.slice(0,2);
+          if (str === '<>') { tag = '<number_not_equal>'; }
+          else if (str === '>=' ) { tag = '<number_greater_equal>'; }
+          else if (str === '<=') { tag = '<number_lesser_equal>'; }
+
+          // Test for 1 character comparators
+          else {
+            str = this.remainder.slice(0,1);
+            if (str === '=') { tag = '<number_equals>'; }
+            else if (str === '>') { tag = '<number_greater_than>'; }
+            else if (str === '<') { tag = '<number_lesser_than>'; }
+          }
+
+          if ( tag === '<number_not_equal>' || tag === '<number_greater_equal>' || tag === '<number_lesser_equal>' ) {
+            this.remainder = this.remainder.slice(2);
+          }
+
+          if ( tag === '<number_equals>' || tag === '<number_greater_than>' || tag === '<number_lesser_than>' ) {
+            this.remainder = this.remainder.slice(1);
+          }
+
+          if ( tag ) {
+            this.match = 'yes';
+            this.stack.push(tag);
+          }
+          else {
+            this.match = 'error';
+          }
+
+        }
+
+        return this;
+      },
+
+
       parseNumericExpression : function () {
 
         if ( this.match != 'error' ) {
