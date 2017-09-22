@@ -619,12 +619,21 @@ describe('Line parser helpers', function() {
   });
 
 
-  xit('should correctly parse a string boolean comparator', function() {
+  it('should correctly parse a string boolean comparator', function() {
 
-    string = '';
+    string = '=';
     this.helpers.set(string).parseStringBooleanComparator();
     expect(this.helpers.match).toEqual('yes');
     expect(this.helpers.stack).toEqual( [
+      '<string_equals>'
+    ] );
+    expect(this.helpers.remainder).toEqual( '' );
+
+    string = '<>';
+    this.helpers.set(string).parseStringBooleanComparator();
+    expect(this.helpers.match).toEqual('yes');
+    expect(this.helpers.stack).toEqual( [
+      '<string_not_equal>'
     ] );
     expect(this.helpers.remainder).toEqual( '' );
 

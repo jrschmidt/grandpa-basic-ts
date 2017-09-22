@@ -833,6 +833,33 @@ export class LineParserHelpers {
       },
 
 
+      // Look for '=' or '<>'
+      parseStringBooleanComparator : function () {
+
+        if ( this.match != 'error' ) {
+
+          if ( this.remainder.slice(0,1) === '=' ) {
+            this.match = 'yes';
+            this.stack.push('<string_equals>');
+            this.remainder = this.remainder.slice(1);
+          }
+
+          else if ( this.remainder.slice(0,2) === '<>' ) {
+            this.match = 'yes';
+            this.stack.push('<string_not_equal>');
+            this.remainder = this.remainder.slice(2);
+          }
+
+          else {
+            this.match = 'error';
+          }
+
+        }
+
+        return this;
+      },
+
+
       parseNumericExpression : function () {
 
         if ( this.match != 'error' ) {
